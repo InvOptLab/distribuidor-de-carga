@@ -78,6 +78,7 @@ export default function TimetableGrid({
           <TableRow>
             <TableCell
               sx={{
+                minWidth: "9rem",
                 maxWidth: "11rem",
                 position: "sticky",
                 left: 0,
