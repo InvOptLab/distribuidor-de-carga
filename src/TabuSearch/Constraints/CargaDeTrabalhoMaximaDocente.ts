@@ -50,8 +50,11 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint {
       if (cargaDocente.get(docente.nome) > 2.0) {
         avaliacao -=
           this.penalty *
-          // (cargaDocente.get(docente.nome) - 2.0) *
-          (docente.saldo < -1.0 ? 0.75 : 1.0);
+          (docente.saldo < -1.0 ? 0.75 : 1.0) *
+          (cargaDocente.get(docente.nome) - 2);
+        // this.penalty *
+        // // (cargaDocente.get(docente.nome) - 2.0) *
+        // (docente.saldo < -1.0 ? 0.75 : 1.0);
       }
     }
 
