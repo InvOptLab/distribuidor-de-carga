@@ -329,13 +329,15 @@ export default function ConstraintViolationsChart({
                 series={barSeries}
                 width={undefined}
                 height={400}
-                margin={{ left: 80, right: 20, top: 20, bottom: 100 }}
+                margin={{ left: 75, right: 75 }}
                 slotProps={{
                   legend: {
                     direction: "row",
                     position: { vertical: "top", horizontal: "middle" },
                   },
                 }}
+                barLabel="value"
+                grid={{ vertical: false, horizontal: true }}
               />
             ) : (
               <Box
