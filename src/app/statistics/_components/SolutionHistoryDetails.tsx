@@ -191,25 +191,30 @@ export default function SolutionHistoryDetails({
                   <b>Avaliação:</b> {solucao.solucao.avaliacao}
                 </Typography>
               </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
-                <Tooltip
-                  title={`${Math.floor(
-                    solucao.solucao.estatisticas.tempoExecucao / 60000
-                  )} min ${(
-                    (solucao.solucao.estatisticas.tempoExecucao % 60000) /
-                    1000
-                  ).toFixed(3)} s`}
-                  arrow
-                >
-                  <Typography variant="body1" sx={{ cursor: "help" }}>
-                    <b>Tempo de Execução:</b>{" "}
-                    {solucao.solucao.estatisticas.tempoExecucao} ms
-                  </Typography>
-                </Tooltip>
-              </Grid2>
+              {solucao.solucao.estatisticas.tempoExecucao && (
+                <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Tooltip
+                    title={`${Math.floor(
+                      solucao.solucao.estatisticas.tempoExecucao / 60000
+                    )} min ${(
+                      (solucao.solucao.estatisticas.tempoExecucao % 60000) /
+                      1000
+                    ).toFixed(3)} s`}
+                    arrow
+                  >
+                    <Typography variant="body1" sx={{ cursor: "help" }}>
+                      <b>Tempo de Execução:</b>{" "}
+                      {solucao.solucao.estatisticas.tempoExecucao} ms
+                    </Typography>
+                  </Tooltip>
+                </Grid2>
+              )}
               <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="body1">
-                  <b>Iterações:</b> {solucao.solucao.estatisticas.iteracoes}
+                  <b>Iterações:</b>{" "}
+                  {solucao.solucao.estatisticas.iteracoes
+                    ? solucao.solucao.estatisticas.iteracoes
+                    : "Dado não informado!"}
                 </Typography>
               </Grid2>
             </Grid2>
@@ -255,11 +260,14 @@ export default function SolutionHistoryDetails({
                       Tamanho da Lista Tabu
                     </Typography>
                     <Typography variant="h5" color="primary">
-                      {solucao.solucao.algorithm.tabuList instanceof Solution
-                        ? solucao.solucao.algorithm.tabuList.tabuSize.toString()
-                        : solucao.solucao.algorithm.tabuList instanceof Moviment
-                        ? `${solucao.solucao.algorithm.tabuList.tenures.add} - ${solucao.solucao.algorithm.tabuList.tenures.drop}`
-                        : ""}
+                      {solucao.solucao.algorithm
+                        ? solucao.solucao.algorithm.tabuList instanceof Solution
+                          ? solucao.solucao.algorithm.tabuList.tabuSize.toString()
+                          : solucao.solucao.algorithm.tabuList instanceof
+                            Moviment
+                          ? `${solucao.solucao.algorithm.tabuList.tenures.add} - ${solucao.solucao.algorithm.tabuList.tenures.drop}`
+                          : ""
+                        : "Dado não informado!"}
                     </Typography>
                   </Box>
                 </Card>
@@ -273,64 +281,74 @@ export default function SolutionHistoryDetails({
             <Typography variant="h6">Restrições</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Grid2 container spacing={2}>
-              {[
-                ...solucao.solucao.algorithm.constraints.hard.values(),
-                ...solucao.solucao.algorithm.constraints.soft.values(),
-              ].map((constraint) => (
-                <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={constraint.name}>
-                  <Card
-                    elevation={3}
-                    sx={{
-                      padding: 2,
-                      borderRadius: 2,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "flex-start",
-                      minHeight: 150,
-                      textAlign: "center",
-                      backgroundColor: constraint.isHard
-                        ? "#ffebee"
-                        : "#fff3cd",
-                      border: constraint.isHard
-                        ? "2px solid #d32f2f"
-                        : "2px solid #ffb300",
-                    }}
-                  >
-                    {constraint.isHard ? (
-                      <ErrorOutlineIcon
-                        color="error"
-                        sx={{ fontSize: 40, marginBottom: 1 }}
-                      />
-                    ) : (
-                      <TrendingDownOutlinedIcon
-                        sx={{ fontSize: 40, marginBottom: 1, color: "#ffb300" }}
-                      />
-                    )}
-                    <Box>
-                      <Typography variant="body1" fontWeight="bold">
-                        {constraint.name}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {constraint.isHard
-                          ? "Restrição Hard (Obrigatória)"
-                          : "Restrição Soft (Flexível)"}
-                      </Typography>
-                      {!constraint.isHard && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          fontWeight="bold"
-                        >
-                          Penalidade: {constraint.penalty}
-                        </Typography>
-                      )}
-                    </Box>
-                  </Card>
+            {solucao.solucao.algorithm &&
+              solucao.solucao.algorithm.constraints && (
+                <Grid2 container spacing={2}>
+                  {[
+                    ...solucao.solucao.algorithm.constraints.hard.values(),
+                    ...solucao.solucao.algorithm.constraints.soft.values(),
+                  ].map((constraint) => (
+                    <Grid2
+                      size={{ xs: 12, sm: 6, md: 4 }}
+                      key={constraint.name}
+                    >
+                      <Card
+                        elevation={3}
+                        sx={{
+                          padding: 2,
+                          borderRadius: 2,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "flex-start",
+                          minHeight: 150,
+                          textAlign: "center",
+                          backgroundColor: constraint.isHard
+                            ? "#ffebee"
+                            : "#fff3cd",
+                          border: constraint.isHard
+                            ? "2px solid #d32f2f"
+                            : "2px solid #ffb300",
+                        }}
+                      >
+                        {constraint.isHard ? (
+                          <ErrorOutlineIcon
+                            color="error"
+                            sx={{ fontSize: 40, marginBottom: 1 }}
+                          />
+                        ) : (
+                          <TrendingDownOutlinedIcon
+                            sx={{
+                              fontSize: 40,
+                              marginBottom: 1,
+                              color: "#ffb300",
+                            }}
+                          />
+                        )}
+                        <Box>
+                          <Typography variant="body1" fontWeight="bold">
+                            {constraint.name}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {constraint.isHard
+                              ? "Restrição Hard (Obrigatória)"
+                              : "Restrição Soft (Flexível)"}
+                          </Typography>
+                          {!constraint.isHard && (
+                            <Typography
+                              variant="body2"
+                              color="error"
+                              fontWeight="bold"
+                            >
+                              Penalidade: {constraint.penalty}
+                            </Typography>
+                          )}
+                        </Box>
+                      </Card>
+                    </Grid2>
+                  ))}
                 </Grid2>
-              ))}
-            </Grid2>
+              )}
           </AccordionDetails>
         </Accordion>
         <Accordion>
@@ -338,88 +356,13 @@ export default function SolutionHistoryDetails({
             <Typography variant="h6">Geração da Vizinhança</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Grid2 container spacing={2}>
-              {Array.from(
-                solucao.solucao.algorithm.neighborhoodPipe.values()
-              ).map((genFunc) => (
-                <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={genFunc.name}>
-                  <Card
-                    elevation={3}
-                    sx={{
-                      padding: 2,
-                      borderRadius: 2,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: 150,
-                      textAlign: "center",
-                      backgroundColor: "#fff3e0",
-                      border: "2px solid #ff9800",
-                    }}
-                  >
-                    <ShuffleOutlinedIcon
-                      color="warning"
-                      sx={{ fontSize: 40, marginBottom: 1 }}
-                    />
-                    <Typography variant="body1" fontWeight="bold">
-                      {genFunc.name}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {genFunc.description}
-                    </Typography>
-                  </Card>
-                </Grid2>
-              ))}
-            </Grid2>
-          </AccordionDetails>
-        </Accordion>
-
-        {/**Interrupção */}
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">Interrupção</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Grid2 container spacing={2}>
-              {Array.from(solucao.solucao.algorithm.stopPipe.values()).map(
-                (stopFunc) => {
-                  let details = null;
-                  let icon = (
-                    <PauseCircleOutlineOutlinedIcon
-                      color="warning"
-                      sx={{ fontSize: 40, marginBottom: 1 }}
-                    />
-                  );
-
-                  if (stopFunc instanceof IteracoesSemModificacao) {
-                    details = `Iterações sem modificação: ${stopFunc.limiteIteracoesSemModificacao}`;
-                    icon = (
-                      <ShutterSpeedOutlinedIcon
-                        color="warning"
-                        sx={{ fontSize: 40, marginBottom: 1 }}
-                      />
-                    );
-                  } else if (stopFunc instanceof IteracoesMaximas) {
-                    details = `Quantidade máxima de iterações: ${stopFunc.maxIteracoes}`;
-                    icon = (
-                      <TimerOutlinedIcon
-                        color="error"
-                        sx={{ fontSize: 40, marginBottom: 1 }}
-                      />
-                    );
-                  } else if (stopFunc instanceof IteracoesSemMelhoraAvaliacao) {
-                    details = `Quantidade máxima de iterações sem modificação: ${stopFunc.limiteIteracoesSemMelhoraAvaliacao}`;
-                    icon = (
-                      <LinearScaleIcon
-                        color="error"
-                        sx={{ fontSize: 40, marginBottom: 1 }}
-                      />
-                    );
-                  }
-
-                  return (
-                    <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={stopFunc.name}>
+            {solucao.solucao.algorithm &&
+              solucao.solucao.algorithm.neighborhoodPipe && (
+                <Grid2 container spacing={2}>
+                  {Array.from(
+                    solucao.solucao.algorithm.neighborhoodPipe.values()
+                  ).map((genFunc) => (
+                    <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={genFunc.name}>
                       <Card
                         elevation={3}
                         sx={{
@@ -431,32 +374,118 @@ export default function SolutionHistoryDetails({
                           justifyContent: "center",
                           minHeight: 150,
                           textAlign: "center",
-                          backgroundColor: "#e3f2fd",
-                          border: "2px solid #1976d2",
+                          backgroundColor: "#fff3e0",
+                          border: "2px solid #ff9800",
                         }}
                       >
-                        {icon}
+                        <ShuffleOutlinedIcon
+                          color="warning"
+                          sx={{ fontSize: 40, marginBottom: 1 }}
+                        />
                         <Typography variant="body1" fontWeight="bold">
-                          {stopFunc.name}
+                          {genFunc.name}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {stopFunc.description}
+                          {genFunc.description}
                         </Typography>
-                        {details && (
-                          <Typography
-                            variant="body2"
-                            color="error"
-                            fontWeight="bold"
-                          >
-                            {details}
-                          </Typography>
-                        )}
                       </Card>
                     </Grid2>
-                  );
-                }
+                  ))}
+                </Grid2>
               )}
-            </Grid2>
+          </AccordionDetails>
+        </Accordion>
+
+        {/**Interrupção */}
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">Interrupção</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {solucao.solucao.algorithm &&
+              solucao.solucao.algorithm.stopPipe && (
+                <Grid2 container spacing={2}>
+                  {Array.from(solucao.solucao.algorithm.stopPipe.values()).map(
+                    (stopFunc) => {
+                      let details = null;
+                      let icon = (
+                        <PauseCircleOutlineOutlinedIcon
+                          color="warning"
+                          sx={{ fontSize: 40, marginBottom: 1 }}
+                        />
+                      );
+
+                      if (stopFunc instanceof IteracoesSemModificacao) {
+                        details = `Iterações sem modificação: ${stopFunc.limiteIteracoesSemModificacao}`;
+                        icon = (
+                          <ShutterSpeedOutlinedIcon
+                            color="warning"
+                            sx={{ fontSize: 40, marginBottom: 1 }}
+                          />
+                        );
+                      } else if (stopFunc instanceof IteracoesMaximas) {
+                        details = `Quantidade máxima de iterações: ${stopFunc.maxIteracoes}`;
+                        icon = (
+                          <TimerOutlinedIcon
+                            color="error"
+                            sx={{ fontSize: 40, marginBottom: 1 }}
+                          />
+                        );
+                      } else if (
+                        stopFunc instanceof IteracoesSemMelhoraAvaliacao
+                      ) {
+                        details = `Quantidade máxima de iterações sem modificação: ${stopFunc.limiteIteracoesSemMelhoraAvaliacao}`;
+                        icon = (
+                          <LinearScaleIcon
+                            color="error"
+                            sx={{ fontSize: 40, marginBottom: 1 }}
+                          />
+                        );
+                      }
+
+                      return (
+                        <Grid2
+                          size={{ xs: 12, sm: 6, md: 4 }}
+                          key={stopFunc.name}
+                        >
+                          <Card
+                            elevation={3}
+                            sx={{
+                              padding: 2,
+                              borderRadius: 2,
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              minHeight: 150,
+                              textAlign: "center",
+                              backgroundColor: "#e3f2fd",
+                              border: "2px solid #1976d2",
+                            }}
+                          >
+                            {icon}
+                            <Typography variant="body1" fontWeight="bold">
+                              {stopFunc.name}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {stopFunc.description}
+                            </Typography>
+                            {details && (
+                              <Typography
+                                variant="body2"
+                                color="error"
+                                fontWeight="bold"
+                              >
+                                {details}
+                              </Typography>
+                            )}
+                          </Card>
+                        </Grid2>
+                      );
+                    }
+                  )}
+                </Grid2>
+              )}
           </AccordionDetails>
         </Accordion>
 
@@ -466,53 +495,56 @@ export default function SolutionHistoryDetails({
             <Typography variant="h6">Critérios de Aspiração</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Grid2 container spacing={2}>
-              {Array.from(
-                solucao.solucao.algorithm.aspirationPipe.values()
-              ).map((aspirationFunc) => (
-                <Grid2
-                  size={{ xs: 12, sm: 6, md: 4 }}
-                  key={aspirationFunc.name}
-                >
-                  <Card
-                    elevation={3}
-                    sx={{
-                      padding: 2,
-                      borderRadius: 2,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: 150,
-                      textAlign: "center",
-                      backgroundColor: "#e8f5e9",
-                      border: "2px solid #2e7d32",
-                    }}
-                  >
-                    <CheckCircleOutlineOutlinedIcon
-                      color="success"
-                      sx={{ fontSize: 40, marginBottom: 1 }}
-                    />
-                    <Typography variant="body1" fontWeight="bold">
-                      {aspirationFunc.name}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {aspirationFunc.description}
-                    </Typography>
-                    {aspirationFunc instanceof SameObjective && (
-                      <Typography
-                        variant="body2"
-                        color="textPrimary"
-                        fontWeight="bold"
+            {solucao.solucao.algorithm &&
+              solucao.solucao.algorithm.aspirationPipe && (
+                <Grid2 container spacing={2}>
+                  {Array.from(
+                    solucao.solucao.algorithm.aspirationPipe.values()
+                  ).map((aspirationFunc) => (
+                    <Grid2
+                      size={{ xs: 12, sm: 6, md: 4 }}
+                      key={aspirationFunc.name}
+                    >
+                      <Card
+                        elevation={3}
+                        sx={{
+                          padding: 2,
+                          borderRadius: 2,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minHeight: 150,
+                          textAlign: "center",
+                          backgroundColor: "#e8f5e9",
+                          border: "2px solid #2e7d32",
+                        }}
                       >
-                        Iterações para aceitação:{" "}
-                        {aspirationFunc.iteracoesParaAceitacao}
-                      </Typography>
-                    )}
-                  </Card>
+                        <CheckCircleOutlineOutlinedIcon
+                          color="success"
+                          sx={{ fontSize: 40, marginBottom: 1 }}
+                        />
+                        <Typography variant="body1" fontWeight="bold">
+                          {aspirationFunc.name}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {aspirationFunc.description}
+                        </Typography>
+                        {aspirationFunc instanceof SameObjective && (
+                          <Typography
+                            variant="body2"
+                            color="textPrimary"
+                            fontWeight="bold"
+                          >
+                            Iterações para aceitação:{" "}
+                            {aspirationFunc.iteracoesParaAceitacao}
+                          </Typography>
+                        )}
+                      </Card>
+                    </Grid2>
+                  ))}
                 </Grid2>
-              ))}
-            </Grid2>
+              )}
           </AccordionDetails>
         </Accordion>
         <Divider sx={{ my: 3 }} />
@@ -532,7 +564,7 @@ export default function SolutionHistoryDetails({
                 </Typography>
                 <ChartContainer>
                   <BarChart
-                    key="teste"
+                    key="histograma_quantidade_atribuicoes_por_prioridade"
                     xAxis={[
                       {
                         scaleType: "band",
@@ -562,67 +594,72 @@ export default function SolutionHistoryDetails({
           </Grid2>
 
           {/* Gráficos menores */}
-          <Grid2 size={{ xs: 12, md: 6 }}>
-            <Card elevation={3}>
-              <CardContent>
-                <Typography variant="h6" align="center" gutterBottom>
-                  Gráfico Avaliação por Iteração
-                </Typography>
-                <LineChart
-                  xAxis={[
-                    {
-                      data: Array.from(
-                        solucao.solucao.estatisticas.avaliacaoPorIteracao.keys()
-                      ),
-                      label: "Iteração",
-                    },
-                  ]}
-                  series={[
-                    {
-                      data: Array.from(
-                        solucao.solucao.estatisticas.avaliacaoPorIteracao.values()
-                      ),
-                      label: "Avaliação",
-                    },
-                  ]}
-                  grid={{ vertical: true, horizontal: true }}
-                  height={300}
-                  margin={{ left: 75, right: 75 }}
-                />
-              </CardContent>
-            </Card>
-          </Grid2>
 
-          <Grid2 size={{ xs: 12, md: 6 }}>
-            <Card elevation={3}>
-              <CardContent>
-                <Typography variant="h6" align="center" gutterBottom>
-                  Gráfico Tempo (s) por Iteração
-                </Typography>
-                <LineChart
-                  xAxis={[
-                    {
-                      data: Array.from(
-                        solucao.solucao.estatisticas.tempoPorIteracao.keys()
-                      ),
-                      label: "Iteração",
-                    },
-                  ]}
-                  series={[
-                    {
-                      data: Array.from(
-                        solucao.solucao.estatisticas.tempoPorIteracao.values()
-                      ).map((value) => value),
-                      label: "Tempo (ms)",
-                    },
-                  ]}
-                  grid={{ vertical: true, horizontal: true }}
-                  height={300}
-                  margin={{ left: 75, right: 75 }}
-                />
-              </CardContent>
-            </Card>
-          </Grid2>
+          {solucao.solucao.estatisticas.avaliacaoPorIteracao && (
+            <Grid2 size={{ xs: 12, md: 6 }}>
+              <Card elevation={3}>
+                <CardContent>
+                  <Typography variant="h6" align="center" gutterBottom>
+                    Gráfico Avaliação por Iteração
+                  </Typography>
+                  <LineChart
+                    xAxis={[
+                      {
+                        data: Array.from(
+                          solucao.solucao.estatisticas.avaliacaoPorIteracao.keys()
+                        ),
+                        label: "Iteração",
+                      },
+                    ]}
+                    series={[
+                      {
+                        data: Array.from(
+                          solucao.solucao.estatisticas.avaliacaoPorIteracao.values()
+                        ),
+                        label: "Avaliação",
+                      },
+                    ]}
+                    grid={{ vertical: true, horizontal: true }}
+                    height={300}
+                    margin={{ left: 75, right: 75 }}
+                  />
+                </CardContent>
+              </Card>
+            </Grid2>
+          )}
+
+          {solucao.solucao.estatisticas.tempoPorIteracao && (
+            <Grid2 size={{ xs: 12, md: 6 }}>
+              <Card elevation={3}>
+                <CardContent>
+                  <Typography variant="h6" align="center" gutterBottom>
+                    Gráfico Tempo (s) por Iteração
+                  </Typography>
+                  <LineChart
+                    xAxis={[
+                      {
+                        data: Array.from(
+                          solucao.solucao.estatisticas.tempoPorIteracao.keys()
+                        ),
+                        label: "Iteração",
+                      },
+                    ]}
+                    series={[
+                      {
+                        data: Array.from(
+                          solucao.solucao.estatisticas.tempoPorIteracao.values()
+                        ).map((value) => value),
+                        label: "Tempo (ms)",
+                      },
+                    ]}
+                    grid={{ vertical: true, horizontal: true }}
+                    height={300}
+                    margin={{ left: 75, right: 75 }}
+                  />
+                </CardContent>
+              </Card>
+            </Grid2>
+          )}
 
           {/* Histograma Ocorrências de Restrições - LINHA INTEIRA */}
           <Grid2 size={{ xs: 12 }}>
