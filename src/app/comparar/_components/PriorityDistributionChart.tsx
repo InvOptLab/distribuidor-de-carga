@@ -209,16 +209,18 @@ export default function PriorityDistributionChart({
                   label: "Quantidade de Atribuições",
                 },
               ]}
+              grid={{ vertical: false, horizontal: true }}
               series={series}
               width={undefined}
               height={400}
-              margin={{ left: 80, right: 20, top: 20, bottom: 60 }}
+              margin={{ left: 75, right: 75 }}
               slotProps={{
                 legend: {
                   direction: "row",
                   position: { vertical: "top", horizontal: "middle" },
                 },
               }}
+              barLabel="value"
             />
           ) : (
             <Box

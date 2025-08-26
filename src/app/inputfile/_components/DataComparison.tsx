@@ -58,49 +58,43 @@ export default function DataComparison({
             <ListItemIcon>
               <PersonIcon color="primary" />
             </ListItemIcon>
-            <ListItemText
-              primary="Docentes"
-              secondary={
-                <Chip
-                  label={`${currentData.docentes} carregados`}
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                />
-              }
-            />
+            <Box style={{ display: "flex", flexDirection: "column" }}>
+              <ListItemText primary="Docentes" sx={{ marginBottom: 0 }} />
+              <Chip
+                label={`${currentData.docentes} carregados`}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            </Box>
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <SchoolIcon color="secondary" />
             </ListItemIcon>
-            <ListItemText
-              primary="Disciplinas"
-              secondary={
-                <Chip
-                  label={`${currentData.disciplinas} carregadas`}
-                  size="small"
-                  color="secondary"
-                  variant="outlined"
-                />
-              }
-            />
+            <Box style={{ display: "flex", flexDirection: "column" }}>
+              <ListItemText primary="Disciplinas" sx={{ marginBottom: 0 }} />
+              <Chip
+                label={`${currentData.disciplinas} carregadas`}
+                size="small"
+                color="secondary"
+                variant="outlined"
+              />
+            </Box>
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <AssignmentIcon color="info" />
             </ListItemIcon>
-            <ListItemText
-              primary="Atribuições"
-              secondary={
-                <Chip
-                  label={`${currentData.atribuicoes} realizadas`}
-                  size="small"
-                  color="info"
-                  variant="outlined"
-                />
-              }
-            />
+            <Box style={{ display: "flex", flexDirection: "column" }}>
+              <ListItemText primary="Atribuições" sx={{ marginBottom: 0 }} />
+              <Chip
+                label={`${currentData.atribuicoes} realizadas`}
+                size="small"
+                color="info"
+                variant="outlined"
+              />
+            </Box>
           </ListItem>
         </List>
 

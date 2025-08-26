@@ -535,7 +535,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
   const downalodJson = () => {
     if (!atribuicoes.some((atribuicao) => atribuicao.docentes.length > 0)) {
       addAlerta("Nenhuma atribuição foi realizada!", "warning");
-      return;
+      // return;
     }
 
     let filename: string;

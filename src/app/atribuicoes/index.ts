@@ -152,7 +152,12 @@ export function exportJson(
       carga: disciplina.carga ? disciplina.carga : 1,
       trava: disciplina.trava,
     };
-    disciplinasDTO[disciplina.id] = disc;
+    console.log(disciplina.conflitos);
+    // disciplinasDTO[disciplina.id] = disc;
+    disciplinasDTO[disciplina.id] = {
+      ...disc,
+      conflitos: Array.from(disciplina.conflitos),
+    };
   }
 
   /**

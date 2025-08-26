@@ -1,0 +1,2641 @@
+{
+  "versao": "3.0",
+  "formularios": {
+    "Docente 9": {
+      "Turma 53": 1,
+      "Turma 27": 2,
+      "Turma 28": 3,
+      "Turma 36": 4,
+      "Turma 39": 5,
+      "Turma 12": 6
+    },
+    "Docente 7": {
+      "Turma 14": 1,
+      "Turma 21": 2,
+      "Turma 22": 3,
+      "Turma 24": 4,
+      "Turma 25": 5
+    },
+    "Docente 2": {},
+    "Docente 29": {
+      "Turma 8": 1,
+      "Turma 54": 2,
+      "Turma 56": 3,
+      "Turma 25": 4,
+      "Turma 21": 5,
+      "Turma 22": 6
+    },
+    "Docente 1": {
+      "Turma 44": 1,
+      "Turma 4": 2,
+      "Turma 5": 3,
+      "Turma 28": 4,
+      "Turma 29": 5,
+      "Turma 46": 6,
+      "Turma 43": 7,
+      "Turma 41": 8,
+      "Turma 42": 9,
+      "Turma 48": 10
+    },
+    "Docente 13": {
+      "Turma 6": 1,
+      "Turma 7": 2,
+      "Turma 24": 3,
+      "Turma 25": 4,
+      "Turma 21": 5,
+      "Turma 22": 6,
+      "Turma 34": 7,
+      "Turma 33": 8,
+      "Turma 54": 9,
+      "Turma 8": 10,
+      "Turma 18": 11
+    },
+    "Docente 32": {
+      "Turma 64": 1,
+      "Turma 32": 2,
+      "Turma 28": 3,
+      "Turma 29": 4,
+      "Turma 4": 5,
+      "Turma 5": 6,
+      "Turma 26": 7,
+      "Turma 25": 8,
+      "Turma 24": 9
+    },
+    "Docente 14": {
+      "Turma 9": 1,
+      "Turma 19": 2,
+      "Turma 20": 3,
+      "Turma 18": 4,
+      "Turma 23": 5,
+      "Turma 24": 6,
+      "Turma 25": 7,
+      "Turma 30": 8,
+      "Turma 31": 9,
+      "Turma 6": 10,
+      "Turma 7": 11,
+      "Turma 14": 12
+    },
+    "Docente 25": {
+      "Turma 59": 1,
+      "Turma 15": 2,
+      "Turma 13": 3,
+      "Turma 33": 4,
+      "Turma 34": 5
+    },
+    "Docente 33": {
+      "Turma 8": 1,
+      "Turma 56": 2,
+      "Turma 18": 3,
+      "Turma 14": 4,
+      "Turma 21": 5,
+      "Turma 22": 6,
+      "Turma 16": 7,
+      "Turma 60": 8,
+      "Turma 23": 9,
+      "Turma 25": 10,
+      "Turma 32": 11
+    },
+    "Docente 15": {
+      "Turma 47": 1,
+      "Turma 12": 2,
+      "Turma 14": 3,
+      "Turma 36": 4,
+      "Turma 27": 5,
+      "Turma 37": 6,
+      "Turma 55": 7,
+      "Turma 28": 8,
+      "Turma 30": 9,
+      "Turma 18": 10
+    },
+    "Docente 20": {
+      "Turma 55": 1,
+      "Turma 53": 2,
+      "Turma 41": 3,
+      "Turma 42": 4,
+      "Turma 48": 5,
+      "Turma 49": 6,
+      "Turma 56": 7,
+      "Turma 62": 8,
+      "Turma 47": 9,
+      "Turma 46": 10
+    },
+    "Docente 21": {
+      "Turma 61": 1,
+      "Turma 11": 2,
+      "Turma 9": 3,
+      "Turma 3": 4,
+      "Turma 2": 5,
+      "Turma 35": 6,
+      "Turma 10": 7,
+      "Turma 21": 8,
+      "Turma 22": 9,
+      "Turma 20": 10
+    },
+    "Docente 24": {
+      "Turma 16": 1,
+      "Turma 25": 2,
+      "Turma 24": 3,
+      "Turma 23": 4,
+      "Turma 22": 5,
+      "Turma 21": 6,
+      "Turma 60": 7
+    },
+    "Docente 26": {
+      "Turma 28": 1,
+      "Turma 29": 2,
+      "Turma 40": 3,
+      "Turma 45": 4,
+      "Turma 47": 5,
+      "Turma 53": 6,
+      "Turma 55": 7,
+      "Turma 27": 8,
+      "Turma 39": 9,
+      "Turma 52": 10
+    },
+    "Docente 10": {
+      "Turma 21": 1,
+      "Turma 8": 2,
+      "Turma 6": 3,
+      "Turma 13": 4,
+      "Turma 14": 5,
+      "Turma 19": 6,
+      "Turma 20": 7
+    },
+    "Docente 36": {
+      "Turma 40": 1,
+      "Turma 29": 2,
+      "Turma 27": 3,
+      "Turma 26": 4,
+      "Turma 4": 5,
+      "Turma 5": 6,
+      "Turma 41": 7,
+      "Turma 42": 8,
+      "Turma 48": 9,
+      "Turma 49": 10
+    },
+    "Docente 23": {
+      "Turma 23": 1,
+      "Turma 21": 2,
+      "Turma 22": 3,
+      "Turma 25": 4,
+      "Turma 24": 5,
+      "Turma 32": 6,
+      "Turma 20": 7,
+      "Turma 19": 8,
+      "Turma 30": 9,
+      "Turma 31": 10,
+      "Turma 18": 11
+    },
+    "Docente 11": {
+      "Turma 32": 1,
+      "Turma 21": 2,
+      "Turma 22": 3,
+      "Turma 25": 4,
+      "Turma 24": 5,
+      "Turma 23": 6,
+      "Turma 8": 7,
+      "Turma 6": 8,
+      "Turma 7": 9,
+      "Turma 18": 10
+    },
+    "Docente 5": {
+      "Turma 14": 1,
+      "Turma 54": 2,
+      "Turma 22": 3,
+      "Turma 34": 4,
+      "Turma 47": 5,
+      "Turma 18": 6,
+      "Turma 58": 7,
+      "Turma 5": 8,
+      "Turma 4": 9,
+      "Turma 16": 10
+    },
+    "Docente 17": {
+      "Turma 21": 1,
+      "Turma 22": 2,
+      "Turma 33": 3,
+      "Turma 34": 4,
+      "Turma 24": 5,
+      "Turma 6": 6,
+      "Turma 7": 7
+    },
+    "Docente 4": {
+      "Turma 63": 1,
+      "Turma 41": 2,
+      "Turma 42": 3,
+      "Turma 48": 4,
+      "Turma 49": 5,
+      "Turma 4": 6,
+      "Turma 5": 7,
+      "Turma 12": 8,
+      "Turma 40": 9,
+      "Turma 44": 10
+    },
+    "Docente 34": {
+      "Turma 10": 1,
+      "Turma 9": 2,
+      "Turma 3": 3,
+      "Turma 2": 4,
+      "Turma 20": 5,
+      "Turma 19": 6,
+      "Turma 35": 7,
+      "Turma 47": 8,
+      "Turma 11": 9,
+      "Turma 30": 10,
+      "Turma 31": 11
+    },
+    "Docente 19": {
+      "Turma 13": 1,
+      "Turma 14": 2,
+      "Turma 18": 3,
+      "Turma 21": 4,
+      "Turma 22": 5,
+      "Turma 33": 6,
+      "Turma 34": 7,
+      "Turma 7": 8,
+      "Turma 6": 9,
+      "Turma 8": 10
+    },
+    "Docente 12": {
+      "Turma 17": 1,
+      "Turma 28": 2,
+      "Turma 38": 3,
+      "Turma 39": 4,
+      "Turma 51": 5
+    },
+    "Docente 27": {
+      "Turma 3": 1,
+      "Turma 2": 2,
+      "Turma 35": 3,
+      "Turma 9": 4,
+      "Turma 11": 5,
+      "Turma 61": 6,
+      "Turma 56": 7,
+      "Turma 20": 8,
+      "Turma 19": 9,
+      "Turma 10": 10
+    },
+    "Docente 16": {
+      "Turma 57": 1,
+      "Turma 12": 2,
+      "Turma 13": 3,
+      "Turma 6": 4,
+      "Turma 7": 5,
+      "Turma 27": 6,
+      "Turma 28": 7,
+      "Turma 29": 8,
+      "Turma 1": 9,
+      "Turma 21": 10,
+      "Turma 36": 11
+    },
+    "Docente 8": {
+      "Turma 12": 1,
+      "Turma 52": 2,
+      "Turma 36": 3,
+      "Turma 44": 4,
+      "Turma 43": 5,
+      "Turma 28": 6,
+      "Turma 4": 7,
+      "Turma 5": 8,
+      "Turma 40": 9,
+      "Turma 45": 10
+    },
+    "Docente 31": {
+      "Turma 38": 1,
+      "Turma 36": 2,
+      "Turma 44": 3,
+      "Turma 39": 4,
+      "Turma 47": 5,
+      "Turma 40": 6,
+      "Turma 12": 7,
+      "Turma 37": 8,
+      "Turma 45": 9,
+      "Turma 53": 10
+    },
+    "Docente 28": {
+      "Turma 6": 1,
+      "Turma 7": 2,
+      "Turma 13": 3,
+      "Turma 33": 4,
+      "Turma 34": 5
+    },
+    "Docente 22": {
+      "Turma 4": 1,
+      "Turma 43": 2,
+      "Turma 5": 3,
+      "Turma 26": 4,
+      "Turma 27": 5,
+      "Turma 28": 6,
+      "Turma 29": 7
+    },
+    "Docente 35": {
+      "Turma 51": 1,
+      "Turma 17": 2,
+      "Turma 53": 3,
+      "Turma 29": 4,
+      "Turma 28": 5
+    },
+    "Docente 18": {
+      "Turma 16": 1,
+      "Turma 60": 2,
+      "Turma 25": 3,
+      "Turma 24": 4,
+      "Turma 21": 5,
+      "Turma 23": 6,
+      "Turma 22": 7,
+      "Turma 20": 8,
+      "Turma 19": 9,
+      "Turma 14": 10,
+      "Turma 8": 11,
+      "Turma 32": 12,
+      "Turma 30": 13,
+      "Turma 31": 14
+    },
+    "Docente 6": {
+      "Turma 4": 1,
+      "Turma 5": 2,
+      "Turma 29": 3,
+      "Turma 43": 4,
+      "Turma 26": 5,
+      "Turma 27": 6,
+      "Turma 63": 7,
+      "Turma 28": 8,
+      "Turma 30": 9,
+      "Turma 55": 10
+    },
+    "Docente 30": {
+      "Turma 13": 1,
+      "Turma 15": 2,
+      "Turma 6": 3,
+      "Turma 34": 4,
+      "Turma 1": 5
+    },
+    "Docente 3": {
+      "Turma 36": 1,
+      "Turma 43": 2,
+      "Turma 44": 3,
+      "Turma 45": 4,
+      "Turma 12": 5,
+      "Turma 39": 6,
+      "Turma 27": 7,
+      "Turma 26": 8,
+      "Turma 40": 9,
+      "Turma 38": 10
+    }
+  },
+  "disciplinas": {
+    "Turma 1": {
+      "codigo": "PRG0027",
+      "turma": 1,
+      "nome": "Disciplina Anônima 1",
+      "horario": "Horário:<br>&emsp;Qua. 16:00/17:40",
+      "horarios": [
+        {
+          "dia": "Qua.",
+          "inicio": "16:00",
+          "fim": "17:40"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Optativa livre para todos os cursos da USP",
+      "ementa": "",
+      "id": "Turma 1",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 16", "Docente 30"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 2": {
+      "codigo": "SME0110",
+      "turma": 1,
+      "nome": "Disciplina Anônima 2",
+      "horario": "Horário:<br>&emsp;Seg. 08:10/09:50<br>&emsp;Qua. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BCC - A",
+      "ementa": "",
+      "id": "Turma 2",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 21", "Docente 34", "Docente 27"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 3": {
+      "codigo": "SME0110",
+      "turma": 2,
+      "nome": "Disciplina Anônima 3",
+      "horario": "Horário:<br>&emsp;Seg. 10:10/11:50<br>&emsp;Qua. 08:10/09:50",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BCC - B",
+      "ementa": "",
+      "id": "Turma 3",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 21", "Docente 34", "Docente 27"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 4": {
+      "codigo": "SME0123",
+      "turma": 1,
+      "nome": "Disciplina Anônima 4",
+      "horario": "Horário:<br>&emsp;Ter. 14:20/16:00<br>&emsp;Sex. 08:10/09:50",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BCC - A",
+      "ementa": "",
+      "id": "Turma 4",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 1",
+        "Docente 32",
+        "Docente 36",
+        "Docente 5",
+        "Docente 4",
+        "Docente 8",
+        "Docente 22",
+        "Docente 6"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 5": {
+      "codigo": "SME0123",
+      "turma": 2,
+      "nome": "Disciplina Anônima 5",
+      "horario": "Horário:<br>&emsp;Ter. 16:20/18:00<br>&emsp;Sex. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BCC - B",
+      "ementa": "",
+      "id": "Turma 5",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 1",
+        "Docente 32",
+        "Docente 36",
+        "Docente 5",
+        "Docente 4",
+        "Docente 8",
+        "Docente 22",
+        "Docente 6"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 6": {
+      "codigo": "SME0142",
+      "turma": 1,
+      "nome": "Disciplina Anônima 6",
+      "horario": "Horário:<br>&emsp;Ter. 10:10/11:50<br>&emsp;Qui. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BCC - A,&emsp;BCDados",
+      "ementa": "",
+      "id": "Turma 6",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 13",
+        "Docente 14",
+        "Docente 10",
+        "Docente 11",
+        "Docente 17",
+        "Docente 19",
+        "Docente 16",
+        "Docente 28",
+        "Docente 30"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 7": {
+      "codigo": "SME0142",
+      "turma": 2,
+      "nome": "Disciplina Anônima 7",
+      "horario": "Horário:<br>&emsp;Ter. 08:10/09:50<br>&emsp;Qui. 08:10/09:50",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BCC - B",
+      "ementa": "",
+      "id": "Turma 7",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 13",
+        "Docente 14",
+        "Docente 11",
+        "Docente 17",
+        "Docente 19",
+        "Docente 16",
+        "Docente 28"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 8": {
+      "codigo": "SME0206",
+      "turma": 1,
+      "nome": "Disciplina Anônima 8",
+      "horario": "Horário:<br>&emsp;Seg. 14:20/16:00<br>&emsp;Qua. 14:20/16:00",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 8",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 29",
+        "Docente 13",
+        "Docente 33",
+        "Docente 10",
+        "Docente 11",
+        "Docente 19",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 9": {
+      "codigo": "SME0211",
+      "turma": 1,
+      "nome": "Disciplina Anônima 9",
+      "horario": "Horário:<br>&emsp;Seg. 16:20/18:00<br>&emsp;Qua. 16:20/18:00",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BMACC,&emsp;BMA<br>&emsp;LMA,&emsp;BCDados",
+      "ementa": "",
+      "id": "Turma 9",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 14", "Docente 21", "Docente 34", "Docente 27"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 10": {
+      "codigo": "SME0212",
+      "turma": 1,
+      "nome": "Disciplina Anônima 10",
+      "horario": "Horário:<br>&emsp;Qui. 10:10/11:50<br>&emsp;Qui. 14:20/16:00",
+      "horarios": [
+        {
+          "dia": "Qui.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BMACC,&emsp;BCDados",
+      "ementa": "",
+      "id": "Turma 10",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 21", "Docente 34", "Docente 27"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 11": {
+      "codigo": "SME0213",
+      "turma": 1,
+      "nome": "Disciplina Anônima 11",
+      "horario": "Horário:<br>&emsp;Seg. 10:10/11:50<br>&emsp;Qua. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 11",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 21", "Docente 34", "Docente 27"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 12": {
+      "codigo": "SME0220",
+      "turma": 1,
+      "nome": "Disciplina Anônima 12",
+      "horario": "Horário:<br>&emsp;Ter. 16:20/18:00<br>&emsp;Qui. 16:20/18:00",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BMA,&emsp;LMA<br>&emsp;BMACC,&emsp;BCDados",
+      "ementa": "",
+      "id": "Turma 12",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 9",
+        "Docente 15",
+        "Docente 4",
+        "Docente 16",
+        "Docente 8",
+        "Docente 31",
+        "Docente 3"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 13": {
+      "codigo": "SME0240",
+      "turma": 1,
+      "nome": "Disciplina Anônima 13",
+      "horario": "Horário:<br>&emsp;Ter. 14:20/16:00<br>&emsp;Qui. 14:20/16:00",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BMA,&emsp;LMA<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 13",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 25",
+        "Docente 10",
+        "Docente 19",
+        "Docente 16",
+        "Docente 28",
+        "Docente 30"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 14": {
+      "codigo": "SME0241",
+      "turma": 1,
+      "nome": "Disciplina Anônima 14",
+      "horario": "Horário:<br>&emsp;Ter. 14:20/16:00",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 14",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 7",
+        "Docente 14",
+        "Docente 33",
+        "Docente 15",
+        "Docente 10",
+        "Docente 5",
+        "Docente 19",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 15": {
+      "codigo": "SME0245",
+      "turma": 1,
+      "nome": "Disciplina Anônima 15",
+      "horario": "Horário:<br>&emsp;Qua. 16:20/18:00<br>&emsp;Sex. 16:20/18:00",
+      "horarios": [
+        {
+          "dia": "Qua.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BMA,&emsp;LMA<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 15",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 25", "Docente 30"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 16": {
+      "codigo": "SME0254",
+      "turma": 1,
+      "nome": "Disciplina Anônima 16",
+      "horario": "Horário:<br>&emsp;Sex. 08:10/09:50<br>&emsp;Sex. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Sex.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 16",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": true,
+      "docentes": ["Docente 33", "Docente 24", "Docente 5", "Docente 18"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 17": {
+      "codigo": "SME0262",
+      "turma": 1,
+      "nome": "Disciplina Anônima 17",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;BECD",
+      "ementa": "",
+      "id": "Turma 17",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 12", "Docente 35"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 18": {
+      "codigo": "SME0274",
+      "turma": 1,
+      "nome": "Disciplina Anônima 18",
+      "horario": "Horário:<br>&emsp;Qua. 14:20/16:00<br>&emsp;Sex. 14:20/16:00",
+      "horarios": [
+        {
+          "dia": "Qua.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;A definir",
+      "ementa": "",
+      "id": "Turma 18",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": true,
+      "docentes": [
+        "Docente 13",
+        "Docente 14",
+        "Docente 33",
+        "Docente 15",
+        "Docente 23",
+        "Docente 11",
+        "Docente 5",
+        "Docente 19"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 19": {
+      "codigo": "SME0284",
+      "turma": 1,
+      "nome": "Disciplina Anônima 19",
+      "horario": "Horário:<br>&emsp;Qua. 14:20/16:00<br>&emsp;Qua. 16:20/18:00",
+      "horarios": [
+        {
+          "dia": "Qua.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 19",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 14",
+        "Docente 10",
+        "Docente 23",
+        "Docente 34",
+        "Docente 27",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 20": {
+      "codigo": "SME0285",
+      "turma": 1,
+      "nome": "Disciplina Anônima 20",
+      "horario": "Horário:<br>&emsp;Ter. 14:20/16:00<br>&emsp;Ter. 16:20/18:00",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        },
+        {
+          "dia": "Ter.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 20",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 14",
+        "Docente 21",
+        "Docente 10",
+        "Docente 23",
+        "Docente 34",
+        "Docente 27",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 21": {
+      "codigo": "SME0300",
+      "turma": 1,
+      "nome": "Disciplina Anônima 21",
+      "horario": "Horário:<br>&emsp;Qua. 10:10/11:50<br>&emsp;Qui. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Qua.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Elétrica - Eletrônica",
+      "ementa": "",
+      "id": "Turma 21",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 7",
+        "Docente 29",
+        "Docente 13",
+        "Docente 33",
+        "Docente 21",
+        "Docente 24",
+        "Docente 10",
+        "Docente 23",
+        "Docente 11",
+        "Docente 17",
+        "Docente 19",
+        "Docente 16",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 22": {
+      "codigo": "SME0300",
+      "turma": 2,
+      "nome": "Disciplina Anônima 22",
+      "horario": "Horário:<br>&emsp;Ter. 10:10/11:50<br>&emsp;Sex. 08:10/09:50",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Elétrica - Automação",
+      "ementa": "",
+      "id": "Turma 22",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 7",
+        "Docente 29",
+        "Docente 13",
+        "Docente 33",
+        "Docente 21",
+        "Docente 24",
+        "Docente 23",
+        "Docente 11",
+        "Docente 5",
+        "Docente 17",
+        "Docente 19",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 23": {
+      "codigo": "SME0306",
+      "turma": 1,
+      "nome": "Disciplina Anônima 23",
+      "horario": "Horário:<br>&emsp;Qui. 16:20/18:00<br>&emsp;Sex. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Qui.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Materiais e Manufatura",
+      "ementa": "",
+      "id": "Turma 23",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 14",
+        "Docente 33",
+        "Docente 24",
+        "Docente 23",
+        "Docente 11",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 24": {
+      "codigo": "SME0306",
+      "turma": 2,
+      "nome": "Disciplina Anônima 24",
+      "horario": "Horário:<br>&emsp;Seg. 08:10/09:50<br>&emsp;Qua. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Civil",
+      "ementa": "",
+      "id": "Turma 24",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 7",
+        "Docente 13",
+        "Docente 32",
+        "Docente 14",
+        "Docente 24",
+        "Docente 23",
+        "Docente 11",
+        "Docente 17",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 25": {
+      "codigo": "SME0306",
+      "turma": 3,
+      "nome": "Disciplina Anônima 25",
+      "horario": "Horário:<br>&emsp;Seg. 16:20/18:00<br>&emsp;Ter. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Ter.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Aeronáutica",
+      "ementa": "",
+      "id": "Turma 25",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 7",
+        "Docente 29",
+        "Docente 13",
+        "Docente 32",
+        "Docente 14",
+        "Docente 33",
+        "Docente 24",
+        "Docente 23",
+        "Docente 11",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 26": {
+      "codigo": "SME0320",
+      "turma": 1,
+      "nome": "Disciplina Anônima 26",
+      "horario": "Horário:<br>&emsp;Qua. 08:10/09:50<br>&emsp;Sex. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Qua.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Ambiental",
+      "ementa": "",
+      "id": "Turma 26",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 32",
+        "Docente 36",
+        "Docente 22",
+        "Docente 6",
+        "Docente 3"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 27": {
+      "codigo": "SME0320",
+      "turma": 2,
+      "nome": "Disciplina Anônima 27",
+      "horario": "Horário:<br>&emsp;Ter. 16:20/18:00<br>&emsp;Qua. 16:20/18:00",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Aeronáutica",
+      "ementa": "",
+      "id": "Turma 27",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 9",
+        "Docente 15",
+        "Docente 26",
+        "Docente 36",
+        "Docente 16",
+        "Docente 22",
+        "Docente 6",
+        "Docente 3"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 28": {
+      "codigo": "SME0320",
+      "turma": 3,
+      "nome": "Disciplina Anônima 28",
+      "horario": "Horário:<br>&emsp;Seg. 16:20/18:00<br>&emsp;Ter. 14:20/16:00",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Ter.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Civil",
+      "ementa": "",
+      "id": "Turma 28",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 9",
+        "Docente 1",
+        "Docente 32",
+        "Docente 15",
+        "Docente 26",
+        "Docente 12",
+        "Docente 16",
+        "Docente 8",
+        "Docente 22",
+        "Docente 35",
+        "Docente 6"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 29": {
+      "codigo": "SME0320",
+      "turma": 4,
+      "nome": "Disciplina Anônima 29",
+      "horario": "Horário:<br>&emsp;Seg. 16:20/18:00<br>&emsp;Qua. 08:10/09:50",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "08:10",
+          "fim": "09:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Mecatrônica",
+      "ementa": "",
+      "id": "Turma 29",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 1",
+        "Docente 32",
+        "Docente 26",
+        "Docente 36",
+        "Docente 16",
+        "Docente 22",
+        "Docente 35",
+        "Docente 6"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 30": {
+      "codigo": "SME0332",
+      "turma": 1,
+      "nome": "Disciplina Anônima 30",
+      "horario": "Horário:<br>&emsp;Ter. 14:20/16:00<br>&emsp;Qui. 14:20/16:00",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;Física,&emsp;Ciências Físicas Biomoleculares",
+      "ementa": "",
+      "id": "Turma 30",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 14",
+        "Docente 15",
+        "Docente 23",
+        "Docente 34",
+        "Docente 18",
+        "Docente 6"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 31": {
+      "codigo": "SME0332",
+      "turma": 2,
+      "nome": "Disciplina Anônima 31",
+      "horario": "Horário:<br>&emsp;Ter. 16:20/18:00<br>&emsp;Qui. 16:20/18:00",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "16:20",
+          "fim": "18:00"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;Física,&emsp;Ciências Físicas Biomoleculares",
+      "ementa": "",
+      "id": "Turma 31",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 14", "Docente 23", "Docente 34", "Docente 18"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 32": {
+      "codigo": "SME0334",
+      "turma": 1,
+      "nome": "Disciplina Anônima 32",
+      "horario": "Horário:<br>&emsp;Qui. 14:20/16:00<br>&emsp;Sex. 14:20/16:00",
+      "horarios": [
+        {
+          "dia": "Qui.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Ambiental",
+      "ementa": "",
+      "id": "Turma 32",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 32",
+        "Docente 33",
+        "Docente 23",
+        "Docente 11",
+        "Docente 18"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 33": {
+      "codigo": "SME0341",
+      "turma": 1,
+      "nome": "Disciplina Anônima 33",
+      "horario": "Horário:<br>&emsp;Qui. 14:20/16:00<br>&emsp;Sex. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Qui.",
+          "inicio": "14:20",
+          "fim": "16:00"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Civil",
+      "ementa": "",
+      "id": "Turma 33",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 13",
+        "Docente 25",
+        "Docente 17",
+        "Docente 19",
+        "Docente 28"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 34": {
+      "codigo": "SME0341",
+      "turma": 2,
+      "nome": "Disciplina Anônima 34",
+      "horario": "Horário:<br>&emsp;Ter. 10:10/11:50<br>&emsp;Sex. 10:10/11:50",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "10:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;Produção",
+      "ementa": "",
+      "id": "Turma 34",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 13",
+        "Docente 25",
+        "Docente 5",
+        "Docente 17",
+        "Docente 19",
+        "Docente 28",
+        "Docente 30"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 35": {
+      "codigo": "SME0510",
+      "turma": 1,
+      "nome": "Disciplina Anônima 35",
+      "horario": "Horário:<br>&emsp;Seg. 19:00/20:40<br>&emsp;Qua. 21:00/22:40",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;Sistemas de Informação,&emsp;Estatística",
+      "ementa": "",
+      "id": "Turma 35",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": ["Docente 21", "Docente 34", "Docente 27"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 36": {
+      "codigo": "SME0800",
+      "turma": 1,
+      "nome": "Disciplina Anônima 36",
+      "horario": "Horário:<br>&emsp;Ter. 19:00/20:40<br>&emsp;Qui. 21:00/22:40",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BECD",
+      "ementa": "",
+      "id": "Turma 36",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": [
+        "Docente 9",
+        "Docente 15",
+        "Docente 16",
+        "Docente 8",
+        "Docente 31",
+        "Docente 3"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 37": {
+      "codigo": "SME0805",
+      "turma": 1,
+      "nome": "Disciplina Anônima 37",
+      "horario": "Horário:<br>&emsp;Ter. 19:00/20:40<br>&emsp;Qui. 21:00/22:40",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BECD,&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 37",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": ["Docente 15", "Docente 31"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 38": {
+      "codigo": "SME0808",
+      "turma": 1,
+      "nome": "Disciplina Anônima 38",
+      "horario": "Horário:<br>&emsp;Ter. 21:00/22:40<br>&emsp;Qui. 19:00/20:40",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BECD,&emsp;BCDados<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 38",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": ["Docente 12", "Docente 31", "Docente 3"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 39": {
+      "codigo": "SME0809",
+      "turma": 1,
+      "nome": "Disciplina Anônima 39",
+      "horario": "Horário:<br>&emsp;Seg. 19:00/20:40<br>&emsp;Qua. 21:00/22:40",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;Estatística,&emsp;BCDados<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 39",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": [
+        "Docente 9",
+        "Docente 26",
+        "Docente 12",
+        "Docente 31",
+        "Docente 3"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 40": {
+      "codigo": "SME0810",
+      "turma": 1,
+      "nome": "Disciplina Anônima 40",
+      "horario": "Horário:<br>&emsp;Seg. 21:00/22:40<br>&emsp;Qua. 19:00/20:40",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BECD,&emsp;BCDados",
+      "ementa": "",
+      "id": "Turma 40",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": [
+        "Docente 26",
+        "Docente 36",
+        "Docente 4",
+        "Docente 8",
+        "Docente 31",
+        "Docente 3"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 41": {
+      "codigo": "SME0814",
+      "turma": 1,
+      "nome": "Disciplina Anônima 41",
+      "horario": "Horário:<br>&emsp;Sáb. 08:10/11:50",
+      "horarios": [
+        {
+          "dia": "Sáb.",
+          "inicio": "08:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BECD",
+      "ementa": "",
+      "id": "Turma 41",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 1", "Docente 20", "Docente 36", "Docente 4"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 42": {
+      "codigo": "SME0815",
+      "turma": 1,
+      "nome": "Disciplina Anônima 42",
+      "horario": "Horário:<br>&emsp;Sáb. 08:10/11:50",
+      "horarios": [
+        {
+          "dia": "Sáb.",
+          "inicio": "08:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BECD",
+      "ementa": "",
+      "id": "Turma 42",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 1", "Docente 20", "Docente 36", "Docente 4"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 43": {
+      "codigo": "SME0820",
+      "turma": 1,
+      "nome": "Disciplina Anônima 43",
+      "horario": "Horário:<br>&emsp;Ter. 21:00/22:40<br>&emsp;Sex. 19:00/20:40",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BECD,&emsp;BCDados<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 43",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": [
+        "Docente 1",
+        "Docente 8",
+        "Docente 22",
+        "Docente 6",
+        "Docente 3"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 44": {
+      "codigo": "SME0822",
+      "turma": 1,
+      "nome": "Disciplina Anônima 44",
+      "horario": "Horário:<br>&emsp;Ter. 19:00/20:40<br>&emsp;Qui. 21:00/22:40",
+      "horarios": [
+        {
+          "dia": "Ter.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        },
+        {
+          "dia": "Qui.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BECD,&emsp;BCDados<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 44",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": [
+        "Docente 1",
+        "Docente 4",
+        "Docente 8",
+        "Docente 31",
+        "Docente 3"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 45": {
+      "codigo": "SME0823",
+      "turma": 1,
+      "nome": "Disciplina Anônima 45",
+      "horario": "Horário:<br>&emsp;Seg. 19:00/20:40<br>&emsp;Qua. 21:00/22:40",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        }
+      ],
+      "cursos": "Cursos:<br>&emsp;BECD,&emsp;BCDados<br>&emsp;BMACC",
+      "ementa": "",
+      "id": "Turma 45",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": ["Docente 26", "Docente 8", "Docente 31", "Docente 3"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 46": {
+      "codigo": "SME0824",
+      "turma": 1,
+      "nome": "Disciplina Anônima 46",
+      "horario": "Horário:<br>&emsp;Qui. 19:00/20:40<br>&emsp;Sex. 21:00/22:40",
+      "horarios": [
+        {
+          "dia": "Qui.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        },
+        {
+          "dia": "Sex.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BECD",
+      "ementa": "",
+      "id": "Turma 46",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": ["Docente 1", "Docente 20"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 47": {
+      "codigo": "SME0828",
+      "turma": 1,
+      "nome": "Disciplina Anônima 47",
+      "horario": "Horário:<br>&emsp;Seg. 21:00/22:40<br>&emsp;Qua. 19:00/20:40",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "inicio": "21:00",
+          "fim": "22:40"
+        },
+        {
+          "dia": "Qua.",
+          "inicio": "19:00",
+          "fim": "20:40"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BECD",
+      "ementa": "",
+      "id": "Turma 47",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": true,
+      "ingles": false,
+      "docentes": [
+        "Docente 15",
+        "Docente 20",
+        "Docente 26",
+        "Docente 5",
+        "Docente 34",
+        "Docente 31"
+      ],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 48": {
+      "codigo": "SME0880",
+      "turma": 1,
+      "nome": "Disciplina Anônima 48",
+      "horario": "Horário:<br>&emsp;Sáb. 08:10/11:50",
+      "horarios": [
+        {
+          "dia": "Sáb.",
+          "inicio": "08:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BECD",
+      "ementa": "",
+      "id": "Turma 48",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 1", "Docente 20", "Docente 36", "Docente 4"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 49": {
+      "codigo": "SME0881",
+      "turma": 1,
+      "nome": "Disciplina Anônima 49",
+      "horario": "Horário:<br>&emsp;Sáb. 08:10/11:50",
+      "horarios": [
+        {
+          "dia": "Sáb.",
+          "inicio": "08:10",
+          "fim": "11:50"
+        }
+      ],
+      "cursos": "Curso:<br>&emsp;BECD",
+      "ementa": "",
+      "id": "Turma 49",
+      "nivel": "g",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 20", "Docente 36", "Docente 4"],
+      "ativo": true,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 50": {
+      "codigo": "EST5525",
+      "turma": 1,
+      "nome": "Disciplina Anônima 50",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PIPGES",
+      "ementa": "",
+      "id": "Turma 50",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 51": {
+      "codigo": "EST5527",
+      "turma": 1,
+      "nome": "Disciplina Anônima 51",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PIPGES",
+      "ementa": "",
+      "id": "Turma 51",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 12", "Docente 35"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 52": {
+      "codigo": "EST5802",
+      "turma": 1,
+      "nome": "Disciplina Anônima 52",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PIPGES",
+      "ementa": "",
+      "id": "Turma 52",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 26", "Docente 8"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 53": {
+      "codigo": "EST5804",
+      "turma": 1,
+      "nome": "Disciplina Anônima 53",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PIPGES",
+      "ementa": "",
+      "id": "Turma 53",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": [
+        "Docente 9",
+        "Docente 20",
+        "Docente 26",
+        "Docente 31",
+        "Docente 35"
+      ],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 54": {
+      "codigo": "MAI5002",
+      "turma": 1,
+      "nome": "Disciplina Anônima 54",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;MECAI",
+      "ementa": "",
+      "id": "Turma 54",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 29", "Docente 13", "Docente 5"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 55": {
+      "codigo": "MAI5003",
+      "turma": 1,
+      "nome": "Disciplina Anônima 55",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;MECAI",
+      "ementa": "",
+      "id": "Turma 55",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 15", "Docente 20", "Docente 26", "Docente 6"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 56": {
+      "codigo": "MAI5014",
+      "turma": 1,
+      "nome": "Disciplina Anônima 56",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;MECAI",
+      "ementa": "",
+      "id": "Turma 56",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 29", "Docente 33", "Docente 20", "Docente 27"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 57": {
+      "codigo": "PMA5641",
+      "turma": 1,
+      "nome": "Disciplina Anônima 57",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;Profmat",
+      "ementa": "",
+      "id": "Turma 57",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 16"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 58": {
+      "codigo": "SCC5933",
+      "turma": 1,
+      "nome": "Disciplina Anônima 58",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Cursos:<br>&emsp;PPG-CCMC, PPG-Mat.",
+      "ementa": "",
+      "id": "Turma 58",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 5"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 59": {
+      "codigo": "SMA5802",
+      "turma": 1,
+      "nome": "Disciplina Anônima 59",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PPG-Mat.",
+      "ementa": "",
+      "id": "Turma 59",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 25"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 60": {
+      "codigo": "SME5785",
+      "turma": 1,
+      "nome": "Disciplina Anônima 60",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PPG-CCMC",
+      "ementa": "",
+      "id": "Turma 60",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": true,
+      "docentes": ["Docente 33", "Docente 24", "Docente 18"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 61": {
+      "codigo": "SME5923",
+      "turma": 1,
+      "nome": "Disciplina Anônima 61",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PPG-CCMC",
+      "ementa": "",
+      "id": "Turma 61",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 21", "Docente 27"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 62": {
+      "codigo": "SME5965",
+      "turma": 1,
+      "nome": "Disciplina Anônima 62",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PPG-CCMC",
+      "ementa": "",
+      "id": "Turma 62",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 20"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 63": {
+      "codigo": "SME5975",
+      "turma": 1,
+      "nome": "Disciplina Anônima 63",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PPG-CCMC",
+      "ementa": "",
+      "id": "Turma 63",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 4", "Docente 6"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    },
+    "Turma 64": {
+      "codigo": "SME5979",
+      "turma": 1,
+      "nome": "Disciplina Anônima 64",
+      "horario": "Horário:<br>&emsp;A definir",
+      "horarios": [],
+      "cursos": "Curso:<br>&emsp;PPG-CCMC",
+      "ementa": "",
+      "id": "Turma 64",
+      "nivel": "pg",
+      "prioridade": 0,
+      "noturna": false,
+      "ingles": false,
+      "docentes": ["Docente 32"],
+      "ativo": false,
+      "conflitos": {},
+      "grupo": "",
+      "carga": 1,
+      "trava": false
+    }
+  },
+  "docentes": [
+    {
+      "nome": "Docente 9",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 7",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 2",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 29",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 1",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 13",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 32",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 14",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 25",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 33",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 15",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 20",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 21",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 24",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 26",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 10",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 36",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 23",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 11",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 5",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 17",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 4",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 34",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 19",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 12",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 27",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 16",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 8",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 31",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 28",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 22",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 35",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 18",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 6",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 30",
+      "ativo": true,
+      "comentario": ""
+    },
+    {
+      "nome": "Docente 3",
+      "ativo": true,
+      "comentario": ""
+    }
+  ],
+  "saldos": {
+    "Docente 9": 1.6217631172839504,
+    "Docente 7": 1.097943672839506,
+    "Docente 2": 2.4164853395061727,
+    "Docente 29": 2.157943672839506,
+    "Docente 1": -1.2282368827160495,
+    "Docente 13": 0.7217631172839503,
+    "Docente 32": -1.9082368827160496,
+    "Docente 14": 0.4279436728395061,
+    "Docente 25": 1.157943672839506,
+    "Docente 33": 1.0017631172839503,
+    "Docente 15": 2.1041242283950616,
+    "Docente 20": 1.797943672839506,
+    "Docente 21": 0.4017631172839504,
+    "Docente 24": -1.7682368827160495,
+    "Docente 26": -2.782056327160494,
+    "Docente 10": -3.90823688271605,
+    "Docente 36": 0.0017631172839502884,
+    "Docente 23": -1.87323688271605,
+    "Docente 11": 0.2867631172839502,
+    "Docente 5": 1.5317631172839505,
+    "Docente 17": 2.2717631172839505,
+    "Docente 4": 3.757943672839506,
+    "Docente 34": 0.847943672839506,
+    "Docente 19": -1.7082368827160497,
+    "Docente 12": 5.59176311728395,
+    "Docente 27": -0.00823688271604972,
+    "Docente 16": 1.3817631172839504,
+    "Docente 8": 0.09176311728395037,
+    "Docente 31": 0.2617631172839503,
+    "Docente 28": -3.32823688271605,
+    "Docente 22": 1.0617631172839503,
+    "Docente 35": 2.05176311728395,
+    "Docente 18": -0.4582368827160499,
+    "Docente 6": 0.5317631172839503,
+    "Docente 30": -0.7782368827160497,
+    "Docente 3": 0.30176311728395033
+  }
+}
