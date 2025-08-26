@@ -349,6 +349,8 @@ export default function InputFileUpload() {
     [processAndAnalyzeFile, addAlerta]
   );
 
+  const [safeCOntinue, setSafeContinue] = useState(false);
+
   // Função para fazer backup dos dados atuais usando sua função
   const createBackup = useCallback(() => {
     const timestamp = new Date().toISOString().split("T")[0];
@@ -359,6 +361,7 @@ export default function InputFileUpload() {
       currentAtribuicoes,
       currentTravas
     );
+    setSafeContinue(true);
     addAlerta("Backup criado com sucesso!", "success");
   }, [
     currentDocentes,
@@ -467,7 +470,10 @@ export default function InputFileUpload() {
   }, [tempData, currentDocentes.length, currentDisciplinas.length]);
 
   const performUpload = useCallback(() => {
-    if (!tempData) return;
+    if (!tempData) {
+      setShowBackupDialog(false);
+      return;
+    }
 
     setUploading(true);
     setUploadProgress([]);
@@ -491,6 +497,7 @@ export default function InputFileUpload() {
     setUploading(false);
     setUploadProgress([]);
     cleanSolucaoAtual();
+    setShowBackupDialog(false);
   }, [selectedFile, tempData, applyTempData, addAlerta, cleanSolucaoAtual]);
 
   // Função para drag and drop
@@ -706,17 +713,31 @@ export default function InputFileUpload() {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowBackupDialog(false)}>Cancelar</Button>
+          <Button
+            onClick={() => setShowBackupDialog(false)}
+            variant="contained"
+            color="error"
+          >
+            Cancelar
+          </Button>
           <Button
             onClick={createBackup}
             startIcon={<BackupIcon />}
             color="info"
+            variant="outlined"
           >
             Criar Backup
           </Button>
-          <Button onClick={performUpload} variant="contained" color="warning">
-            Continuar sem Backup
-          </Button>
+          {!safeCOntinue && (
+            <Button onClick={performUpload} variant="contained" color="warning">
+              Continuar sem Backup
+            </Button>
+          )}
+          {safeCOntinue && (
+            <Button onClick={performUpload} variant="contained" color="info">
+              Continuar
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </Container>
