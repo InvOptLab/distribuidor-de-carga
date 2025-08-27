@@ -32,7 +32,8 @@ export default function SolutionSelector({
   );
 
   const formatDateTime = (datetime: string) => {
-    return new Date(datetime).toLocaleString("pt-BR");
+    return datetime;
+    //return new Date(datetime).toLocaleString("pt-BR");
   };
 
   const getTotalAssignments = (solution: HistoricoSolucao) => {
