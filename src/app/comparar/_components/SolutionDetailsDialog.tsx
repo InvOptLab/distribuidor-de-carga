@@ -49,7 +49,8 @@ export default function SolutionDetailsDialog({
   title,
 }: SolutionDetailsDialogProps) {
   const formatDateTime = (datetime: string) => {
-    return new Date(datetime).toLocaleString("pt-BR");
+    return datetime;
+    //return new Date(datetime).toLocaleString("pt-BR");
   };
 
   const getTotalAssignments = () => {

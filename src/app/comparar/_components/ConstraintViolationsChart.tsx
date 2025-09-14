@@ -1,6 +1,6 @@
 "use client";
 
-import { HistoricoSolucao } from "@/context/Global/utils";
+import type { HistoricoSolucao } from "@/context/Global/utils";
 import {
   Card,
   CardContent,
@@ -14,6 +14,7 @@ import {
 import { BarChart } from "@mui/x-charts/BarChart";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { useState } from "react";
+import WorkloadHistogramChart from "./WorkloadHistogramChart";
 
 interface ConstraintViolationsChartProps {
   solutionA: HistoricoSolucao;
@@ -37,21 +38,6 @@ export default function ConstraintViolationsChart({
     "#FFC658",
     "#FF7C7C",
   ];
-
-  // Função para obter cor baseada no valor (para histograma de carga de trabalho)
-  const getWorkloadColor = (value: number): string => {
-    if (value === 0) return "#FFC107"; // Amarelo
-    if (value === 1) return "#81C784"; // Verde claro
-    if (value === 2) return "#1976D2"; // Azul escuro
-
-    // Para valores >= 3, tons de vermelho progressivos
-    const intensity = Math.min(value / 10, 1); // Normalizar para máximo de 10
-    const red = Math.floor(255 * (0.5 + intensity * 0.5)); // De 128 a 255
-    const green = Math.floor(128 * (1 - intensity)); // De 128 a 0
-    const blue = Math.floor(128 * (1 - intensity)); // De 128 a 0
-
-    return `rgb(${red}, ${green}, ${blue})`;
-  };
 
   // Função para extrair dados de violações de restrições (versão agrupada)
   const extractConstraintData = (solution: HistoricoSolucao) => {
@@ -79,24 +65,8 @@ export default function ConstraintViolationsChart({
     return data;
   };
 
-  // Função para extrair dados detalhados da "Carga de Trabalho"
-  const extractWorkloadDetailData = (solution: HistoricoSolucao) => {
-    const violations =
-      solution.solucao.estatisticas?.qtdOcorrenciasRestricoes || new Map();
-    const workloadViolations = violations.get("Carga de Trabalho") || [];
-
-    // Pegar todos os elementos exceto os 2 primeiros (que são os agrupados)
-    return workloadViolations.slice(2).map((item, index) => ({
-      carga: item.label,
-      quantidade: item.qtd,
-      valor: Number.parseInt(item.label) || index + 3, // Usar o label como valor numérico
-    }));
-  };
-
   const dataA = extractConstraintData(solutionA);
   const dataB = extractConstraintData(solutionB);
-  const workloadDetailA = extractWorkloadDetailData(solutionA);
-  const workloadDetailB = extractWorkloadDetailData(solutionB);
 
   // Preparar dados para gráfico de barras comparativo
   const prepareBarChartData = () => {
@@ -134,43 +104,9 @@ export default function ConstraintViolationsChart({
     }));
   };
 
-  // Preparar dados para histograma de carga de trabalho
-  const prepareWorkloadHistogramData = () => {
-    // Combinar dados das duas soluções
-    const allCargas = new Set([
-      ...workloadDetailA.map((item) => item.carga),
-      ...workloadDetailB.map((item) => item.carga),
-    ]);
-
-    return Array.from(allCargas)
-      .sort((a, b) => {
-        // Ordenar numericamente se possível
-        const numA = Number.parseInt(a);
-        const numB = Number.parseInt(b);
-        if (!isNaN(numA) && !isNaN(numB)) {
-          return numA - numB;
-        }
-        return a.localeCompare(b);
-      })
-      .map((carga) => {
-        const itemA = workloadDetailA.find((item) => item.carga === carga);
-        const itemB = workloadDetailB.find((item) => item.carga === carga);
-        const valor = Number.parseInt(carga) || 0;
-
-        return {
-          carga,
-          solucaoA: itemA?.quantidade || 0,
-          solucaoB: itemB?.quantidade || 0,
-          valor,
-          color: getWorkloadColor(valor),
-        };
-      });
-  };
-
   const barChartData = prepareBarChartData();
   const pieDataA = preparePieChartData(dataA);
   const pieDataB = preparePieChartData(dataB);
-  const workloadHistogramData = prepareWorkloadHistogramData();
 
   // Calcular totais
   const totalViolationsA = pieDataA.reduce((sum, item) => sum + item.value, 0);
@@ -202,36 +138,6 @@ export default function ConstraintViolationsChart({
         if (value === null) return "";
         const data = barChartData[dataIndex];
         return `${data.constraint}: ${value} violações`;
-      },
-    },
-  ];
-
-  // Configuração das séries para histograma de carga de trabalho com valueFormatter
-  const workloadSeries = [
-    {
-      dataKey: "solucaoA",
-      label: "Solução A",
-      color: "#1976d2",
-      valueFormatter: (
-        value: number | null,
-        { dataIndex }: { dataIndex: number }
-      ) => {
-        if (value === null) return "";
-        const data = workloadHistogramData[dataIndex];
-        return `${data.carga}: ${value} docentes`;
-      },
-    },
-    {
-      dataKey: "solucaoB",
-      label: "Solução B",
-      color: "#dc004e",
-      valueFormatter: (
-        value: number | null,
-        { dataIndex }: { dataIndex: number }
-      ) => {
-        if (value === null) return "";
-        const data = workloadHistogramData[dataIndex];
-        return `${data.carga} disciplinas: ${value} docentes`;
       },
     },
   ];
@@ -452,84 +358,9 @@ export default function ConstraintViolationsChart({
           </Box>
         )}
 
-        {/* Histograma de Carga de Trabalho */}
+        {/* Histograma de Carga de Trabalho - Componente Separado */}
         {currentTab === 3 && (
-          <Box sx={{ width: "100%", height: 400 }}>
-            {workloadHistogramData.length > 0 ? (
-              <>
-                {/* Legenda de Cores */}
-                <Box
-                  sx={{
-                    mb: 2,
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 1,
-                    justifyContent: "center",
-                  }}
-                >
-                  <Chip
-                    label="0 disciplinas"
-                    size="small"
-                    sx={{ bgcolor: "#FFC107", color: "black" }}
-                  />
-                  <Chip
-                    label="1 disciplina"
-                    size="small"
-                    sx={{ bgcolor: "#81C784", color: "white" }}
-                  />
-                  <Chip
-                    label="2 disciplinas"
-                    size="small"
-                    sx={{ bgcolor: "#1976D2", color: "white" }}
-                  />
-                  <Chip
-                    label="3+ disciplinas"
-                    size="small"
-                    sx={{ bgcolor: "#D32F2F", color: "white" }}
-                  />
-                </Box>
-
-                <BarChart
-                  dataset={workloadHistogramData}
-                  xAxis={[
-                    {
-                      scaleType: "band",
-                      dataKey: "carga",
-                      label: "Número de Disciplinas por Docente",
-                    },
-                  ]}
-                  yAxis={[
-                    {
-                      label: "Quantidade de Docentes",
-                    },
-                  ]}
-                  series={workloadSeries}
-                  width={undefined}
-                  height={400}
-                  margin={{ left: 80, right: 20, top: 20, bottom: 80 }}
-                  slotProps={{
-                    legend: {
-                      direction: "row",
-                      position: { vertical: "top", horizontal: "middle" },
-                    },
-                  }}
-                />
-              </>
-            ) : (
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                }}
-              >
-                <Typography variant="body1" color="text.secondary">
-                  Nenhum dado detalhado de carga de trabalho encontrado
-                </Typography>
-              </Box>
-            )}
-          </Box>
+          <WorkloadHistogramChart solutionA={solutionA} solutionB={solutionB} />
         )}
 
         {/* Análise Comparativa */}
@@ -576,14 +407,6 @@ export default function ConstraintViolationsChart({
                   variant="outlined"
                 />
               )}
-            {currentTab === 3 && workloadHistogramData.length > 0 && (
-              <Chip
-                label={`${workloadHistogramData.length} níveis de carga analisados`}
-                color="info"
-                size="small"
-                variant="outlined"
-              />
-            )}
           </Box>
         </Box>
       </CardContent>

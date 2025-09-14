@@ -186,7 +186,8 @@ export default function DisciplinasTreeView({
 
       for (const _docente of disciplina.atribuicoes.keys()) {
         const docente = disciplina.atribuicoes.get(_docente);
-        temConflito = docente.conflitos.size > 0;
+        temConflito =
+          docente && docente.conflitos && docente.conflitos.size > 0;
 
         childrenToRender.push(
           <CustomTreeItem
