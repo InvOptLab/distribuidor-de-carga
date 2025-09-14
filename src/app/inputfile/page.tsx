@@ -305,7 +305,7 @@ export default function InputFileUpload() {
       setTempData(temp);
       setSelectedFile(null); // Limpar arquivo selecionado
 
-      addAlerta("Dados de teste carregados com sucesso!", "success");
+      addAlerta("Dados de teste importados com sucesso!", "success");
     } catch (error) {
       console.error("Erro ao carregar dados de teste:", error);
       addAlerta(
