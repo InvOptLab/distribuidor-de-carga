@@ -131,7 +131,10 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
       }
     }
 
-    data.push({ label: "Carga maior que 2.", qtd: cargaMaiorQue2 });
+    data.push({
+      label: `Carga maior que ${this.params.maxLimit.value}.`,
+      qtd: cargaMaiorQue2,
+    });
 
     return data;
   }

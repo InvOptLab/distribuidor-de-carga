@@ -160,7 +160,10 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
     // }
 
     data.push(
-      { label: "Carga Menor que 1.", qtd: qtdMenosUm }
+      {
+        label: `Carga Menor que ${this.params.minLimit.value}.`,
+        qtd: qtdMenosUm,
+      }
       // { label: "0 atribuições.", qtd: zeroAtribuicoes },
       // {
       //   label: "Saldo Negativo Carga Menor que -1",

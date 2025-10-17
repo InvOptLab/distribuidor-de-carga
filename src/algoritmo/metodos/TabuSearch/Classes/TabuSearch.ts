@@ -1,3 +1,4 @@
+import { delay } from "@/algoritmo/communs/utils";
 import Algorithm from "../../../abstractions/Algorithm";
 import Constraint from "../../../abstractions/Constraint";
 import { NeighborhoodFunction } from "../../../abstractions/NeighborhoodFunction";
@@ -93,15 +94,6 @@ export class TabuSearch extends Algorithm {
       maiorPrioridade,
       true
     );
-
-    this.context = {
-      atribuicoes: atribuicoes,
-      docentes: docentes,
-      turmas: turmas,
-      travas: travas,
-      prioridades: prioridades,
-      maiorPrioridade: maiorPrioridade,
-    };
 
     /**
      * Finaliza a instância das estatísticas
@@ -356,9 +348,9 @@ export class TabuSearch extends Algorithm {
     const tempoInicialTotal = performance.now();
 
     while (!this.stop(iteracoes, vizinhanca[0], interrompe)) {
-      console.log("Iteração: " + iteracoes); // Apenas para o script
+      // console.log("Iteração: " + iteracoes); // Apenas para o script
 
-      // await delay(0);
+      await delay(0);
 
       /**
        * Atualizar as estatisticas
@@ -412,7 +404,6 @@ export class TabuSearch extends Algorithm {
           localBestSolution.vizinho.isTabu &&
           localBestSolution.forceAcceptance
         ) {
-          console.log("@@@@ isTabu &  forceAcceptance @@@@");
           this.tabuList.remove(localBestSolution.vizinho);
           localBestSolution.vizinho.isTabu = false;
         }
@@ -425,8 +416,6 @@ export class TabuSearch extends Algorithm {
         if (this.bestSolution.avaliacao >= this.incumbente.avaliacao) {
           this.incumbente = structuredClone(this.bestSolution);
         }
-      } else {
-        console.log("@@@@ Vizinhança inteira como tabu. @@@@");
       }
 
       /**
@@ -478,7 +467,7 @@ export class TabuSearch extends Algorithm {
     this.statistics.iteracoes = iteracoes;
     this.statistics.tempoExecucao = tempoFinal - tempoInicialTotal;
 
-    this.generateStatistics();
+    await this.generateStatistics();
 
     this.bestSolution = this.incumbente;
 
