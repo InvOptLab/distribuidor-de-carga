@@ -4,11 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import { useGlobalContext } from "@/context/Global";
 import { useAlertsContext } from "@/context/Alerts";
 import { useAlgorithmContext } from "@/context/Algorithm";
-import { TabuSearch } from "@/TabuSearch/Classes/TabuSearch";
+
 import {
-  type Solucao,
+  ContextoExecucao,
   TipoInsercao,
-  type ContextoExecucao,
   getActiveFormularios,
 } from "@/context/Global/utils";
 import {
@@ -16,6 +15,8 @@ import {
   updateSolutionId,
 } from "@/context/SolutionHistory/utils";
 import { useTimetable } from "../context/TimetableContext";
+import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
+import { Solucao } from "@/algoritmo/communs/interfaces/interfaces";
 
 export function useAlgorithm() {
   const {
@@ -118,13 +119,17 @@ export function useAlgorithm() {
           : parametros.tabuTenure.tenures,
         stop,
         aspiration,
-        undefined, //maxPriority + 1
+        undefined, //maxPriority + 1,
+        "max",
         objectives
       );
 
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      await buscaTabu.run(() => interrompeRef.current, setDisciplinasAlocadas);
+      await buscaTabu.execute(
+        () => interrompeRef.current,
+        setDisciplinasAlocadas
+      );
 
       const solucao: Solucao = {
         atribuicoes: buscaTabu.bestSolution.atribuicoes,

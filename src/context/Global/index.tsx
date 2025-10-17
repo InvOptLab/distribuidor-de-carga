@@ -1,14 +1,13 @@
-import { createContext, useContext, useState } from "react";
 import {
   Atribuicao,
   Celula,
   Disciplina,
   Docente,
   Formulario,
-  HistoricoSolucao,
-  Parametros,
   Solucao,
-} from "./utils";
+} from "@/algoritmo/communs/interfaces/interfaces";
+import { createContext, useContext, useState } from "react";
+import { HistoricoSolucao, Parametros } from "./utils";
 
 //import _ from "lodash"; // Comparação entre objetos de forma otimizada
 

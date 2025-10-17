@@ -16,9 +16,9 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
-import { IteracoesMaximas } from "@/TabuSearch/StopCriteria/IteracoesMaximas";
-import { IteracoesSemModificacao } from "@/TabuSearch/StopCriteria/IteracoesSemModificacao";
-import IteracoesSemMelhoraAvaliacao from "@/TabuSearch/StopCriteria/IteracoesSemMelhoraAvaliacao";
+import { IteracoesMaximas } from "@/algoritmo/communs/StopCriteria/IteracoesMaximas";
+import { IteracoesSemModificacao } from "@/algoritmo/communs/StopCriteria/IteracoesSemModificacao";
+import IteracoesSemMelhoraAvaliacao from "@/algoritmo/communs/StopCriteria/IteracoesSemMelhoraAvaliacao";
 
 export default function StopCriteriaConfig() {
   const { stopFunctions, setStopFunctions } = useAlgorithmContext();

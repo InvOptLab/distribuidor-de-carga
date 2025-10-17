@@ -35,8 +35,8 @@ import {
 } from "@mui/icons-material";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
-import { ObjectiveComponent } from "@/TabuSearch/Classes/Abstract/ObjectiveComponent";
 import { getPriorityColor } from "@/app/atribuicoes";
+import { ObjectiveComponent } from "@/algoritmo/abstractions/ObjectiveComponent";
 
 export default function ObjectiveConfig() {
   const { objectiveComponents, setObjectiveComponents, maiorPrioridade } =

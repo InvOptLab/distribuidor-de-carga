@@ -20,20 +20,23 @@ import TrendingDownOutlinedIcon from "@mui/icons-material/TrendingDownOutlined";
 import { BarChart, LineChart } from "@mui/x-charts";
 import ConstraintsBarCharts from "./ConstraintsBarCharts";
 import { HistoricoSolucao } from "@/context/Global/utils";
-import { IteracoesSemModificacao } from "@/TabuSearch/StopCriteria/IteracoesSemModificacao";
-import { IteracoesMaximas } from "@/TabuSearch/StopCriteria/IteracoesMaximas";
+
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ShuffleOutlinedIcon from "@mui/icons-material/ShuffleOutlined";
 import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
 import ShutterSpeedOutlinedIcon from "@mui/icons-material/ShutterSpeedOutlined";
 import PauseCircleOutlineOutlinedIcon from "@mui/icons-material/PauseCircleOutlineOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
-import IteracoesSemMelhoraAvaliacao from "@/TabuSearch/StopCriteria/IteracoesSemMelhoraAvaliacao";
+
 import LinearScaleIcon from "@mui/icons-material/LinearScale";
-import SameObjective from "@/TabuSearch/AspirationCriteria/SameObjective";
+
 import ChartContainer from "./ChartContainer";
-import { Moviment } from "@/TabuSearch/TabuList/Moviment";
-import { Solution } from "@/TabuSearch/TabuList/Solution";
+import { Solution } from "@/algoritmo/metodos/TabuSearch/TabuList/Solution";
+import { Moviment } from "@/algoritmo/metodos/TabuSearch/TabuList/Moviment";
+import { IteracoesSemModificacao } from "@/algoritmo/communs/StopCriteria/IteracoesSemModificacao";
+import { IteracoesMaximas } from "@/algoritmo/communs/StopCriteria/IteracoesMaximas";
+import IteracoesSemMelhoraAvaliacao from "@/algoritmo/communs/StopCriteria/IteracoesSemMelhoraAvaliacao";
+import SameObjective from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/SameObjective";
 
 // const getDefs = () => {
 //   const styles = getStyles();
@@ -260,12 +263,11 @@ export default function SolutionHistoryDetails({
                       Tamanho da Lista Tabu
                     </Typography>
                     <Typography variant="h5" color="primary">
-                      {solucao.solucao.algorithm
-                        ? solucao.solucao.algorithm.tabuList instanceof Solution
-                          ? solucao.solucao.algorithm.tabuList.tabuSize.toString()
-                          : solucao.solucao.algorithm.tabuList instanceof
-                            Moviment
-                          ? `${solucao.solucao.algorithm.tabuList.tenures.add} - ${solucao.solucao.algorithm.tabuList.tenures.drop}`
+                      {solucao.algorithm
+                        ? solucao.algorithm.tabuList instanceof Solution
+                          ? solucao.algorithm.tabuList.tabuSize.toString()
+                          : solucao.algorithm.tabuList instanceof Moviment
+                          ? `${solucao.algorithm.tabuList.tenures.add} - ${solucao.algorithm.tabuList.tenures.drop}`
                           : ""
                         : "Dado não informado!"}
                     </Typography>
@@ -281,74 +283,70 @@ export default function SolutionHistoryDetails({
             <Typography variant="h6">Restrições</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            {solucao.solucao.algorithm &&
-              solucao.solucao.algorithm.constraints && (
-                <Grid2 container spacing={2}>
-                  {[
-                    ...solucao.solucao.algorithm.constraints.hard.values(),
-                    ...solucao.solucao.algorithm.constraints.soft.values(),
-                  ].map((constraint) => (
-                    <Grid2
-                      size={{ xs: 12, sm: 6, md: 4 }}
-                      key={constraint.name}
+            {solucao.algorithm && solucao.algorithm.constraints && (
+              <Grid2 container spacing={2}>
+                {[
+                  ...solucao.algorithm.constraints.hard.values(),
+                  ...solucao.algorithm.constraints.soft.values(),
+                ].map((constraint) => (
+                  <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={constraint.name}>
+                    <Card
+                      elevation={3}
+                      sx={{
+                        padding: 2,
+                        borderRadius: 2,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        minHeight: 150,
+                        textAlign: "center",
+                        backgroundColor: constraint.isHard
+                          ? "#ffebee"
+                          : "#fff3cd",
+                        border: constraint.isHard
+                          ? "2px solid #d32f2f"
+                          : "2px solid #ffb300",
+                      }}
                     >
-                      <Card
-                        elevation={3}
-                        sx={{
-                          padding: 2,
-                          borderRadius: 2,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "flex-start",
-                          minHeight: 150,
-                          textAlign: "center",
-                          backgroundColor: constraint.isHard
-                            ? "#ffebee"
-                            : "#fff3cd",
-                          border: constraint.isHard
-                            ? "2px solid #d32f2f"
-                            : "2px solid #ffb300",
-                        }}
-                      >
-                        {constraint.isHard ? (
-                          <ErrorOutlineIcon
+                      {constraint.isHard ? (
+                        <ErrorOutlineIcon
+                          color="error"
+                          sx={{ fontSize: 40, marginBottom: 1 }}
+                        />
+                      ) : (
+                        <TrendingDownOutlinedIcon
+                          sx={{
+                            fontSize: 40,
+                            marginBottom: 1,
+                            color: "#ffb300",
+                          }}
+                        />
+                      )}
+                      <Box>
+                        <Typography variant="body1" fontWeight="bold">
+                          {constraint.name}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {constraint.isHard
+                            ? "Restrição Hard (Obrigatória)"
+                            : "Restrição Soft (Flexível)"}
+                        </Typography>
+                        {!constraint.isHard && (
+                          <Typography
+                            variant="body2"
                             color="error"
-                            sx={{ fontSize: 40, marginBottom: 1 }}
-                          />
-                        ) : (
-                          <TrendingDownOutlinedIcon
-                            sx={{
-                              fontSize: 40,
-                              marginBottom: 1,
-                              color: "#ffb300",
-                            }}
-                          />
+                            fontWeight="bold"
+                          >
+                            Penalidade: {constraint.penalty}
+                          </Typography>
                         )}
-                        <Box>
-                          <Typography variant="body1" fontWeight="bold">
-                            {constraint.name}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {constraint.isHard
-                              ? "Restrição Hard (Obrigatória)"
-                              : "Restrição Soft (Flexível)"}
-                          </Typography>
-                          {!constraint.isHard && (
-                            <Typography
-                              variant="body2"
-                              color="error"
-                              fontWeight="bold"
-                            >
-                              Penalidade: {constraint.penalty}
-                            </Typography>
-                          )}
-                        </Box>
-                      </Card>
-                    </Grid2>
-                  ))}
-                </Grid2>
-              )}
+                      </Box>
+                    </Card>
+                  </Grid2>
+                ))}
+              </Grid2>
+            )}
           </AccordionDetails>
         </Accordion>
         <Accordion>
@@ -356,12 +354,10 @@ export default function SolutionHistoryDetails({
             <Typography variant="h6">Geração da Vizinhança</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            {solucao.solucao.algorithm &&
-              solucao.solucao.algorithm.neighborhoodPipe && (
-                <Grid2 container spacing={2}>
-                  {Array.from(
-                    solucao.solucao.algorithm.neighborhoodPipe.values()
-                  ).map((genFunc) => (
+            {solucao.algorithm && solucao.algorithm.neighborhoodPipe && (
+              <Grid2 container spacing={2}>
+                {Array.from(solucao.algorithm.neighborhoodPipe.values()).map(
+                  (genFunc) => (
                     <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={genFunc.name}>
                       <Card
                         elevation={3}
@@ -390,9 +386,10 @@ export default function SolutionHistoryDetails({
                         </Typography>
                       </Card>
                     </Grid2>
-                  ))}
-                </Grid2>
-              )}
+                  )
+                )}
+              </Grid2>
+            )}
           </AccordionDetails>
         </Accordion>
 
@@ -402,90 +399,89 @@ export default function SolutionHistoryDetails({
             <Typography variant="h6">Interrupção</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            {solucao.solucao.algorithm &&
-              solucao.solucao.algorithm.stopPipe && (
-                <Grid2 container spacing={2}>
-                  {Array.from(solucao.solucao.algorithm.stopPipe.values()).map(
-                    (stopFunc) => {
-                      let details = null;
-                      let icon = (
-                        <PauseCircleOutlineOutlinedIcon
+            {solucao.algorithm && solucao.algorithm.stopPipe && (
+              <Grid2 container spacing={2}>
+                {Array.from(solucao.algorithm.stopPipe.values()).map(
+                  (stopFunc) => {
+                    let details = null;
+                    let icon = (
+                      <PauseCircleOutlineOutlinedIcon
+                        color="warning"
+                        sx={{ fontSize: 40, marginBottom: 1 }}
+                      />
+                    );
+
+                    if (stopFunc instanceof IteracoesSemModificacao) {
+                      details = `Iterações sem modificação: ${stopFunc.limiteIteracoesSemModificacao}`;
+                      icon = (
+                        <ShutterSpeedOutlinedIcon
                           color="warning"
                           sx={{ fontSize: 40, marginBottom: 1 }}
                         />
                       );
-
-                      if (stopFunc instanceof IteracoesSemModificacao) {
-                        details = `Iterações sem modificação: ${stopFunc.limiteIteracoesSemModificacao}`;
-                        icon = (
-                          <ShutterSpeedOutlinedIcon
-                            color="warning"
-                            sx={{ fontSize: 40, marginBottom: 1 }}
-                          />
-                        );
-                      } else if (stopFunc instanceof IteracoesMaximas) {
-                        details = `Quantidade máxima de iterações: ${stopFunc.maxIteracoes}`;
-                        icon = (
-                          <TimerOutlinedIcon
-                            color="error"
-                            sx={{ fontSize: 40, marginBottom: 1 }}
-                          />
-                        );
-                      } else if (
-                        stopFunc instanceof IteracoesSemMelhoraAvaliacao
-                      ) {
-                        details = `Quantidade máxima de iterações sem modificação: ${stopFunc.limiteIteracoesSemMelhoraAvaliacao}`;
-                        icon = (
-                          <LinearScaleIcon
-                            color="error"
-                            sx={{ fontSize: 40, marginBottom: 1 }}
-                          />
-                        );
-                      }
-
-                      return (
-                        <Grid2
-                          size={{ xs: 12, sm: 6, md: 4 }}
-                          key={stopFunc.name}
-                        >
-                          <Card
-                            elevation={3}
-                            sx={{
-                              padding: 2,
-                              borderRadius: 2,
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              minHeight: 150,
-                              textAlign: "center",
-                              backgroundColor: "#e3f2fd",
-                              border: "2px solid #1976d2",
-                            }}
-                          >
-                            {icon}
-                            <Typography variant="body1" fontWeight="bold">
-                              {stopFunc.name}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {stopFunc.description}
-                            </Typography>
-                            {details && (
-                              <Typography
-                                variant="body2"
-                                color="error"
-                                fontWeight="bold"
-                              >
-                                {details}
-                              </Typography>
-                            )}
-                          </Card>
-                        </Grid2>
+                    } else if (stopFunc instanceof IteracoesMaximas) {
+                      details = `Quantidade máxima de iterações: ${stopFunc.maxIteracoes}`;
+                      icon = (
+                        <TimerOutlinedIcon
+                          color="error"
+                          sx={{ fontSize: 40, marginBottom: 1 }}
+                        />
+                      );
+                    } else if (
+                      stopFunc instanceof IteracoesSemMelhoraAvaliacao
+                    ) {
+                      details = `Quantidade máxima de iterações sem modificação: ${stopFunc.limiteIteracoesSemMelhoraAvaliacao}`;
+                      icon = (
+                        <LinearScaleIcon
+                          color="error"
+                          sx={{ fontSize: 40, marginBottom: 1 }}
+                        />
                       );
                     }
-                  )}
-                </Grid2>
-              )}
+
+                    return (
+                      <Grid2
+                        size={{ xs: 12, sm: 6, md: 4 }}
+                        key={stopFunc.name}
+                      >
+                        <Card
+                          elevation={3}
+                          sx={{
+                            padding: 2,
+                            borderRadius: 2,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            minHeight: 150,
+                            textAlign: "center",
+                            backgroundColor: "#e3f2fd",
+                            border: "2px solid #1976d2",
+                          }}
+                        >
+                          {icon}
+                          <Typography variant="body1" fontWeight="bold">
+                            {stopFunc.name}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {stopFunc.description}
+                          </Typography>
+                          {details && (
+                            <Typography
+                              variant="body2"
+                              color="error"
+                              fontWeight="bold"
+                            >
+                              {details}
+                            </Typography>
+                          )}
+                        </Card>
+                      </Grid2>
+                    );
+                  }
+                )}
+              </Grid2>
+            )}
           </AccordionDetails>
         </Accordion>
 
@@ -495,12 +491,10 @@ export default function SolutionHistoryDetails({
             <Typography variant="h6">Critérios de Aspiração</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            {solucao.solucao.algorithm &&
-              solucao.solucao.algorithm.aspirationPipe && (
-                <Grid2 container spacing={2}>
-                  {Array.from(
-                    solucao.solucao.algorithm.aspirationPipe.values()
-                  ).map((aspirationFunc) => (
+            {solucao.algorithm && solucao.algorithm.aspirationPipe && (
+              <Grid2 container spacing={2}>
+                {Array.from(solucao.algorithm.aspirationPipe.values()).map(
+                  (aspirationFunc) => (
                     <Grid2
                       size={{ xs: 12, sm: 6, md: 4 }}
                       key={aspirationFunc.name}
@@ -542,9 +536,10 @@ export default function SolutionHistoryDetails({
                         )}
                       </Card>
                     </Grid2>
-                  ))}
-                </Grid2>
-              )}
+                  )
+                )}
+              </Grid2>
+            )}
           </AccordionDetails>
         </Accordion>
         <Divider sx={{ my: 3 }} />

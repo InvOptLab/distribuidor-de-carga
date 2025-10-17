@@ -1,4 +1,5 @@
-import { TabuSearch } from "@/TabuSearch/Classes/TabuSearch";
+import { Horario, Solucao } from "@/algoritmo/communs/interfaces/interfaces";
+import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
 
 export interface Docente {
   nome: string;
@@ -80,11 +81,11 @@ export interface Celula {
 }
 
 // Ver se o melhor lugar para essa interface é aqui
-export interface Horario {
-  dia: "Seg." | "Ter." | "Qua." | "Qui." | "Sex." | "Sáb." | "";
-  inicio: string;
-  fim: string;
-}
+// export interface Horario {
+//   dia: "Seg." | "Ter." | "Qua." | "Qui." | "Sex." | "Sáb." | "";
+//   inicio: string;
+//   fim: string;
+// }
 
 export interface ContextoExecucao {
   docentes: Docente[];
@@ -104,14 +105,14 @@ export interface Estatisticas {
   qtdOcorrenciasRestricoes?: Map<string, { label: string; qtd: number }[]>;
 }
 
-export interface Solucao {
-  atribuicoes: Atribuicao[];
-  avaliacao?: number;
-  idHistorico?: string;
-  estatisticas?: Estatisticas;
-  isTabu?: boolean;
-  algorithm?: TabuSearch;
-}
+// export interface Solucao {
+//   atribuicoes: Atribuicao[];
+//   avaliacao?: number;
+//   idHistorico?: string;
+//   estatisticas?: Estatisticas;
+//   isTabu?: boolean;
+//   algorithm?: TabuSearch;
+// }
 
 export enum TipoInsercao {
   Algoritmo = "Algoritmo",
@@ -125,6 +126,7 @@ export interface HistoricoSolucao {
   solucao: Solucao;
   tipoInsercao: TipoInsercao;
   contexto: ContextoExecucao;
+  algorithm?: TabuSearch;
 }
 
 /**

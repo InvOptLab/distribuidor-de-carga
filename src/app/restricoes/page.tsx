@@ -10,18 +10,18 @@ import {
   Typography,
 } from "@mui/material";
 import ConstraintCard from "@/components/Constraints/ConstraintCard";
-import Constraint from "@/TabuSearch/Classes/Constraint";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import AddIcon from "@mui/icons-material/Add";
 import { motion } from "framer-motion";
 import { useAlertsContext } from "@/context/Alerts";
+import Constraint from "@/algoritmo/abstractions/Constraint";
 
 export interface ConstraintInterface {
   name: string;
   tipo: "Hard" | "Soft";
   penalidade: string;
   descricao: string;
-  constraint: new (...args: any[]) => Constraint;
+  constraint: new (...args: any[]) => Constraint<any>;
 }
 
 // const initialConstraints: ConstraintInterface[] = [
@@ -78,7 +78,7 @@ export default function Restricoes() {
   });
 
   const [availableConstraints, setAvailableConstraints] = useState<
-    Map<string, Constraint>
+    Map<string, Constraint<any>>
   >(() => {
     const available = new Map(allConstraints);
     hardConstraints.forEach((_, key) => available.delete(key));
@@ -150,8 +150,8 @@ export default function Restricoes() {
   };
 
   const saveConstraints = () => {
-    const newSoftConstraints = new Map<string, Constraint>();
-    const newHardConstraints = new Map<string, Constraint>();
+    const newSoftConstraints = new Map<string, Constraint<any>>();
+    const newHardConstraints = new Map<string, Constraint<any>>();
 
     for (const constraint of constraints) {
       const ConstraintClass = constraint.constraint;

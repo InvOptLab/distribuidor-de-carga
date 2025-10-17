@@ -1,3 +1,4 @@
+import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
 import {
   Atribuicao,
   Celula,
@@ -9,7 +10,6 @@ import {
   TipoInsercao,
 } from "@/context/Global/utils";
 import { addNewSolutionToHistory } from "@/context/SolutionHistory/utils";
-import { TabuSearch } from "@/TabuSearch/Classes/TabuSearch";
 
 /**
  * Função que define a colocação da célula na tabela
