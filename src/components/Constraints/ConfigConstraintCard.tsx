@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -49,16 +48,56 @@ export default function ConfigConstraintCard({
     String(constraint.penalty || 0)
   );
 
+  // Verificar se a constraint suporta hard e soft através do prototype
+  const [supportsHard, setSupportsHard] = useState(true);
+  const [supportsSoft, setSupportsSoft] = useState(true);
+
+  useEffect(() => {
+    // Acessar o construtor da classe
+    const ConstraintClass = constraint.constructor as any;
+
+    // console.log("=== Verificando suporte de tipos ===");
+    // console.log("Constraint:", constraint.name);
+    // console.log("Constructor:", ConstraintClass);
+    // console.log("Constructor.prototype:", ConstraintClass.prototype);
+
+    // Verificar se existem as flags no prototype
+    if (ConstraintClass.prototype) {
+      // const hardSupport = ConstraintClass.prototype["hard"];
+      // const softSupport = ConstraintClass.prototype["soft"];
+
+      // console.log("hard flag:", hardSupport);
+      // console.log("soft flag:", softSupport);
+
+      // Definir suporte baseado nas flags do prototype
+      // if (typeof hardSupport !== "undefined") {
+      //   setSupportsHard(hardSupport === true);
+      // }
+      setSupportsHard(!!ConstraintClass.prototype["hard"]);
+      setSupportsSoft(!!ConstraintClass.prototype["soft"]);
+
+      // if (typeof softSupport !== "undefined") {
+      //   setSupportsSoft(softSupport === true);
+      // }
+
+      // console.log(
+      //   `Resultado - Supports Hard: ${hardSupport}, Supports Soft: ${softSupport}`
+      // );
+    }
+  }, [constraint]);
+
   // Verificar se a constraint tem parâmetros
   const hasParams =
     constraint.params && Object.keys(constraint.params).length > 0;
 
-  console.log("ConstraintCard renderizando:");
-  console.log("  - Nome:", constraint.name);
-  console.log("  - Tipo:", tipo);
-  console.log("  - Penalidade:", penalidade);
-  console.log("  - Params:", constraint.params);
-  console.log("  - Has Params:", hasParams);
+  // console.log("ConstraintCard renderizando:");
+  // console.log("  - Nome:", constraint.name);
+  // console.log("  - Tipo:", tipo);
+  // console.log("  - Penalidade:", penalidade);
+  // console.log("  - Supports Hard:", supportsHard);
+  // console.log("  - Supports Soft:", supportsSoft);
+  // console.log("  - Params:", constraint.params);
+  // console.log("  - Has Params:", hasParams);
 
   const handleTipoChange = (event: SelectChangeEvent) => {
     const newTipo = event.target.value as "Hard" | "Soft";
@@ -85,26 +124,27 @@ export default function ConfigConstraintCard({
   };
 
   const handleParamChange = (paramKey: string, newValue: any) => {
-    console.log(`Alterando parâmetro "${paramKey}" para:`, newValue);
+    // console.log(`Alterando parâmetro "${paramKey}" para:`, newValue);
 
     // Atualizar o valor diretamente na instância
     if (constraint.params && constraint.params[paramKey]) {
       constraint.params[paramKey].value = newValue;
-      console.log(
-        `Parâmetro atualizado. Novo valor:`,
-        constraint.params[paramKey]
-      );
+      // console.log(
+      //   `Parâmetro atualizado. Novo valor:`,
+      //   constraint.params[paramKey]
+      // );
 
       // Notificar mudança
       onChange(constraint);
     } else {
-      console.error(
-        `Parâmetro "${paramKey}" não encontrado em constraint.params`
-      );
+      // console.error(
+      //   `Parâmetro "${paramKey}" não encontrado em constraint.params`
+      // );
     }
   };
 
   const handleDelete = () => {
+    // console.log(`ConstraintCard: Chamando onDelete para "${constraint.name}"`);
     onDelete(constraint.name);
   };
 
@@ -113,6 +153,25 @@ export default function ConfigConstraintCard({
       showInformations(constraint.description, "info");
     }
   };
+
+  // Se só suporta um tipo, ajustar o estado inicial se necessário
+  useEffect(() => {
+    if (!supportsHard && supportsSoft && tipo === "Hard") {
+      setTipo("Soft");
+      constraint.isHard = false;
+      onChange(constraint);
+    } else if (supportsHard && !supportsSoft && tipo === "Soft") {
+      setTipo("Hard");
+      constraint.isHard = true;
+      onChange(constraint);
+    }
+  }, [supportsHard, supportsSoft]);
+
+  // Desabilitar select se não tem opções ou só tem uma opção
+  const selectDisabled =
+    (!supportsHard && !supportsSoft) ||
+    (supportsHard && !supportsSoft) ||
+    (!supportsHard && supportsSoft);
 
   return (
     <Card
@@ -204,40 +263,76 @@ export default function ConfigConstraintCard({
 
           {/* Configurações básicas */}
           <Grid2 size={{ xs: 12, md: 6 }}>
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" disabled={selectDisabled}>
               <InputLabel>Tipo de Restrição</InputLabel>
               <Select
                 value={tipo}
                 label="Tipo de Restrição"
                 onChange={handleTipoChange}
               >
-                <MenuItem value="Hard">
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Chip
-                      label="RÍGIDA"
-                      color="error"
-                      size="small"
-                      sx={{ height: 20, fontSize: "0.7rem" }}
-                    />
-                    <Typography variant="body2">
-                      Deve ser sempre satisfeita
-                    </Typography>
-                  </Stack>
-                </MenuItem>
-                <MenuItem value="Soft">
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Chip
-                      label="FLEXÍVEL"
-                      color="warning"
-                      size="small"
-                      sx={{ height: 20, fontSize: "0.7rem" }}
-                    />
-                    <Typography variant="body2">
-                      Preferível mas não obrigatória
-                    </Typography>
-                  </Stack>
-                </MenuItem>
+                {supportsHard && (
+                  <MenuItem value="Hard">
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Chip
+                        label="RÍGIDA"
+                        color="error"
+                        size="small"
+                        sx={{ height: 20, fontSize: "0.7rem" }}
+                      />
+                      <Typography variant="body2">
+                        Deve ser sempre satisfeita
+                      </Typography>
+                    </Stack>
+                  </MenuItem>
+                )}
+                {supportsSoft && (
+                  <MenuItem value="Soft">
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Chip
+                        label="FLEXÍVEL"
+                        color="warning"
+                        size="small"
+                        sx={{ height: 20, fontSize: "0.7rem" }}
+                      />
+                      <Typography variant="body2">
+                        Preferível mas não obrigatória
+                      </Typography>
+                    </Stack>
+                  </MenuItem>
+                )}
               </Select>
+              {!supportsHard && !supportsSoft && (
+                <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                  Esta restrição não implementa nenhum tipo
+                </Typography>
+              )}
+              {!supportsHard && supportsSoft && (
+                <Typography
+                  variant="caption"
+                  color="info.main"
+                  sx={{ mt: 0.5 }}
+                >
+                  Apenas modo flexível disponível
+                </Typography>
+              )}
+              {supportsHard && !supportsSoft && (
+                <Typography
+                  variant="caption"
+                  color="info.main"
+                  sx={{ mt: 0.5 }}
+                >
+                  Apenas modo rígido disponível
+                </Typography>
+              )}
+              {supportsHard && supportsSoft && (
+                <Typography
+                  variant="caption"
+                  color="success.main"
+                  sx={{ mt: 0.5 }}
+                >
+                  Ambos os modos disponíveis
+                </Typography>
+              )}
             </FormControl>
           </Grid2>
 

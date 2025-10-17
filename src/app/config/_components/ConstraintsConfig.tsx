@@ -17,7 +17,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
-import Constraint from "@/algoritmo/abstractions/Constraint";
+import type Constraint from "@/algoritmo/abstractions/Constraint";
 import ConfigConstraintCard from "@/components/Constraints/ConfigConstraintCard";
 
 export default function ConstraintsConfig() {
@@ -32,9 +32,9 @@ export default function ConstraintsConfig() {
   const { addAlerta } = useAlertsContext();
 
   // Estado contendo as instâncias ativas das constraints
-  const [activeConstraints, setActiveConstraints] = useState<
-    Map<string, Constraint<any>>
-  >(new Map());
+  const [activeConstraints, setActiveConstraints] = useState<Constraint<any>[]>(
+    []
+  );
 
   // Estado contendo as instâncias disponíveis para adicionar
   const [availableConstraints, setAvailableConstraints] = useState<
@@ -43,42 +43,69 @@ export default function ConstraintsConfig() {
 
   // Inicializar constraints ativas e disponíveis
   useEffect(() => {
-    const active = new Map<string, Constraint<any>>();
+    // console.log("=== Inicializando ConstraintsConfig ===");
+    // console.log("hardConstraints:", hardConstraints);
+    // console.log("softConstraints:", softConstraints);
+    // console.log("allConstraints:", allConstraints);
+
+    const active: Constraint<any>[] = [];
     const available = new Map(allConstraints);
 
     // Adicionar constraints hard ativas
     hardConstraints.forEach((constraint, key) => {
-      active.set(key, constraint);
+      // console.log(`Adicionando constraint hard ativa: ${key}`);
+      active.push(constraint);
       available.delete(key);
     });
 
     // Adicionar constraints soft ativas
     softConstraints.forEach((constraint, key) => {
-      active.set(key, constraint);
+      // console.log(`Adicionando constraint soft ativa: ${key}`);
+      active.push(constraint);
       available.delete(key);
     });
+
+    // console.log("Active constraints:", active);
+    // console.log("Available constraints:", available);
 
     setActiveConstraints(active);
     setAvailableConstraints(available);
   }, [hardConstraints, softConstraints, allConstraints]);
 
   const handleConstraintChange = (constraintInstance: Constraint<any>) => {
-    // Atualizar a instância no estado
+    // console.log(
+    //   "handleConstraintChange chamado para:",
+    //   constraintInstance.name
+    // );
+    // Atualizar a instância no array
     setActiveConstraints((prev) => {
-      const updated = new Map(prev);
-      updated.set(constraintInstance.name, constraintInstance);
-      return updated;
+      return prev.map((c) =>
+        c.name === constraintInstance.name ? constraintInstance : c
+      );
     });
   };
 
   const removeConstraint = (name: string) => {
-    const constraintToRemove = activeConstraints.get(name);
-    if (!constraintToRemove) return;
+    // console.log("=== removeConstraint chamado ===");
+    // console.log("Nome da constraint a remover:", name);
+    // console.log("Active constraints antes:", activeConstraints);
 
-    // Remover do estado ativo
+    const constraintToRemove = activeConstraints.find((c) => c.name === name);
+    if (!constraintToRemove) {
+      // console.error("Constraint não encontrada:", name);
+      return;
+    }
+
+    // console.log("Constraint encontrada:", constraintToRemove);
+
+    // Remover do estado ativo usando filter para garantir imutabilidade
     setActiveConstraints((prev) => {
-      const updated = new Map(prev);
-      updated.delete(name);
+      const updated = prev.filter((c) => c.name !== name);
+      // console.log(
+      //   `Constraint ${name} removida. Total restante:`,
+      //   updated.length
+      // );
+      // console.log("Array atualizado:", updated);
       return updated;
     });
 
@@ -86,38 +113,54 @@ export default function ConstraintsConfig() {
     setAvailableConstraints((prev) => {
       const updated = new Map(prev);
       updated.set(name, constraintToRemove);
+      // console.log("Constraint adicionada de volta às disponíveis");
       return updated;
     });
 
     // Remover dos contextos
     if (constraintToRemove.isHard) {
+      // console.log("Removendo de hardConstraints");
       const newHardConstraints = new Map(hardConstraints);
       newHardConstraints.delete(name);
       setHardConstraints(newHardConstraints);
     } else {
+      // console.log("Removendo de softConstraints");
       const newSoftConstraints = new Map(softConstraints);
       newSoftConstraints.delete(name);
       setSoftConstraints(newSoftConstraints);
     }
+
+    addAlerta(`Restrição "${name}" removida com sucesso!`, "info");
   };
 
   const addConstraint = (name: string) => {
+    // console.log("=== addConstraint chamado ===");
+    // console.log("Nome da constraint a adicionar:", name);
+
     const constraintToAdd = availableConstraints.get(name);
-    if (!constraintToAdd) return;
+    if (!constraintToAdd) {
+      // console.error("Constraint não encontrada nas disponíveis:", name);
+      return;
+    }
+
+    // console.log("Constraint encontrada:", constraintToAdd);
 
     // Remover das disponíveis
     setAvailableConstraints((prev) => {
       const updated = new Map(prev);
       updated.delete(name);
+      // console.log("Constraint removida das disponíveis");
       return updated;
     });
 
     // Adicionar às ativas
     setActiveConstraints((prev) => {
-      const updated = new Map(prev);
-      updated.set(name, constraintToAdd);
+      const updated = [...prev, constraintToAdd];
+      // console.log("Constraint adicionada às ativas. Total:", updated.length);
       return updated;
     });
+
+    addAlerta(`Restrição "${name}" adicionada com sucesso!`, "success");
   };
 
   const saveConstraints = () => {
@@ -125,11 +168,11 @@ export default function ConstraintsConfig() {
     const newHardConstraints = new Map<string, Constraint<any>>();
 
     // Separar constraints por tipo
-    activeConstraints.forEach((constraint, name) => {
+    activeConstraints.forEach((constraint) => {
       if (constraint.isHard) {
-        newHardConstraints.set(name, constraint);
+        newHardConstraints.set(constraint.name, constraint);
       } else {
-        newSoftConstraints.set(name, constraint);
+        newSoftConstraints.set(constraint.name, constraint);
       }
     });
 
@@ -139,11 +182,9 @@ export default function ConstraintsConfig() {
     addAlerta("Configurações de restrições salvas com sucesso!", "success");
   };
 
-  const activeCount = activeConstraints.size;
+  const activeCount = activeConstraints.length;
   const totalCount = activeCount + availableConstraints.size;
-  const hardCount = Array.from(activeConstraints.values()).filter(
-    (c) => c.isHard
-  ).length;
+  const hardCount = activeConstraints.filter((c) => c.isHard).length;
   const softCount = activeCount - hardCount;
 
   return (
@@ -252,6 +293,9 @@ export default function ConstraintsConfig() {
                             transform: "scale(1.05)",
                             backgroundColor: "primary.main",
                             color: "white",
+                            "& .MuiChip-deleteIcon": {
+                              color: "white",
+                            },
                           },
                         }}
                       />
@@ -275,7 +319,7 @@ export default function ConstraintsConfig() {
           ✅ Restrições Ativas
         </Typography>
 
-        {activeConstraints.size === 0 ? (
+        {activeConstraints.length === 0 ? (
           <Paper
             elevation={2}
             sx={{
@@ -300,14 +344,20 @@ export default function ConstraintsConfig() {
           </Paper>
         ) : (
           <Grid2 container spacing={3}>
-            <AnimatePresence>
-              {Array.from(activeConstraints.values()).map((constraint) => (
-                <Grid2 size={12} key={constraint.name}>
+            <AnimatePresence mode="popLayout">
+              {activeConstraints.map((constraint) => (
+                <Grid2
+                  size={12}
+                  key={`${constraint.name}-${
+                    constraint.isHard ? "hard" : "soft"
+                  }`}
+                >
                   <motion.div
                     initial={{ opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 50 }}
                     transition={{ duration: 0.4 }}
+                    layout
                   >
                     <ConfigConstraintCard
                       constraint={constraint}
@@ -339,7 +389,7 @@ export default function ConstraintsConfig() {
           startIcon={<SaveIcon />}
           onClick={saveConstraints}
           size="large"
-          disabled={activeConstraints.size === 0}
+          disabled={activeConstraints.length === 0}
           sx={{
             py: 1.5,
             px: 4,

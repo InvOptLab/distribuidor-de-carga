@@ -2,34 +2,25 @@
 
 import { useState } from "react";
 import {
-  Box,
-  TextField,
-  Typography,
-  Grid2,
-  Switch,
-  FormControlLabel,
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Box,
+  Grid2,
+  TextField,
+  Typography,
+  Switch,
+  FormControlLabel,
+  Chip,
   Tooltip,
   IconButton,
-  Paper,
-  Stack,
-  Chip,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import TuneIcon from "@mui/icons-material/Tune";
-
-export interface IParameter<T> {
-  value: T;
-  name: string;
-  description: string;
-}
-
-export type ConstraintParams = {
-  [key: string]: IParameter<any>;
-};
+import {
+  ConstraintParams,
+  IParameter,
+} from "@/algoritmo/communs/interfaces/interfaces";
 
 interface ConstraintParametersProps {
   params: ConstraintParams;
@@ -42,254 +33,175 @@ export default function ConstraintParameters({
 }: ConstraintParametersProps) {
   const [expanded, setExpanded] = useState(true);
 
-  console.log("ConstraintParameters renderizando com params:", params);
-
-  if (!params || Object.keys(params).length === 0) {
-    console.log("Params vazio ou null, retornando null");
-    return null;
-  }
-
-  const handleToggle = () => {
+  const handleChange = () => {
     setExpanded(!expanded);
   };
 
-  const renderParameterInput = (key: string, param: IParameter<any>) => {
-    if (!param || typeof param !== "object" || !("value" in param)) {
-      console.error(`Parâmetro inválido para chave "${key}":`, param);
-      return (
-        <Typography variant="body2" color="error">
-          Parâmetro inválido
-        </Typography>
-      );
-    }
+  const renderParameterField = (paramKey: string, param: IParameter<any>) => {
+    const valueType = typeof param.value;
 
-    const value = param.value;
-    console.log(
-      `Renderizando input para "${key}" (${param.name}) com valor:`,
-      value,
-      "tipo:",
-      typeof value
-    );
+    // console.log(`Renderizando parâmetro "${paramKey}":`, param);
+    // console.log(`Tipo do valor: ${valueType}`);
 
-    if (typeof value === "boolean") {
+    // Boolean - Switch
+    if (valueType === "boolean") {
       return (
-        <FormControlLabel
-          control={
-            <Switch
-              checked={value}
-              onChange={(e) => {
-                console.log(`Switch "${key}" alterado para:`, e.target.checked);
-                onParamChange(key, e.target.checked);
-              }}
-              color="primary"
-            />
-          }
-          label={
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {param.name || key}
-            </Typography>
-          }
-        />
-      );
-    }
-
-    if (typeof value === "number") {
-      return (
-        <TextField
-          fullWidth
-          type="number"
-          label={param.name || key}
-          value={value}
-          onChange={(e) => {
-            const newValue = e.target.value === "" ? 0 : Number(e.target.value);
-            console.log(`TextField numérico "${key}" alterado para:`, newValue);
-            onParamChange(key, newValue);
-          }}
-          size="small"
-          InputProps={{
-            inputProps: { step: "any" },
-          }}
-        />
-      );
-    }
-
-    if (typeof value === "string") {
-      return (
-        <TextField
-          fullWidth
-          label={param.name || key}
-          value={value}
-          onChange={(e) => {
-            console.log(
-              `TextField string "${key}" alterado para:`,
-              e.target.value
-            );
-            onParamChange(key, e.target.value);
-          }}
-          size="small"
-        />
-      );
-    }
-
-    if (Array.isArray(value) || (typeof value === "object" && value !== null)) {
-      return (
-        <TextField
-          fullWidth
-          label={param.name || key}
-          value={JSON.stringify(value, null, 2)}
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              console.log(`TextField JSON "${key}" alterado para:`, parsed);
-              onParamChange(key, parsed);
-            } catch (error) {
-              console.warn("JSON inválido durante digitação:", error);
+        <Grid2 size={12} key={paramKey}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={param.value}
+                onChange={(e) => {
+                  // console.log(`Switch alterado para: ${e.target.checked}`);
+                  onParamChange(paramKey, e.target.checked);
+                }}
+                color="primary"
+              />
             }
-          }}
-          size="small"
-          multiline
-          rows={3}
-          placeholder="Formato JSON"
-        />
+            label={
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {param.name}
+                </Typography>
+                {param.description && (
+                  <Tooltip title={param.description} arrow>
+                    <IconButton size="small">
+                      <InfoOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Box>
+            }
+          />
+        </Grid2>
       );
     }
 
+    // Number - TextField numérico
+    if (valueType === "number") {
+      return (
+        <Grid2 size={{ xs: 12, md: 6 }} key={paramKey}>
+          <TextField
+            fullWidth
+            type="number"
+            label={param.name}
+            value={param.value}
+            onChange={(e) => {
+              const newValue = Number(e.target.value);
+              // console.log(`Campo numérico alterado para: ${newValue}`);
+              onParamChange(paramKey, newValue);
+            }}
+            size="small"
+            helperText={param.description}
+            InputProps={{
+              inputProps: { step: "any" },
+            }}
+          />
+        </Grid2>
+      );
+    }
+
+    // String - TextField de texto
+    if (valueType === "string") {
+      return (
+        <Grid2 size={{ xs: 12, md: 6 }} key={paramKey}>
+          <TextField
+            fullWidth
+            type="text"
+            label={param.name}
+            value={param.value}
+            onChange={(e) => {
+              // console.log(`Campo de texto alterado para: ${e.target.value}`);
+              onParamChange(paramKey, e.target.value);
+            }}
+            size="small"
+            helperText={param.description}
+          />
+        </Grid2>
+      );
+    }
+
+    // Array ou Object - TextField multiline com JSON
+    if (valueType === "object") {
+      const jsonValue = JSON.stringify(param.value, null, 2);
+      return (
+        <Grid2 size={12} key={paramKey}>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            label={param.name}
+            value={jsonValue}
+            onChange={(e) => {
+              try {
+                const parsed = JSON.parse(e.target.value);
+                // console.log(`JSON alterado para:`, parsed);
+                onParamChange(paramKey, parsed);
+              } catch (error) {
+                console.error("JSON inválido:", error);
+              }
+            }}
+            size="small"
+            helperText={param.description || "Formato JSON"}
+            placeholder='{"key": "value"}'
+          />
+        </Grid2>
+      );
+    }
+
+    // Fallback para tipos desconhecidos
     return (
-      <TextField
-        fullWidth
-        label={param.name || key}
-        value={String(value)}
-        onChange={(e) => {
-          console.log(
-            `TextField fallback "${key}" alterado para:`,
-            e.target.value
-          );
-          onParamChange(key, e.target.value);
-        }}
-        size="small"
-      />
+      <Grid2 size={12} key={paramKey}>
+        <Typography variant="body2" color="error">
+          Tipo de parâmetro não suportado: {valueType}
+        </Typography>
+      </Grid2>
     );
   };
 
   const paramCount = Object.keys(params).length;
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Accordion
-        expanded={expanded}
-        onChange={handleToggle}
+    <Accordion
+      expanded={expanded}
+      onChange={handleChange}
+      sx={{
+        border: "1px solid",
+        borderColor: "primary.light",
+        borderRadius: 1,
+        "&:before": { display: "none" },
+      }}
+    >
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
         sx={{
-          border: "2px solid",
-          borderColor: "primary.main",
-          borderRadius: 2,
-          boxShadow: 2,
-          "&:before": {
-            display: "none",
+          backgroundColor: "primary.50",
+          borderRadius: 1,
+          "&:hover": {
+            backgroundColor: "primary.100",
           },
-          overflow: "hidden",
         }}
       >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          sx={{
-            backgroundColor: "primary.main",
-            color: "white",
-            minHeight: 56,
-            "&.Mui-expanded": {
-              minHeight: 56,
-            },
-            "& .MuiAccordionSummary-content": {
-              margin: "12px 0",
-            },
-          }}
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 1, width: "100%" }}
         >
-          <Stack
-            direction="row"
-            spacing={2}
-            alignItems="center"
-            sx={{ width: "100%" }}
-          >
-            <TuneIcon />
-            <Typography
-              variant="subtitle1"
-              sx={{ fontWeight: 700, flexGrow: 1 }}
-            >
-              Parâmetros Específicos
-            </Typography>
-            <Chip
-              label={`${paramCount} parâmetro${paramCount !== 1 ? "s" : ""}`}
-              size="small"
-              sx={{
-                backgroundColor: "white",
-                color: "primary.main",
-                fontWeight: 700,
-              }}
-            />
-          </Stack>
-        </AccordionSummary>
-
-        <AccordionDetails sx={{ p: 3, backgroundColor: "grey.50" }}>
-          <Grid2 container spacing={2}>
-            {Object.entries(params).map(([key, param]) => {
-              if (!param || typeof param !== "object" || !("value" in param)) {
-                console.warn(`Parâmetro inválido para chave "${key}":`, param);
-                return null;
-              }
-
-              return (
-                <Grid2 size={12} key={key}>
-                  <Paper
-                    elevation={1}
-                    sx={{
-                      p: 2,
-                      backgroundColor: "white",
-                      borderRadius: 1,
-                      border: "1px solid",
-                      borderColor: "grey.300",
-                    }}
-                  >
-                    <Stack spacing={1}>
-                      <Stack
-                        direction="row"
-                        alignItems="flex-start"
-                        spacing={1}
-                      >
-                        <Box sx={{ flexGrow: 1 }}>
-                          {renderParameterInput(key, param)}
-                        </Box>
-                        {param.description && (
-                          <Tooltip
-                            title={param.description}
-                            arrow
-                            placement="top"
-                          >
-                            <IconButton size="small" color="info">
-                              <InfoOutlinedIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      {param.description && (
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{
-                            display: "block",
-                            fontStyle: "italic",
-                            pl: 1,
-                          }}
-                        >
-                          💡 {param.description}
-                        </Typography>
-                      )}
-                    </Stack>
-                  </Paper>
-                </Grid2>
-              );
-            })}
-          </Grid2>
-        </AccordionDetails>
-      </Accordion>
-    </Box>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+            ⚙️ Parâmetros da Restrição
+          </Typography>
+          <Chip
+            label={`${paramCount} parâmetro${paramCount !== 1 ? "s" : ""}`}
+            size="small"
+            color="primary"
+          />
+        </Box>
+      </AccordionSummary>
+      <AccordionDetails sx={{ pt: 2 }}>
+        <Grid2 container spacing={2}>
+          {Object.entries(params).map(([key, param]) =>
+            renderParameterField(key, param)
+          )}
+        </Grid2>
+      </AccordionDetails>
+    </Accordion>
   );
 }
