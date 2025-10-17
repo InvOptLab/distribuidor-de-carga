@@ -30,7 +30,9 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
     isActive: boolean,
     parametros: constructorLimiteMinimo
   ) {
-    const params: LimiteMinimo = {
+    super(name, description, isHard, penalty, isActive);
+
+    this.params = {
       minLimit: {
         value: parametros.minLimit,
         name: "Carga didática mínimo.",
@@ -38,7 +40,6 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
           "O número mínimo de carga didática que pode ser atribuída a um docente.",
       },
     };
-    super(name, description, isHard, penalty, isActive, params);
   }
 
   soft(

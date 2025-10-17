@@ -30,7 +30,9 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
     isActive: boolean,
     parametros: constructorLimiteMaximo
   ) {
-    const params: LimiteMaximo = {
+    super(name, description, isHard, penalty, isActive);
+
+    this.params = {
       maxLimit: {
         value: parametros.maxLimit,
         name: "Carga didática máxima.",
@@ -38,8 +40,6 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
           "O número máximo de carga didática que pode ser atribuída a um docente.",
       },
     };
-
-    super(name, description, isHard, penalty, isActive, params);
   }
 
   soft(

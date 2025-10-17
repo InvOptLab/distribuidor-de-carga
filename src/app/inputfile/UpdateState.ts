@@ -1,13 +1,15 @@
 import {
-  ajustaDisciplinas,
   Atribuicao,
   Celula,
   Disciplina,
   DisciplinaETL,
   Docente,
   Formulario,
-  HistoricoSolucao,
   Solucao,
+} from "@/algoritmo/communs/interfaces/interfaces";
+import {
+  ajustaDisciplinas,
+  HistoricoSolucao,
   TipoInsercao,
 } from "@/context/Global/utils";
 import { Dispatch, SetStateAction } from "react";

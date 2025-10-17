@@ -18,10 +18,6 @@ import { Solution } from "../TabuList/Solution";
 import { AspirationCriteria } from "./Abstract/AspirationCriteria";
 import { TabuList } from "./Abstract/TabuList";
 
-function isTenureSizes(obj: any): obj is TenureSizes {
-  return typeof obj === "object" && "add" in obj && "drop" in obj;
-}
-
 export interface EstatisticasTabu {
   tempoPorIteracaoTabu: Map<number, number>;
 }

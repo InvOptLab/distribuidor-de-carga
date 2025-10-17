@@ -144,7 +144,7 @@ export interface Celula {
 
 // Ver se o melhor lugar para essa interface é aqui
 export interface Horario {
-  dia: "Seg." | "Ter." | "Qua." | "Qui." | "Sex." | "Sáb.";
+  dia: "Seg." | "Ter." | "Qua." | "Qui." | "Sex." | "Sáb." | "";
   inicio: string;
   fim: string;
 }

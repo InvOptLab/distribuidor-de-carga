@@ -50,7 +50,7 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
    */
   isActive: boolean;
 
-  public readonly params: T;
+  public params: T;
 
   /**
    * Construtor
@@ -60,8 +60,7 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
     description: string,
     isHard: boolean,
     penalty: number,
-    isActive: boolean = true,
-    paramns: T
+    isActive: boolean = true
   ) {
     this.name = name;
     this.description = description;
@@ -69,7 +68,6 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
     this.isHard = isHard;
     this.penalty = penalty;
     this.isActive = isActive;
-    this.params = paramns;
   }
 
   /**

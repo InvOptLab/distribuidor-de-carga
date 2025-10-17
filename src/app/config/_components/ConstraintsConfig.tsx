@@ -1,20 +1,355 @@
 "use client";
-import Restricoes from "@/app/restricoes/page";
-import { Box, Typography, Alert } from "@mui/material";
+
+import { useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  Chip,
+  Grid2,
+  Paper,
+  Typography,
+  Alert,
+  Stack,
+  Divider,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAlgorithmContext } from "@/context/Algorithm";
+import { useAlertsContext } from "@/context/Alerts";
+import Constraint from "@/algoritmo/abstractions/Constraint";
+import ConfigConstraintCard from "@/components/Constraints/ConfigConstraintCard";
 
 export default function ConstraintsConfig() {
+  const {
+    hardConstraints,
+    softConstraints,
+    setHardConstraints,
+    setSoftConstraints,
+    allConstraints,
+  } = useAlgorithmContext();
+
+  const { addAlerta } = useAlertsContext();
+
+  // Estado contendo as instâncias ativas das constraints
+  const [activeConstraints, setActiveConstraints] = useState<
+    Map<string, Constraint<any>>
+  >(new Map());
+
+  // Estado contendo as instâncias disponíveis para adicionar
+  const [availableConstraints, setAvailableConstraints] = useState<
+    Map<string, Constraint<any>>
+  >(new Map());
+
+  // Inicializar constraints ativas e disponíveis
+  useEffect(() => {
+    const active = new Map<string, Constraint<any>>();
+    const available = new Map(allConstraints);
+
+    // Adicionar constraints hard ativas
+    hardConstraints.forEach((constraint, key) => {
+      active.set(key, constraint);
+      available.delete(key);
+    });
+
+    // Adicionar constraints soft ativas
+    softConstraints.forEach((constraint, key) => {
+      active.set(key, constraint);
+      available.delete(key);
+    });
+
+    setActiveConstraints(active);
+    setAvailableConstraints(available);
+  }, [hardConstraints, softConstraints, allConstraints]);
+
+  const handleConstraintChange = (constraintInstance: Constraint<any>) => {
+    // Atualizar a instância no estado
+    setActiveConstraints((prev) => {
+      const updated = new Map(prev);
+      updated.set(constraintInstance.name, constraintInstance);
+      return updated;
+    });
+  };
+
+  const removeConstraint = (name: string) => {
+    const constraintToRemove = activeConstraints.get(name);
+    if (!constraintToRemove) return;
+
+    // Remover do estado ativo
+    setActiveConstraints((prev) => {
+      const updated = new Map(prev);
+      updated.delete(name);
+      return updated;
+    });
+
+    // Adicionar de volta às disponíveis
+    setAvailableConstraints((prev) => {
+      const updated = new Map(prev);
+      updated.set(name, constraintToRemove);
+      return updated;
+    });
+
+    // Remover dos contextos
+    if (constraintToRemove.isHard) {
+      const newHardConstraints = new Map(hardConstraints);
+      newHardConstraints.delete(name);
+      setHardConstraints(newHardConstraints);
+    } else {
+      const newSoftConstraints = new Map(softConstraints);
+      newSoftConstraints.delete(name);
+      setSoftConstraints(newSoftConstraints);
+    }
+  };
+
+  const addConstraint = (name: string) => {
+    const constraintToAdd = availableConstraints.get(name);
+    if (!constraintToAdd) return;
+
+    // Remover das disponíveis
+    setAvailableConstraints((prev) => {
+      const updated = new Map(prev);
+      updated.delete(name);
+      return updated;
+    });
+
+    // Adicionar às ativas
+    setActiveConstraints((prev) => {
+      const updated = new Map(prev);
+      updated.set(name, constraintToAdd);
+      return updated;
+    });
+  };
+
+  const saveConstraints = () => {
+    const newSoftConstraints = new Map<string, Constraint<any>>();
+    const newHardConstraints = new Map<string, Constraint<any>>();
+
+    // Separar constraints por tipo
+    activeConstraints.forEach((constraint, name) => {
+      if (constraint.isHard) {
+        newHardConstraints.set(name, constraint);
+      } else {
+        newSoftConstraints.set(name, constraint);
+      }
+    });
+
+    setSoftConstraints(newSoftConstraints);
+    setHardConstraints(newHardConstraints);
+
+    addAlerta("Configurações de restrições salvas com sucesso!", "success");
+  };
+
+  const activeCount = activeConstraints.size;
+  const totalCount = activeCount + availableConstraints.size;
+  const hardCount = Array.from(activeConstraints.values()).filter(
+    (c) => c.isHard
+  ).length;
+  const softCount = activeCount - hardCount;
+
   return (
     <Box>
+      {/* Estatísticas */}
+      <Paper
+        elevation={2}
+        sx={{
+          p: 2,
+          mb: 3,
+          backgroundColor: "primary.50",
+          border: "1px solid",
+          borderColor: "primary.main",
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent="space-between"
+          flexWrap="wrap"
+        >
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              📊 Estatísticas:
+            </Typography>
+            <Chip
+              label={`${activeCount}/${totalCount} ativas`}
+              color="primary"
+              sx={{ fontWeight: 700 }}
+            />
+            <Chip
+              label={`${hardCount} rígidas`}
+              color="error"
+              variant="outlined"
+              sx={{ fontWeight: 700 }}
+            />
+            <Chip
+              label={`${softCount} flexíveis`}
+              color="warning"
+              variant="outlined"
+              sx={{ fontWeight: 700 }}
+            />
+          </Stack>
+        </Stack>
+      </Paper>
+
+      {/* Alert informativo */}
       <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body2">
-          <strong>Restrições Hard:</strong> Devem ser sempre satisfeitas
-          (penalidade alta).
+        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+          💡 Configuração de Restrições
+        </Typography>
+        <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
+          <strong>Rígidas:</strong> Devem ser sempre satisfeitas (violações são
+          críticas)
           <br />
-          <strong>Restrições Soft:</strong> Preferíveis mas não obrigatórias
-          (penalidade configurável).
+          <strong>Flexíveis:</strong> Preferíveis mas não obrigatórias
+          (violações têm penalidade configurável)
         </Typography>
       </Alert>
-      <Restricoes />
+
+      {/* Restrições Disponíveis */}
+      {availableConstraints.size > 0 && (
+        <Box sx={{ mb: 4 }}>
+          <Typography
+            variant="h6"
+            sx={{ mb: 2, fontWeight: 700, color: "primary.main" }}
+          >
+            📋 Restrições Disponíveis para Adicionar
+          </Typography>
+
+          <Paper
+            elevation={2}
+            sx={{
+              p: 2.5,
+              backgroundColor: "grey.50",
+              borderRadius: 2,
+              border: "2px dashed",
+              borderColor: "primary.main",
+            }}
+          >
+            <Grid2 container spacing={1.5}>
+              <AnimatePresence>
+                {Array.from(availableConstraints.keys()).map((name) => (
+                  <Grid2 key={name}>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Chip
+                        label={name}
+                        deleteIcon={<AddIcon fontSize="small" />}
+                        onDelete={() => addConstraint(name)}
+                        color="primary"
+                        variant="outlined"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: "0.875rem",
+                          height: 36,
+                          transition: "all 0.2s ease",
+                          "&:hover": {
+                            boxShadow: "0 0 12px rgba(25, 118, 210, 0.4)",
+                            borderColor: "primary.dark",
+                            transform: "scale(1.05)",
+                            backgroundColor: "primary.main",
+                            color: "white",
+                          },
+                        }}
+                      />
+                    </motion.div>
+                  </Grid2>
+                ))}
+              </AnimatePresence>
+            </Grid2>
+          </Paper>
+        </Box>
+      )}
+
+      <Divider sx={{ my: 4 }} />
+
+      {/* Restrições Ativas */}
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, fontWeight: 700, color: "success.main" }}
+        >
+          ✅ Restrições Ativas
+        </Typography>
+
+        {activeConstraints.size === 0 ? (
+          <Paper
+            elevation={2}
+            sx={{
+              p: 4,
+              textAlign: "center",
+              backgroundColor: "grey.50",
+              borderRadius: 2,
+              border: "2px dashed",
+              borderColor: "grey.400",
+            }}
+          >
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{ fontStyle: "italic", mb: 1 }}
+            >
+              🚫 Nenhuma restrição ativa
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Adicione restrições acima para configurar o algoritmo
+            </Typography>
+          </Paper>
+        ) : (
+          <Grid2 container spacing={3}>
+            <AnimatePresence>
+              {Array.from(activeConstraints.values()).map((constraint) => (
+                <Grid2 size={12} key={constraint.name}>
+                  <motion.div
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 50 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <ConfigConstraintCard
+                      constraint={constraint}
+                      onChange={handleConstraintChange}
+                      onDelete={removeConstraint}
+                      showInformations={addAlerta}
+                    />
+                  </motion.div>
+                </Grid2>
+              ))}
+            </AnimatePresence>
+          </Grid2>
+        )}
+      </Box>
+
+      {/* Botão Salvar */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          mt: 4,
+          pt: 3,
+          borderTop: "2px solid",
+          borderColor: "grey.300",
+        }}
+      >
+        <Button
+          variant="contained"
+          startIcon={<SaveIcon />}
+          onClick={saveConstraints}
+          size="large"
+          disabled={activeConstraints.size === 0}
+          sx={{
+            py: 1.5,
+            px: 4,
+            fontWeight: 700,
+            fontSize: "1rem",
+          }}
+        >
+          Salvar Todas as Configurações
+        </Button>
+      </Box>
     </Box>
   );
 }

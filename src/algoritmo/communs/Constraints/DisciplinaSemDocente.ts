@@ -14,7 +14,9 @@ export class DisciplinaSemDocente extends Constraint<any> {
     isActive: boolean,
     parametros: any
   ) {
-    super(name, description, isHard, penalty, isActive, parametros);
+    super(name, description, isHard, penalty, isActive);
+
+    this.params = parametros;
   }
 
   soft(atribuicoes: Atribuicao[]): number {

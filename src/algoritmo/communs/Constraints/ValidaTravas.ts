@@ -20,7 +20,9 @@ export class ValidaTravas extends Constraint<any> {
     isActive: boolean,
     parametros: any
   ) {
-    super(name, description, isHard, penalty, isActive, parametros);
+    super(name, description, isHard, penalty, isActive);
+
+    this.params = parametros;
   }
 
   hard(

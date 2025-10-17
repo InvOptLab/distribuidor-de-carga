@@ -136,7 +136,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           true,
           0,
           true,
-          {}
+          null
         ),
       ],
       [
@@ -147,7 +147,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           true,
           0,
           true,
-          {}
+          null
         ),
       ],
     ])
@@ -162,7 +162,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           false,
           1000000,
           true,
-          {}
+          null
         ),
       ],
       [
@@ -173,7 +173,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           false,
           100000,
           true,
-          {}
+          null
         ),
       ],
       // [

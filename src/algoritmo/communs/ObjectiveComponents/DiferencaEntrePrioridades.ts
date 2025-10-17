@@ -187,7 +187,7 @@ export class DiferencaEntrePrioridades extends ObjectiveComponent {
           if (!docente) {
             continue;
           }
-          let prioridade = docente.formularios.get(atribuicao.id_disciplina);
+          const prioridade = docente.formularios.get(atribuicao.id_disciplina);
 
           prioridadesAtribuicoesPorDocente.set(_docente, [
             prioridade ? prioridade : 0,

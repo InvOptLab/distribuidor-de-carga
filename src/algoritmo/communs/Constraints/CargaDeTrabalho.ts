@@ -18,7 +18,9 @@ export class CargaDeTrabalho extends Constraint<null> {
     isActive: boolean,
     parametros: null
   ) {
-    super(name, description, isHard, penalty, isActive, parametros);
+    super(name, description, isHard, penalty, isActive);
+
+    this.params = parametros;
   }
 
   soft(

@@ -1,3 +1,4 @@
+import { Solucao } from "@/algoritmo/communs/interfaces/interfaces";
 import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
 import {
   Atribuicao,
@@ -6,7 +7,6 @@ import {
   Disciplina,
   Docente,
   HistoricoSolucao,
-  Solucao,
   TipoInsercao,
 } from "@/context/Global/utils";
 import { addNewSolutionToHistory } from "@/context/SolutionHistory/utils";
