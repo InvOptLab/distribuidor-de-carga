@@ -32,8 +32,8 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import ListIcon from "@mui/icons-material/List";
 import { HistoricoSolucao } from "@/context/Global/utils";
-import { Solution } from "@/TabuSearch/TabuList/Solution";
-import { Moviment } from "@/TabuSearch/TabuList/Moviment";
+import { Solution } from "@/algoritmo/metodos/TabuSearch/TabuList/Solution";
+import { Moviment } from "@/algoritmo/metodos/TabuSearch/TabuList/Moviment";
 
 interface SolutionDetailsDialogProps {
   open: boolean;
@@ -74,7 +74,7 @@ export default function SolutionDetailsDialog({
     return docentes.size;
   };
 
-  const algorithm = solution.solucao.algorithm;
+  const algorithm = solution.algorithm;
 
   // Função para obter informações da TabuList
   const getTabuListInfo = () => {

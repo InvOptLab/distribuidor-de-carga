@@ -38,7 +38,7 @@ import {
   Delete as DeleteIcon,
   AccessTime as TimeIcon,
 } from "@mui/icons-material";
-import { Disciplina, Horario } from "@/context/Global/utils";
+import { Disciplina, Horario } from "@/algoritmo/communs/interfaces/interfaces";
 
 interface DisciplinaEditorProps {
   disciplinas: Disciplina[];

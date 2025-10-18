@@ -1,24 +1,24 @@
-import { Objective } from "@/TabuSearch/AspirationCriteria/Objective";
-import SameObjective from "@/TabuSearch/AspirationCriteria/SameObjective";
-import { AspirationCriteria } from "@/TabuSearch/Classes/Abstract/AspirationCriteria";
-import { NeighborhoodFunction } from "@/TabuSearch/Classes/Abstract/NeighborhoodFunction";
-import { ObjectiveComponent } from "@/TabuSearch/Classes/Abstract/ObjectiveComponent";
-import { StopCriteria } from "@/TabuSearch/Classes/Abstract/StopCriteria";
-import Constraint from "@/TabuSearch/Classes/Constraint";
-import { AtribuicaoSemFormulario } from "@/TabuSearch/Constraints/AtribuicaoSemFormulario";
-import { CargaDeTrabalhoMaximaDocente } from "@/TabuSearch/Constraints/CargaDeTrabalhoMaximaDocente";
-import { CargaDeTrabalhoMinimaDocente } from "@/TabuSearch/Constraints/CargaDeTrabalhoMinimaDocente";
-import { ChoqueDeHorarios } from "@/TabuSearch/Constraints/ChoqueDeHorarios";
-import { DisciplinaSemDocente } from "@/TabuSearch/Constraints/DisciplinaSemDocente";
-import { ValidaTravas } from "@/TabuSearch/Constraints/ValidaTravas";
-import { Add } from "@/TabuSearch/NeighborhoodGeneration/Add";
-import { Remove } from "@/TabuSearch/NeighborhoodGeneration/Remove";
-import { Swap } from "@/TabuSearch/NeighborhoodGeneration/Swap";
-import { PrioridadesDefault } from "@/TabuSearch/ObjectiveComponents/PrioridadesDefault";
-import { PrioridadesPesosTabelados } from "@/TabuSearch/ObjectiveComponents/PrioridadesPesosTabelados";
-import { IteracoesMaximas } from "@/TabuSearch/StopCriteria/IteracoesMaximas";
-import IteracoesSemMelhoraAvaliacao from "@/TabuSearch/StopCriteria/IteracoesSemMelhoraAvaliacao";
-import { IteracoesSemModificacao } from "@/TabuSearch/StopCriteria/IteracoesSemModificacao";
+import Constraint from "@/algoritmo/abstractions/Constraint";
+import { NeighborhoodFunction } from "@/algoritmo/abstractions/NeighborhoodFunction";
+import { ObjectiveComponent } from "@/algoritmo/abstractions/ObjectiveComponent";
+import { StopCriteria } from "@/algoritmo/abstractions/StopCriteria";
+import { AtribuicaoSemFormulario } from "@/algoritmo/communs/Constraints/AtribuicaoSemFormulario";
+import { CargaDeTrabalhoMaximaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMaximaDocente";
+import { CargaDeTrabalhoMinimaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMinimaDocente";
+import { ChoqueDeHorarios } from "@/algoritmo/communs/Constraints/ChoqueDeHorarios";
+import { DisciplinaSemDocente } from "@/algoritmo/communs/Constraints/DisciplinaSemDocente";
+import { ValidaTravas } from "@/algoritmo/communs/Constraints/ValidaTravas";
+import { Add } from "@/algoritmo/communs/NeighborhoodGeneration/Add";
+import { Remove } from "@/algoritmo/communs/NeighborhoodGeneration/Remove";
+import { Swap } from "@/algoritmo/communs/NeighborhoodGeneration/Swap";
+import { PrioridadesDefault } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesDefault";
+import { PrioridadesPesosTabelados } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesPesosTabelados";
+import { IteracoesMaximas } from "@/algoritmo/communs/StopCriteria/IteracoesMaximas";
+import IteracoesSemMelhoraAvaliacao from "@/algoritmo/communs/StopCriteria/IteracoesSemMelhoraAvaliacao";
+import { IteracoesSemModificacao } from "@/algoritmo/communs/StopCriteria/IteracoesSemModificacao";
+import { Objective } from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/Objective";
+import SameObjective from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/SameObjective";
+import { AspirationCriteria } from "@/algoritmo/metodos/TabuSearch/Classes/Abstract/AspirationCriteria";
 import { createContext, useContext, useState } from "react";
 
 type NeighborhoodEntry = {
@@ -37,17 +37,17 @@ type AspirationCriteriaEntry = {
 };
 
 export interface AlgorithmInterface {
-  hardConstraints: Map<string, Constraint>;
-  softConstraints: Map<string, Constraint>;
+  hardConstraints: Map<string, Constraint<any>>;
+  softConstraints: Map<string, Constraint<any>>;
   setHardConstraints: React.Dispatch<
-    React.SetStateAction<Map<string, Constraint>>
+    React.SetStateAction<Map<string, Constraint<any>>>
   >;
   setSoftConstraints: React.Dispatch<
-    React.SetStateAction<Map<string, Constraint>>
+    React.SetStateAction<Map<string, Constraint<any>>>
   >;
-  allConstraints: Map<string, Constraint>;
+  allConstraints: Map<string, Constraint<any>>;
   setAllConstraints: React.Dispatch<
-    React.SetStateAction<Map<string, Constraint>>
+    React.SetStateAction<Map<string, Constraint<any>>>
   >;
   parametros: {
     tabuTenure: {
@@ -94,12 +94,12 @@ export interface AlgorithmInterface {
 }
 
 const AlgorithmContext = createContext<AlgorithmInterface>({
-  hardConstraints: new Map<string, Constraint>(),
-  softConstraints: new Map<string, Constraint>(),
-  setHardConstraints: () => Map<string, Constraint>,
-  setSoftConstraints: () => Map<string, Constraint>,
-  allConstraints: new Map<string, Constraint>(),
-  setAllConstraints: () => Map<string, Constraint>,
+  hardConstraints: new Map<string, Constraint<any>>(),
+  softConstraints: new Map<string, Constraint<any>>(),
+  setHardConstraints: () => Map<string, Constraint<any>>,
+  setSoftConstraints: () => Map<string, Constraint<any>>,
+  allConstraints: new Map<string, Constraint<any>>(),
+  setAllConstraints: () => Map<string, Constraint<any>>,
   parametros: {
     tabuTenure: {
       size: 25,
@@ -127,14 +127,16 @@ const AlgorithmContext = createContext<AlgorithmInterface>({
 
 export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   const [hardConstraints, setHardConstraints] = useState(
-    new Map<string, Constraint>([
+    new Map<string, Constraint<any>>([
       [
         "Atribuição sem formulário",
         new AtribuicaoSemFormulario(
           "Atribuição sem formulário",
           "Essa restrição verifica se o docente preencheu o formulário para as disciplinas que foi atribuído.",
           true,
-          0
+          0,
+          true,
+          null
         ),
       ],
       [
@@ -143,16 +145,25 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Validar Travas",
           "Restrição que impede a alteração em células travadas.",
           true,
-          0
+          0,
+          true,
+          null
         ),
       ],
     ])
   );
   const [softConstraints, setSoftConstraints] = useState(
-    new Map<string, Constraint>([
+    new Map<string, Constraint<any>>([
       [
         "Disciplina sem docente",
-        new DisciplinaSemDocente("Disciplina sem docente", "", false, 1000000),
+        new DisciplinaSemDocente(
+          "Disciplina sem docente",
+          "",
+          false,
+          1000000,
+          true,
+          null
+        ),
       ],
       [
         "Choque de horários",
@@ -160,7 +171,9 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Choque de horários",
           "Essa restrição verifica se os docentes foram atribuídos a disciplinas que ocorrem ao mesmo tempo ou apresentam conflitos de início e fim de aula.",
           false,
-          100000
+          100000,
+          true,
+          null
         ),
       ],
       // [
@@ -179,7 +192,9 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Carga de Trabalho Mínima",
           "Penaliza a avaliação da solução para cada docente que não tenha atingido o mínimo de carga de trabalho atribuída (1.0).",
           false,
-          10000
+          10000,
+          true,
+          { minLimit: 1 }
         ),
       ],
       [
@@ -188,7 +203,9 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Carga de Trabalho Máxima",
           "Penaliza a avaliação da solução para cada docente que tenha ultrapassado o limite de carga de trabalho atribuída (2.0).",
           false,
-          10000
+          10000,
+          true,
+          { maxLimit: 2 }
         ),
       ],
     ])

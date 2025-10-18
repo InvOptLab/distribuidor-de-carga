@@ -97,8 +97,8 @@
 //     </Box>
 //   );
 // }
+import { Horario } from "@/algoritmo/communs/interfaces/interfaces";
 import { Box, Typography, Chip, Stack } from "@mui/material";
-import { Horario } from "@/context/Global/utils";
 
 type Props = {
   nome: string;

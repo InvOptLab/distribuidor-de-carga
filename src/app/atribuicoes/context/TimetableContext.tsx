@@ -13,16 +13,6 @@ import { useGlobalContext } from "@/context/Global";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
 import { useAlertsContext } from "@/context/Alerts";
 import { useAlgorithmContext } from "@/context/Algorithm";
-import {
-  type Atribuicao,
-  type Celula,
-  type Disciplina,
-  type Docente,
-  TipoTrava,
-  type ContextoExecucao,
-  getActiveFormularios,
-} from "@/context/Global/utils";
-import { TabuSearch } from "@/TabuSearch/Classes/TabuSearch";
 import { DisciplinaFilters, DocenteFilters, FilterRule } from "../types/types";
 import {
   exportJson,
@@ -30,6 +20,15 @@ import {
   removeInativos,
   saveAtribuicoesInHistoryState,
 } from "..";
+import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
+import {
+  Atribuicao,
+  Celula,
+  Disciplina,
+  Docente,
+  TipoTrava,
+} from "@/algoritmo/communs/interfaces/interfaces";
+import { ContextoExecucao, getActiveFormularios } from "@/context/Global/utils";
 
 interface TimetableContextType {
   docentes: Docente[];
@@ -489,6 +488,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         stop,
         aspiration,
         maxPriority,
+        "max",
         objectives
       );
 
