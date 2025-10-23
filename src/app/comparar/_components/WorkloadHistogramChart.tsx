@@ -60,14 +60,16 @@ export default function WorkloadHistogramChart({
     const docenteWorkloadMap = new Map<string, DocenteWorkload>();
 
     // Inicializar todos os docentes com carga zero
-    docentes.forEach((docente) => {
-      docenteWorkloadMap.set(docente.nome, {
-        nome: docente.nome,
-        cargaTotal: 0,
-        cargaArredondada: 0,
-        disciplinas: [],
+    docentes
+      .filter((docente) => docente.ativo)
+      .forEach((docente) => {
+        docenteWorkloadMap.set(docente.nome, {
+          nome: docente.nome,
+          cargaTotal: 0,
+          cargaArredondada: 0,
+          disciplinas: [],
+        });
       });
-    });
 
     // Calcular cargas baseado nas atribuições
     atribuicoes.forEach((atribuicao) => {
