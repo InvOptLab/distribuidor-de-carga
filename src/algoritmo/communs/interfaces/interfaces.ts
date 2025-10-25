@@ -180,3 +180,20 @@ export type ConstraintParams = {
 };
 
 export type Algorithm = string;
+
+export // Tipo do Callback: recebe um objeto parcial
+type EstatisticasCallback = (statsAtualizadas: Partial<Estatisticas>) => void;
+
+// Interface para as opções de monitoramento
+export interface OpcoesMonitoramento {
+  /**
+   * Um Map onde a chave é o campo a ser monitorado
+   * e o valor é a frequência (a cada N iterações).
+   * Ex: 'iteracoes' => 1 (a cada iteração)
+   * 'avaliacaoPorIteracao' => 10 (a cada 10 iterações)
+   */
+  campos: Map<keyof Estatisticas, number>;
+
+  /** A função que será chamada com os dados atualizados. */
+  onUpdate: EstatisticasCallback;
+}

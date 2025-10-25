@@ -11,6 +11,7 @@ import {
   Docente,
   Estatisticas,
   Formulario,
+  OpcoesMonitoramento,
   Solucao,
   Vizinho,
 } from "../../../communs/interfaces/interfaces";
@@ -319,7 +320,8 @@ export class TabuSearch extends Algorithm {
    */
   async execute(
     interrompe?: () => boolean,
-    atualizaQuantidadeAlocacoes?: (qtd: number) => void
+    atualizaQuantidadeAlocacoes?: (qtd: number) => void,
+    atualizaEstatisticas?: OpcoesMonitoramento
   ): Promise<Vizinho> {
     let iteracoes = 0;
     let vizinhanca: Vizinho[] = [];
@@ -446,10 +448,41 @@ export class TabuSearch extends Algorithm {
         );
       }
 
+      if (atualizaEstatisticas) {
+        // Objeto que enviaremos, contendo apenas o que mudou NESTA iteração
+        const dadosParaEnviar: Partial<Estatisticas> = {};
+        let algoParaEnviar = false;
+
+        // Base para o cálculo da frequência (ex: iteração 1, 2, 3...)
+        const iteracaoAtual = this.statistics.iteracoes;
+
+        // Itera sobre o Map de campos e suas frequências
+        for (const [
+          campo,
+          frequencia,
+        ] of atualizaEstatisticas.campos.entries()) {
+          // Evita divisão por zero ou frequências inválidas
+          if (frequencia <= 0) continue;
+
+          // Verifica se a iteração atual é um múltiplo da frequência
+          if (iteracaoAtual % frequencia === 0) {
+            // Adiciona o valor atualizado ao pacote de envio
+            (dadosParaEnviar as any)[campo] = this.statistics[campo];
+            algoParaEnviar = true;
+          }
+        }
+
+        // Se pelo menos um campo atingiu sua frequência, envia o pacote
+        if (algoParaEnviar) {
+          atualizaEstatisticas.onUpdate(dadosParaEnviar);
+        }
+      }
+
       /**
        * Incrementar o contador de iterações
        */
       iteracoes += 1;
+      this.statistics.iteracoes = iteracoes;
     }
 
     /**

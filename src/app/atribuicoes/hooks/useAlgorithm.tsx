@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useGlobalContext } from "@/context/Global";
 import { useAlertsContext } from "@/context/Alerts";
 import { useAlgorithmContext } from "@/context/Algorithm";
@@ -16,7 +16,10 @@ import {
 } from "@/context/SolutionHistory/utils";
 import { useTimetable } from "../context/TimetableContext";
 import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
-import { Solucao } from "@/algoritmo/communs/interfaces/interfaces";
+import {
+  Estatisticas,
+  Solucao,
+} from "@/algoritmo/communs/interfaces/interfaces";
 
 export function useAlgorithm() {
   const {
@@ -50,15 +53,84 @@ export function useAlgorithm() {
   const [processing, setProcessing] = useState(false);
   const [interrompe, setInterrompe] = useState(false);
   const [disciplinasAlocadas, setDisciplinasAlocadas] = useState(0);
+  // const [estatisticasMonitoradas, setEstatisticasMonitoradas] = useState({
+  //   iteracoes: 0,
+  //   tempoPorIteracao: new Map<number, number>(),
+  //   avaliacaoPorIteracao: new Map<number, number>(),
+  // });
+
+  /**
+   * 1. SEPARE OS ESTADOS.
+   * Em vez de um único objeto 'estatisticasMonitoradas',
+   * crie um estado para cada dado que seu gráfico precisa.
+   */
+  const [iteracoes, setIteracoes] = useState(0);
+  const [tempoPorIteracao, setTempoPorIteracao] = useState(
+    () => new Map<number, number>()
+  );
+  const [avaliacaoPorIteracao, setAvaliacaoPorIteracao] = useState(
+    () => new Map<number, number>()
+  );
 
   const disciplinasAlocadasRef = useRef(disciplinasAlocadas);
   const interrompeRef = useRef(interrompe);
+  // const estatisticasMonitoradasRef = useRef(estatisticasMonitoradas);
+
+  /**
+   * Campos a serem monitorados durante a execução do algoritmo.
+   */
+  const camposMonitorados = new Map<keyof Estatisticas, number>();
+  camposMonitorados.set("iteracoes", 1);
+  camposMonitorados.set("tempoPorIteracao", 1);
+  camposMonitorados.set("avaliacaoPorIteracao", 1);
 
   useEffect(() => {
     interrompeRef.current = interrompe;
     disciplinasAlocadasRef.current = disciplinasAlocadas;
+    // estatisticasMonitoradasRef.current = estatisticasMonitoradas;
   }, [interrompe, disciplinasAlocadas]);
 
+  /**
+   * 2. CRIE O CALLBACK DE ATUALIZAÇÃO (handleStatisticsUpdate)
+   * Esta função agora é mais inteligente. Ela usa a forma funcional (prevState)
+   * para atualizar APENAS os estados que receberam novos dados,
+   * e mescla os Maps.
+   */
+  const handleStatisticsUpdate = useCallback(
+    (mudancas: Partial<Estatisticas>) => {
+      // Atualiza 'iteracoes' se presente
+      if (mudancas.iteracoes !== undefined) {
+        // Substituição simples
+        setIteracoes(mudancas.iteracoes);
+      }
+
+      // Atualiza 'tempoPorIteracao' se presente
+      if (mudancas.tempoPorIteracao) {
+        // Usa o 'prevState' (prevMap) para mesclar os dados
+        setTempoPorIteracao((prevMap) => {
+          // Cria um novo Map para imutabilidade
+          const newMap = new Map(prevMap);
+          // Adiciona/sobrescreve as novas entradas
+          mudancas.tempoPorIteracao!.forEach((value, key) => {
+            newMap.set(key, value);
+          });
+          return newMap;
+        });
+      }
+
+      // Atualiza 'avaliacaoPorIteracao' se presente
+      if (mudancas.avaliacaoPorIteracao) {
+        setAvaliacaoPorIteracao((prevMap) => {
+          const newMap = new Map(prevMap);
+          mudancas.avaliacaoPorIteracao!.forEach((value, key) => {
+            newMap.set(key, value);
+          });
+          return newMap;
+        });
+      }
+    },
+    []
+  ); // Os setters (setIteracoes, etc.) são estáveis, então o array de dependência é vazio.
   /**
    * Executa o algoritmo Busca Tabu
    */
@@ -128,7 +200,8 @@ export function useAlgorithm() {
 
       await buscaTabu.execute(
         () => interrompeRef.current,
-        setDisciplinasAlocadas
+        setDisciplinasAlocadas,
+        { campos: camposMonitorados, onUpdate: handleStatisticsUpdate }
       );
 
       const solucao: Solucao = {
@@ -204,5 +277,10 @@ export function useAlgorithm() {
     handleCloseDialog,
     applySolution,
     interruptExecution,
+    estatisticasMonitoradas: {
+      iteracoes: iteracoes,
+      tempoPorIteracao: tempoPorIteracao,
+      avaliacaoPorIteracao: avaliacaoPorIteracao,
+    },
   };
 }

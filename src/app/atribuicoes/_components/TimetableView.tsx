@@ -49,6 +49,7 @@ export default function TimetableView() {
     handleCloseDialog,
     applySolution,
     interruptExecution,
+    estatisticasMonitoradas,
   } = useAlgorithm();
 
   const { formularios, docentes } = useGlobalContext();
@@ -112,43 +113,6 @@ export default function TimetableView() {
     });
   }
 
-  // function renderHoverDocenteChildren(hoveredDocente: Docente): ReactNode {
-  //   const turmaFormularios = formularios.filter(
-  //     (f) => f.nome_docente === hoveredDocente.nome
-  //   );
-
-  //   return turmaFormularios.map((f) => {
-  //     const disciplina = disciplinas.find((d) => d.id === f.id_disciplina);
-  //     return (
-  //       <Grid2 size={6} key={`${f.nome_docente}_${f.id_disciplina}`}>
-  //         <Box
-  //           key={`box_hover_${f.nome_docente}_${f.id_disciplina}`}
-  //           display="flex"
-  //           alignItems="center"
-  //         >
-  //           <Typography
-  //             key={`typography_hover_saldo_${f.nome_docente}_${f.id_disciplina}`}
-  //             variant="body2"
-  //             sx={{
-  //               fontFamily: "monospace",
-  //               whiteSpace: "nowrap",
-  //             }}
-  //             //color={docente?.saldo < 0 ? "error" : "success"}
-  //           >
-  //             ({disciplina?.carga.toFixed(1).replace(".", ",")}
-  //             )&emsp;
-  //           </Typography>
-  //           <Typography
-  //             key={`typography_hover_${f.nome_docente}_${f.id_disciplina}`}
-  //             variant="body2"
-  //           >
-  //             {f.id_disciplina} : {f.prioridade}
-  //           </Typography>
-  //         </Box>
-  //       </Grid2>
-  //     );
-  //   });
-  // }
   return (
     <ThemeProvider theme={customTheme}>
       <div className="space-y-4">
@@ -185,6 +149,7 @@ export default function TimetableView() {
           total: filteredDisciplinas.filter((disciplina) => disciplina.ativo)
             .length,
         }}
+        estatisticasMonitoradas={estatisticasMonitoradas}
       />
 
       {hoveredCourse && (
