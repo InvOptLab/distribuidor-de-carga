@@ -155,7 +155,7 @@ export interface Solucao {
   idHistorico?: string;
   estatisticas?: Estatisticas;
   isTabu?: boolean;
-  algorithm?: Algorithm;
+  algorithm?: any;
 }
 
 /**
@@ -178,3 +178,5 @@ export interface IParameter<T> {
 export type ConstraintParams = {
   [key: string]: IParameter<any>;
 };
+
+export type Algorithm = string;
