@@ -1,4 +1,8 @@
-import {
+"use client";
+
+import type React from "react";
+
+import type {
   Atribuicao,
   Celula,
   Disciplina,
@@ -7,7 +11,7 @@ import {
   Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { createContext, useContext, useState } from "react";
-import { HistoricoSolucao, Parametros } from "./utils";
+import type { HistoricoSolucao } from "./utils";
 
 //import _ from "lodash"; // Comparação entre objetos de forma otimizada
 
@@ -32,12 +36,6 @@ interface GlobalContextInterface {
   >;
   solucaoAtual: Solucao;
   setSolucaoAtual: React.Dispatch<React.SetStateAction<Solucao>>;
-
-  /**
-   * Mudar de local
-   */
-  parametros: Parametros;
-  setParametros: React.Dispatch<React.SetStateAction<Parametros>>;
 }
 
 const GlobalContext = createContext<GlobalContextInterface>({
@@ -59,8 +57,6 @@ const GlobalContext = createContext<GlobalContextInterface>({
     idHistorico: undefined,
   },
   setSolucaoAtual: () => {},
-  parametros: { k1: 0, k2: 0, k3: 0, k4: 0, k5: 0, k6: 0 },
-  setParametros: () => {},
 });
 
 export function GlobalWrapper({ children }: { children: React.ReactNode }) {
@@ -82,18 +78,6 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
     idHistorico: undefined,
   });
 
-  /**
-   * Mudar de lugar
-   */
-  const [parametros, setParametros] = useState<Parametros>({
-    k1: 1000,
-    k2: 100000,
-    k3: 100,
-    k4: 10000,
-    k5: 1000,
-    k6: 0,
-  });
-
   return (
     <GlobalContext.Provider
       value={{
@@ -111,8 +95,6 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
         setHistoricoSolucoes,
         setSolucaoAtual,
         solucaoAtual,
-        parametros,
-        setParametros,
       }}
     >
       {children}
