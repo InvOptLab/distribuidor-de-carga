@@ -1,102 +1,299 @@
-import { Disciplina } from "@/context/Global/utils";
-import { Paper, Stack, Typography } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
+"use client";
+
+import type React from "react";
+
+import {
+  Paper,
+  Stack,
+  Typography,
+  Divider,
+  Chip,
+  Box,
+  Grid,
+} from "@mui/material";
+import {
+  Schedule as ScheduleIcon,
+  Person as PersonIcon,
+  School as SchoolIcon,
+  AccessTime as AccessTimeIcon,
+} from "@mui/icons-material";
+import type { Dispatch, SetStateAction } from "react";
+import {
+  Disciplina,
+  Docente,
+  Formulario,
+} from "@/algoritmo/communs/interfaces/interfaces";
 
 interface HoveredCourseProps {
   disciplina: Disciplina;
+  formularios?: Formulario[]; // Lista de formulários para mostrar docentes interessados
+  docentes?: Docente[]; // Adicionada lista de docentes para acessar o saldo
   children?: React.ReactNode;
   setHoveredCourese: Dispatch<SetStateAction<Disciplina | null>>;
 }
 
 /**
- * Componente desenvolvido para exibir as turmas que forem "selecionadas" no cabeçalho da tabela da tela Timetabling,
- * com intuíto de exibir toadas as informações sem preocupação com o tamanho do componente.
+ * Componente desenvolvido para exibir detalhes de uma disciplina ao passar o mouse sobre ela.
+ * Exibe informações como código, nome, horários, carga horária e docentes interessados.
  */
 export default function HoveredCourse({
   disciplina,
+  formularios = [],
+  docentes = [],
   children,
   setHoveredCourese,
 }: HoveredCourseProps) {
-  /**
-   * Cria o bloco referente aos horários de um adisicplina
-   * @param disciplina Disciplina contendo os horários
-   * @returns Componente React com os horários.
-   */
-  const createHorariosblock = (disciplina: Disciplina): React.ReactNode => {
-    const horarios = disciplina.horarios ?? []; // Caso 'horarios' seja null ou undefined, usa um array vazio.
+  // Filtra formulários relacionados a esta disciplina
+  const formulariosRelacionados = formularios.filter(
+    (f) => f.id_disciplina === disciplina.id
+  );
 
-    return (
-      <Typography
-        align="left"
-        variant="body1"
-        style={{ fontSize: "18px", whiteSpace: "pre-wrap" }}
-      >
-        Horário:
-        {horarios.length > 0 ? (
-          horarios.map((horario, index) =>
-            horario ? (
-              <span key={`${disciplina.nome}-${index}`}>
-                <br />
-                &emsp;{horario.dia} {horario.inicio}/{horario.fim}
-              </span>
-            ) : null
-          )
-        ) : (
-          <span>
-            <br />
-            &emsp;A definir
-          </span>
-        )}
-      </Typography>
-    );
+  const getSaldoColor = (saldo?: number): string => {
+    if (saldo === undefined) return "inherit";
+    if (saldo > 2) return "#4caf50"; // Verde
+    if (saldo < -1) return "#f44336"; // Vermelho
+    return "inherit"; // Preto (cor padrão)
+  };
+
+  // Função para determinar a cor da prioridade
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const getPrioridadeColor = (prioridade: number): string => {
+    // if (prioridade >= 4) return "#4caf50"; // Verde para alta prioridade
+    // if (prioridade === 3) return "#ff9800"; // Laranja para média prioridade
+    return "#364cf4ff"; // "#f44336" Vermelho para baixa prioridade
+  };
+
+  const getDocenteByName = (nome: string): Docente | undefined => {
+    return docentes.find((d) => d.nome === nome);
   };
 
   return (
     <Paper
-      elevation={8}
+      elevation={12}
       sx={{
         position: "fixed",
         zIndex: 99,
-        bottom: "10vh",
+        bottom: "6vh",
         right: "2vw",
-        maxWidth: 320,
-        borderRadius: 2,
+        maxWidth: 700, // Aumentada a largura máxima de 380 para 700
+        borderRadius: 3,
         overflow: "hidden",
+        border: "1px solid",
+        borderColor: "divider",
       }}
       onMouseLeave={() => setHoveredCourese(null)}
     >
-      <Stack
-        direction="column"
-        spacing={1.5}
+      {/* Cabeçalho com gradiente */}
+      <Box
         sx={{
-          p: 2,
-          backgroundColor: "rgba(25, 118, 210, 0.12)",
-          alignSelf: { xs: "flex-end", sm: "center" },
+          background: "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
+          p: 2.5,
+          color: "white",
         }}
       >
+        <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+          <SchoolIcon fontSize="small" />
+          <Typography
+            variant="caption"
+            sx={{ opacity: 0.9, textTransform: "uppercase", letterSpacing: 1 }}
+          >
+            Disciplina
+          </Typography>
+        </Stack>
         <Typography
-          align="left"
-          variant="body1"
-          style={{ fontWeight: "bold", paddingTop: "2px", fontSize: "22px" }} // Aplica estilos dinâmicos
-          dangerouslySetInnerHTML={{
-            __html: disciplina.cursos
-              .replace(/^[^;]*;/, "")
-              .replace(/<br\s*\/?>/gi, "")
-              .replace(/&emsp;/gi, " "),
+          variant="h6"
+          sx={{
+            fontWeight: 600,
+            mb: 0.5,
+            lineHeight: 1.3,
           }}
-        />
-        <Typography
-          align="left"
-          variant="body1"
-          style={{
-            fontWeight: "bold",
-            fontSize: "20px",
-            paddingTop: "2px",
-          }} // Estilos dinâmicos
         >
-          {disciplina.codigo + " " + disciplina.nome}
+          {disciplina.codigo} - T{disciplina.turma}
         </Typography>
-        {createHorariosblock(disciplina)}
+        <Typography
+          variant="body2"
+          sx={{
+            opacity: 0.95,
+            lineHeight: 1.4,
+          }}
+        >
+          {disciplina.nome}
+        </Typography>
+      </Box>
+
+      {/* Conteúdo principal */}
+      <Stack spacing={2} sx={{ p: 2.5 }}>
+        {/* Curso */}
+        <Box>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}
+          >
+            Curso
+          </Typography>
+          <Typography
+            variant="body2"
+            dangerouslySetInnerHTML={{
+              __html: disciplina.cursos
+                .replace(/^[^;]*;/, "")
+                .replace(/<br\s*\/?>/gi, "")
+                .replace(/&emsp;/gi, " "),
+            }}
+          />
+        </Box>
+
+        <Divider />
+
+        {/* Carga Didática */}
+        {disciplina.carga && (
+          <>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <AccessTimeIcon fontSize="small" color="action" />
+              <Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ fontWeight: 600, textTransform: "uppercase" }}
+                >
+                  Carga Didática
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {disciplina.carga.toFixed(2)}
+                </Typography>
+              </Box>
+            </Stack>
+            <Divider />
+          </>
+        )}
+
+        {/* Horários */}
+        <Box>
+          <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+            <ScheduleIcon fontSize="small" color="action" />
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ fontWeight: 600, textTransform: "uppercase" }}
+            >
+              Horários
+            </Typography>
+          </Stack>
+          {disciplina.horarios && disciplina.horarios.length > 0 ? (
+            <Stack spacing={0.5}>
+              {disciplina.horarios.map((horario, index) => (
+                <Chip
+                  key={`${disciplina.id}-horario-${index}`}
+                  label={`${horario.dia} ${horario.inicio} - ${horario.fim}`}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    justifyContent: "flex-start",
+                    fontFamily: "monospace",
+                    width: "fit-content",
+                  }}
+                />
+              ))}
+            </Stack>
+          ) : (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              fontStyle="italic"
+            >
+              A definir
+            </Typography>
+          )}
+        </Box>
+
+        {/* Docentes com Formulários */}
+        {formulariosRelacionados.length > 0 && (
+          <>
+            <Divider />
+            <Box>
+              <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+                <PersonIcon fontSize="small" color="action" />
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ fontWeight: 600, textTransform: "uppercase" }}
+                >
+                  Docentes Interessados
+                </Typography>
+              </Stack>
+              <Grid
+                container
+                spacing={1}
+                // sx={{ maxHeight: 200, overflow: "auto" }}
+              >
+                {formulariosRelacionados.map((formulario, index) => {
+                  const docente = getDocenteByName(formulario.nome_docente);
+                  const saldoColor = getSaldoColor(docente?.saldo);
+
+                  return (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                      key={`${formulario.nome_docente}-${index}`}
+                      minWidth={300}
+                    >
+                      <Box
+                        sx={{
+                          borderLeft: "3px solid",
+                          borderColor: getPrioridadeColor(
+                            formulario.prioridade
+                          ),
+                          pl: 1.5,
+                          py: 0.75,
+                          backgroundColor: "action.hover",
+                          borderRadius: 1,
+                          height: "100%",
+                        }}
+                      >
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 700,
+                              color: saldoColor,
+                              minWidth: "35px",
+                            }}
+                          >
+                            {docente?.saldo !== undefined
+                              ? docente.saldo
+                              : "N/A"}
+                          </Typography>
+                          <Box flex={1}>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {formulario.nome_docente}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: getPrioridadeColor(
+                                  formulario.prioridade
+                                ),
+                                fontWeight: 600,
+                              }}
+                            >
+                              Prioridade: {formulario.prioridade}
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </Box>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </Box>
+          </>
+        )}
+
+        {/* Conteúdo adicional */}
         {children}
       </Stack>
     </Paper>
