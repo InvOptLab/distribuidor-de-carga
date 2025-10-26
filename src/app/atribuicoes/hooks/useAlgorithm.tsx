@@ -60,7 +60,6 @@ export function useAlgorithm() {
   // });
 
   /**
-   * 1. SEPARE OS ESTADOS.
    * Em vez de um único objeto 'estatisticasMonitoradas',
    * crie um estado para cada dado que seu gráfico precisa.
    */
@@ -91,8 +90,7 @@ export function useAlgorithm() {
   }, [interrompe, disciplinasAlocadas]);
 
   /**
-   * 2. CRIE O CALLBACK DE ATUALIZAÇÃO (handleStatisticsUpdate)
-   * Esta função agora é mais inteligente. Ela usa a forma funcional (prevState)
+   * Esta função usa a forma funcional (prevState)
    * para atualizar APENAS os estados que receberam novos dados,
    * e mescla os Maps.
    */
@@ -130,7 +128,8 @@ export function useAlgorithm() {
       }
     },
     []
-  ); // Os setters (setIteracoes, etc.) são estáveis, então o array de dependência é vazio.
+  );
+
   /**
    * Executa o algoritmo Busca Tabu
    */

@@ -1,7 +1,6 @@
-import { Context } from "vm";
 import { NeighborhoodFunction } from "../../abstractions/NeighborhoodFunction";
 import Constraint from "../../abstractions/Constraint";
-import { Movimento, Vizinho } from "../interfaces/interfaces";
+import { Movimento, Vizinho, Context } from "../interfaces/interfaces";
 import { podeAtribuir } from "../utils";
 /**
  * O processo `Remove` é responsável por remover um docente de uma turma.
@@ -25,7 +24,8 @@ export class Remove extends NeighborhoodFunction {
           turma,
           context.travas,
           hardConstraints,
-          baseSolution
+          baseSolution,
+          context.turmas
         )
       ) {
         /**
