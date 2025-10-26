@@ -1,8 +1,8 @@
 "use client";
 
-import { Box, Grid2, Paper, Typography } from "@mui/material";
+import { Paper } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import TimetableGrid from "./TimetableGrid";
 import AlgoritmoDialog from "@/components/AlgorithmDialog";
 import CleanAlertDialog from "./CleanAlertDialog";
@@ -52,7 +52,8 @@ export default function TimetableView() {
     estatisticasMonitoradas,
   } = useAlgorithm();
 
-  const { formularios, docentes } = useGlobalContext();
+  const { formularios, docentes, disciplinas, atribuicoes } =
+    useGlobalContext();
 
   const [openCleanDialog, setOpenCleanDialog] = useState(false);
   const [hoveredCourse, setHoveredCourse] = useState<Disciplina | null>(null);
@@ -73,45 +74,45 @@ export default function TimetableView() {
     setHoveredDocente(docente);
   };
 
-  function renderHoverCourseChildren(hoveredCourse: Disciplina): ReactNode {
-    const turmaFormularios = formularios.filter(
-      (f) => f.id_disciplina === hoveredCourse.id
-    );
+  // function renderHoverCourseChildren(hoveredCourse: Disciplina): ReactNode {
+  //   const turmaFormularios = formularios.filter(
+  //     (f) => f.id_disciplina === hoveredCourse.id
+  //   );
 
-    return turmaFormularios.map((f) => {
-      const docente = docentes.find((d) => d.nome === f.nome_docente);
-      return (
-        <Grid2 size={6} key={`${f.nome_docente}_${f.id_disciplina}`}>
-          <Box
-            key={`box_hover_${f.nome_docente}_${f.id_disciplina}`}
-            display="flex"
-            alignItems="center"
-          >
-            <Typography
-              key={`typography_hover_saldo_${f.nome_docente}_${f.id_disciplina}`}
-              variant="body2"
-              sx={{
-                fontFamily: "monospace",
-                whiteSpace: "nowrap",
-              }}
-              color={docente?.saldo < 0 ? "error" : "success"}
-            >
-              (
-              {(docente?.saldo < 0 ? "" : "+") +
-                docente?.saldo.toFixed(1).replace(".", ",")}
-              )&emsp;
-            </Typography>
-            <Typography
-              key={`typography_hover_${f.nome_docente}_${f.id_disciplina}`}
-              variant="body2"
-            >
-              {f.nome_docente} : {f.prioridade}
-            </Typography>
-          </Box>
-        </Grid2>
-      );
-    });
-  }
+  //   return turmaFormularios.map((f) => {
+  //     const docente = docentes.find((d) => d.nome === f.nome_docente);
+  //     return (
+  //       <Grid2 size={6} key={`${f.nome_docente}_${f.id_disciplina}`}>
+  //         <Box
+  //           key={`box_hover_${f.nome_docente}_${f.id_disciplina}`}
+  //           display="flex"
+  //           alignItems="center"
+  //         >
+  //           <Typography
+  //             key={`typography_hover_saldo_${f.nome_docente}_${f.id_disciplina}`}
+  //             variant="body2"
+  //             sx={{
+  //               fontFamily: "monospace",
+  //               whiteSpace: "nowrap",
+  //             }}
+  //             color={docente?.saldo < 0 ? "error" : "success"}
+  //           >
+  //             (
+  //             {(docente?.saldo < 0 ? "" : "+") +
+  //               docente?.saldo.toFixed(1).replace(".", ",")}
+  //             )&emsp;
+  //           </Typography>
+  //           <Typography
+  //             key={`typography_hover_${f.nome_docente}_${f.id_disciplina}`}
+  //             variant="body2"
+  //           >
+  //             {f.nome_docente} : {f.prioridade}
+  //           </Typography>
+  //         </Box>
+  //       </Grid2>
+  //     );
+  //   });
+  // }
 
   return (
     <ThemeProvider theme={customTheme}>
@@ -156,8 +157,10 @@ export default function TimetableView() {
         <HoveredCourse
           disciplina={hoveredCourse}
           setHoveredCourese={setHoveredCourse}
+          formularios={formularios}
+          docentes={docentes}
         >
-          {renderHoverCourseChildren(hoveredCourse)}
+          {/* {renderHoverCourseChildren(hoveredCourse)} */}
         </HoveredCourse>
       )}
 
@@ -165,6 +168,11 @@ export default function TimetableView() {
         <HoveredDocente
           docente={hoveredDocente}
           setHoveredDocente={setHoveredDocente}
+          disciplinas={disciplinas}
+          formularios={formularios}
+          atribuicoes={atribuicoes.filter((atribuicao) =>
+            atribuicao.docentes.includes(hoveredDocente.nome)
+          )}
         >
           {/* {renderHoverDocenteChildren(hoveredDocente)} */}
         </HoveredDocente>
