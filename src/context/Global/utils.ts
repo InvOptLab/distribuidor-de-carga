@@ -130,19 +130,6 @@ export interface HistoricoSolucao {
 }
 
 /**
- * Mudar para outro contexto
- */
-
-export interface Parametros {
-  k1: number;
-  k2: number;
-  k3: number;
-  k4: number;
-  k5: number;
-  k6: number;
-}
-
-/**
  * Verifica se um objeto é do tipo Disciplina
  * @param obj Objeto a ser verificado
  * @returns Objeto do tipo Disciplina

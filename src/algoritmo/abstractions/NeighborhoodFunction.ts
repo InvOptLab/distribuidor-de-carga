@@ -1,6 +1,5 @@
-import { Context } from "vm";
 import Constraint from "./Constraint";
-import { Vizinho } from "../communs/interfaces/interfaces";
+import { Vizinho, Context } from "../communs/interfaces/interfaces";
 
 export abstract class NeighborhoodFunction {
   /**

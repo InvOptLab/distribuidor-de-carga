@@ -21,7 +21,8 @@ export function podeAtribuir(
   turma: Disciplina,
   travas: Celula[],
   hardConstraints: Map<string, Constraint<any>>,
-  baseSolution: Vizinho
+  baseSolution: Vizinho,
+  disciplinas: Disciplina[]
 ): boolean {
   for (const _constraint of hardConstraints.keys()) {
     const constraint = hardConstraints.get(_constraint);
@@ -31,7 +32,8 @@ export function podeAtribuir(
         baseSolution.atribuicoes,
         docente ? [docente] : [],
         [turma],
-        travas
+        travas,
+        disciplinas
       )
     ) {
       return false;

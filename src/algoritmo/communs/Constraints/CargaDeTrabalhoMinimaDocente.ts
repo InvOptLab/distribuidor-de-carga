@@ -1,6 +1,7 @@
 import Constraint from "../../abstractions/Constraint";
 import {
   Atribuicao,
+  Celula,
   ConstraintInterface,
   Disciplina,
   Docente,
@@ -89,6 +90,99 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
     }
 
     return avaliacao;
+  }
+
+  /**
+   * Será que faz sentido eu ver se estou menor que o limite apenas quando eu for remover e ver quando
+   * estou passando o máximo apenas quando estiver adicionando ?
+   */
+
+  hard(
+    atribuicoes?: Atribuicao[],
+    docentes?: Docente[],
+    disciplinasAtribuidas?: Disciplina[],
+    travas?: Celula[],
+    disciplinas?: Disciplina[]
+  ): boolean {
+    // for (const docente of docentes) {
+    //   /**
+    //    * Atribuições já existentes
+    //    */
+    //   const atribuicoesClone = structuredClone(atribuicoes);
+    //   /**
+    //    * Atribuição a ser realizada `disciplinasAtribuidas`
+    //    */
+    //   for (const disciplina of disciplinasAtribuidas) {
+    //     const novaAtribuicao = atribuicoesClone.find(
+    //       (atribuicao) => atribuicao.id_disciplina === disciplina.id
+    //     );
+    //     novaAtribuicao.docentes = [docente.nome];
+    //   }
+
+    //   if (
+    //     this.calculaCargaDidatica(docente, atribuicoesClone, disciplinas) <
+    //     this.params.minLimit.value
+    //   ) {
+    //     return false;
+    //   }
+    // }
+
+    /**
+     * Quer dizer que estou removendo um docente de uma turma
+     */
+    if (docentes.length === 0) {
+      /**
+       * Para todas as turmas em `disciplinasAtribuidas`, podemos observar os docentes atribuídos e remove-los para
+       * ver qual a carga que eles ficarão.
+       */
+
+      for (const disciplina of disciplinasAtribuidas) {
+        const docentesAtribuidos = atribuicoes.find(
+          (atribuicao) => atribuicao.id_disciplina === disciplina.id
+        ).docentes;
+
+        for (const _docente of docentesAtribuidos) {
+          const atribuicoesClone = structuredClone(atribuicoes);
+
+          const novaAtribuicao = atribuicoesClone.find(
+            (atribuicao) => atribuicao.id_disciplina === disciplina.id
+          );
+          novaAtribuicao.docentes = novaAtribuicao.docentes.filter(
+            (nome) => nome !== _docente
+          );
+
+          const docente = docentes.find((docente) => docente.nome === _docente);
+
+          if (
+            docente &&
+            this.calculaCargaDidatica(docente, atribuicoesClone, disciplinas) <
+              this.params.minLimit.value
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  private calculaCargaDidatica(
+    docente: Docente,
+    atribuicoes: Atribuicao[],
+    disciplinas: Disciplina[]
+  ) {
+    const atribuicoesDocente = atribuicoes.filter((atribuicao) =>
+      atribuicao.docentes.includes(docente.nome)
+    );
+
+    let cargaDocente = 0;
+
+    for (const atribuicao of atribuicoesDocente) {
+      cargaDocente += disciplinas.find(
+        (disciplina) => disciplina.id === atribuicao.id_disciplina
+      ).carga;
+    }
+    return cargaDocente;
   }
 
   toObject(): ConstraintInterface {

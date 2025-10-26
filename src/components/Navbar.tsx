@@ -40,12 +40,13 @@ const navItems: IPages[] = [
     options: [
       { name: "Tabela", link: "/atribuicoes" },
       { name: "Atribuição em Blocos", link: "/atribuicaoBlocos" },
+      { name: "Planilha", link: "/planilha" },
     ],
   },
   { name: "Histórico", link: "/history" },
   { name: "Estatísticas", link: "/statistics" },
   { name: "Comparar Soluções", link: "/comparar" },
-  // { name: "Calendário", link: "/horarios" },
+  { name: "Calendário", link: "/horarios" },
 ];
 
 // Componente para itens de submenu no desktop

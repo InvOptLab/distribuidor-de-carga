@@ -1,7 +1,11 @@
-import { Context } from "vm";
 import { NeighborhoodFunction } from "../../abstractions/NeighborhoodFunction";
 import Constraint from "../../abstractions/Constraint";
-import { Disciplina, Movimento, Vizinho } from "../interfaces/interfaces";
+import {
+  Disciplina,
+  Movimento,
+  Vizinho,
+  Context,
+} from "../interfaces/interfaces";
 import { podeAtribuir } from "../utils";
 
 export class Swap extends NeighborhoodFunction {
@@ -58,7 +62,8 @@ export class Swap extends NeighborhoodFunction {
               turmaAtual,
               context.travas,
               hardConstraints,
-              baseSolution
+              baseSolution,
+              context.turmas
             );
         }
 
@@ -71,7 +76,8 @@ export class Swap extends NeighborhoodFunction {
               turmaPivot,
               context.travas,
               hardConstraints,
-              baseSolution
+              baseSolution,
+              context.turmas
             );
         }
         //&& !compareArrays(docentesPivot, docentesAtual);

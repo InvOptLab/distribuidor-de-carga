@@ -7,6 +7,7 @@ import {
   Docente,
   Estatisticas,
   Formulario,
+  OpcoesMonitoramento,
   Solucao,
   Vizinho,
 } from "../communs/interfaces/interfaces";
@@ -175,7 +176,8 @@ export default abstract class Algorithm {
    */
   abstract execute(
     interrompe?: () => boolean,
-    atualizaQuantidadeAlocacoes?: (qtd: number) => void
+    atualizaQuantidadeAlocacoes?: (qtd: number) => void,
+    atualizaEstatisticas?: OpcoesMonitoramento
   ): Promise<Vizinho>;
 
   // /**
@@ -183,4 +185,25 @@ export default abstract class Algorithm {
   //  * Essa função adiciona as restrições na propriedade `constraints`.
   //  */
   // abstract setDefaultConstraints(): Map<string, Constraint>;
+
+  /**
+   * Helper privado para criar um objeto parcial com base nas chaves pedidas.
+   */
+  protected filtrarEstatisticas(
+    campos: (keyof Estatisticas)[]
+  ): Partial<Estatisticas> {
+    const dadosFiltrados: Partial<Estatisticas> = {};
+
+    for (const campo of campos) {
+      // Verifica se a chave existe em 'this.statistics' antes de copiar
+      if (Object.prototype.hasOwnProperty.call(this.statistics, campo)) {
+        // A asserção 'as any' é uma forma simples de lidar com a
+        // complexidade de tipos dinâmicos do TypeScript aqui.
+        // Ela está encapsulada e segura dentro deste método.
+        (dadosFiltrados as any)[campo] = this.statistics[campo];
+      }
+    }
+
+    return dadosFiltrados;
+  }
 }

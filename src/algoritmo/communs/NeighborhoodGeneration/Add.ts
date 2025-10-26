@@ -1,7 +1,6 @@
-import { Context } from "vm";
 import { NeighborhoodFunction } from "../../abstractions/NeighborhoodFunction";
 import Constraint from "../../abstractions/Constraint";
-import { Movimento, Vizinho } from "../interfaces/interfaces";
+import { Movimento, Vizinho, Context } from "../interfaces/interfaces";
 import { podeAtribuir } from "../utils";
 /**
  * O processo `Add` é responsável por adicionar um docente a uma turma (ou caso tenha alguma alocação, subistituir).
@@ -28,7 +27,8 @@ export class Add extends NeighborhoodFunction {
             turma,
             context.travas,
             hardConstraints,
-            baseSolution
+            baseSolution,
+            context.turmas
           )
         ) {
           continue;

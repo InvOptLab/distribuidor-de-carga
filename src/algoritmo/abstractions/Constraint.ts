@@ -82,8 +82,9 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
   hard?(
     atribuicoes?: Atribuicao[],
     docentes?: Docente[],
-    disciplinas?: Disciplina[],
-    travas?: Celula[]
+    disciplinasAtribuidas?: Disciplina[],
+    travas?: Celula[],
+    disciplinas?: Disciplina[]
   ): boolean;
 
   abstract toObject(): ConstraintInterface;

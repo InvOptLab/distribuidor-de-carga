@@ -1,6 +1,7 @@
 import Constraint from "../../abstractions/Constraint";
 import {
   Atribuicao,
+  Celula,
   ConstraintInterface,
   Disciplina,
   Docente,
@@ -81,6 +82,50 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
     }
 
     return avaliacao;
+  }
+
+  hard(
+    atribuicoes?: Atribuicao[],
+    docentes?: Docente[],
+    disciplinasAtribuidas?: Disciplina[],
+    travas?: Celula[],
+    disciplinas?: Disciplina[]
+  ): boolean {
+    if (docentes === undefined) {
+      return true;
+    }
+
+    for (const docente of docentes) {
+      /**
+       * Atribuições já existentes
+       */
+      const atribuicoesDocente = atribuicoes.filter((atribuicao) =>
+        atribuicao.docentes.includes(docente.nome)
+      );
+
+      /**
+       * Atribuição a ser realizada `disciplinasAtribuidas`
+       */
+      for (const disciplina of disciplinasAtribuidas) {
+        atribuicoesDocente.push({
+          id_disciplina: disciplina.id,
+          docentes: [docente.nome],
+        });
+      }
+
+      let cargaDocente = 0;
+
+      for (const atribuicao of atribuicoesDocente) {
+        cargaDocente += disciplinas.find(
+          (disciplina) => disciplina.id === atribuicao.id_disciplina
+        ).carga;
+      }
+
+      if (cargaDocente > this.params.maxLimit.value) {
+        return false;
+      }
+    }
+    return true;
   }
 
   toObject(): ConstraintInterface {
