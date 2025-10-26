@@ -9,7 +9,7 @@ import {
   Divider,
   Chip,
   Box,
-  Grid,
+  Grid2,
 } from "@mui/material";
 import {
   Person as PersonIcon,
@@ -224,17 +224,15 @@ export default function HoveredDocente({
                   Turmas com Formulário
                 </Typography>
               </Stack>
-              <Grid container spacing={1}>
+              <Grid2 container spacing={2}>
                 {formulariosRelacionados.map((formulario, index) => {
                   const disciplina = getDisciplinaById(
                     formulario.id_disciplina
                   );
 
                   return (
-                    <Grid
-                      item
-                      xs={12}
-                      sm={6}
+                    <Grid2
+                      size={{ xs: 12, sm: 6 }}
                       key={`${formulario.id_disciplina}-${index}`}
                     >
                       <Box
@@ -313,17 +311,17 @@ export default function HoveredDocente({
                                   color="text.secondary"
                                   sx={{ fontWeight: 500 }}
                                 >
-                                  {disciplina.carga.toFixed(2)}h
+                                  {disciplina.carga.toFixed(2)}
                                 </Typography>
                               </Stack>
                             )}
                           </Stack>
                         </Stack>
                       </Box>
-                    </Grid>
+                    </Grid2>
                   );
                 })}
-              </Grid>
+              </Grid2>
             </Box>
           </>
         )}

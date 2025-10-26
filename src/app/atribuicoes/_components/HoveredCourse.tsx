@@ -9,7 +9,7 @@ import {
   Divider,
   Chip,
   Box,
-  Grid,
+  Grid2,
 } from "@mui/material";
 import {
   Schedule as ScheduleIcon,
@@ -221,9 +221,9 @@ export default function HoveredCourse({
                   Docentes Interessados
                 </Typography>
               </Stack>
-              <Grid
+              <Grid2
                 container
-                spacing={1}
+                spacing={2}
                 // sx={{ maxHeight: 200, overflow: "auto" }}
               >
                 {formulariosRelacionados.map((formulario, index) => {
@@ -231,10 +231,8 @@ export default function HoveredCourse({
                   const saldoColor = getSaldoColor(docente?.saldo);
 
                   return (
-                    <Grid
-                      item
-                      xs={12}
-                      sm={6}
+                    <Grid2
+                      size={{ xs: 12, sm: 6 }}
                       key={`${formulario.nome_docente}-${index}`}
                       minWidth={300}
                     >
@@ -261,7 +259,7 @@ export default function HoveredCourse({
                             }}
                           >
                             {docente?.saldo !== undefined
-                              ? docente.saldo
+                              ? docente.saldo.toFixed(2)
                               : "N/A"}
                           </Typography>
                           <Box flex={1}>
@@ -285,10 +283,10 @@ export default function HoveredCourse({
                           </Box>
                         </Stack>
                       </Box>
-                    </Grid>
+                    </Grid2>
                   );
                 })}
-              </Grid>
+              </Grid2>
             </Box>
           </>
         )}
