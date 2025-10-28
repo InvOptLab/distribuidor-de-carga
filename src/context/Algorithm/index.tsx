@@ -19,6 +19,7 @@ import { IteracoesSemModificacao } from "@/algoritmo/communs/StopCriteria/Iterac
 import { Objective } from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/Objective";
 import SameObjective from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/SameObjective";
 import { AspirationCriteria } from "@/algoritmo/metodos/TabuSearch/Classes/Abstract/AspirationCriteria";
+import { AlgorithmType } from "@/app/types/algorithm-types";
 import { createContext, useContext, useState } from "react";
 
 type NeighborhoodEntry = {
@@ -91,6 +92,9 @@ export interface AlgorithmInterface {
   >;
   maiorPrioridade: number;
   setMaiorPrioridade: React.Dispatch<React.SetStateAction<number>>;
+
+  selectedAlgorithm: AlgorithmType;
+  setSelectedAlgorithm: React.Dispatch<React.SetStateAction<AlgorithmType>>;
 }
 
 const AlgorithmContext = createContext<AlgorithmInterface>({
@@ -123,6 +127,8 @@ const AlgorithmContext = createContext<AlgorithmInterface>({
   setObjectiveComponents: () => Map<string, ObjectiveComponent>,
   maiorPrioridade: 0,
   setMaiorPrioridade: () => 0,
+  selectedAlgorithm: "tabu-search",
+  setSelectedAlgorithm: () => {},
 });
 
 export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
@@ -354,6 +360,9 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
    */
   const [maiorPrioridade, setMaiorPrioridade] = useState<number>(0);
 
+  const [selectedAlgorithm, setSelectedAlgorithm] =
+    useState<AlgorithmType>("tabu-search");
+
   return (
     <AlgorithmContext.Provider
       value={{
@@ -377,6 +386,8 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         setObjectiveComponents: setObjectiveComponents,
         maiorPrioridade: maiorPrioridade,
         setMaiorPrioridade: setMaiorPrioridade,
+        selectedAlgorithm,
+        setSelectedAlgorithm,
       }}
     >
       {children}
