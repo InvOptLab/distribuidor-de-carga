@@ -4,6 +4,8 @@ import {
   Docente,
   Formulario,
 } from "../communs/interfaces/interfaces";
+import { modelSCP } from "../metodos/MILP/MILP";
+import { OptimizationModel, Term } from "../metodos/MILP/optimization_model";
 
 /**
  * Classe que representa o custo da função objetivo.
@@ -70,5 +72,19 @@ export class ObjectiveFunction {
     }
 
     return valor;
+  }
+
+  /**
+   *
+   * @param model
+   */
+  milpFormulation(model: OptimizationModel, modelSCP: modelSCP) {
+    const objectiveTerms: Term[] = [];
+    /**
+     * Gero todos os termos das componentes da função objetivo
+     */
+    for (const component of this.components.values()) {
+      objectiveTerms.push(...component.milpFormulation(model, modelSCP));
+    }
   }
 }
