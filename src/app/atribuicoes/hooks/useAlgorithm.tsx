@@ -20,6 +20,64 @@ import {
   Estatisticas,
   Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
+import { MILP } from "@/algoritmo/metodos/MILP/MILP";
+import { HighsSolution } from "../types/types";
+
+export interface Atribuicao {
+  id_disciplina: string;
+  docentes: string[];
+}
+
+/**
+ * Converte a saída do solver HiGHS (baseada em índices e objeto 'Primal')
+ * de volta para uma lista legível de atribuições por disciplina.
+ *
+ * @param solutionVariables - O objeto de solução retornado pelo HiGHS.
+ * @param activeDocentes - O array de docentes ATIVOS, na MESMA ORDEM
+ * usada para criar o conjunto D.
+ * @param activeTurmas - O array de turmas ATIVAS, na MESMA ORDEM
+ * usada para criar o conjunto T.
+ * @returns Um array de objetos Atribuicao.
+ */
+export function reconstruirAtribuicoes(
+  solutionVariables: HighsSolution,
+  activeDocentes: { nome: string }[], // Ajuste a interface se necessário
+  activeTurmas: { id: string }[] // Ajuste a interface se necessário
+): Atribuicao[] {
+  const atribuicoesFinais: Atribuicao[] = [];
+
+  // Itera sobre cada TURMA (índice j)
+  for (let j = 0; j < activeTurmas.length; j++) {
+    const idDisciplina = activeTurmas[j].id;
+    const docentesAlocados: string[] = [];
+
+    // Itera sobre cada DOCENTE (índice i) para verificar se ele foi alocado a esta turma j
+    for (let i = 0; i < activeDocentes.length; i++) {
+      const nomeDocente = activeDocentes[i].nome;
+
+      // Monta o nome da variável que o solver conhece
+      const varName = `x_${i}_${j}`;
+
+      // --- LÓGICA ATUALIZADA ---
+      // 1. Acessa o objeto da variável pelo nome
+      const varSolution = solutionVariables[varName];
+
+      // 2. Verifica se a variável existe e se o valor 'Primal' é ~1
+      if (varSolution && varSolution.Primal > 0.9) {
+        docentesAlocados.push(nomeDocente);
+      }
+      // --- FIM DA ATUALIZAÇÃO ---
+    }
+
+    // Adiciona a turma e seus docentes à lista final
+    atribuicoesFinais.push({
+      id_disciplina: idDisciplina,
+      docentes: docentesAlocados,
+    });
+  }
+
+  return atribuicoesFinais;
+}
 
 export function useAlgorithm() {
   const {
@@ -46,6 +104,7 @@ export function useAlgorithm() {
     aspirationFunctions,
     tabuListType,
     objectiveComponents,
+    selectedAlgorithm,
   } = useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
 
@@ -138,78 +197,204 @@ export function useAlgorithm() {
     setProcessing(true);
 
     try {
-      const neighborhood = Array.from(neighborhoodFunctions.values())
-        .filter((entry) => entry.isActive)
-        .map((entry) => entry.instance);
+      if (selectedAlgorithm === "tabu-search") {
+        const neighborhood = Array.from(neighborhoodFunctions.values())
+          .filter((entry) => entry.isActive)
+          .map((entry) => entry.instance);
 
-      const stop = Array.from(stopFunctions.values())
-        .filter((entry) => entry.isActive)
-        .map((entry) => entry.instance);
+        const stop = Array.from(stopFunctions.values())
+          .filter((entry) => entry.isActive)
+          .map((entry) => entry.instance);
 
-      const aspiration = Array.from(aspirationFunctions.values())
-        .filter((entry) => entry.isActive)
-        .map((entry) => entry.instance);
+        const aspiration = Array.from(aspirationFunctions.values())
+          .filter((entry) => entry.isActive)
+          .map((entry) => entry.instance);
 
-      const objectives = Array.from(objectiveComponents.values()).filter(
-        (entry) => entry.isActive
-      );
+        const objectives = Array.from(objectiveComponents.values()).filter(
+          (entry) => entry.isActive
+        );
 
-      // Filter only active items
-      const activeDocentes = docentes.filter((d) => d.ativo);
-      const activeDisciplinas = disciplinas.filter((d) => d.ativo);
-      const activeFormularios = getActiveFormularios(
-        formularios,
-        disciplinas,
-        docentes
-      );
+        // Filter only active items
+        const activeDocentes = docentes.filter((d) => d.ativo);
+        const activeDisciplinas = disciplinas.filter((d) => d.ativo);
+        const activeFormularios = getActiveFormularios(
+          formularios,
+          disciplinas,
+          docentes
+        );
 
-      // Filter atribuicoes to only include active items
-      const activeAtribuicoes = atribuicoes
-        .filter((attr) =>
-          activeDisciplinas.some((d) => d.id === attr.id_disciplina)
-        )
-        .map((attr) => ({
-          ...attr,
-          docentes: attr.docentes.filter((docente) =>
-            activeDocentes.some((d) => d.nome === docente)
-          ),
-        }));
+        // Filter atribuicoes to only include active items
+        const activeAtribuicoes = atribuicoes
+          .filter((attr) =>
+            activeDisciplinas.some((d) => d.id === attr.id_disciplina)
+          )
+          .map((attr) => ({
+            ...attr,
+            docentes: attr.docentes.filter((docente) =>
+              activeDocentes.some((d) => d.nome === docente)
+            ),
+          }));
 
-      const buscaTabu = new TabuSearch(
-        activeAtribuicoes,
-        activeDocentes,
-        activeDisciplinas,
-        travas,
-        activeFormularios,
-        [...hardConstraints.values(), ...softConstraints.values()],
-        { atribuicoes: activeAtribuicoes },
-        neighborhood,
-        tabuListType,
-        tabuListType === "Solução"
-          ? parametros.tabuTenure.size
-          : parametros.tabuTenure.tenures,
-        stop,
-        aspiration,
-        undefined, //maxPriority + 1,
-        "max",
-        objectives
-      );
+        const buscaTabu = new TabuSearch(
+          activeAtribuicoes,
+          activeDocentes,
+          activeDisciplinas,
+          travas,
+          activeFormularios,
+          [...hardConstraints.values(), ...softConstraints.values()],
+          { atribuicoes: activeAtribuicoes },
+          neighborhood,
+          tabuListType,
+          tabuListType === "Solução"
+            ? parametros.tabuTenure.size
+            : parametros.tabuTenure.tenures,
+          stop,
+          aspiration,
+          undefined, //maxPriority + 1,
+          "max",
+          objectives
+        );
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
 
-      await buscaTabu.execute(
-        () => interrompeRef.current,
-        setDisciplinasAlocadas,
-        { campos: camposMonitorados, onUpdate: handleStatisticsUpdate }
-      );
+        await buscaTabu.execute(
+          () => interrompeRef.current,
+          setDisciplinasAlocadas,
+          { campos: camposMonitorados, onUpdate: handleStatisticsUpdate }
+        );
 
-      const solucao: Solucao = {
-        atribuicoes: buscaTabu.bestSolution.atribuicoes,
-        avaliacao: buscaTabu.bestSolution.avaliacao,
-        estatisticas: buscaTabu.statistics,
-        algorithm: buscaTabu,
-      };
-      setSolucaoAtual(solucao);
+        const solucao: Solucao = {
+          atribuicoes: buscaTabu.bestSolution.atribuicoes,
+          avaliacao: buscaTabu.bestSolution.avaliacao,
+          estatisticas: buscaTabu.statistics,
+          algorithm: buscaTabu,
+        };
+        setSolucaoAtual(solucao);
+      } else {
+        const activeDocentes = docentes.filter((d) => d.ativo);
+        const activeTurmas = disciplinas.filter((d) => d.ativo);
+        const activeFormularios = getActiveFormularios(
+          formularios,
+          disciplinas,
+          docentes
+        );
+
+        // 1. Conjuntos
+        const D_count = activeDocentes.length; // Número de docentes
+        const T_count = activeTurmas.length; // Número de turmas
+
+        // Mapeamento para facilitar a leitura
+        const D = Array.from({ length: D_count }, (_, i) => i); // Docentes: 0, 1, 2
+        const T = Array.from({ length: T_count }, (_, j) => j); // Turmas: 0, 1, 2, 3, 4
+
+        // 2. Parâmetros dos Docentes e Turmas
+        // Carga horária de cada turma j
+        const c: number[] = activeTurmas.map((t) => t.carga);
+        // Saldo de carga horária acumulado de cada docente i
+        const s: number[] = docentes.map((d) => d.saldo);
+        // Prioridades p_ij do docente i para a turma j
+        const p: number[][] = [];
+
+        let Pmax = 0;
+
+        for (const docente of activeDocentes) {
+          const prioridadesDocente = [];
+          for (const turma of activeTurmas) {
+            const prioridadeDocenteTurma = activeFormularios.find(
+              (f) =>
+                f.id_disciplina === turma.id && f.nome_docente === docente.nome
+            );
+
+            /**
+             * Atualiza Pmax
+             */
+            if (
+              prioridadeDocenteTurma &&
+              prioridadeDocenteTurma.prioridade > Pmax
+            ) {
+              Pmax = prioridadeDocenteTurma.prioridade;
+            }
+
+            prioridadesDocente.push(
+              prioridadeDocenteTurma ? prioridadeDocenteTurma.prioridade : 0
+            );
+          }
+          p.push(prioridadesDocente);
+        }
+
+        const m: number[][] = [];
+        const a: number[][] = [];
+
+        for (const {} of activeDocentes) {
+          const dados = [];
+          for (const {} of activeTurmas) {
+            dados.push(0);
+          }
+          m.push(dados);
+          a.push(dados);
+        }
+
+        const F: [number, number][] = [];
+
+        for (let i = 0; i < activeTurmas.length; i++) {
+          for (let j = 0; j < activeTurmas.length; j++) {
+            if (i >= j) {
+              continue;
+            }
+
+            // Se a turma 'i' tem a turma 'j' em sua lista de conflitos.
+            if (activeTurmas[i].conflitos.has(activeTurmas[j].id)) {
+              // Adiciona o par de ÍNDICES [i, j] à lista F.
+              F.push([i, j]);
+              F.push([j, i]);
+            }
+          }
+        }
+
+        const solver = new MILP("Modelo Inteiro", {
+          D: D,
+          T: T,
+          a: a,
+          c: c,
+          F: F,
+          m: m,
+          p: p,
+          s: s,
+        });
+
+        const solution = await solver.execute();
+
+        console.log(solution);
+
+        // 2. Obtém os resultados do solver
+        //    !!! IMPORTANTE !!!
+        //    Você precisa adaptar esta linha.
+        //    Estou assumindo que o solver expõe a solução em uma propriedade.
+        //    Pode ser:
+        //    - solver.solutionVariables
+        //    - solver.getSolution().variables
+        //    - const sol = await solver.execute(); sol.variables
+        //    Verifique a implementação da sua classe MILP.
+
+        // Assumindo que a propriedade se chama `solutionVariables`
+        const solutionVariables = solution.Columns;
+
+        console.log(solutionVariables);
+
+        // 3. Reconstrói as atribuições
+        const atribuicoes: Atribuicao[] = reconstruirAtribuicoes(
+          solutionVariables,
+          activeDocentes,
+          activeTurmas
+        );
+
+        const solucao: Solucao = {
+          atribuicoes: atribuicoes,
+          avaliacao: solution.ObjectiveValue,
+          algorithm: solver,
+        };
+        setSolucaoAtual(solucao);
+      }
     } catch (error) {
       console.error("Erro na execução do algoritmo:", error);
       addAlerta("Erro na execução do algoritmo!", "error");
