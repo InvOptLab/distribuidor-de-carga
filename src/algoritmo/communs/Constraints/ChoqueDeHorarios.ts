@@ -1,3 +1,8 @@
+import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
+import {
+  OptimizationModel,
+  Term,
+} from "@/algoritmo/metodos/MILP/optimization_model";
 import Constraint from "../../abstractions/Constraint";
 import {
   Atribuicao,
@@ -5,6 +10,7 @@ import {
   Disciplina,
   Docente,
 } from "../interfaces/interfaces";
+import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
 export class ChoqueDeHorarios extends Constraint<any> {
   constructor(
@@ -135,5 +141,53 @@ export class ChoqueDeHorarios extends Constraint<any> {
     }
 
     return data;
+  }
+
+  milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
+    modelData.D.forEach((i) =>
+      modelData.F.forEach(([j, k]) => {
+        const lhs = LpSum([
+          { variable: modelData.x[i][j], coefficient: 1 },
+          { variable: modelData.x[i][k], coefficient: 1 },
+        ]);
+        model.addConstraint(`conflito_horario_${i}_${j}_${k}`, lhs, "<=", 1);
+      })
+    );
+  }
+
+  milpSoftFormulation(
+    model: OptimizationModel,
+    modelData: modelSCP
+  ): { objectiveTerms: Term[] } {
+    /**
+     * Restrição
+     */
+    modelData.D.forEach((i) =>
+      modelData.F.forEach(([j, k]) => {
+        const v_ijk = modelData.v[i][j][k]!;
+        const lhs = LpSum([
+          { variable: modelData.x[i][j], coefficient: 1 },
+          { variable: modelData.x[i][k], coefficient: 1 },
+          { variable: v_ijk, coefficient: -1 },
+        ]);
+        model.addConstraint(`conflito_horario_${i}_${j}_${k}`, lhs, "<=", 1);
+      })
+    );
+
+    /**
+     * Componente na função objetivo
+     */
+    const objectiveTerms: Term[] = [];
+
+    modelData.D.forEach((i) =>
+      modelData.F.forEach(([j, k]) => {
+        objectiveTerms.push({
+          variable: modelData.v[i][j][k],
+          coefficient: this.penalty,
+        });
+      })
+    );
+
+    return { objectiveTerms };
   }
 }

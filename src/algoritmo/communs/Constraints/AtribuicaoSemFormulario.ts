@@ -1,3 +1,8 @@
+import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
+import {
+  OptimizationModel,
+  Term,
+} from "@/algoritmo/metodos/MILP/optimization_model";
 import Constraint from "../../abstractions/Constraint";
 import {
   Atribuicao,
@@ -5,6 +10,7 @@ import {
   Disciplina,
   Docente,
 } from "../interfaces/interfaces";
+import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
 export class AtribuicaoSemFormulario extends Constraint<null> {
   constructor(
@@ -102,5 +108,79 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
       });
     }
     return data ? data : [{ label: "Sem Formulário", qtd: 0 }];
+  }
+
+  milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
+    modelData.D.forEach((i) =>
+      modelData.T.forEach((j) => {
+        model.addConstraint(
+          `prioridade_definida_${i}_${j}`,
+          LpSum([modelData.x[i][j]]),
+          "<=",
+          modelData.P[i][j] + modelData.m[i][j]
+        );
+      })
+    );
+  }
+
+  milpSoftFormulation(
+    model: OptimizationModel,
+    modelData: modelSCP
+  ): { objectiveTerms: Term[] } {
+    /**
+     * Restrição
+     */
+
+    // modelData.D.forEach((i) =>
+    //   modelData.T.forEach((j) => {
+    //     model.addConstraint(
+    //       `prioridade_definida_soft_${i}_${j}`,
+    //       LpSum([
+    //         { variable: modelData.x[i][j], coefficient: 1 },
+    //         { variable: modelData.b[i][j], coefficient: -1 },
+    //       ]),
+    //       "<=",
+    //       modelData.P[i][j] + modelData.m[i][j] // aqui seria adicionado o + b[i][j] -> inserido como x - b
+    //     );
+    //   })
+    // );
+
+    /**
+     * Como neste caso não teremos que garantir o P, insere-se apenas quando P_ij = 0, de modo que
+     * x_ij - b_ij = 0
+     */
+    modelData.D.forEach((i) =>
+      modelData.T.forEach((j) => {
+        if (modelData.P[i][j] === 0) {
+          model.addConstraint(
+            `prioridade_definida_soft_${i}_${j}`,
+            LpSum([
+              { variable: modelData.x[i][j], coefficient: 1 },
+              { variable: modelData.b[i][j], coefficient: -1 },
+            ]),
+            "==",
+            0
+          );
+        }
+      })
+    );
+
+    /**
+     * Adicionar no objetivo os termos referentes a Penalização
+     */
+    const objectiveTerms: Term[] = [];
+
+    modelData.D.forEach((i) =>
+      modelData.T.forEach((j) => {
+        if (modelData.P[i][j] === 0) {
+          objectiveTerms.push({
+            variable: modelData.b[i][j],
+            coefficient: this.penalty,
+          });
+        }
+      })
+    );
+
+    return { objectiveTerms };
   }
 }

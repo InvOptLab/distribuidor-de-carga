@@ -1,3 +1,5 @@
+import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
+import { OptimizationModel } from "@/algoritmo/metodos/MILP/optimization_model";
 import Constraint from "../../abstractions/Constraint";
 import {
   Atribuicao,
@@ -7,6 +9,7 @@ import {
   Docente,
   TipoTrava,
 } from "../interfaces/interfaces";
+import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
 /**
  * Restrição para não permitir a geração de movimentos em turmsa ou docentes com travas
@@ -168,5 +171,20 @@ export class ValidaTravas extends Constraint<any> {
       { label: "Travas Células", qtd: qtdTravasCelula }
     );
     return data;
+  }
+
+  milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
+    modelData.D.forEach((i) =>
+      modelData.T.forEach((j) => {
+        if (modelData.m[i][j] == 1) {
+          model.addConstraint(
+            `trava_${i}_${j}`,
+            LpSum([modelData.x[i][j]]),
+            "==",
+            modelData.a[i][j]
+          );
+        }
+      })
+    );
   }
 }

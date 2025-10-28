@@ -1,3 +1,8 @@
+import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
+import {
+  OptimizationModel,
+  Term,
+} from "@/algoritmo/metodos/MILP/optimization_model";
 import Constraint from "../../abstractions/Constraint";
 import {
   Atribuicao,
@@ -7,6 +12,7 @@ import {
   Docente,
   IParameter,
 } from "../interfaces/interfaces";
+import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
 /**
  * Forma do parâmtro que será utilizada na classe
@@ -182,5 +188,64 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
     });
 
     return data;
+  }
+
+  milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
+    modelData.D.forEach((i) => {
+      // Cria o somatório: Σ c_j * x_i,j
+      const terms = modelData.T.map((j) => ({
+        variable: modelData.x[i][j],
+        coefficient: modelData.c[j],
+      }));
+
+      // Adiciona a restrição: (Σ c_j * x_i,j) <= L_sup
+      model.addConstraint(
+        `carga_maxima_${i}`,
+        LpSum(terms),
+        "<=",
+        this.params.maxLimit.value
+      );
+    });
+  }
+
+  milpSoftFormulation(
+    model: OptimizationModel,
+    modelData: modelSCP
+  ): { objectiveTerms: Term[] } {
+    /**
+     * Restrição
+     */
+    modelData.D.forEach((i) => {
+      // Cria o somatório: Σ c_j * x_i,j
+      const terms = modelData.T.map((j) => ({
+        variable: modelData.x[i][j],
+        coefficient: modelData.c[j],
+      }));
+
+      // Adiciona o termo -w_i (antes era -BigM * w_i)
+      terms.push({ variable: modelData.w[i], coefficient: -1 });
+
+      // Adiciona a restrição: (Σ c_j * x_i,j) - w_i <= L_sup
+      model.addConstraint(
+        `carga_maxima_${i}`,
+        LpSum(terms),
+        "<=",
+        this.params.maxLimit.value
+      );
+    });
+
+    /**
+     * Componente na função objetivo
+     */
+    const objectiveTerms: Term[] = [];
+
+    modelData.D.forEach((i) =>
+      objectiveTerms.push({
+        variable: modelData.w[i],
+        coefficient: this.penalty * modelData.eta[i],
+      })
+    );
+
+    return { objectiveTerms };
   }
 }

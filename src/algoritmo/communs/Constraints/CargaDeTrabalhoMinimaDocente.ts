@@ -1,3 +1,8 @@
+import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
+import {
+  OptimizationModel,
+  Term,
+} from "@/algoritmo/metodos/MILP/optimization_model";
 import Constraint from "../../abstractions/Constraint";
 import {
   Atribuicao,
@@ -7,6 +12,7 @@ import {
   Docente,
   IParameter,
 } from "../interfaces/interfaces";
+import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
 /**
  * Forma do parâmtro que será utilizada na classe
@@ -267,5 +273,56 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
     );
 
     return data;
+  }
+
+  milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
+    modelData.D.forEach((i) => {
+      const terms = modelData.T.map((j) => ({
+        variable: modelData.x[i][j],
+        coefficient: modelData.c[j],
+      }));
+      model.addConstraint(
+        `carga_minima_hard_${i}`,
+        LpSum(terms),
+        ">=",
+        this.params.minLimit.value
+      );
+    });
+  }
+
+  milpSoftFormulation(
+    model: OptimizationModel,
+    modelData: modelSCP
+  ): { objectiveTerms: Term[] } {
+    /**
+     * Restrição
+     */
+    modelData.D.forEach((i) => {
+      const terms = modelData.T.map((j) => ({
+        variable: modelData.x[i][j],
+        coefficient: modelData.c[j],
+      }));
+      terms.push({ variable: modelData.z[i], coefficient: modelData.BigM });
+      model.addConstraint(
+        `carga_minima_soft_${i}`,
+        LpSum(terms),
+        ">=",
+        this.params.minLimit.value
+      );
+    });
+
+    /**
+     * Componente na função objetivo
+     */
+    const objectiveTerms: Term[] = [];
+
+    modelData.D.forEach((i) =>
+      objectiveTerms.push({
+        variable: modelData.z[i],
+        coefficient: this.penalty * modelData.omega[i],
+      })
+    );
+
+    return { objectiveTerms };
   }
 }

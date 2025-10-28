@@ -1,9 +1,15 @@
+import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
+import {
+  OptimizationModel,
+  Term,
+} from "@/algoritmo/metodos/MILP/optimization_model";
 import Constraint from "../../abstractions/Constraint";
 import {
   Atribuicao,
   ConstraintInterface,
   Docente,
 } from "../interfaces/interfaces";
+import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
 export class DisciplinaSemDocente extends Constraint<any> {
   constructor(
@@ -76,5 +82,41 @@ export class DisciplinaSemDocente extends Constraint<any> {
     }
 
     return data;
+  }
+
+  milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
+    modelData.T.forEach((j) => {
+      const lhs = modelData.D.map((i) => modelData.x[i][j]);
+      model.addConstraint(`cobertura_turma_hard_${j}`, LpSum(lhs), "==", 1);
+    });
+  }
+
+  milpSoftFormulation(
+    model: OptimizationModel,
+    modelData: modelSCP
+  ): { objectiveTerms: Term[] } {
+    /**
+     * Restrições
+     */
+    modelData.T.forEach((j) => {
+      const lhs = modelData.D.map((i) => modelData.x[i][j]);
+      lhs.push(modelData.u[j]);
+      model.addConstraint(`cobertura_turma_soft_${j}`, LpSum(lhs), "==", 1);
+    });
+
+    /**
+     * Componentes na função objetivo
+     */
+
+    const objectiveTerms: Term[] = [];
+
+    modelData.T.forEach((j) => {
+      objectiveTerms.push({
+        variable: modelData.u[j],
+        coefficient: this.penalty,
+      });
+    });
+
+    return { objectiveTerms };
   }
 }
