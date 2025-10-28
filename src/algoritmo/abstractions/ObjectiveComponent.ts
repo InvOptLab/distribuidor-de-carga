@@ -3,6 +3,8 @@ import {
   Docente,
   Formulario,
 } from "../communs/interfaces/interfaces";
+import { modelSCP } from "../metodos/MILP/MILP";
+import { OptimizationModel, Term } from "../metodos/MILP/optimization_model";
 
 export abstract class ObjectiveComponent {
   /**
@@ -81,4 +83,10 @@ export abstract class ObjectiveComponent {
     }
     return custo;
   }
+
+  /**
+   * (NOVO) Método para formulação do componente na função objetivo do MILP.
+   * Retorna os termos que devem ser somados/subtraídos.
+   */
+  milpFormulation?(model: OptimizationModel, modelData: modelSCP): Term[];
 }
