@@ -17,16 +17,12 @@ import {
 import { useTimetable } from "../context/TimetableContext";
 import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
 import {
+  Atribuicao,
   Estatisticas,
   Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { MILP } from "@/algoritmo/metodos/MILP/MILP";
 import { HighsSolution } from "../types/types";
-
-export interface Atribuicao {
-  id_disciplina: string;
-  docentes: string[];
-}
 
 /**
  * Converte a saída do solver HiGHS (baseada em índices e objeto 'Primal')
@@ -41,8 +37,8 @@ export interface Atribuicao {
  */
 export function reconstruirAtribuicoes(
   solutionVariables: HighsSolution,
-  activeDocentes: { nome: string }[], // Ajuste a interface se necessário
-  activeTurmas: { id: string }[] // Ajuste a interface se necessário
+  activeDocentes: { nome: string }[],
+  activeTurmas: { id: string }[]
 ): Atribuicao[] {
   const atribuicoesFinais: Atribuicao[] = [];
 
@@ -58,15 +54,13 @@ export function reconstruirAtribuicoes(
       // Monta o nome da variável que o solver conhece
       const varName = `x_${i}_${j}`;
 
-      // --- LÓGICA ATUALIZADA ---
-      // 1. Acessa o objeto da variável pelo nome
+      // Acessa o objeto da variável pelo nome
       const varSolution = solutionVariables[varName];
 
-      // 2. Verifica se a variável existe e se o valor 'Primal' é ~1
+      // Verifica se a variável existe e se o valor 'Primal' é ~1
       if (varSolution && varSolution.Primal > 0.9) {
         docentesAlocados.push(nomeDocente);
       }
-      // --- FIM DA ATUALIZAÇÃO ---
     }
 
     // Adiciona a turma e seus docentes à lista final
@@ -279,7 +273,7 @@ export function useAlgorithm() {
           docentes
         );
 
-        // 1. Conjuntos
+        // Conjuntos
         const D_count = activeDocentes.length; // Número de docentes
         const T_count = activeTurmas.length; // Número de turmas
 
@@ -287,7 +281,7 @@ export function useAlgorithm() {
         const D = Array.from({ length: D_count }, (_, i) => i); // Docentes: 0, 1, 2
         const T = Array.from({ length: T_count }, (_, j) => j); // Turmas: 0, 1, 2, 3, 4
 
-        // 2. Parâmetros dos Docentes e Turmas
+        // Parâmetros dos Docentes e Turmas
         // Carga horária de cada turma j
         const c: number[] = activeTurmas.map((t) => t.carga);
         // Saldo de carga horária acumulado de cada docente i
@@ -305,9 +299,6 @@ export function useAlgorithm() {
                 f.id_disciplina === turma.id && f.nome_docente === docente.nome
             );
 
-            /**
-             * Atualiza Pmax
-             */
             if (
               prioridadeDocenteTurma &&
               prioridadeDocenteTurma.prioridade > Pmax
@@ -364,24 +355,8 @@ export function useAlgorithm() {
 
         const solution = await solver.execute();
 
-        console.log(solution);
-
-        // 2. Obtém os resultados do solver
-        //    !!! IMPORTANTE !!!
-        //    Você precisa adaptar esta linha.
-        //    Estou assumindo que o solver expõe a solução em uma propriedade.
-        //    Pode ser:
-        //    - solver.solutionVariables
-        //    - solver.getSolution().variables
-        //    - const sol = await solver.execute(); sol.variables
-        //    Verifique a implementação da sua classe MILP.
-
-        // Assumindo que a propriedade se chama `solutionVariables`
         const solutionVariables = solution.Columns;
 
-        console.log(solutionVariables);
-
-        // 3. Reconstrói as atribuições
         const atribuicoes: Atribuicao[] = reconstruirAtribuicoes(
           solutionVariables,
           activeDocentes,
@@ -393,6 +368,7 @@ export function useAlgorithm() {
           avaliacao: solution.ObjectiveValue,
           algorithm: solver,
         };
+
         setSolucaoAtual(solucao);
       }
     } catch (error) {

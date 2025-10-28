@@ -149,7 +149,6 @@ export class MILP {
       })
     );
     this.model.setObjective("maximize", LpSum(objectiveTerms));
-    console.log("Função objetivo definida.");
 
     this.modelSets.D.forEach((i) =>
       this.modelSets.T.forEach((j) => {
