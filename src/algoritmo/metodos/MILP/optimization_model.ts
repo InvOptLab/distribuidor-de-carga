@@ -79,17 +79,47 @@ function filterLinearlyIndependentRows(
   return { A: independentRows, b: independentB };
 }
 
-// --- A Classe de Modelagem Principal ---
 export class OptimizationModel {
   public name: string;
   private variables: Variable[] = [];
   private variablesByName: Map<string, Variable> = new Map();
   private constraints: Constraint[] = [];
-  private objective: Objective | null = null;
+  private objectiveSense: "minimize" | "maximize" = "minimize";
+  private objectiveExpression: Expression = [];
   private varCounter = 0;
+
+  private objectiveOffset = 0;
 
   constructor(name?: string) {
     this.name = name ? name : "NewModel";
+  }
+
+  /**
+   * Define o sentido da otimização.
+   */
+  public setObjectiveSense(sense: "minimize" | "maximize"): void {
+    this.objectiveSense = sense;
+  }
+
+  /**
+   * Adiciona termos à expressão da função objetivo.
+   */
+  public addObjectiveTerms(terms: Term[]): void {
+    this.objectiveExpression.push(...terms);
+  }
+
+  /**
+   * Retorna o objeto Objetivo completo.
+   * Usado internamente por toCplexLpFormat e runPresolve.
+   */
+  public getObjective(): Objective | null {
+    if (this.objectiveExpression.length === 0) {
+      return null;
+    }
+    return {
+      sense: this.objectiveSense,
+      expression: this.objectiveExpression,
+    };
   }
 
   public addVariable(
@@ -124,26 +154,17 @@ export class OptimizationModel {
   }
 
   /**
-   * Modificar essa função para que seja possível chamar várias vezes esse método e que ele vá adicionando
-   * novos componentes sem apagar o(s) anterior(es).
-   * (Melhor abordagem) Ou criar uma função setObjectiveComponents que terá esse comportamento de ir adicionando componentes e a
-   * `setObjective` executará apenas ao final "juntando tudo".
+   * O 'setObjective' antigo agora pode ser um atalho
+   * para limpar e definir tudo de uma vez.
    */
   public setObjective(
     sense: "minimize" | "maximize",
     expression: Expression
   ): void {
-    expression.forEach((term) => {
-      if (
-        term.variable.id >= this.varCounter ||
-        this.variables[term.variable.id] !== term.variable
-      ) {
-        throw new Error(
-          `Variável '${term.variable.name}' na função objetivo não pertence a este modelo.`
-        );
-      }
-    });
-    this.objective = { sense, expression };
+    this.objectiveSense = sense;
+    this.objectiveExpression = expression;
+    // Limpe o offset se estiver redefinindo tudo
+    this.objectiveOffset = 0;
   }
 
   public addConstraint(
@@ -168,8 +189,6 @@ export class OptimizationModel {
     const newConstraint: Constraint = { name, expression, sense, rhs };
     this.constraints.push(newConstraint);
   }
-
-  private objectiveOffset = 0;
 
   /**
    * Constrói as matrizes A e b a partir do modelo pré-processado.
@@ -236,7 +255,7 @@ export class OptimizationModel {
       }
     }
 
-    // 2. Converte a representação esparsa intermediária para uma matriz densa temporária.
+    // Converte a representação esparsa intermediária para uma matriz densa temporária.
     const tempDenseA = Array(sparseRows.length)
       .fill(0)
       .map(() => Array(numVars).fill(0));
@@ -246,12 +265,12 @@ export class OptimizationModel {
       }
     });
 
-    // 3. (PASSO CRÍTICO) Filtra a matriz densa e o vetor 'b' para remover linhas dependentes.
+    //  Filtra a matriz densa e o vetor 'b' para remover linhas dependentes.
     const filtered = filterLinearlyIndependentRows(tempDenseA, tempB);
     const finalDenseA = filtered.A;
     const finalB = filtered.b;
 
-    // 4. Converte a matriz densa JÁ FILTRADA para o formato CSC final.
+    // Converte a matriz densa JÁ FILTRADA para o formato CSC final.
     const numRows = finalDenseA.length;
     const values: number[] = [];
     const rowIndices: number[] = [];
@@ -286,19 +305,22 @@ export class OptimizationModel {
     const presolve = new Presolve(
       this.variables,
       this.constraints,
-      this.objective
+      this.getObjective() // Passa o objetivo construído
     );
     const presolveResult = presolve.run();
 
     // Atualiza o estado do modelo com os resultados do presolve
     this.variables = presolveResult.variables;
     this.constraints = presolveResult.constraints;
-    this.objective = presolveResult.objective;
+    if (presolveResult.objective) {
+      this.objectiveSense = presolveResult.objective.sense;
+      this.objectiveExpression = presolveResult.objective.expression;
+    }
     this.objectiveOffset = presolveResult.objectiveOffset;
   }
 
   public displayModelStats(A: SparseMatrixCSC): void {
-    if (!this.objective) {
+    if (!this.objectiveExpression || !this.objectiveSense) {
       console.warn(
         "Aviso: Exibindo estatísticas de um modelo sem função objetivo."
       );
@@ -387,18 +409,23 @@ export class OptimizationModel {
    */
   public toCplexLpFormat(): string {
     const lines: string[] = [];
+    const objective = this.getObjective();
 
-    if (!this.objective) {
+    if (!objective) {
       throw new Error(
         "Não é possível gerar o LP: Função objetivo não definida."
       );
     }
 
-    // 1. Função Objetivo (sem alteração)
-    lines.push(this.objective.sense === "maximize" ? "Maximize" : "Minimize");
-    lines.push(` obj: ${this.formatExpression(this.objective.expression)}`);
+    lines.push(objective.sense === "maximize" ? "Maximize" : "Minimize");
+    // Adiciona o offset, se houver
+    const offsetStr =
+      this.objectiveOffset !== 0 ? ` + ${this.objectiveOffset}` : "";
+    lines.push(
+      ` obj: ${this.formatExpression(objective.expression)}${offsetStr}`
+    );
 
-    // 2. Restrições (Constraints) (sem alteração)
+    // Restrições (Constraints)
     lines.push("\nSubject To");
     if (this.constraints.length === 0) {
       lines.push(" \\ Nenhuma restrição");
@@ -412,7 +439,7 @@ export class OptimizationModel {
       );
     }
 
-    // 3. Limites (Bounds)
+    // Limites (Bounds)
     const boundsLines: string[] = [];
     for (const v of this.variables) {
       // --- Pula variáveis Binárias ---
@@ -420,7 +447,6 @@ export class OptimizationModel {
       if (v.type === "Binary") {
         continue;
       }
-      // --- Fim da Alteração ---
 
       const name = v.name;
       if (v.lowerBound === -Infinity && v.upperBound === Infinity) {
@@ -440,7 +466,23 @@ export class OptimizationModel {
       lines.push(...boundsLines);
     }
 
-    // 4. Tipos de Variáveis (General para Inteiras)
+    //Tipos de Variáveis
+
+    const continuous = this.variables.filter((v) => v.type === "Continuous");
+    if (continuous.length > 0) {
+      lines.push("\n\\ Continuous Variables (Default type >= 0)");
+      for (const v of continuous) {
+        // A linha só é útil se a variável não foi listada em 'Bounds'
+        const listedInBounds = boundsLines.some((line) =>
+          line.includes(` ${v.name} `)
+        );
+        if (!listedInBounds) {
+          lines.push(` \\ ${v.name}`);
+        }
+      }
+    }
+
+    // General para Inteiras
     const integers = this.variables.filter((v) => v.type === "Integer");
     if (integers.length > 0) {
       lines.push("\nGeneral");
@@ -449,7 +491,7 @@ export class OptimizationModel {
       }
     }
 
-    // --- Adiciona a seção Binaries ---
+    // Adiciona a seção Binaries
     const binaries = this.variables.filter((v) => v.type === "Binary");
     if (binaries.length > 0) {
       lines.push("\nBinaries");
