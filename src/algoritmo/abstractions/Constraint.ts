@@ -5,6 +5,8 @@ import {
   Disciplina,
   Docente,
 } from "../communs/interfaces/interfaces";
+import { modelSCP } from "../metodos/MILP/MILP";
+import { OptimizationModel, Term } from "../metodos/MILP/optimization_model";
 
 export interface ConstraintInterface {
   name: string;
@@ -109,4 +111,22 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
     disciplinas?: Disciplina[],
     travas?: Celula[]
   ): { label: string; qtd: number }[];
+
+  /**
+   * (NOVO) Método para formulação de restrições HARD no MILP.
+   * Adiciona restrições diretamente ao modelo.
+   */
+  milpHardFormulation?(model: OptimizationModel, modelData: modelSCP): void;
+
+  /**
+   * (NOVO) Método para formulação de restrições SOFT no MILP.
+   * Retorna termos para a função objetivo e, opcionalmente,
+   * novas restrições (ex: para definir variáveis de penalidade).
+   */
+  milpSoftFormulation?(
+    model: OptimizationModel,
+    modelData: modelSCP
+  ): {
+    objectiveTerms: Term[];
+  };
 }
