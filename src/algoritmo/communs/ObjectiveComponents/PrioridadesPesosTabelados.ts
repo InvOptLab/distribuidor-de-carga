@@ -1,5 +1,10 @@
+import {
+  OptimizationModel,
+  Term,
+} from "@/algoritmo/metodos/MILP/optimization_model";
 import { ObjectiveComponent } from "../../abstractions/ObjectiveComponent";
 import { Atribuicao, Docente, Formulario } from "../interfaces/interfaces";
+import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
 
 /**
  * Esse componente implementa a ideia de aplicar um multiplicador difirente para cada prioridade.
@@ -111,5 +116,22 @@ export class PrioridadesPesosTabelados extends ObjectiveComponent {
       }
     }
     return custo;
+  }
+
+  milpFormulation(model: OptimizationModel, modelData: modelSCP): Term[] {
+    console.log(this.tabelaMultiplicadores);
+
+    const objectiveTerms: Term[] = [];
+    modelData.D.forEach((i) =>
+      modelData.T.forEach((j) => {
+        objectiveTerms.push({
+          variable: modelData.x[i][j],
+          coefficient:
+            this.multiplier * this.tabelaMultiplicadores.get(modelData.p[i][j]),
+        });
+      })
+    );
+
+    return objectiveTerms;
   }
 }
