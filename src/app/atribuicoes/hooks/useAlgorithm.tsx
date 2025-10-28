@@ -19,10 +19,10 @@ import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
 import {
   Atribuicao,
   Estatisticas,
+  HighsColumn,
   Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { MILP } from "@/algoritmo/metodos/MILP/MILP";
-import { HighsSolution } from "../types/types";
 
 /**
  * Converte a saída do solver HiGHS (baseada em índices e objeto 'Primal')
@@ -36,7 +36,7 @@ import { HighsSolution } from "../types/types";
  * @returns Um array de objetos Atribuicao.
  */
 export function reconstruirAtribuicoes(
-  solutionVariables: HighsSolution,
+  solutionVariables: Record<string, HighsColumn>,
   activeDocentes: { nome: string }[],
   activeTurmas: { id: string }[]
 ): Atribuicao[] {
@@ -273,6 +273,21 @@ export function useAlgorithm() {
           docentes
         );
 
+        const activeAtribuicoes = atribuicoes
+          .filter((attr) =>
+            activeTurmas.some((d) => d.id === attr.id_disciplina)
+          )
+          .map((attr) => ({
+            ...attr,
+            docentes: attr.docentes.filter((docente) =>
+              activeDocentes.some((d) => d.nome === docente)
+            ),
+          }));
+
+        const objectives = Array.from(objectiveComponents.values()).filter(
+          (entry) => entry.isActive
+        );
+
         // Conjuntos
         const D_count = activeDocentes.length; // Número de docentes
         const T_count = activeTurmas.length; // Número de turmas
@@ -289,40 +304,56 @@ export function useAlgorithm() {
         // Prioridades p_ij do docente i para a turma j
         const p: number[][] = [];
 
-        let Pmax = 0;
-
-        for (const docente of activeDocentes) {
-          const prioridadesDocente = [];
-          for (const turma of activeTurmas) {
-            const prioridadeDocenteTurma = activeFormularios.find(
-              (f) =>
-                f.id_disciplina === turma.id && f.nome_docente === docente.nome
-            );
-
-            if (
-              prioridadeDocenteTurma &&
-              prioridadeDocenteTurma.prioridade > Pmax
-            ) {
-              Pmax = prioridadeDocenteTurma.prioridade;
-            }
-
-            prioridadesDocente.push(
-              prioridadeDocenteTurma ? prioridadeDocenteTurma.prioridade : 0
-            );
-          }
-          p.push(prioridadesDocente);
-        }
-
         const m: number[][] = [];
         const a: number[][] = [];
 
-        for (const {} of activeDocentes) {
+        for (const docente of activeDocentes) {
           const dados = [];
-          for (const {} of activeTurmas) {
+          for (const turma of activeTurmas) {
             dados.push(0);
+
+            const trava = travas.find(
+              (trava) =>
+                trava.nome_docente === docente.nome &&
+                trava.id_disciplina === turma.id
+            );
+
+            if (trava) {
+            }
           }
           m.push(dados);
           a.push(dados);
+        }
+
+        // Crie um Set para busca O(1)
+        const travasSet = new Set(
+          travas.map((trava) => `${trava.nome_docente}|${trava.id_disciplina}`)
+        );
+
+        for (let i = 0; i < activeDocentes.length; i++) {
+          const docente = activeDocentes[i];
+          for (let j = 0; j < activeTurmas.length; j++) {
+            const turma = activeTurmas[j];
+
+            // Verificação O(1)
+            if (travasSet.has(`${docente.nome}|${turma.id}`)) {
+              m[i][j] = 1;
+            } else {
+              m[i][j] = 0;
+            }
+
+            const atribuicao = activeAtribuicoes.find(
+              (atribuicao) =>
+                atribuicao.docentes.includes(docente.nome) &&
+                atribuicao.id_disciplina === turma.id
+            );
+
+            if (atribuicao) {
+              a[i][j] = 1;
+            } else {
+              a[i][j] = 0;
+            }
+          }
         }
 
         const F: [number, number][] = [];
@@ -342,29 +373,60 @@ export function useAlgorithm() {
           }
         }
 
-        const solver = new MILP("Modelo Inteiro", {
-          D: D,
-          T: T,
-          a: a,
-          c: c,
-          F: F,
-          m: m,
-          p: p,
-          s: s,
-        });
+        for (const docente of activeDocentes) {
+          const prioridadesDocente = [];
+          for (const turma of activeTurmas) {
+            const prioridadeDocenteTurma = formularios.find(
+              (f) =>
+                f.id_disciplina === turma.id && f.nome_docente === docente.nome
+            );
+
+            prioridadesDocente.push(
+              prioridadeDocenteTurma ? prioridadeDocenteTurma.prioridade : 0 //maxPriority + 1
+            );
+          }
+          p.push(prioridadesDocente);
+        }
+
+        const solver = new MILP(
+          "Modelo Inteiro",
+          {
+            atribuicoes: activeAtribuicoes,
+            docentes: activeDocentes,
+            prioridades: activeFormularios,
+            travas: travas,
+            turmas: activeTurmas,
+          },
+          [...hardConstraints.values(), ...softConstraints.values()],
+          { atribuicoes: activeAtribuicoes },
+          "max",
+          objectives,
+          undefined,
+          true,
+          {
+            D: D,
+            T: T,
+            a: a,
+            c: c,
+            F: F,
+            m: m,
+            p: p,
+            s: s,
+          }
+        );
 
         const solution = await solver.execute();
 
         const solutionVariables = solution.Columns;
 
-        const atribuicoes: Atribuicao[] = reconstruirAtribuicoes(
+        const atribuicoesSolucao: Atribuicao[] = reconstruirAtribuicoes(
           solutionVariables,
           activeDocentes,
           activeTurmas
         );
 
         const solucao: Solucao = {
-          atribuicoes: atribuicoes,
+          atribuicoes: atribuicoesSolucao,
           avaliacao: solution.ObjectiveValue,
           algorithm: solver,
         };
