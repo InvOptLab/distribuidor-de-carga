@@ -7,21 +7,32 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Card,
+  CardContent,
+  Chip,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SettingsIcon from "@mui/icons-material/Settings";
 import type React from "react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import TabuListConfig from "./_components/TabuListConfig";
 import ConstraintsConfig from "./_components/ConstraintsConfig";
 import NeighborhoodConfig from "./_components/NeighborhoodConfig";
 import StopCriteriaConfig from "./_components/StopCriteriaConfig";
 import AspirationConfig from "./_components/AspirationConfig";
 import ObjectiveConfig from "./_components/ObjectiveConfig";
+import { useAlgorithmContext } from "@/context/Algorithm";
+import { AlgorithmType, AVAILABLE_ALGORITHMS } from "../types/algorithm-types";
 
 export default function Configuracoes() {
+  const { selectedAlgorithm, setSelectedAlgorithm } = useAlgorithmContext();
   const [expandedPanels, setExpandedPanels] = useState<string[]>([
-    "tabu-list",
     "constraints",
+    "objectiveCost",
   ]);
 
   const handlePanelChange =
@@ -31,67 +42,105 @@ export default function Configuracoes() {
       );
     };
 
-  const configSections = [
-    {
-      id: "tabu-list",
-      title: "Lista Tabu",
-      description: "Configure o tipo e tamanho da lista tabu",
-      component: <TabuListConfig />,
-      icon: "🚫",
-    },
-    {
-      id: "constraints",
-      title: "Restrições",
-      description: "Gerencie restrições hard e soft do algoritmo",
-      component: <ConstraintsConfig />,
-      icon: "⚖️",
-    },
-    {
-      id: "objectiveCost",
-      title: "Custos da Função Objetivo",
-      description:
-        "Configure os custos que serão considerados na função objetivo",
-      component: <ObjectiveConfig />,
-      icon: "🎯",
-    },
-    {
-      id: "neighborhood",
-      title: "Geração da Vizinhança",
-      description: "Configure as funções de geração de vizinhança",
-      component: <NeighborhoodConfig />,
-      icon: "🔄",
-    },
-    {
-      id: "stop-criteria",
-      title: "Critérios de Parada",
-      description: "Defina quando o algoritmo deve parar",
-      component: <StopCriteriaConfig />,
-      icon: "⏹️",
-    },
-    {
-      id: "aspiration",
-      title: "Critérios de Aspiração",
-      description: "Configure critérios para aceitar soluções tabu",
-      component: <AspirationConfig />,
-      icon: "✨",
-    },
-  ];
+  const handleAlgorithmChange = (event: { target: { value: string } }) => {
+    setSelectedAlgorithm(event.target.value as AlgorithmType);
+    // Reset expanded panels when algorithm changes
+    setExpandedPanels(["constraints", "objectiveCost"]);
+  };
+
+  // Get the current algorithm configuration
+  const currentAlgorithm = useMemo(
+    () => AVAILABLE_ALGORITHMS.find((alg) => alg.id === selectedAlgorithm),
+    [selectedAlgorithm]
+  );
+
+  // Map section IDs to their components
+  const componentMap: Record<string, React.ReactNode> = {
+    "tabu-list": <TabuListConfig />,
+    constraints: <ConstraintsConfig />,
+    objectiveCost: <ObjectiveConfig />,
+    neighborhood: <NeighborhoodConfig />,
+    "stop-criteria": <StopCriteriaConfig />,
+    aspiration: <AspirationConfig />,
+  };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      {/* Header Section */}
       <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Configurações do Algoritmo
-        </Typography>
-        <Typography variant="body1" color="text.secondary" align="center">
-          Ajuste os parâmetros do algoritmo Busca Tabu para otimizar os
-          resultados
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+          <SettingsIcon sx={{ fontSize: 40, color: "primary.main" }} />
+          <Box>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 0 }}>
+              Configurações do Algoritmo
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Selecione o algoritmo e ajuste seus parâmetros para otimizar os
+              resultados
+            </Typography>
+          </Box>
+        </Box>
       </Paper>
 
+      {/* Algorithm Selection */}
+      <Card sx={{ mb: 3, boxShadow: 2 }}>
+        <CardContent>
+          <FormControl fullWidth>
+            <InputLabel id="algorithm-select-label">
+              Selecione o Algoritmo
+            </InputLabel>
+            <Select
+              labelId="algorithm-select-label"
+              id="algorithm-select"
+              value={selectedAlgorithm}
+              label="Selecione o Algoritmo"
+              onChange={handleAlgorithmChange}
+            >
+              {AVAILABLE_ALGORITHMS.map((algorithm) => (
+                <MenuItem key={algorithm.id} value={algorithm.id}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Typography sx={{ fontSize: "1.5rem" }}>
+                      {algorithm.icon}
+                    </Typography>
+                    <Box>
+                      <Typography variant="body1" fontWeight="medium">
+                        {algorithm.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {algorithm.description}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {currentAlgorithm && (
+            <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+                Seções de configuração:
+              </Typography>
+              {currentAlgorithm.configSections.map((section) => (
+                <Chip
+                  key={section.id}
+                  label={section.title}
+                  size="small"
+                  icon={
+                    <Typography sx={{ fontSize: "1rem" }}>
+                      {section.icon}
+                    </Typography>
+                  }
+                />
+              ))}
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Configuration Sections */}
       <Box sx={{ width: "100%" }}>
-        {/* eslint-disable-next-line @typescript-eslint/no-unused-vars*/}
-        {configSections.map((section, _index) => (
+        {currentAlgorithm?.configSections.map((section) => (
           <Accordion
             key={section.id}
             expanded={expandedPanels.includes(section.id)}
@@ -140,7 +189,7 @@ export default function Configuracoes() {
               </Box>
             </AccordionSummary>
             <AccordionDetails sx={{ p: 3 }}>
-              {section.component}
+              {componentMap[section.id]}
             </AccordionDetails>
           </Accordion>
         ))}
