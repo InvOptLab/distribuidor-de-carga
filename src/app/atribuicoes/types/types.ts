@@ -22,3 +22,23 @@ export interface DisciplinaFilters {
   search: string;
   rules: FilterRule[];
 }
+
+/**
+ * Interface auxiliar para representar a estrutura da solução do HiGHS
+ * para uma única variável.
+ */
+export interface HighsVariableSolution {
+  Index: number;
+  Lower: number | null;
+  Upper: number | null;
+  Primal: number; // Este é o valor que nos interessa
+  Type: string;
+  Name: string;
+}
+
+/**
+ * Tipo para representar o objeto completo da solução do HiGHS.
+ */
+export type HighsSolution = {
+  [variableName: string]: HighsVariableSolution;
+};
