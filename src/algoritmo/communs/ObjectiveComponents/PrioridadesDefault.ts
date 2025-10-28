@@ -1,3 +1,8 @@
+import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
+import {
+  OptimizationModel,
+  Term,
+} from "@/algoritmo/metodos/MILP/optimization_model";
 import { ObjectiveComponent } from "../../abstractions/ObjectiveComponent";
 import { Atribuicao, Docente, Formulario } from "../interfaces/interfaces";
 
@@ -76,5 +81,28 @@ export class PrioridadesDefault extends ObjectiveComponent {
       }
     }
     return custo;
+  }
+
+  /**
+   * Essa formulação **DEVE** ser revisitada e analisada a questão de ter um valor de prioridade para a prioridade 0
+   * (por exemplo o valor 1)
+   * @param model
+   * @param modelData
+   * @returns
+   */
+  milpFormulation(model: OptimizationModel, modelData: modelSCP): Term[] {
+    const objectiveTerms: Term[] = [];
+    modelData.D.forEach((i) =>
+      modelData.T.forEach((j) => {
+        objectiveTerms.push({
+          variable: modelData.x[i][j],
+          coefficient:
+            this.multiplier *
+            (modelData.p[i][j] > 0 ? modelData.Pmax - modelData.p[i][j] : 0),
+        });
+      })
+    );
+
+    return objectiveTerms;
   }
 }
