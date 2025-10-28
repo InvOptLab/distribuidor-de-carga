@@ -1,25 +1,17 @@
 import { ObjectiveFunction } from "../classes/ObjectiveFunction";
 import {
-  Atribuicao,
-  Celula,
   Context,
-  Disciplina,
-  Docente,
   Estatisticas,
-  Formulario,
   OpcoesMonitoramento,
   Solucao,
-  Vizinho,
 } from "../communs/interfaces/interfaces";
 import Constraint from "./Constraint";
-import { NeighborhoodFunction } from "./NeighborhoodFunction";
 import { ObjectiveComponent } from "./ObjectiveComponent";
-import { StopCriteria } from "./StopCriteria";
 
 /**
  * Criar uma classe para o algoritmo
  */
-export default abstract class Algorithm {
+export default abstract class Algorithm<T> {
   /**
    * Propriedades
    */
@@ -45,23 +37,11 @@ export default abstract class Algorithm {
    */
   public solution: Solucao | undefined = undefined;
 
-  // Processos de geração de vizinhos
-  public neighborhoodPipe: Map<string, NeighborhoodFunction> = new Map<
-    string,
-    NeighborhoodFunction
-  >();
-
   // Restrições
   public constraints: {
     hard: Map<string, Constraint<any>>;
     soft: Map<string, Constraint<any>>;
   };
-
-  /**
-   * Lista que armazena os processos que serão responsáveis por interromper a execução
-   * do algoritmo.
-   */
-  public stopPipe: Map<string, StopCriteria> = new Map<string, StopCriteria>();
 
   /**
    * Atribuito para utilizar a Função objetivo e seus componentes.
@@ -76,15 +56,9 @@ export default abstract class Algorithm {
    */
   constructor(
     name: string,
-    atribuicoes: Atribuicao[],
-    docentes: Docente[],
-    turmas: Disciplina[],
-    travas: Celula[],
-    prioridades: Formulario[],
+    context: Context,
     constraints: Constraint<any>[],
     solution: Solucao | undefined,
-    neighborhoodFunctions: NeighborhoodFunction[],
-    stopFunctions: StopCriteria[],
     objectiveType: "min" | "max",
     objectiveComponentes: ObjectiveComponent[],
     maiorPrioridade: number | undefined,
@@ -96,7 +70,7 @@ export default abstract class Algorithm {
 
     // Se o parâmetro `maiorPrioridade` não for informado, ele deverá ser encontrado.
     if (maiorPrioridade === undefined) {
-      for (const a of prioridades) {
+      for (const a of context.prioridades) {
         if (a.prioridade > maiorPrioridade || !maiorPrioridade) {
           maiorPrioridade = a.prioridade;
         }
@@ -104,14 +78,7 @@ export default abstract class Algorithm {
       maiorPrioridade += 1; // Deixando sempre o 0 como prioridade para quando houver atribução sem formulário
     }
 
-    this.context = {
-      atribuicoes: atribuicoes,
-      docentes: docentes,
-      turmas: turmas,
-      travas: travas,
-      prioridades: prioridades,
-      maiorPrioridade: maiorPrioridade,
-    };
+    this.context = context;
 
     /**
      * Inicializa o Map de Retsrições, atribui as restrições passadas para o contrutor.
@@ -129,13 +96,6 @@ export default abstract class Algorithm {
     }
 
     /**
-     * Inicializa um Map para o Pipe de geração de vizinhanças.
-     */
-    for (const process of neighborhoodFunctions) {
-      this.neighborhoodPipe.set(process.name, process);
-    }
-
-    /**
      * Inicializar a propriedade `statistics`
      */
     this.statistics = {
@@ -150,13 +110,6 @@ export default abstract class Algorithm {
         { label: string; qtd: number }[]
       >(),
     };
-
-    /**
-     * Inicializa a propriedade `stopCriteria`
-     */
-    for (const func of stopFunctions) {
-      this.stopPipe.set(func.name, func);
-    }
 
     /**
      * Inicializar a função objetivo
@@ -178,13 +131,7 @@ export default abstract class Algorithm {
     interrompe?: () => boolean,
     atualizaQuantidadeAlocacoes?: (qtd: number) => void,
     atualizaEstatisticas?: OpcoesMonitoramento
-  ): Promise<Vizinho>;
-
-  // /**
-  //  * Todos os algoritmos devem apresentar algumas restrições como padrão.
-  //  * Essa função adiciona as restrições na propriedade `constraints`.
-  //  */
-  // abstract setDefaultConstraints(): Map<string, Constraint>;
+  ): Promise<T>;
 
   /**
    * Helper privado para criar um objeto parcial com base nas chaves pedidas.
