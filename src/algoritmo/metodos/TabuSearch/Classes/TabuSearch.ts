@@ -1,5 +1,4 @@
 import { delay } from "@/algoritmo/communs/utils";
-import Algorithm from "../../../abstractions/Algorithm";
 import Constraint from "../../../abstractions/Constraint";
 import { NeighborhoodFunction } from "../../../abstractions/NeighborhoodFunction";
 import { ObjectiveComponent } from "../../../abstractions/ObjectiveComponent";
@@ -19,12 +18,13 @@ import { Moviment, TenureSizes } from "../TabuList/Moviment";
 import { Solution } from "../TabuList/Solution";
 import { AspirationCriteria } from "./Abstract/AspirationCriteria";
 import { TabuList } from "./Abstract/TabuList";
+import { HeuristicAlgorithm } from "@/algoritmo/abstractions/HeuristicAlgorithm";
 
 export interface EstatisticasTabu {
   tempoPorIteracaoTabu: Map<number, number>;
 }
 
-export class TabuSearch extends Algorithm {
+export class TabuSearch extends HeuristicAlgorithm {
   /**
    * Lista tabu com a sua tipagem dinâmica devido a possibilidades de diferentes interpretações.
    */
@@ -81,19 +81,21 @@ export class TabuSearch extends Algorithm {
 
     super(
       "Busca Tabu",
-      atribuicoes,
-      docentes,
-      turmas,
-      travas,
-      prioridades,
+      {
+        atribuicoes: atribuicoes,
+        docentes: docentes,
+        prioridades: prioridades,
+        travas: travas,
+        turmas: turmas,
+      },
       constraints,
       solution,
-      neighborhoodFunctions,
-      stopFunctions,
       objectiveType,
       objectiveComponentes,
       maiorPrioridade,
-      true
+      true,
+      neighborhoodFunctions,
+      stopFunctions
     );
 
     /**
