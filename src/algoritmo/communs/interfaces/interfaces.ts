@@ -26,8 +26,8 @@ export interface Context {
 
 export interface Vizinho {
   atribuicoes: Atribuicao[];
-  movimentos: Movimentos; // Depois será melhor acertar as tipagens
-  isTabu: boolean;
+  movimentos?: Movimentos; // Depois será melhor acertar as tipagens
+  isTabu?: boolean;
   avaliacao?: number;
 }
 
@@ -196,4 +196,99 @@ export interface OpcoesMonitoramento {
 
   /** A função que será chamada com os dados atualizados. */
   onUpdate: EstatisticasCallback;
+}
+
+/**
+ * Interface auxiliar para representar a estrutura da solução do HiGHS
+ * para uma única variável.
+ */
+export interface HighsVariableSolution {
+  Index: number;
+  Lower: number | null;
+  Upper: number | null;
+  Primal: number; // Este é o valor que nos interessa
+  Type: string;
+  Name: string;
+}
+
+/**
+ * Tipo para representar o objeto completo da solução do HiGHS.
+ */
+export type HighsSolution = {
+  [variableName: string]: HighsVariableSolution;
+};
+
+/**
+ * Define o tipo de uma variável no modelo (coluna).
+ */
+export type HighsVariableType = "Continuous" | "Integer" | "Binary";
+
+/**
+ * Representa o estado de uma única coluna (variável) no resultado do solver.
+ */
+export interface HighsColumn {
+  Index: number;
+  Lower: number;
+  /** O limite superior pode ser nulo, representando infinito. */
+  Upper: number | null;
+  Type: HighsVariableType;
+  Name: string;
+  /** Opcional: O valor da variável na solução (se houver). */
+  Primal?: number;
+}
+
+/**
+ * Representa o estado de uma única linha (restrição) no resultado do solver.
+ */
+export interface HighsRow {
+  Index: number;
+  /** O limite inferior pode ser nulo, representando -infinito. */
+  Lower: number | null;
+  /** O limite superior pode ser nulo, representando +infinito. */
+  Upper: number | null;
+  Name: string;
+  /** Opcional: O valor da atividade da linha (LHS) na solução (se houver). */
+  Primal?: number;
+}
+
+/**
+ * Define o status da solução retornado pelo solver.
+ * (Você pode adicionar mais status conforme a documentação da biblioteca).
+ */
+export type HighsSolverStatus =
+  | "Not set"
+  | "Load error"
+  | "Model error"
+  | "Presolve error"
+  | "Solve error"
+  | "Postsolve error"
+  | "Empty"
+  | "Infeasible"
+  | "Primal infeasible or unbounded"
+  | "Optimal"
+  | "Feasible"
+  | "Primal feasible"
+  | "Dual feasible"
+  | "Bounded"
+  | "Unbounded"
+  | "Time limit"
+  | "Iteration limit"
+  | "Unknown";
+
+/**
+ * Interface principal para o objeto de resultado retornado pela biblioteca Highs.
+ */
+export interface HighsSolverResult {
+  Status: HighsSolverStatus;
+
+  /** * Um objeto onde cada chave é o nome de uma variável
+   * e o valor são os detalhes dessa coluna.
+   */
+  Columns: Record<string, HighsColumn>;
+
+  /** Uma lista dos detalhes de cada linha (restrição). */
+  Rows: HighsRow[];
+
+  /** O valor final da função objetivo (pode ser nulo se não houver solução). */
+  ObjectiveValue: number | null;
 }
