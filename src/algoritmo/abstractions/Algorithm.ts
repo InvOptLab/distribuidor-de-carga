@@ -1,4 +1,5 @@
 import { ObjectiveFunction } from "../classes/ObjectiveFunction";
+import { Statistics } from "../classes/Statistics";
 import {
   Context,
   Estatisticas,
@@ -27,9 +28,10 @@ export default abstract class Algorithm<T> {
   protected enableStatistics: boolean = false;
 
   /**
-   * Interface com todas as propriedades da estatística, sendo undefined quando `enableStatistics` for `undefined`
+   * Interface com todas as propriedades da estatística.
+   * Agora é uma instância da classe Statistics.
    */
-  public statistics: Estatisticas;
+  public statistics: Statistics;
 
   /**
    * Solução final após a execução do algoritmo.
@@ -78,7 +80,7 @@ export default abstract class Algorithm<T> {
       maiorPrioridade += 1; // Deixando sempre o 0 como prioridade para quando houver atribução sem formulário
     }
 
-    this.context = context;
+    this.context = { ...context, maiorPrioridade: maiorPrioridade };
 
     /**
      * Inicializa o Map de Retsrições, atribui as restrições passadas para o contrutor.
@@ -98,18 +100,7 @@ export default abstract class Algorithm<T> {
     /**
      * Inicializar a propriedade `statistics`
      */
-    this.statistics = {
-      avaliacaoPorIteracao: new Map<number, number>(),
-      interrupcao: false,
-      iteracoes: 0,
-      tempoExecucao: 0,
-      tempoPorIteracao: new Map<number, number>(),
-      docentesPrioridade: new Map<number, number>(),
-      qtdOcorrenciasRestricoes: new Map<
-        string,
-        { label: string; qtd: number }[]
-      >(),
-    };
+    this.statistics = new Statistics();
 
     /**
      * Inicializar a função objetivo
