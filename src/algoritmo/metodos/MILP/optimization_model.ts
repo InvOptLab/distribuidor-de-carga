@@ -376,7 +376,7 @@ export class OptimizationModel {
     return expression
       .map((term, index) => {
         const coeff = term.coefficient;
-        if (Math.abs(coeff) < 1e-12) return null; // Ignora termos zero
+        // if (Math.abs(coeff) < 1e-12) return null; // Ignora termos zero
 
         const varName = term.variable.name;
         const absCoeff = Math.abs(coeff);
