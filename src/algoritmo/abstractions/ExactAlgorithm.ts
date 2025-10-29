@@ -7,9 +7,13 @@ import {
 } from "../communs/interfaces/interfaces";
 import Constraint from "./Constraint";
 import { ObjectiveComponent } from "./ObjectiveComponent";
+import { Statistics } from "../classes/Statistics";
+import { reconstruirAtribuicoes } from "@/app/atribuicoes/hooks/useAlgorithm";
 
 export abstract class ExactAlgorithm extends Algorithm<HighsSolverResult> {
   public model: OptimizationModel;
+
+  public statistics: Statistics;
 
   constructor(
     name: string,
@@ -40,22 +44,41 @@ export abstract class ExactAlgorithm extends Algorithm<HighsSolverResult> {
    */
   protected abstract buildModel(): void;
   protected abstract runSolver(): Promise<any>; // Retorno genérico do solver
-  // protected abstract parseSolverSolution(solverResult: any): Solucao;
 
   /**
    * Implementação do método de execução principal para solvers exatos.
    */
-  async execute(): Promise<any> {
+  async execute(): Promise<HighsSolverResult> {
     const startTime = performance.now();
 
     this.buildModel();
 
     const solverResult = await this.runSolver();
 
-    // this.solution = this.parseSolverSolution(solverResult);
-
     this.statistics.tempoExecucao = performance.now() - startTime;
-    // return this.solution;
+    this.statistics.iteracoes = 1; // Algoritmos exatos têm 1 "iteração"
+    this.statistics.interrupcao = false; // Ou baseado no status do solver
+
+    this.solution.atribuicoes = reconstruirAtribuicoes(
+      solverResult.Columns,
+      this.context.docentes,
+      this.context.turmas
+    );
+
+    /**
+     * Algoritmos exatos também devem gerar os histogramas.
+     * Os gráficos iterativos (tempo, avaliação) ficarão vazios,
+     * o que está correto.
+     */
+    if (this.solution) {
+      // Garanta que a solução foi parseada
+      this.statistics.generateFinalStatistics(
+        this.solution.atribuicoes,
+        this.context,
+        this.constraints
+      );
+    }
+
     return solverResult;
   }
 }

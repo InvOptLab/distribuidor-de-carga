@@ -1,3 +1,4 @@
+import { Statistics } from "../classes/Statistics";
 import { Context, Solucao, Vizinho } from "../communs/interfaces/interfaces";
 import Algorithm from "./Algorithm";
 import Constraint from "./Constraint";
@@ -9,6 +10,8 @@ export abstract class HeuristicAlgorithm extends Algorithm<Vizinho> {
   public neighborhoodPipe: Map<string, NeighborhoodFunction>;
   public stopPipe: Map<string, StopCriteria>;
   public currentSolution: Vizinho;
+
+  public statistics: Statistics;
 
   constructor(
     name: string,
