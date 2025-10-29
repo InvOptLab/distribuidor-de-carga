@@ -58,9 +58,10 @@ export default function HoveredCourse({
   // Função para determinar a cor da prioridade
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getPrioridadeColor = (prioridade: number): string => {
-    // if (prioridade >= 4) return "#4caf50"; // Verde para alta prioridade
-    // if (prioridade === 3) return "#ff9800"; // Laranja para média prioridade
-    return "#364cf4ff"; // "#f44336" Vermelho para baixa prioridade
+    if (prioridade >= 4) return "#4caf50"; // Verde para alta prioridade
+    if (prioridade === 3) return "#ff9800"; // Laranja para média prioridade
+    return "#f44336";
+    // return "#364cf4ff"; // "#f44336" Vermelho para baixa prioridade
   };
 
   const getDocenteByName = (nome: string): Docente | undefined => {
