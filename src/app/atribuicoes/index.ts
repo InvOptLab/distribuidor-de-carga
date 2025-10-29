@@ -1,5 +1,6 @@
+import Algorithm from "@/algoritmo/abstractions/Algorithm";
+import { Statistics } from "@/algoritmo/classes/Statistics";
 import { Solucao } from "@/algoritmo/communs/interfaces/interfaces";
-import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
 import {
   Atribuicao,
   Celula,
@@ -279,13 +280,14 @@ export function saveAtribuicoesInHistoryState(
   setHistoricoSolucoes,
   setSolucaoAtual,
   contextoExecucao: ContextoExecucao,
-  algorithm?: TabuSearch
+  algorithm?: Algorithm<any>,
+  statistics?: Statistics
 ) {
   const novaSolucao: Solucao = {
     atribuicoes: atribuicoes,
     avaliacao: avaliacao,
     algorithm: algorithm,
-    estatisticas: algorithm.statistics,
+    estatisticas: statistics,
   };
 
   const id = addNewSolutionToHistory(
