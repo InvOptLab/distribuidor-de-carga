@@ -451,7 +451,7 @@ export default function CustomSelector({
 
           return (
             <ListItemButton
-              key={isDisciplina(value) ? value.id : value.nome}
+              key={isDisciplina(value) ? `${value.id}` : value.nome}
               role="listitem"
               onClick={() => handleToggle(value)}
             >

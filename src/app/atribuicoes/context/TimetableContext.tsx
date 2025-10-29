@@ -500,14 +500,14 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         softConstraints, // Map de restrições soft
         hardConstraints, // Map de restrições hard
         objectives,
-        maxPriority + 1
+        maxPriority
       );
 
       const contextoExecucao: ContextoExecucao = {
         disciplinas: [...disciplinas],
         docentes: [...docentes],
         travas: [...travas],
-        maxPriority: maxPriority + 1,
+        maxPriority: maxPriority,
         formularios: formularios,
       };
 

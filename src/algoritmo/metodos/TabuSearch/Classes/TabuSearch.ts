@@ -142,23 +142,6 @@ export class TabuSearch extends HeuristicAlgorithm {
     // TODO: Implementar os demais casos quando as classes forem criadas.
 
     /**
-     * Inicializar a propriedade `statistics`
-     */
-    // this.statistics = {
-    //   avaliacaoPorIteracao: new Map<number, number>(),
-    //   interrupcao: false,
-    //   iteracoes: 0,
-    //   tempoExecucao: 0,
-    //   tempoPorIteracao: new Map<number, number>(),
-    //   docentesPrioridade: new Map<number, number>(),
-    //   qtdOcorrenciasRestricoes: new Map<
-    //     string,
-    //     { label: string; qtd: number }[]
-    //   >(),
-    //   tempoPorIteracaoTabu: new Map<number, number>(),
-    // };
-
-    /**
      * Inicializa a classe de estatísticas específica do Tabu.
      * Isso sobrescreve a inicialização padrão do 'Algorithm'.
      */

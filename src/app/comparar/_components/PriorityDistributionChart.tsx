@@ -61,8 +61,13 @@ export default function PriorityDistributionChart({
   ]);
   const sortedPriorities = Array.from(allPriorities).sort((a, b) => a - b);
 
+  const sequenciaCompletaPrioridades: number[] = [];
+
+  for (let i = 0; i <= sortedPriorities[sortedPriorities.length - 1]; i++) {
+    sequenciaCompletaPrioridades.push(i);
+  }
   // Preparar dados para o gráfico
-  const chartData = sortedPriorities.map((priority) => ({
+  const chartData = sequenciaCompletaPrioridades.map((priority) => ({
     prioridade: priority,
     solucaoA: distributionA.get(priority) || 0,
     solucaoB: distributionB.get(priority) || 0,

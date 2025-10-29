@@ -183,7 +183,7 @@ export default function TimetableGrid({
                       key={
                         atribuicao.nome +
                         "_" +
-                        prioridade +
+                        prioridade.prioridade +
                         "_" +
                         prioridade.id_disciplina
                       }
