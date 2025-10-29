@@ -244,7 +244,7 @@ export function useAlgorithm() {
             : parametros.tabuTenure.tenures,
           stop,
           aspiration,
-          undefined, //maxPriority + 1,
+          maxPriority + 1,
           "max",
           objectives
         );
@@ -389,7 +389,7 @@ export function useAlgorithm() {
         }
 
         const solver = new MILP(
-          "Modelo Inteiro",
+          "integer-solver",
           {
             atribuicoes: activeAtribuicoes,
             docentes: activeDocentes,
@@ -401,7 +401,7 @@ export function useAlgorithm() {
           { atribuicoes: activeAtribuicoes },
           "max",
           objectives,
-          undefined,
+          maxPriority + 1,
           true,
           {
             D: D,
@@ -417,18 +417,11 @@ export function useAlgorithm() {
 
         const solution = await solver.execute();
 
-        const solutionVariables = solution.Columns;
-
-        const atribuicoesSolucao: Atribuicao[] = reconstruirAtribuicoes(
-          solutionVariables,
-          activeDocentes,
-          activeTurmas
-        );
-
         const solucao: Solucao = {
-          atribuicoes: atribuicoesSolucao,
+          atribuicoes: solver.solution.atribuicoes,
           avaliacao: solution.ObjectiveValue,
           algorithm: solver,
+          estatisticas: solver.statistics,
         };
 
         setSolucaoAtual(solucao);
