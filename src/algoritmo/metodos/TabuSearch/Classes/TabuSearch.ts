@@ -19,6 +19,7 @@ import { Solution } from "../TabuList/Solution";
 import { AspirationCriteria } from "./Abstract/AspirationCriteria";
 import { TabuList } from "./Abstract/TabuList";
 import { HeuristicAlgorithm } from "@/algoritmo/abstractions/HeuristicAlgorithm";
+import { TabuStatistics } from "./TabuStatistics";
 
 export interface EstatisticasTabu {
   tempoPorIteracaoTabu: Map<number, number>;
@@ -56,7 +57,7 @@ export class TabuSearch extends HeuristicAlgorithm {
     AspirationCriteria
   >();
 
-  public statistics: Estatisticas & EstatisticasTabu;
+  public statistics: TabuStatistics;
 
   constructor(
     atribuicoes: Atribuicao[],
@@ -80,7 +81,7 @@ export class TabuSearch extends HeuristicAlgorithm {
      */
 
     super(
-      "Busca Tabu",
+      "tabu-search",
       {
         atribuicoes: atribuicoes,
         docentes: docentes,
@@ -97,11 +98,6 @@ export class TabuSearch extends HeuristicAlgorithm {
       neighborhoodFunctions,
       stopFunctions
     );
-
-    /**
-     * Finaliza a instância das estatísticas
-     */
-    this.statistics.tempoPorIteracaoTabu = new Map<number, number>();
 
     /**
      * Inicialização do atribuito bestSolution para iniciar com uma solução caso já exista e seja informada como parâmetro.
@@ -148,19 +144,25 @@ export class TabuSearch extends HeuristicAlgorithm {
     /**
      * Inicializar a propriedade `statistics`
      */
-    this.statistics = {
-      avaliacaoPorIteracao: new Map<number, number>(),
-      interrupcao: false,
-      iteracoes: 0,
-      tempoExecucao: 0,
-      tempoPorIteracao: new Map<number, number>(),
-      docentesPrioridade: new Map<number, number>(),
-      qtdOcorrenciasRestricoes: new Map<
-        string,
-        { label: string; qtd: number }[]
-      >(),
-      tempoPorIteracaoTabu: new Map<number, number>(),
-    };
+    // this.statistics = {
+    //   avaliacaoPorIteracao: new Map<number, number>(),
+    //   interrupcao: false,
+    //   iteracoes: 0,
+    //   tempoExecucao: 0,
+    //   tempoPorIteracao: new Map<number, number>(),
+    //   docentesPrioridade: new Map<number, number>(),
+    //   qtdOcorrenciasRestricoes: new Map<
+    //     string,
+    //     { label: string; qtd: number }[]
+    //   >(),
+    //   tempoPorIteracaoTabu: new Map<number, number>(),
+    // };
+
+    /**
+     * Inicializa a classe de estatísticas específica do Tabu.
+     * Isso sobrescreve a inicialização padrão do 'Algorithm'.
+     */
+    this.statistics = new TabuStatistics();
 
     /**
      * Inicializa os critérios de aspiração
@@ -331,7 +333,7 @@ export class TabuSearch extends HeuristicAlgorithm {
      * Variáveis para o controle do tempo de execução. Também serão utilizados nas estatisticas.
      */
     let tempoInicial: number; // Por iteração
-    let tempoFinal: number; // Por iteração
+    // let tempoFinal: number; // Por iteração
 
     let tempoInicialTabu: number; // Por iteração
     let tempoFinalTabu: number; // Por iteração
@@ -360,10 +362,11 @@ export class TabuSearch extends HeuristicAlgorithm {
        * Atualizar as estatisticas
        */
 
-      this.statistics.avaliacaoPorIteracao.set(
-        iteracoes,
-        this.bestSolution.avaliacao
-      );
+      // this.statistics.addIteracaoData(
+      //   iteracoes,
+      //   this.bestSolution.avaliacao,
+      //   performance.now() - tempoInicial
+      // );
 
       /**
        * Captura o tempo de inicio da iteração
@@ -423,17 +426,17 @@ export class TabuSearch extends HeuristicAlgorithm {
       }
 
       /**
+       * Atualiza o tempo por iteração
+       */
+      this.statistics.addIteracaoData(
+        iteracoes,
+        this.bestSolution.avaliacao,
+        performance.now() - tempoInicial
+      );
+      /**
        * Captura o tempo final de execução da iteração, como também atualiza o map com as novas informações
        */
-      tempoFinal = performance.now();
-      this.statistics.tempoPorIteracao.set(
-        iteracoes,
-        tempoFinal - tempoInicial
-      );
-
-      /**
-       * Atualiza o tempo final do tabu para cada iteração
-       */
+      // tempoFinal = performance.now();
       this.statistics.tempoPorIteracaoTabu.set(
         iteracoes,
         tempoFinalTabu - tempoInicialTabu
@@ -498,12 +501,15 @@ export class TabuSearch extends HeuristicAlgorithm {
     /**
      * Finalizar a atualização das estatísticas
      */
-    this.statistics.interrupcao = interrompe && interrompe();
     this.statistics.iteracoes = iteracoes;
-    this.statistics.tempoExecucao = tempoFinal - tempoInicialTotal;
+    this.statistics.interrupcao = (interrompe && interrompe()) || false; // Ajustado
+    this.statistics.tempoExecucao = performance.now() - tempoInicialTotal; // Ajustado
 
-    await this.generateStatistics();
-
+    this.statistics.generateFinalStatistics(
+      this.incumbente.atribuicoes,
+      this.context,
+      this.constraints
+    );
     this.bestSolution = this.incumbente;
 
     /**
@@ -514,68 +520,5 @@ export class TabuSearch extends HeuristicAlgorithm {
     // this.statistics.ultimaVizinhanca = vizinhanca;
 
     return this.incumbente;
-  }
-
-  /**
-   * Metódo responsável por gerar as estatísticas extras presentes na classe {@link Estatisticas}
-   * @returns {Estatisticas} Retorna todas as estatísticas geradas.
-   */
-  async generateStatistics(): Promise<Estatisticas> {
-    /**
-     * Gerar os valores referentes a quantidade de atribuições por prioridade.
-     * O processo tem início com o preenchimento de toda a lista com zeros.
-     */
-    for (let i = 0; i < this.context.maiorPrioridade; i++) {
-      this.statistics.docentesPrioridade.set(i, 0);
-    }
-
-    /**
-     * Caso o docente atribuído não tenha um formulário preenchido, o valor '0' representará esses casos.
-     */
-    for (const atribuicao of this.incumbente.atribuicoes) {
-      for (const _docente of atribuicao.docentes) {
-        const docente = this.context.docentes.find(
-          (doc) => doc.nome === _docente
-        );
-
-        if (docente.formularios.has(atribuicao.id_disciplina)) {
-          const prioridade = docente.formularios.get(atribuicao.id_disciplina);
-          const qtd = this.statistics.docentesPrioridade.get(prioridade);
-          this.statistics.docentesPrioridade.set(prioridade, qtd + 1);
-        } else {
-          const qtd = this.statistics.docentesPrioridade.get(0);
-          this.statistics.docentesPrioridade.set(0, qtd + 1);
-        }
-      }
-    }
-
-    /**
-     * Preenche as estatísticas referentes a quantidade de ocorrências das quebras das restrições.
-     */
-
-    for (const constraint of this.constraints.hard.values()) {
-      this.statistics.qtdOcorrenciasRestricoes.set(
-        constraint.name,
-        constraint.occurrences(
-          this.incumbente.atribuicoes,
-          this.context.docentes,
-          this.context.turmas,
-          this.context.travas
-        )
-      );
-    }
-    for (const constraint of this.constraints.soft.values()) {
-      this.statistics.qtdOcorrenciasRestricoes.set(
-        constraint.name,
-        constraint.occurrences(
-          this.incumbente.atribuicoes,
-          this.context.docentes,
-          this.context.turmas,
-          this.context.travas
-        )
-      );
-    }
-
-    return this.statistics;
   }
 }
