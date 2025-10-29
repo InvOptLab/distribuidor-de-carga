@@ -12,11 +12,11 @@ import {
   Box,
   Typography,
   Tooltip,
-  Grid,
   Card,
   CardContent,
   Tabs,
   Tab,
+  Grid2,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
@@ -26,17 +26,9 @@ import LoopIcon from "@mui/icons-material/Loop";
 import LinearProgress, {
   type LinearProgressProps,
 } from "@mui/material/LinearProgress";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 import { Estatisticas } from "@/algoritmo/communs/interfaces/interfaces";
+import { LineChart } from "@mui/x-charts";
+import ChartContainer from "@/app/statistics/_components/ChartContainer";
 
 export interface IProgressBar {
   total: number;
@@ -242,32 +234,32 @@ export default function AlgoritmoDialog({
         </Box>
 
         {/* Cards de métricas */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={4}>
+        <Grid2 container spacing={2} sx={{ mb: 3 }}>
+          <Grid2 size={{ xs: 12, sm: 4 }}>
             <MetricCard
               title="Iterações"
               value={metrics.iteracoes}
               icon={<LoopIcon />}
               color="primary"
             />
-          </Grid>
-          <Grid item xs={12} sm={4}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 4 }}>
             <MetricCard
               title="Tempo Médio"
               value={metrics.tempoMedio}
               icon={<TimerIcon />}
               color="info"
             />
-          </Grid>
-          <Grid item xs={12} sm={4}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 4 }}>
             <MetricCard
               title="Melhor Avaliação"
               value={metrics.melhorAvaliacao}
               icon={<TrendingUpIcon />}
               color="success"
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
 
         {/* Tabs para diferentes visualizações */}
         {chartData.length > 0 && (
@@ -284,73 +276,54 @@ export default function AlgoritmoDialog({
             {/* Gráfico de Avaliação */}
             {tabValue === 0 && (
               <Box sx={{ width: "100%", height: 300 }}>
-                <ResponsiveContainer>
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="iteracao"
-                      label={{
-                        value: "Iteração",
-                        position: "insideBottom",
-                        offset: -5,
-                      }}
-                    />
-                    <YAxis
-                      label={{
-                        value: "Avaliação",
-                        angle: -90,
-                        position: "insideLeft",
-                      }}
-                      domain={["auto", "auto"]}
-                    />
-                    <RechartsTooltip />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="avaliacao"
-                      stroke="#4caf50"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      name="Avaliação"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <ChartContainer>
+                  <LineChart
+                    xAxis={[
+                      {
+                        data: chartData.map((item) => item.iteracao),
+                        label: "Iteração",
+                      },
+                    ]}
+                    series={[
+                      {
+                        data: Array.from(
+                          chartData.map((item) => item.avaliacao)
+                        ),
+                        label: "Avaliação",
+                        color: "#4caf50",
+                      },
+                    ]}
+                    grid={{ vertical: true, horizontal: true }}
+                    height={300}
+                    margin={{ left: 75, right: 75 }}
+                  />
+                </ChartContainer>
               </Box>
             )}
 
             {/* Gráfico de Tempo */}
             {tabValue === 1 && (
               <Box sx={{ width: "100%", height: 300 }}>
-                <ResponsiveContainer>
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="iteracao"
-                      label={{
-                        value: "Iteração",
-                        position: "insideBottom",
-                        offset: -5,
-                      }}
-                    />
-                    <YAxis
-                      label={{
-                        value: "Tempo (ms)",
-                        angle: -90,
-                        position: "insideLeft",
-                      }}
-                    />
-                    <RechartsTooltip />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="tempo"
-                      stroke="#2196f3"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      name="Tempo (ms)"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <ChartContainer>
+                  <LineChart
+                    xAxis={[
+                      {
+                        data: chartData.map((item) => item.iteracao),
+                        label: "Iteração",
+                      },
+                    ]}
+                    series={[
+                      {
+                        data: Array.from(chartData.map((item) => item.tempo)),
+                        label: "Tempo",
+                        color: "#1C77C3",
+                      },
+                    ]}
+                    grid={{ vertical: true, horizontal: true }}
+                    height={300}
+                    margin={{ left: 75, right: 75 }}
+                  />
+                </ChartContainer>
               </Box>
             )}
           </Box>
