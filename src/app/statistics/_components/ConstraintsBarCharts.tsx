@@ -13,8 +13,8 @@ interface ConstraintsBarChartsProps {
 export default function ConstraintsBarCharts({
   ocorrencias,
 }: ConstraintsBarChartsProps) {
-  const xLabels = [];
-  const values = [];
+  const xLabels: string[] = [];
+  const values: number[] = [];
 
   for (const constraint of ocorrencias.values()) {
     for (const item of constraint) {
@@ -28,17 +28,13 @@ export default function ConstraintsBarCharts({
       xAxis={[
         {
           scaleType: "band",
-          data: xLabels /*.map((label) => label.replace(/ /g, "\n"))*/, // Força quebra de linha em espaços
+          data: xLabels,
           tickLabelStyle: {
-            whiteSpace: "pre-wrap", // Permite quebras de linha
-            textAnchor: "middle", // Centraliza os rótulos
-            fontSize: 12, // Ajusta tamanho da fonte
+            whiteSpace: "pre-wrap",
+            textAnchor: "middle",
+            fontSize: 12,
             wordWrap: "break-word",
           },
-          // colorMap: {
-          //   type: "ordinal",
-          //   colors: generateColors(xLabels.length),
-          // },
           label: "Restrições",
         },
       ]}
@@ -51,6 +47,7 @@ export default function ConstraintsBarCharts({
         {
           data: values,
           label: "Ocorrências",
+          color: "#D63230",
         },
       ]}
       height={300}

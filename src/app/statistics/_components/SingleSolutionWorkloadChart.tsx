@@ -1,6 +1,5 @@
 "use client";
 
-import type { HistoricoSolucao } from "@/context/Global/utils";
 import {
   Card,
   CardContent,
@@ -23,6 +22,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import { useState } from "react";
+import { HistoricoSolucao } from "@/context/Global/utils";
 
 interface SingleSolutionWorkloadChartProps {
   solution: HistoricoSolucao;
@@ -47,18 +47,13 @@ export default function SingleSolutionWorkloadChart({
 }: SingleSolutionWorkloadChartProps) {
   const [expanded, setExpanded] = useState<string | false>(false);
 
-  // Função para calcular a carga de trabalho de cada docente
   const calculateDocenteWorkloads = (): DocenteWorkload[] => {
     const { atribuicoes } = solution.solucao;
     const { disciplinas, docentes } = solution.contexto;
 
-    // Criar mapa de disciplinas para acesso rápido
     const disciplinaMap = new Map(disciplinas.map((d) => [d.id, d]));
-
-    // Criar mapa para armazenar carga por docente
     const docenteWorkloadMap = new Map<string, DocenteWorkload>();
 
-    // Inicializar todos os docentes ativos com carga zero
     docentes
       .filter((docente) => docente.ativo)
       .forEach((docente) => {
@@ -71,7 +66,6 @@ export default function SingleSolutionWorkloadChart({
         });
       });
 
-    // Calcular cargas baseado nas atribuições
     atribuicoes.forEach((atribuicao) => {
       const disciplina = disciplinaMap.get(atribuicao.id_disciplina);
       if (!disciplina || !disciplina.carga) return;
@@ -89,7 +83,6 @@ export default function SingleSolutionWorkloadChart({
       });
     });
 
-    // Arredondar cargas para 2 casas decimais
     docenteWorkloadMap.forEach((workload) => {
       workload.cargaArredondada = Math.round(workload.cargaTotal * 100) / 100;
     });
@@ -97,7 +90,6 @@ export default function SingleSolutionWorkloadChart({
     return Array.from(docenteWorkloadMap.values());
   };
 
-  // Função para agrupar docentes por carga arredondada
   const groupByWorkload = (workloads: DocenteWorkload[]): WorkloadGroup[] => {
     const groups = new Map<number, WorkloadGroup>();
 
@@ -125,23 +117,20 @@ export default function SingleSolutionWorkloadChart({
   const workloads = calculateDocenteWorkloads();
   const groups = groupByWorkload(workloads);
 
-  // Preparar dados para o gráfico
   const chartData = groups.map((group) => ({
     carga: group.cargaArredondada.toString(),
     cargaNumeric: group.cargaArredondada,
     quantidade: group.quantidade,
   }));
 
-  // Função para obter cor baseada na carga
   const getWorkloadColor = (carga: number): string => {
-    if (carga === 0) return "#FFC107"; // Amarelo
-    if (carga <= 2) return "#81C784"; // Verde claro
-    if (carga <= 4) return "#1976D2"; // Azul
-    if (carga <= 6) return "#FF9800"; // Laranja
-    return "#D32F2F"; // Vermelho para cargas altas
+    if (carga === 0) return "#FFC107";
+    if (carga <= 2) return "#81C784";
+    if (carga <= 4) return "#1976D2";
+    if (carga <= 6) return "#FF9800";
+    return "#D32F2F";
   };
 
-  // Calcular estatísticas
   const totalDocentes = workloads.length;
   const docentesComCarga = workloads.filter((w) => w.cargaTotal > 0).length;
   const docentesSemCarga = workloads.filter((w) => w.cargaTotal === 0).length;
@@ -153,7 +142,6 @@ export default function SingleSolutionWorkloadChart({
     0
   );
 
-  // Calcular desvio padrão
   const variance =
     workloads.reduce(
       (sum, w) => sum + Math.pow(w.cargaTotal - avgWorkload, 2),
@@ -168,7 +156,6 @@ export default function SingleSolutionWorkloadChart({
           Análise de Carga Didática - {solution.datetime}
         </Typography>
 
-        {/* Estatísticas Principais */}
         <Box
           sx={{
             display: "grid",
@@ -258,7 +245,6 @@ export default function SingleSolutionWorkloadChart({
           </Paper>
         </Box>
 
-        {/* Estatísticas Detalhadas */}
         <Alert severity="info" sx={{ mb: 3 }}>
           <Typography variant="body2">
             <strong>Carga Máxima:</strong> {maxWorkload.toFixed(2)} •{" "}
@@ -268,7 +254,6 @@ export default function SingleSolutionWorkloadChart({
           </Typography>
         </Alert>
 
-        {/* Gráfico de Barras */}
         <Box sx={{ width: "100%", height: 400, mb: 3 }}>
           {chartData.length > 0 ? (
             <BarChart
@@ -323,7 +308,6 @@ export default function SingleSolutionWorkloadChart({
           )}
         </Box>
 
-        {/* Legenda de Cores */}
         <Box
           sx={{
             mb: 3,
@@ -366,7 +350,6 @@ export default function SingleSolutionWorkloadChart({
           />
         </Box>
 
-        {/* Detalhes dos Docentes por Faixa de Carga */}
         <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
           Detalhes dos Docentes por Faixa de Carga
         </Typography>
@@ -484,7 +467,6 @@ export default function SingleSolutionWorkloadChart({
           </Accordion>
         ))}
 
-        {/* Análise de Distribuição */}
         <Paper
           elevation={1}
           sx={{ mt: 3, p: 2, bgcolor: "grey.50", borderRadius: 2 }}

@@ -1,8 +1,6 @@
 "use client";
 
 import type React from "react";
-
-import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
 import {
   Box,
   FormControl,
@@ -19,6 +17,7 @@ import {
 import { useState } from "react";
 import SolutionHistoryDetails from "./_components/SolutionHistoryDetails";
 import SingleSolutionWorkloadChart from "./_components/SingleSolutionWorkloadChart";
+import { useGlobalContext } from "@/context/Global";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,7 +42,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export default function Statistics() {
-  const { historicoSolucoes } = useSolutionHistory();
+  const { historicoSolucoes } = useGlobalContext();
   const [solutionId, setSolutionId] = useState("");
   const [currentTab, setCurrentTab] = useState(0);
 
@@ -68,7 +67,6 @@ export default function Statistics() {
         alignItems: "center",
       }}
     >
-      {/* Card para seleção de soluções */}
       <Card
         elevation={3}
         sx={{
@@ -106,7 +104,6 @@ export default function Statistics() {
         </FormControl>
       </Card>
 
-      {/* Tabs e conteúdo */}
       {solutionId && selectedSolution && (
         <Box sx={{ width: "100%" }}>
           <Card elevation={2} sx={{ mb: 2 }}>
