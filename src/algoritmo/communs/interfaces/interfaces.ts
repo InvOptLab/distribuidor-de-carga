@@ -1,4 +1,6 @@
+import Algorithm from "@/algoritmo/abstractions/Algorithm";
 import Constraint from "../../abstractions/Constraint";
+import { Statistics } from "@/algoritmo/classes/Statistics";
 
 export enum MovimentType {
   Add /** Movimento de adicionar um docente */,
@@ -26,7 +28,7 @@ export interface Context {
 
 export interface Vizinho {
   atribuicoes: Atribuicao[];
-  movimentos?: Movimentos; // Depois será melhor acertar as tipagens
+  movimentos?: Movimentos;
   isTabu?: boolean;
   avaliacao?: number;
 }
@@ -38,18 +40,6 @@ export interface ConstraintInterface {
   descricao: string;
   constraint: new (...args: any[]) => Constraint<any>;
 }
-
-// export interface Statistics {
-//   tempoExecucao: number;
-//   iteracoes: number;
-//   interrupcao: boolean;
-//   avaliacaoPorIteracao: Map<number, number>;
-//   tempoPorIteracao: Map<number, number>;
-//   docentesPrioridade?: Map<number, number>;
-//   qtdOcorrenciasRestricoes?: Map<string, { label: string; qtd: number }[]>;
-//   ultimaVizinhanca: Vizinho[];
-//   tempoPorIteracaoTabu?: Map<number, number>;
-// }
 
 export interface Estatisticas {
   tempoExecucao: number;
@@ -117,7 +107,6 @@ export interface Disciplina {
 export interface Atribuicao {
   id_disciplina: string;
   docentes: string[];
-  // COLOCAR A PRIORIDADE AQUI
 }
 
 export interface Formulario {
@@ -153,9 +142,9 @@ export interface Solucao {
   atribuicoes: Atribuicao[];
   avaliacao?: number;
   idHistorico?: string;
-  estatisticas?: Estatisticas;
+  estatisticas?: Statistics; //Estatisticas;
   isTabu?: boolean;
-  algorithm?: any;
+  algorithm?: Algorithm<any>;
 }
 
 /**
@@ -178,8 +167,6 @@ export interface IParameter<T> {
 export type ConstraintParams = {
   [key: string]: IParameter<any>;
 };
-
-export type Algorithm = string;
 
 export // Tipo do Callback: recebe um objeto parcial
 type EstatisticasCallback = (statsAtualizadas: Partial<Estatisticas>) => void;
