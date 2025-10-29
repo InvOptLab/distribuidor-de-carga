@@ -20,15 +20,54 @@ import {
   removeInativos,
   saveAtribuicoesInHistoryState,
 } from "..";
-import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
 import {
   Atribuicao,
   Celula,
+  Context,
   Disciplina,
   Docente,
+  Estatisticas,
+  Solucao,
   TipoTrava,
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { ContextoExecucao, getActiveFormularios } from "@/context/Global/utils";
+import { ObjectiveComponent } from "@/algoritmo/abstractions/ObjectiveComponent";
+import { calculateManualSolution } from "@/algoritmo/communs/calculateManualSolution";
+import Algorithm from "@/algoritmo/abstractions/Algorithm";
+import Constraint from "@/algoritmo/abstractions/Constraint";
+
+/**
+ * Remover essa classe depois desse local.
+ */
+class InsercaoManual extends Algorithm<any> {
+  constructor(
+    name: string,
+    context: Context,
+    constraints: Constraint<any>[],
+    solution: Solucao | undefined,
+    objectiveType: "min" | "max",
+    objectiveComponentes: ObjectiveComponent[],
+    maiorPrioridade: number | undefined
+  ) {
+    super(
+      name,
+      context,
+      constraints,
+      solution,
+      objectiveType,
+      objectiveComponentes,
+      maiorPrioridade,
+      true
+    );
+  }
+
+  execute(): Promise<any> {
+    return;
+  }
+  protected filtrarEstatisticas(): Partial<Estatisticas> {
+    return;
+  }
+}
 
 interface TimetableContextType {
   docentes: Docente[];
@@ -75,16 +114,8 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     setHistoricoSolucoes,
   } = useGlobalContext();
 
-  const {
-    parametros,
-    hardConstraints,
-    softConstraints,
-    neighborhoodFunctions,
-    stopFunctions,
-    aspirationFunctions,
-    tabuListType,
-    objectiveComponents,
-  } = useAlgorithmContext();
+  const { hardConstraints, softConstraints, objectiveComponents } =
+    useAlgorithmContext();
   const { cleanSolucaoAtual } = useSolutionHistory();
   const { addAlerta } = useAlertsContext();
 
@@ -450,76 +481,65 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
   };
 
   /**
-   * Salva as alterações atuais no histórico
+   * Salva as alterações atuais no histórico (maunal)
    */
   const saveAlterations = async () => {
     try {
-      const neighborhood = Array.from(neighborhoodFunctions.values())
-        .filter((entry) => entry.isActive)
-        .map((entry) => entry.instance);
-
-      const stop = Array.from(stopFunctions.values())
-        .filter((entry) => entry.isActive)
-        .map((entry) => entry.instance);
-
-      const aspiration = Array.from(aspirationFunctions.values())
-        .filter((entry) => entry.isActive)
-        .map((entry) => entry.instance);
-
-      const objectives = Array.from(objectiveComponents.values()).filter(
-        (entry) => entry.isActive
-      );
+      const objectives: ObjectiveComponent[] = Array.from(
+        objectiveComponents.values()
+      ).filter((entry) => entry.isActive);
 
       const ativos = removeInativos(docentes, disciplinas, atribuicoes);
 
-      const buscaTabu = new TabuSearch(
+      const solucaoManual: Solucao = await calculateManualSolution(
         ativos.atribuicoes,
         ativos.docentes,
         ativos.turmas,
         travas,
         formularios,
-        [...hardConstraints.values(), ...softConstraints.values()],
-        { atribuicoes: ativos.atribuicoes },
-        neighborhood,
-        tabuListType,
-        tabuListType === "Solução"
-          ? parametros.tabuTenure.size
-          : parametros.tabuTenure.tenures,
-        stop,
-        aspiration,
-        maxPriority,
-        "max",
-        objectives
+        softConstraints, // Map de restrições soft
+        hardConstraints, // Map de restrições hard
+        objectives,
+        maxPriority + 1
       );
-
-      const avaliacao = (
-        await buscaTabu.evaluateNeighbors([
-          {
-            atribuicoes: ativos.atribuicoes,
-            isTabu: false,
-            movimentos: { add: [], drop: [] },
-          },
-        ])
-      )[0].avaliacao;
-
-      buscaTabu.generateStatistics();
 
       const contextoExecucao: ContextoExecucao = {
         disciplinas: [...disciplinas],
         docentes: [...docentes],
         travas: [...travas],
-        maxPriority: maxPriority,
+        maxPriority: maxPriority + 1,
         formularios: formularios,
       };
 
+      /**
+       * Precisa ser revisto, talvez uma opção seja criar um método "manual" para facilitar a inserção.
+       */
+      const algorithm = new InsercaoManual(
+        "manual-insert",
+        {
+          atribuicoes: ativos.atribuicoes,
+          docentes: ativos.docentes,
+          turmas: ativos.turmas,
+          prioridades: formularios,
+          travas: travas,
+          maiorPrioridade: maxPriority,
+        },
+        [...hardConstraints.values(), ...softConstraints.values()],
+        solucaoManual,
+        "max",
+        [...objectiveComponents.values()],
+        maxPriority
+      );
+
       saveAtribuicoesInHistoryState(
-        atribuicoes,
-        avaliacao,
+        solucaoManual.atribuicoes,
+        solucaoManual.avaliacao,
         historicoSolucoes,
         setHistoricoSolucoes,
         setSolucaoAtual,
         contextoExecucao,
-        buscaTabu
+        algorithm,
+        solucaoManual.estatisticas
       );
 
       addAlerta("As atribuições foram adicionadas ao histórico!", "success");
