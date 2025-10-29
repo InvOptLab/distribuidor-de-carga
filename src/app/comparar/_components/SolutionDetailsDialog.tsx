@@ -34,6 +34,7 @@ import ListIcon from "@mui/icons-material/List";
 import { HistoricoSolucao } from "@/context/Global/utils";
 import { Solution } from "@/algoritmo/metodos/TabuSearch/TabuList/Solution";
 import { Moviment } from "@/algoritmo/metodos/TabuSearch/TabuList/Moviment";
+import { isHeuristicAlgorithm, isTabuSearch } from "@/algoritmo/communs/utils";
 
 interface SolutionDetailsDialogProps {
   open: boolean;
@@ -78,20 +79,21 @@ export default function SolutionDetailsDialog({
 
   // Função para obter informações da TabuList
   const getTabuListInfo = () => {
-    if (!algorithm?.tabuList) return null;
+    if (isTabuSearch(algorithm)) {
+      if (!algorithm?.tabuList) return null;
+      if (algorithm.tabuList instanceof Solution) {
+        return {
+          size: algorithm.tabuList.tabuSize || 0,
+          type: "Solução",
+        };
+      }
 
-    if (algorithm.tabuList instanceof Solution) {
-      return {
-        size: algorithm.tabuList.tabuSize || 0,
-        type: "Solução",
-      };
-    }
-
-    if (algorithm.tabuList instanceof Moviment) {
-      return {
-        size: `Add: ${algorithm.tabuList.tenures.add}, Drop: ${algorithm.tabuList.tenures.drop}`,
-        type: "Movimento",
-      };
+      if (algorithm.tabuList instanceof Moviment) {
+        return {
+          size: `Add: ${algorithm.tabuList.tenures.add}, Drop: ${algorithm.tabuList.tenures.drop}`,
+          type: "Movimento",
+        };
+      }
     }
   };
 
@@ -108,11 +110,17 @@ export default function SolutionDetailsDialog({
   };
 
   const tabuListInfo = getTabuListInfo();
-  const neighborhoodFunctions = mapToArray(algorithm?.neighborhoodPipe);
+  const neighborhoodFunctions = mapToArray(
+    isHeuristicAlgorithm(algorithm) ? algorithm.neighborhoodPipe : null
+  );
   const hardConstraints = mapToArray(algorithm?.constraints?.hard);
   const softConstraints = mapToArray(algorithm?.constraints?.soft);
-  const stopFunctions = mapToArray(algorithm?.stopPipe);
-  const aspirationFunctions = mapToArray(algorithm?.aspirationPipe);
+  const stopFunctions = mapToArray(
+    isHeuristicAlgorithm(algorithm) ? algorithm.stopPipe : null
+  );
+  const aspirationFunctions = mapToArray(
+    isTabuSearch(algorithm) ? algorithm.aspirationPipe : null
+  );
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
