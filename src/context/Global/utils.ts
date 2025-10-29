@@ -1,6 +1,5 @@
+import Algorithm from "@/algoritmo/abstractions/Algorithm";
 import { Horario, Solucao } from "@/algoritmo/communs/interfaces/interfaces";
-import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
-
 export interface Docente {
   nome: string;
   saldo?: number;
@@ -80,13 +79,6 @@ export interface Celula {
   trava?: boolean;
 }
 
-// Ver se o melhor lugar para essa interface é aqui
-// export interface Horario {
-//   dia: "Seg." | "Ter." | "Qua." | "Qui." | "Sex." | "Sáb." | "";
-//   inicio: string;
-//   fim: string;
-// }
-
 export interface ContextoExecucao {
   docentes: Docente[];
   disciplinas: Disciplina[];
@@ -105,15 +97,6 @@ export interface Estatisticas {
   qtdOcorrenciasRestricoes?: Map<string, { label: string; qtd: number }[]>;
 }
 
-// export interface Solucao {
-//   atribuicoes: Atribuicao[];
-//   avaliacao?: number;
-//   idHistorico?: string;
-//   estatisticas?: Estatisticas;
-//   isTabu?: boolean;
-//   algorithm?: TabuSearch;
-// }
-
 export enum TipoInsercao {
   Algoritmo = "Algoritmo",
   Manual = "Manual",
@@ -126,7 +109,7 @@ export interface HistoricoSolucao {
   solucao: Solucao;
   tipoInsercao: TipoInsercao;
   contexto: ContextoExecucao;
-  algorithm?: TabuSearch;
+  algorithm?: Algorithm<any>;
 }
 
 /**
