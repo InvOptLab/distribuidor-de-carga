@@ -1,4 +1,7 @@
+import Algorithm from "../abstractions/Algorithm";
 import Constraint from "../abstractions/Constraint";
+import { MILP } from "../metodos/MILP/MILP";
+import { TabuSearch } from "../metodos/TabuSearch/Classes/TabuSearch";
 import {
   Atribuicao,
   Celula,
@@ -171,4 +174,37 @@ export function atribuicoesIguais(atr1: Atribuicao, atr2: Atribuicao): boolean {
     atr1.docentes.length === atr2.docentes.length &&
     atr1.docentes.every((docente) => atr2.docentes.includes(docente))
   );
+}
+
+// Definir um tipo de união para todos os seus algoritmos
+export type AnyAlgorithm = TabuSearch | MILP;
+
+// --- Type Guards ---
+
+/**
+ * Verifica se um algoritmo é uma instância de TabuSearch.
+ */
+export function isTabuSearch(
+  alg: Algorithm<any> | AnyAlgorithm
+): alg is TabuSearch {
+  // Use o nome que você definiu no construtor da classe TabuSearch
+  return alg.name === "tabu-search"; //
+}
+
+/**
+ * Verifica se um algoritmo é uma instância de MILP.
+ */
+export function isMILP(alg: Algorithm<any> | AnyAlgorithm): alg is MILP {
+  // Use o nome que você definiu no construtor da classe MILP
+  return alg.name === "integer-solver"; //
+}
+
+/**
+ * Verifica se é um algoritmo heurístico (com pipes de vizinhança/parada).
+ * Isso é útil para seções compartilhadas.
+ */
+export function isHeuristicAlgorithm(
+  alg: Algorithm<any> | AnyAlgorithm
+): alg is TabuSearch {
+  return isTabuSearch(alg);
 }
