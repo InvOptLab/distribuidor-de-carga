@@ -119,8 +119,6 @@ export class PrioridadesPesosTabelados extends ObjectiveComponent {
   }
 
   milpFormulation(model: OptimizationModel, modelData: modelSCP): Term[] {
-    console.log(this.tabelaMultiplicadores);
-
     const objectiveTerms: Term[] = [];
     modelData.D.forEach((i) =>
       modelData.T.forEach((j) => {
