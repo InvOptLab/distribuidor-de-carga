@@ -35,6 +35,7 @@ export function addNewSolutionToHistory(
     datetime: date.toLocaleString(),
     tipoInsercao: tipoInsercao,
     contexto: contextoExecucao,
+    algorithm: novaSolucao.algorithm,
   });
 
   setHistoricoSolucoes(newHistoricoSolucoesMap);
