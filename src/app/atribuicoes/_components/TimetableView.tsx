@@ -1,9 +1,8 @@
 "use client";
 
-import { Fade, Paper, Drawer, Box } from "@mui/material";
+import { Fade, Drawer, Box, Paper } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import TimetableGrid from "./TimetableGrid";
 
 import CleanAlertDialog from "./CleanAlertDialog";
 
@@ -17,6 +16,8 @@ import { Disciplina, Docente } from "@/algoritmo/communs/interfaces/interfaces";
 import AlgoritmoDialog from "@/components/AlgorithmDialog";
 import HoveredCourse from "./HoveredCourse";
 import HoveredDocente from "./HoveredDocente";
+// import TimetableDataGrid from "./TimetableDataGrid";
+import TimetableGrid from "./TimetableGrid";
 
 const customTheme = createTheme({
   components: {
@@ -150,7 +151,20 @@ export default function TimetableView() {
 
   return (
     <ThemeProvider theme={customTheme}>
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          // Define a altura total do layout da grade.
+          // '100%' funciona se o layout pai (ex: em page.tsx ou layout.tsx)
+          // já tiver uma altura definida.
+          // Uma alternativa comum é 'calc(100vh - 80px)' (se sua navbar tiver 80px)
+          // Vamos usar o valor que você tinha (88vh), mas aplicando-o ao
+          // contêiner inteiro, não apenas à grade.
+          height: "90vh",
+          gap: 1, // Substitui o 'space-y-4' (gap: 2 = 16px)
+        }}
+      >
         <ActionBar
           onExecute={executeProcess}
           onClean={() => setOpenCleanDialog(true)}
@@ -181,17 +195,22 @@ export default function TimetableView() {
           />
         </Drawer>
 
-        <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
-          <Paper sx={{ width: "100%", height: "100%", overflow: "hidden" }}>
-            {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
-              <TimetableGrid
-                setHoveredCourse={handleCourseEnter}
-                setHoveredDocente={handleDocenteEnter}
-                onMouseLeaveGrid={handleMouseLeave}
-              />
-            )}
-          </Paper>
-        </Box>
+        <Paper
+          sx={{
+            width: "100%",
+            overflow: "hidden",
+            flex: 1, // <-- CHAVE: Faz o Paper preencher o espaço restante
+            display: "flex", // Para que o TableContainer possa usar height: 100%
+          }}
+        >
+          {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
+            <TimetableGrid //TimetableDataGrid -> Futuro
+              setHoveredCourse={handleCourseEnter}
+              setHoveredDocente={handleDocenteEnter}
+              onMouseLeaveGrid={handleMouseLeave}
+            />
+          )}
+        </Paper>
       </Box>
 
       <AlgoritmoDialog

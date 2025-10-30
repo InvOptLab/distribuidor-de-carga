@@ -64,14 +64,14 @@ export default function TimetableGrid({
 
   return (
     <TableContainer
-      sx={{ maxHeight: "100%", overflow: "scroll" }}
+      sx={{
+        height: "100%", // Preenche o <Paper> pai
+        width: "100%", // Preenche o <Paper> pai
+        overflow: "auto", // Adiciona scrolls X e Y *automaticamente*
+      }}
       onMouseLeave={onMouseLeaveGrid}
     >
-      <Table
-        sx={{ width: "fit-content", height: "fit-content" }}
-        aria-label="sticky table"
-        stickyHeader
-      >
+      <Table aria-label="sticky table" stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell
