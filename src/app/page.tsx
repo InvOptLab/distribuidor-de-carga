@@ -25,6 +25,7 @@ import {
   School,
 } from "@mui/icons-material";
 import InsightsIcon from "@mui/icons-material/Insights";
+import AnimatedLogo from "@/components/AnimatedLogo";
 
 export default function Home() {
   const autores: IAuthProfileProps[] = [
@@ -85,6 +86,10 @@ export default function Home() {
       <Box display="flex" flexDirection="column" gap={6}>
         {/* Hero Section */}
         <Box textAlign="center">
+          <Box display="flex" justifyContent="center" marginBottom={4}>
+            <AnimatedLogo />
+          </Box>
+
           <Typography
             variant="h3"
             component="h1"
