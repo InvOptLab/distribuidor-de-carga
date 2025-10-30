@@ -1,20 +1,23 @@
 "use client";
 
-import { Fade, Paper } from "@mui/material";
+import { Fade, Paper, Drawer, Box } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import TimetableGrid from "./TimetableGrid";
-import AlgoritmoDialog from "@/components/AlgorithmDialog";
+
 import CleanAlertDialog from "./CleanAlertDialog";
-import HoveredCourse from "./HoveredCourse";
-import HoveredDocente from "./HoveredDocente";
+
 import TimetableFilters from "./TimetableFilters";
+import ActionBar from "./ActionBar";
 import { useAlgorithm } from "../hooks/useAlgorithm";
-import type { Disciplina, Docente } from "@/context/Global/utils";
+
 import { useTimetable } from "../context/TimetableContext";
 import { useGlobalContext } from "@/context/Global";
+import { Disciplina, Docente } from "@/algoritmo/communs/interfaces/interfaces";
+import AlgoritmoDialog from "@/components/AlgorithmDialog";
+import HoveredCourse from "./HoveredCourse";
+import HoveredDocente from "./HoveredDocente";
 
-// Customizar todos os TableCell
 const customTheme = createTheme({
   components: {
     MuiTableCell: {
@@ -58,19 +61,17 @@ export default function TimetableView() {
   const [openCleanDialog, setOpenCleanDialog] = useState(false);
   const [hoveredCourse, setHoveredCourse] = useState<Disciplina | null>(null);
   const [hoveredDocente, setHoveredDocente] = useState<Docente | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // Refs dos timers
   const enterTimer = useRef<NodeJS.Timeout | null>(null);
   const leaveTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const ENTER_DELAY_MS = 150; // Atraso para entrar
-  const LEAVE_DELAY_MS = 200; // Atraso para sair (dá tempo de mover o mouse para o card)
+  const ENTER_DELAY_MS = 150;
+  const LEAVE_DELAY_MS = 200;
 
-  // Refs para os *elementos de conteúdo rolável* dentro dos cards
   const courseCardContentRef = useRef<HTMLDivElement>(null);
   const docenteCardContentRef = useRef<HTMLDivElement>(null);
 
-  // Limpa qualquer timer pendente
   const clearTimers = () => {
     if (enterTimer.current) {
       clearTimeout(enterTimer.current);
@@ -82,17 +83,15 @@ export default function TimetableView() {
     }
   };
 
-  // Handler para ENTRAR em um CURSO
   const handleCourseEnter = (disciplina: Disciplina | null) => {
     if (!disciplina) return;
     clearTimers();
     enterTimer.current = setTimeout(() => {
       setHoveredCourse(disciplina);
-      setHoveredDocente(null); // Garante que só um esteja aberto
+      setHoveredDocente(null);
     }, ENTER_DELAY_MS);
   };
 
-  // Handler para ENTRAR em um DOCENTE
   const handleDocenteEnter = (nome: string | null) => {
     clearTimers();
     if (!nome) return;
@@ -102,11 +101,10 @@ export default function TimetableView() {
 
     enterTimer.current = setTimeout(() => {
       setHoveredDocente(docente);
-      setHoveredCourse(null); // Garante que só um esteja aberto
+      setHoveredCourse(null);
     }, ENTER_DELAY_MS);
   };
 
-  // Handler para SAIR (seja do trigger ou do próprio card)
   const handleMouseLeave = () => {
     clearTimers();
     leaveTimer.current = setTimeout(() => {
@@ -124,65 +122,77 @@ export default function TimetableView() {
     setOpenCleanDialog(false);
   };
 
-  // useEffect para encaminhamento de Scroll
+  const hasActiveFilters =
+    docenteFilters.search ||
+    docenteFilters.rules.length > 0 ||
+    disciplinaFilters.search ||
+    disciplinaFilters.rules.length > 0;
+
   useEffect(() => {
-    // Esta função será chamada CADA vez que o usuário usar o scroll
     const handleWheel = (event: WheelEvent) => {
-      // Verifica se o card de Docente está ativo e se sua ref existe
       if (hoveredDocente && docenteCardContentRef.current) {
-        event.preventDefault(); // Impede a página de rolar
-        // Aplica o scroll manualmente ao conteúdo do card
+        event.preventDefault();
         docenteCardContentRef.current.scrollTop += event.deltaY;
-      }
-      // Se não, verifica se o card de Curso está ativo
-      else if (hoveredCourse && courseCardContentRef.current) {
-        event.preventDefault(); // Impede a página de rolar
-        // Aplica o scroll manualmente ao conteúdo do card
+      } else if (hoveredCourse && courseCardContentRef.current) {
+        event.preventDefault();
         courseCardContentRef.current.scrollTop += event.deltaY;
       }
-      // Se nenhum card estiver ativo, esta função não fará nada
-      // (e o listener idealmente já terá sido removido)
     };
 
-    // Adiciona o listener SÓ SE um dos cards estiver ativo
     if (hoveredDocente || hoveredCourse) {
-      // Adicionamos { passive: false } para permitir o uso de event.preventDefault()
       window.addEventListener("wheel", handleWheel, { passive: false });
     }
 
-    // Função de limpeza do useEffect:
-    // Isso é chamado quando o componente é desmontado
-    // ou ANTES de o efeito rodar novamente (quando as dependências mudam)
     return () => {
       window.removeEventListener("wheel", handleWheel);
     };
-  }, [hoveredDocente, hoveredCourse]); // Dependências: re-executa se o card ativo mudar
+  }, [hoveredDocente, hoveredCourse]);
 
   return (
     <ThemeProvider theme={customTheme}>
-      <div className="space-y-4">
-        <TimetableFilters
-          docenteFilters={docenteFilters}
-          disciplinaFilters={disciplinaFilters}
-          onDocenteFiltersChange={setDocenteFilters}
-          onDisciplinaFiltersChange={setDisciplinaFilters}
-          onClearFilters={clearFilters}
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+        <ActionBar
+          onExecute={executeProcess}
+          onClean={() => setOpenCleanDialog(true)}
+          onDownload={downalodJson}
+          onSave={saveAlterations}
+          onToggleFilters={() => setFiltersOpen(!filtersOpen)}
+          hasActiveFilters={!!hasActiveFilters}
         />
 
-        <Paper sx={{ width: "100%", overflow: "hidden" }}>
-          {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
-            <TimetableGrid
-              onExecute={executeProcess}
-              onClean={() => setOpenCleanDialog(true)}
-              onDownload={downalodJson}
-              onSave={saveAlterations}
-              setHoveredCourse={handleCourseEnter}
-              setHoveredDocente={handleDocenteEnter}
-              onMouseLeaveGrid={handleMouseLeave} // Handler de saída
-            />
-          )}
-        </Paper>
-      </div>
+        <Drawer
+          anchor="right"
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          sx={{
+            "& .MuiDrawer-paper": {
+              width: { xs: "100%", sm: 400, md: 500 },
+              padding: 2,
+            },
+          }}
+        >
+          <TimetableFilters
+            docenteFilters={docenteFilters}
+            disciplinaFilters={disciplinaFilters}
+            onDocenteFiltersChange={setDocenteFilters}
+            onDisciplinaFiltersChange={setDisciplinaFilters}
+            onClearFilters={clearFilters}
+            onClose={() => setFiltersOpen(false)}
+          />
+        </Drawer>
+
+        <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
+          <Paper sx={{ width: "100%", height: "100%", overflow: "hidden" }}>
+            {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
+              <TimetableGrid
+                setHoveredCourse={handleCourseEnter}
+                setHoveredDocente={handleDocenteEnter}
+                onMouseLeaveGrid={handleMouseLeave}
+              />
+            )}
+          </Paper>
+        </Box>
+      </Box>
 
       <AlgoritmoDialog
         open={openDialog}
@@ -198,24 +208,19 @@ export default function TimetableView() {
         estatisticasMonitoradas={estatisticasMonitoradas}
       />
 
-      {/* Envolve os cards em <Fade> para fluidez */}
-      {/* O `in` agora é um booleano */}
       <Fade in={!!hoveredCourse} timeout={150}>
-        {/* Wrapper <div style={{...}}> é necessário para o Fade 
-            posicionar corretamente um item 'fixed' */}
         <div
           style={{ position: "fixed", zIndex: 99, bottom: "6vh", right: "2vw" }}
         >
-          {/* Só renderiza o conteúdo se o objeto existir (evita erro no Fade out) */}
           {hoveredCourse && (
             <HoveredCourse
               ref={courseCardContentRef}
               disciplina={hoveredCourse}
               formularios={formularios}
               docentes={docentes}
-              onMouseEnter={clearTimers} // Se entrar no card, cancela o "fechar"
-              onMouseLeave={handleMouseLeave} // Se sair do card, agenda o "fechar"
-            ></HoveredCourse>
+              onMouseEnter={clearTimers}
+              onMouseLeave={handleMouseLeave}
+            />
           )}
         </div>
       </Fade>
@@ -235,7 +240,7 @@ export default function TimetableView() {
               )}
               onMouseEnter={clearTimers}
               onMouseLeave={handleMouseLeave}
-            ></HoveredDocente>
+            />
           )}
         </div>
       </Fade>

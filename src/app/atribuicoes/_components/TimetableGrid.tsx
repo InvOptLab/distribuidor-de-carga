@@ -7,31 +7,24 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import { useTimetableRows } from "../hooks/useTimetableRows";
 import { useHoverEffects } from "../hooks/useHoverEffects";
-import ButtonGroupHeader from "./ButtonGroupHeader";
 import HeaderCell from "./HeaderCell";
-import { TipoTrava } from "@/context/Global/utils";
-import { Typography } from "@mui/material";
-import type { Disciplina } from "@/context/Global/utils";
 import { useTimetable } from "../context/TimetableContext";
+import {
+  Disciplina,
+  TipoTrava,
+} from "@/algoritmo/communs/interfaces/interfaces";
 
 interface TimetableGridProps {
-  onExecute: () => void;
-  onClean: () => void;
-  onDownload: () => void;
-  onSave: () => void;
   setHoveredCourse: (disciplina: Disciplina | null) => void;
   setHoveredDocente: (docente: string | null) => void;
   onMouseLeaveGrid: () => void;
 }
 
 export default function TimetableGrid({
-  onExecute,
-  onClean,
-  onDownload,
-  onSave,
   setHoveredCourse,
   setHoveredDocente,
   onMouseLeaveGrid,
@@ -51,26 +44,27 @@ export default function TimetableGrid({
 
   const { handleCellClick, handleColumnClick, handleRowClick } = useTimetable();
 
-  const handleMouseEnterDocente = (atribuicao: {
-    nome: string;
-    prioridades: {
-      id_disciplina: string;
-      prioridade: number;
-    }[];
-  }) => {
+  const handleMouseEnterDocente = (
+    atribuicao: {
+      nome: string;
+      prioridades: {
+        id_disciplina: string;
+        prioridade: number;
+      }[];
+    } | null
+  ) => {
     if (atribuicao) {
       handleOnMouseEnterDocente(atribuicao.nome);
-      setHoveredDocente(atribuicao.nome); // Chama o handler do TimetableView
+      setHoveredDocente(atribuicao.nome);
     } else {
       handleOnMouseEnterDocente(null);
-      onMouseLeaveGrid(); // Chama o handler de SAÍDA do TimetableView
-      // setHoveredDocente(null);
+      onMouseLeaveGrid();
     }
   };
 
   return (
     <TableContainer
-      sx={{ maxHeight: "88vh", overflow: "scroll" }}
+      sx={{ maxHeight: "100%", overflow: "scroll" }}
       onMouseLeave={onMouseLeaveGrid}
     >
       <Table
@@ -89,15 +83,10 @@ export default function TimetableGrid({
                 backgroundColor: "white",
                 zIndex: 3,
                 textAlign: "center",
+                fontWeight: "bold",
               }}
             >
-              <ButtonGroupHeader
-                key="button_group_timetabling"
-                onExecute={onExecute}
-                onClean={onClean}
-                download={onDownload}
-                saveAlterations={onSave}
-              />
+              Docentes
             </TableCell>
             {filteredDisciplinas.map(
               (disciplina) =>

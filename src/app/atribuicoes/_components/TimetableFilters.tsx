@@ -2,14 +2,11 @@
 
 import { useState } from "react";
 import {
-  Card,
-  CardContent,
   Typography,
   TextField,
   Chip,
   Box,
   Button,
-  Collapse,
   IconButton,
   Grid,
   Select,
@@ -22,9 +19,10 @@ import {
   DialogActions,
   Switch,
   FormControlLabel,
+  Divider,
 } from "@mui/material";
-import { ExpandMore, ExpandLess, Clear, Add } from "@mui/icons-material";
-import { FilterRule } from "../types/types";
+import { Clear, Add, Close } from "@mui/icons-material";
+import type { FilterRule } from "../types/types";
 import { useTimetable } from "../context/TimetableContext";
 
 interface TimetableFiltersProps {
@@ -39,6 +37,7 @@ interface TimetableFiltersProps {
   onDocenteFiltersChange: (filters: any) => void;
   onDisciplinaFiltersChange: (filters: any) => void;
   onClearFilters: () => void;
+  onClose: () => void;
 }
 
 export default function TimetableFilters({
@@ -47,13 +46,12 @@ export default function TimetableFilters({
   onDocenteFiltersChange,
   onDisciplinaFiltersChange,
   onClearFilters,
+  onClose,
 }: TimetableFiltersProps) {
   const { disciplinas } = useTimetable();
-  const [expanded, setExpanded] = useState(false);
   const [openDocenteDialog, setOpenDocenteDialog] = useState(false);
   const [openDisciplinaDialog, setOpenDisciplinaDialog] = useState(false);
 
-  // Get unique values for chips
   const uniqueGroups = Array.from(
     new Set(disciplinas.filter((d) => d.ativo && d.grupo).map((d) => d.grupo))
   ).filter(Boolean);
@@ -151,147 +149,153 @@ export default function TimetableFilters({
   };
 
   return (
-    <Card>
-      <CardContent>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={1}
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h6">Filtros da Grade</Typography>
+        <IconButton onClick={onClose}>
+          <Close />
+        </IconButton>
+      </Box>
+
+      <Divider sx={{ mb: 2 }} />
+
+      {hasActiveFilters && (
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<Clear />}
+          onClick={onClearFilters}
+          fullWidth
+          sx={{ mb: 2 }}
         >
-          <Typography variant="h6">Filtros da Grade</Typography>
-          <Box display="flex" gap={1}>
-            {hasActiveFilters && (
-              <Button
-                variant="outlined"
+          Limpar Todos os Filtros
+        </Button>
+      )}
+
+      {hasActiveFilters && (
+        <Box mb={2}>
+          <Typography variant="subtitle2" gutterBottom>
+            Filtros Ativos:
+          </Typography>
+          <Box display="flex" flexWrap="wrap" gap={1}>
+            {docenteFilters.search && (
+              <Chip
+                label={`Busca Docente: "${docenteFilters.search}"`}
                 size="small"
-                startIcon={<Clear />}
-                onClick={onClearFilters}
-              >
-                Limpar Filtros
-              </Button>
+                color="secondary"
+                variant="outlined"
+              />
             )}
-            <IconButton onClick={() => setExpanded(!expanded)}>
-              {expanded ? <ExpandLess /> : <ExpandMore />}
-            </IconButton>
+            {disciplinaFilters.search && (
+              <Chip
+                label={`Busca Disciplina: "${disciplinaFilters.search}"`}
+                size="small"
+                color="secondary"
+                variant="outlined"
+              />
+            )}
+            {docenteFilters.rules.map((rule) =>
+              renderFilterRule(rule, removeDocenteRule)
+            )}
+            {disciplinaFilters.rules.map((rule) =>
+              renderFilterRule(rule, removeDisciplinaRule)
+            )}
           </Box>
         </Box>
+      )}
 
-        {/* Active Filters Display */}
-        {hasActiveFilters && (
-          <Box mb={1}>
-            <Typography variant="subtitle2" gutterBottom>
-              Filtros Ativos:
+      <Divider sx={{ mb: 2 }} />
+
+      <Box sx={{ flexGrow: 1, overflow: "auto" }}>
+        <Grid container spacing={3}>
+          {/* Filtros de Docentes */}
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" gutterBottom fontWeight="bold">
+              Filtros de Docentes (Linhas)
             </Typography>
+
+            <TextField
+              fullWidth
+              size="small"
+              label="Buscar docente por nome"
+              value={docenteFilters.search}
+              onChange={(e) => handleDocenteSearchChange(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={1}
+            >
+              <Typography variant="body2">Filtros Avançados:</Typography>
+              <Button
+                size="small"
+                startIcon={<Add />}
+                onClick={() => setOpenDocenteDialog(true)}
+                variant="outlined"
+              >
+                Adicionar
+              </Button>
+            </Box>
+
             <Box display="flex" flexWrap="wrap" gap={1}>
-              {docenteFilters.search && (
-                <Chip
-                  label={`Busca Docente: "${docenteFilters.search}"`}
-                  size="small"
-                  color="secondary"
-                  variant="outlined"
-                />
-              )}
-              {disciplinaFilters.search && (
-                <Chip
-                  label={`Busca Disciplina: "${disciplinaFilters.search}"`}
-                  size="small"
-                  color="secondary"
-                  variant="outlined"
-                />
-              )}
               {docenteFilters.rules.map((rule) =>
                 renderFilterRule(rule, removeDocenteRule)
               )}
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+
+          {/* Filtros de Disciplinas */}
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" gutterBottom fontWeight="bold">
+              Filtros de Disciplinas (Colunas)
+            </Typography>
+
+            <TextField
+              fullWidth
+              size="small"
+              label="Buscar disciplina por nome, código ou ID"
+              value={disciplinaFilters.search}
+              onChange={(e) => handleDisciplinaSearchChange(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={2}
+            >
+              <Typography variant="body2">Filtros Avançados:</Typography>
+              <Button
+                size="small"
+                startIcon={<Add />}
+                onClick={() => setOpenDisciplinaDialog(true)}
+                variant="outlined"
+              >
+                Adicionar
+              </Button>
+            </Box>
+
+            <Box display="flex" flexWrap="wrap" gap={1}>
               {disciplinaFilters.rules.map((rule) =>
                 renderFilterRule(rule, removeDisciplinaRule)
               )}
             </Box>
-          </Box>
-        )}
-
-        <Collapse in={expanded}>
-          <Grid container spacing={3}>
-            {/* Filtros de Docentes */}
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle1" gutterBottom>
-                Filtros de Docentes (Linhas)
-              </Typography>
-
-              <TextField
-                fullWidth
-                size="small"
-                label="Buscar docente por nome"
-                value={docenteFilters.search}
-                onChange={(e) => handleDocenteSearchChange(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={1}
-              >
-                <Typography variant="body2">Filtros Avançados:</Typography>
-                <Button
-                  size="small"
-                  startIcon={<Add />}
-                  onClick={() => setOpenDocenteDialog(true)}
-                  variant="outlined"
-                >
-                  Adicionar Filtro
-                </Button>
-              </Box>
-
-              <Box display="flex" flexWrap="wrap" gap={1}>
-                {docenteFilters.rules.map((rule) =>
-                  renderFilterRule(rule, removeDocenteRule)
-                )}
-              </Box>
-            </Grid>
-
-            {/* Filtros de Disciplinas */}
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle1" gutterBottom>
-                Filtros de Disciplinas (Colunas)
-              </Typography>
-
-              <TextField
-                fullWidth
-                size="small"
-                label="Buscar disciplina por nome, código ou ID"
-                value={disciplinaFilters.search}
-                onChange={(e) => handleDisciplinaSearchChange(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={2}
-              >
-                <Typography variant="body2">Filtros Avançados:</Typography>
-                <Button
-                  size="small"
-                  startIcon={<Add />}
-                  onClick={() => setOpenDisciplinaDialog(true)}
-                  variant="outlined"
-                >
-                  Adicionar Filtro
-                </Button>
-              </Box>
-
-              <Box display="flex" flexWrap="wrap" gap={1}>
-                {disciplinaFilters.rules.map((rule) =>
-                  renderFilterRule(rule, removeDisciplinaRule)
-                )}
-              </Box>
-            </Grid>
           </Grid>
-        </Collapse>
-      </CardContent>
+        </Grid>
+      </Box>
 
       {/* Docente Filter Dialog */}
       <FilterDialog
@@ -346,10 +350,9 @@ export default function TimetableFilters({
             label: "Horário (Range)",
             type: "timeRange",
           },
-          // { key: "prioridade", label: "Prioridade", type: "number" },
         ]}
       />
-    </Card>
+    </Box>
   );
 }
 
@@ -406,8 +409,7 @@ function FilterDialog({
       value = booleanValue;
       type = "boolean";
     } else if (selectedFieldConfig?.type === "timeRange") {
-      // Allow partial time ranges
-      if (!timeStart && !timeEnd) return; // At least one must be specified
+      if (!timeStart && !timeEnd) return;
       value = {
         start: timeStart || null,
         end: timeEnd || null,
@@ -432,7 +434,6 @@ function FilterDialog({
       value,
     });
 
-    // Reset form
     setSelectedField("");
     setTextValue("");
     setNumberValue("");
@@ -454,7 +455,7 @@ function FilterDialog({
     if (!selectedField) return true;
 
     if (selectedFieldConfig?.type === "timeRange") {
-      return !timeStart && !timeEnd; // At least one must be specified
+      return !timeStart && !timeEnd;
     }
 
     if (selectedFieldConfig?.type === "chips") {
