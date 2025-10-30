@@ -17,7 +17,8 @@ import AlgoritmoDialog from "@/components/AlgorithmDialog";
 import HoveredCourse from "./HoveredCourse";
 import HoveredDocente from "./HoveredDocente";
 // import TimetableDataGrid from "./TimetableDataGrid";
-import TimetableGrid from "./TimetableGrid";
+// import TimetableGrid from "./TimetableGrid";
+import TimetableDataGrid from "./TimetableDataGrid";
 
 const customTheme = createTheme({
   components: {
@@ -162,6 +163,7 @@ export default function TimetableView() {
           // Vamos usar o valor que você tinha (88vh), mas aplicando-o ao
           // contêiner inteiro, não apenas à grade.
           height: "90vh",
+          width: "100%",
           gap: 1, // Substitui o 'space-y-4' (gap: 2 = 16px)
         }}
       >
@@ -197,14 +199,14 @@ export default function TimetableView() {
 
         <Paper
           sx={{
-            width: "100%",
-            overflow: "hidden",
+            // width: "100%",
+            // overflow: "hidden",
             flex: 1, // <-- CHAVE: Faz o Paper preencher o espaço restante
             display: "flex", // Para que o TableContainer possa usar height: 100%
           }}
         >
           {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
-            <TimetableGrid //TimetableDataGrid -> Futuro
+            <TimetableDataGrid //TimetableDataGrid -> Futuro
               setHoveredCourse={handleCourseEnter}
               setHoveredDocente={handleDocenteEnter}
               onMouseLeaveGrid={handleMouseLeave}

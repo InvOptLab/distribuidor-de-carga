@@ -89,6 +89,10 @@ export default function TimetableDataGrid({
             fontWeight: "bold",
             fontSize: "14px",
             padding: "8px",
+            position: "sticky",
+            left: 0,
+            zIndex: 10,
+            backgroundColor: "background.paper",
           }}
         >
           Docente
@@ -126,6 +130,8 @@ export default function TimetableDataGrid({
                 color: temConflito ? "error.main" : "inherit",
                 transition: "background-color 0.2s ease",
                 position: "sticky",
+                left: 0,
+                zIndex: 5, // Menor que o zIndex do header
               }}
             >
               {nomeDocente}
@@ -163,6 +169,8 @@ export default function TimetableDataGrid({
               padding: "8px",
               transition: "background-color 0.2s ease",
             }}
+            display="flex"
+            flexDirection="column"
           >
             <Typography
               variant="body2"
@@ -187,17 +195,22 @@ export default function TimetableDataGrid({
             >
               {disciplina.nome}
             </Typography>
-            {disciplina.horarios && disciplina.horarios.length > 0 && (
-              <Typography
-                variant="caption"
-                sx={{
-                  fontSize: "10px",
-                  color: "text.secondary",
-                }}
-              >
-                {disciplina.horarios[0].dia} {disciplina.horarios[0].inicio}
-              </Typography>
-            )}
+            {disciplina.horarios &&
+              disciplina.horarios.length > 0 &&
+              disciplina.horarios.map((horario) => {
+                return (
+                  <Typography
+                    key={`${disciplina.id}_${horario.dia}-${horario.inicio}:-${horario.fim}`}
+                    variant="caption"
+                    sx={{
+                      fontSize: "10px",
+                      color: "text.secondary",
+                    }}
+                  >
+                    {horario.dia} {horario.inicio}:{horario.fim}
+                  </Typography>
+                );
+              })}
           </Box>
         ),
         renderCell: (params: GridRenderCellParams) => {
@@ -221,6 +234,10 @@ export default function TimetableDataGrid({
               trava.nome_docente === nomeDocente
           );
 
+          const isHovered =
+            hover.docente === nomeDocente ||
+            hover.id_disciplina === disciplina.id;
+
           return (
             <Box
               onClick={(event) => handleCellClick(event, celula)}
@@ -237,16 +254,31 @@ export default function TimetableDataGrid({
                 backgroundColor: setCellColor(prioridade, celula),
                 cursor: "pointer",
                 fontWeight: isAtribuido ? "bold" : "normal",
-                border:
-                  hover.docente === nomeDocente ||
-                  hover.id_disciplina === disciplina.id
-                    ? "4px solid rgba(25, 118, 210, 1)"
-                    : "1px solid rgba(224, 224, 224, 0.5)",
-                transition: "all 0.2s ease",
                 position: "relative",
+                transition: "border 0.1s ease-out, z-index 0.1s ease-out",
+                // border:
+                //   hover.docente === nomeDocente ||
+                //   hover.id_disciplina === disciplina.id
+                //     ? "4px solid rgba(25, 118, 210, 1)"
+                //     : "1px solid rgba(224, 224, 224, 0.5)",
+
+                ...(isHovered
+                  ? {
+                      // ESTADO HOVER (LINHA/COLUNA)
+                      border: "4px solid rgba(25, 118, 210, 1)", // Borda grossa azul (como no seu original)
+                      zIndex: 15,
+                    }
+                  : {
+                      // ESTADO PADRÃO
+                      border: "1px solid rgba(224, 224, 224, 0.5)", // Borda fina cinza
+                      zIndex: 1,
+                    }),
+
+                // &:hover NA CÉLULA ESPECÍFICA
                 "&:hover": {
-                  borderColor: "primary.main",
-                  borderWidth: "2px",
+                  zIndex: 20, // Garante que a célula sob o mouse fique no topo
+                  borderColor: "rgba(25, 118, 210, 1)", // Garante a cor azul
+                  borderWidth: "4px", // Garante a espessura (sem "afinamento")
                 },
               }}
             >
@@ -300,23 +332,32 @@ export default function TimetableDataGrid({
     setHoveredDocente,
   ]);
 
+  const handleLeaveDataGrid = () => {
+    onMouseLeaveGrid();
+    handleOnMouseEnter(null, null);
+  };
+
   return (
     <Box
       sx={{ width: "100%", height: "calc(100vh - 200px)" }}
-      // onMouseLeave={onMouseLeaveGrid}
+      onMouseLeave={onMouseLeaveGrid}
     >
       <DataGrid
-        onColumnHeaderLeave={onMouseLeaveGrid}
+        columnHeaderHeight={100}
+        onColumnHeaderLeave={handleLeaveDataGrid}
         rows={rows}
         columns={columns}
         disableRowSelectionOnClick
-        // disableColumnMenu
+        disableColumnMenu
         hideFooter
+        disableAutosize
+        // disableColumnFilter
+        // disableColumnSorting
         sx={{
           border: "none",
           "& .MuiDataGrid-cell": {
             padding: 0,
-            border: "1px solid rgba(224, 224, 224, 0.5)",
+            // border: "1px solid rgba(224, 224, 224, 0.5)",
           },
           "& .MuiDataGrid-columnHeader": {
             padding: 0,
@@ -337,6 +378,19 @@ export default function TimetableDataGrid({
           "& .MuiDataGrid-columnHeader:focus": {
             outline: "none",
           },
+          // // NOVOS ESTILOS PARA "PINAR" A COLUNA 'docente'
+          // "& .MuiDataGrid-columnHeader[data-field='docente']": {
+          //   position: "sticky",
+          //   left: 0,
+          //   zIndex: 10, // Garante que o header fixo fique acima das células
+          //   backgroundColor: "background.paper",
+          // },
+          // "& .MuiDataGrid-cell[data-field='docente']": {
+          //   position: "sticky",
+          //   left: 0,
+          //   zIndex: 5, // Fica acima das células normais, mas abaixo do header
+          //   backgroundColor: "background.paper",
+          // },
         }}
       />
     </Box>
