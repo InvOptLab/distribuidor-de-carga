@@ -72,48 +72,10 @@ const SolutionHistoryStatistics: React.FC<SolutionHistoryStatisticsProps> = ({
     )
   );
 
-  //const qtdDisciplinasAtivas: number = solucao.contexto.disciplinas.filter(disciplina => disciplina.ativo).length
-  // const qtdDocentesTravados: number = solucao.contexto.travas.filter(
-  //   (trava) =>
-  //     trava.tipo_trava === TipoTrava.Row &&
-  //     docentesAtribuicoes.has(trava.nome_docente)
-  // ).length;
-  // const qtdDisciplinasTravadas: number = solucao.contexto.travas.filter(
-  //   (trava) =>
-  //     trava.tipo_trava === TipoTrava.Column &&
-  //     disciplinasAtribuicoes.has(trava.id_disciplina)
-  // ).length;
-
   return (
     <Grid2 container spacing={2} key={`grid2_container_${id}`}>
       {/* Componente DataTreeView com as informações dos docentes e atribuições */}
-      {/* <Grid2 size={{ xs: 12 }}>
-        <DataTreeView
-          docentes={atribuicoesProcessadas.treeDocentes}
-          //atribuicoes={solucao.solucao.atribuicoes}
-          disciplinas={atribuicoesProcessadas.treeDisciplinas}
-          solucao={solucao}
-          setHoveredCourese={setHoveredCourese}
-          entidade="Docente"
-        />
-      </Grid2>
-      <Grid2 size={{ xs: 12 }}>
-        <DataTreeView
-          docentes={atribuicoesProcessadas.treeDocentes}
-          //atribuicoes={solucao.solucao.atribuicoes}
-          disciplinas={atribuicoesProcessadas.treeDisciplinas}
-          solucao={solucao}
-          setHoveredCourese={setHoveredCourese}
-          entidade="Disciplina"
-        />
-      </Grid2> */}
 
-      {/* Título e Gráficos de Relação Ativos X Inativos */}
-      {/* <Grid2 size={{ xs: 12 }}>
-        <Typography variant="h6" gutterBottom align="center">
-          Relação Ativos X Inativos
-        </Typography>
-      </Grid2> */}
       <Grid2 size={{ xs: 12, md: 12 }}>
         <NewDataTreeView
           key="new_data_tree_view"

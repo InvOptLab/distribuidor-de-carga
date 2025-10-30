@@ -24,6 +24,7 @@ interface TimetableGridProps {
   onSave: () => void;
   setHoveredCourse: (disciplina: Disciplina | null) => void;
   setHoveredDocente: (docente: string | null) => void;
+  onMouseLeaveGrid: () => void;
 }
 
 export default function TimetableGrid({
@@ -33,6 +34,7 @@ export default function TimetableGrid({
   onSave,
   setHoveredCourse,
   setHoveredDocente,
+  onMouseLeaveGrid,
 }: TimetableGridProps) {
   const { filteredDisciplinas } = useTimetable();
   const { rows } = useTimetableRows();
@@ -58,17 +60,19 @@ export default function TimetableGrid({
   }) => {
     if (atribuicao) {
       handleOnMouseEnterDocente(atribuicao.nome);
-
-      setHoveredDocente(atribuicao.nome);
+      setHoveredDocente(atribuicao.nome); // Chama o handler do TimetableView
     } else {
       handleOnMouseEnterDocente(null);
-
-      setHoveredDocente(null);
+      onMouseLeaveGrid(); // Chama o handler de SAÍDA do TimetableView
+      // setHoveredDocente(null);
     }
   };
 
   return (
-    <TableContainer sx={{ maxHeight: "88vh", overflow: "scroll" }}>
+    <TableContainer
+      sx={{ maxHeight: "88vh", overflow: "scroll" }}
+      onMouseLeave={onMouseLeaveGrid}
+    >
       <Table
         sx={{ width: "fit-content", height: "fit-content" }}
         aria-label="sticky table"
@@ -217,9 +221,10 @@ export default function TimetableGrid({
                           prioridade.id_disciplina
                         )
                       }
-                      onMouseLeave={() =>
-                        setHover({ docente: "", id_disciplina: "" })
-                      }
+                      onMouseLeave={() => {
+                        setHover({ docente: "", id_disciplina: "" });
+                        onMouseLeaveGrid();
+                      }}
                     >
                       {prioridade.prioridade}
                     </TableCell>
