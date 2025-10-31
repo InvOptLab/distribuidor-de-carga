@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar } from "@mui/material";
 
 interface AvatarIconProps {
@@ -15,13 +15,20 @@ export const AvatarIcon = ({ isSpeaking }: AvatarIconProps) => {
 
   // Você deve colocar essas imagens na sua pasta /public
   const idleSrc = "./chat/avatar-idle.png";
+  const idleSrcSmiling = "./chat/avatar-idle-smiling.png";
   const talkingSrc = "./chat/avatar-talking.gif";
 
-  const src = isSpeaking ? talkingSrc : idleSrc;
+  const [isHovering, setIsHovering] = useState(false);
+
+  const src = isSpeaking ? talkingSrc : isHovering ? idleSrcSmiling : idleSrc;
+
+  const imageKey = isSpeaking ? "speaking" : isHovering ? "smiling" : "idle";
 
   return (
     <Avatar
       src={src}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       alt="Assistente Virtual"
       sx={{
         width: AVATAR_SIZE,
@@ -29,8 +36,8 @@ export const AvatarIcon = ({ isSpeaking }: AvatarIconProps) => {
         margin: "0 auto", // Centraliza
         // Adiciona uma 'key' para forçar o React a recarregar o GIF do início
         // sempre que o estado 'isSpeaking' mudar para true
-        key: isSpeaking ? "speaking" : "idle",
       }}
+      key={imageKey}
     />
   );
 };
