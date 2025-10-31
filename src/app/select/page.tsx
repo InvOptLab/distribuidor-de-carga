@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Grid from "@mui/material/Grid2";
-import Button from "@mui/material/Button";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -12,6 +11,7 @@ import { useGlobalContext } from "@/context/Global";
 import { Disciplina, Docente } from "@/context/Global/utils";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
 import CustomSelector from "./_components/CustomSelector";
+import { Button } from "@mui/material";
 
 function not<T>(a: readonly T[], b: readonly T[]) {
   return a.filter((value) => b.indexOf(value) === -1);

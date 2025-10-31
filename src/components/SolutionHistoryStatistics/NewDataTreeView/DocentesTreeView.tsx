@@ -1,6 +1,5 @@
 import * as React from "react";
 import clsx from "clsx";
-import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -20,6 +19,7 @@ import {
 import { TreeItem2Provider } from "@mui/x-tree-view/TreeItem2Provider";
 import { TreeItem2Icon } from "@mui/x-tree-view/TreeItem2Icon";
 import { TreeDocente } from "@/app/history/_components/SolutionHistoryStatistics";
+import { styled, useTheme } from "@mui/material";
 
 declare module "react" {
   interface CSSProperties {

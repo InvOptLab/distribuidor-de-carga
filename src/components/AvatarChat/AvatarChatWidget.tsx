@@ -19,7 +19,8 @@ export const AvatarChatWidget = () => {
         sx={{
           position: "fixed",
           bottom: 32,
-          right: 32,
+          // right: 32,
+          left: 32,
           zIndex: 1000, // Garante que fique acima de outros elementos
         }}
       >

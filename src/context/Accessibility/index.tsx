@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useState, useMemo } from "react";
-import { createTheme, ThemeProvider, ThemeOptions } from "@mui/material/styles";
-import { CssBaseline, GlobalStyles } from "@mui/material";
+import {
+  createTheme,
+  CssBaseline,
+  GlobalStyles,
+  ThemeOptions,
+  ThemeProvider,
+} from "@mui/material";
 
 interface AccessibilityContextType {
   fontScale: number;
