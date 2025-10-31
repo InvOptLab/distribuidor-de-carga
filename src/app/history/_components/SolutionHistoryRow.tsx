@@ -19,6 +19,8 @@ import SolutionHistoryStatistics, {
 } from "./SolutionHistoryStatistics";
 import { exportJson, getFormattedDate } from "@/app/atribuicoes";
 import { useHistoryComponentContext } from "../context/history.context";
+import { isMILP } from "@/algoritmo/communs/utils";
+import { MathModelDisplay } from "@/components/MathModelDisplay";
 
 interface SolutionHistoryRowProps {
   id: string;
@@ -88,6 +90,53 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
       solucao.solucao.atribuicoes,
     ]
   );
+
+  /**
+   * Teste modelo
+   */
+  const fapModel = String.raw`
+  \begin{aligned}
+  \begin{equation}
+      \begin{split}
+          \max \quad & K_1 \cdot \sum_{i \in D} \sum_{j \in T}  x_{i,j} \cdot p_{i,j}
+          - K_{2} \cdot \sum_{j \in T} u_{j}
+          - K_{3} \cdot \sum_{i \in D} \sum_{(j, k) \in F} v_{i,j,k}
+          - K_{4} \cdot \sum_{i \in D}{ \omega_{i} \cdot z_{i}}
+          - K_{5} \cdot \sum_{i \in D}{ \eta_{i} \cdot w_{i} }
+      \end{split}
+  \end{equation} \\
+
+  \textit{S.A}
+
+  \begin{equation}
+      \sum_{i \in D} x_{i,j} + u_{j} = 1 \quad \quad \forall j \in T 
+  \end{equation} \\
+
+  \begin{equation}
+      x_{i,j} \le P_{i,j} + m_{i,j} \quad \quad \forall i \in D, \forall j \in T 
+  \end{equation} \\
+
+  \begin{equation}
+      x_{i,j} = a_{i,j} \quad \quad \forall i \in D, \forall j \in T \mid m_{i,j} = 1 
+  \end{equation} \\
+
+  \begin{equation}
+      x_{i,j} + x_{i,k} - v_{i,j,k} \le 1 \quad \forall i \in D, \forall (j,k) \in F 
+  \end{equation} \\
+
+  \begin{equation}
+      \sum_{j \in T}{c_{j} \cdot x_{i, j}} + \text{BigM} \cdot z_{i} \ge L_{\text{inf}} \quad \quad \forall i \in D
+  \end{equation} \\
+
+  \begin{equation}
+      \sum_{j \in T}{c_{j} \cdot x_{i, j}} \le L_{\text{sup}} + w_{i} \quad \quad \forall i \in D
+  \end{equation} \\
+
+  \begin{equation}
+      \text{BigM} = \sum_{j \in T} c_{j}
+  \end{equation}
+  \end{aligned}
+`;
 
   return (
     <Fragment key={`fragment_${id}`}>
@@ -165,6 +214,14 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
                 solucao={solucao}
                 setHoveredCourese={setHoveredCourese}
               />
+              <Box maxWidth="100%">
+                {isMILP(solucao.algorithm) && (
+                  <MathModelDisplay
+                    title="Problema de Atribuição de Docentes (FAP / TAP)"
+                    latexString={fapModel}
+                  />
+                )}
+              </Box>
             </Box>
           </Collapse>
         </TableCell>

@@ -23,10 +23,13 @@
     "@tauri-apps/plugin-shell": "^2.2.1",
     "framer-motion": "^11.18.2",
     "highs": "^1.8.0",
+    "katex": "^0.16.25",
     "lodash": "^4.17.21",
     "next": "^14.2.28",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-draggable": "^4.5.0",
+    "react-katex": "^3.1.0",
     "styled-components": "^6.1.17",
     "xlsx": "^0.18.5"
   },
