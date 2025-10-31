@@ -44,7 +44,7 @@ export default function DataComparison({
           Dados Atuais
         </Typography>
 
-        <Alert severity="info" sx={{ mb: 2 }}>
+        <Alert severity="warning" sx={{ mb: 2, color: "text.primary" }}>
           Você já possui dados carregados. Carregar um novo arquivo irá
           substituí-los.
         </Alert>
@@ -84,14 +84,14 @@ export default function DataComparison({
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <AssignmentIcon color="info" />
+              <AssignmentIcon color="success" />
             </ListItemIcon>
             <Box style={{ display: "flex", flexDirection: "column" }}>
               <ListItemText primary="Atribuições" sx={{ marginBottom: 0 }} />
               <Chip
                 label={`${currentData.atribuicoes} realizadas`}
                 size="small"
-                color="info"
+                color="success"
                 variant="outlined"
               />
             </Box>

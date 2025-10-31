@@ -5,11 +5,10 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Container, IconButton, Menu, MenuItem, useTheme } from "@mui/material";
+import { Button, Container, IconButton, Menu, MenuItem } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 interface ISimplePage {
@@ -134,7 +133,7 @@ function DesktopSubmenu({ item, pathname }: DesktopSubmenuProps) {
         }}
         sx={{
           "& .MuiPaper-root": {
-            backgroundColor: "#1976D2",
+            backgroundColor: "primary.main",
             border: "1px solid rgba(255, 255, 255, 0.1)",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
           },
@@ -312,7 +311,6 @@ function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
 
 export default function Navbar() {
   const pathname = usePathname();
-  const theme = useTheme();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -331,7 +329,8 @@ export default function Navbar() {
       component="nav"
       position="sticky"
       sx={{
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: "primary.main",
+        color: "primary.contrastText",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
       }}
     >
@@ -362,7 +361,8 @@ export default function Navbar() {
               sx={{
                 display: { xs: "block", md: "none" },
                 "& .MuiPaper-root": {
-                  backgroundColor: "#1976D2",
+                  backgroundColor: "primary.main", //"#1976D2",
+                  color: "primary.contrastText",
                   maxHeight: "70vh",
                   overflowY: "auto",
                 },

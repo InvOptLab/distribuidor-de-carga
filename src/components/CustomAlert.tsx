@@ -116,6 +116,8 @@ export default function CustomAlert(props: IAlertProps) {
         <Alert
           key={props.id}
           severity={props.type}
+          color={props.type} // Para ver se altera a cor conforme o thema
+          sx={{ color: "text.primary" }}
           variant="filled"
           action={
             <IconButton

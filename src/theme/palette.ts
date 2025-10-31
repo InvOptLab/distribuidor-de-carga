@@ -1,7 +1,7 @@
 // src/theme/palette.ts
 import { PaletteMode } from "@mui/material";
 
-// --- DEFINIÇÕES DO MODO CLARO (Como antes) ---
+// --- DEFINIÇÕES DO MODO CLARO ---
 const primaryLight = {
   main: "#1976d2",
   light: "#42a5f5",
@@ -16,9 +16,9 @@ const secondaryLight = {
   contrastText: "#ffffff",
 };
 
-// --- NOVAS DEFINIÇÕES - MODO DARK "PRO" ---
+// --- MODO DARK ---
 const primaryDark = {
-  main: "#3399FF", // 👈 Um azul mais "elétrico" e vibrante
+  main: "#3399FF",
   light: "#66B2FF",
   dark: "#007BFF",
   contrastText: "#0A1929", // Texto escuro para contrastar com o azul claro
@@ -26,7 +26,7 @@ const primaryDark = {
 };
 
 const secondaryDark = {
-  main: "#FFA726", // 👈 Um laranja mais "vivo" (MUI orange[400])
+  main: "#FFA726",
   light: "#FFB74D",
   dark: "#FB8C00",
   contrastText: "#0A1929", // Texto escuro para contrastar
@@ -39,7 +39,7 @@ export const getDesignTokens = (mode: PaletteMode) => ({
   palette: {
     mode,
 
-    // As paletas de erro, info, etc. podem ser comuns
+    // As paletas de erro, info, etc
     error: {
       main: "#F44336",
     },
@@ -49,7 +49,7 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 
     ...(mode === "light"
       ? {
-          // --- MODO CLARO (Inalterado) ---
+          // --- MODO CLARO ---
           primary: primaryLight,
           secondary: secondaryLight,
           text: {
@@ -69,16 +69,16 @@ export const getDesignTokens = (mode: PaletteMode) => ({
           },
         }
       : {
-          // --- MODO DARK "PRO" (Novo!) ---
+          // --- MODO DARK  ---
           primary: primaryDark,
           secondary: secondaryDark,
           text: {
-            primary: "#E0E6F1", // 👈 Cinza-claro levemente azulado
-            secondary: "#94A3B8", // 👈 Cinza-médio azulado (Slate 400)
+            primary: "#E0E6F1",
+            secondary: "#94A3B8", // Cinza-médio azulado (Slate 400)
           },
           background: {
-            default: "#0A1929", // 👈 "Midnight Blue" (Muito escuro)
-            paper: "#14253E", // 👈 "Azul-Ardósia" (Cor de elevação)
+            default: "#0A1929", // "Midnight Blue" (Muito escuro)
+            paper: "#14253E", // "Azul-Ardósia" (Cor de elevação)
           },
           divider: "rgba(148, 163, 184, 0.2)", // Um divisor semitransparente
           info: {
@@ -90,10 +90,10 @@ export const getDesignTokens = (mode: PaletteMode) => ({
         }),
   },
 
-  // Aqui você também pode ajustar outros aspectos para o modo dark
+  // Aqui também pode ajustar outros aspectos para o modo dark
   // por exemplo, a aparência dos componentes
   components: {
-    // Exemplo: Deixar o Paper (Cards) com menos sombra e mais borda no dark mode
+    // Deixar o Paper (Cards) com menos sombra e mais borda no dark mode
     MuiPaper: {
       styleOverrides: {
         root: ({ theme }) => ({
