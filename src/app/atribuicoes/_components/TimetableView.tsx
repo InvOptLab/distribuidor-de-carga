@@ -18,7 +18,8 @@ import HoveredCourse from "./HoveredCourse";
 import HoveredDocente from "./HoveredDocente";
 // import TimetableDataGrid from "./TimetableDataGrid";
 // import TimetableGrid from "./TimetableGrid";
-import TimetableDataGrid from "./TimetableDataGrid";
+// import TimetableDataGrid from "./TimetableDataGrid";
+import TimetableGrid from "./TimetableGrid";
 
 const customTheme = createTheme({
   components: {
@@ -68,8 +69,8 @@ export default function TimetableView() {
   const enterTimer = useRef<NodeJS.Timeout | null>(null);
   const leaveTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const ENTER_DELAY_MS = 150;
-  const LEAVE_DELAY_MS = 200;
+  const ENTER_DELAY_MS = 100;
+  const LEAVE_DELAY_MS = 100;
 
   const courseCardContentRef = useRef<HTMLDivElement>(null);
   const docenteCardContentRef = useRef<HTMLDivElement>(null);
@@ -206,7 +207,7 @@ export default function TimetableView() {
           }}
         >
           {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
-            <TimetableDataGrid //TimetableDataGrid -> Futuro
+            <TimetableGrid //TimetableDataGrid -> Futuro
               setHoveredCourse={handleCourseEnter}
               setHoveredDocente={handleDocenteEnter}
               onMouseLeaveGrid={handleMouseLeave}
