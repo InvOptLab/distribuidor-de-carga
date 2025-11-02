@@ -10,31 +10,41 @@ interface AvatarChatContextType {
   isChatOpen: boolean;
   openChat: () => void;
   closeChat: () => void;
+  isMuted: boolean;
+  toggleMute: () => void;
 }
 
-// Cria o contexto com um valor padrão undefined
 const AvatarChatContext = createContext<AvatarChatContextType | undefined>(
   undefined
 );
 
-/**
- * Provedor do Contexto do Chat do Avatar.
- * Envolva sua aplicação (no _app.tsx) com este componente.
- */
 export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   const openChat = () => setIsChatOpen(true);
   const closeChat = () => setIsChatOpen(false);
 
-  // Memoiza o valor do contexto para evitar re-renderizações desnecessárias
+  const toggleMute = () => {
+    setIsMuted((prev) => {
+      const newMuteState = !prev;
+      // Se estiver mutando, cancela qualquer fala atual
+      if (newMuteState) {
+        window.speechSynthesis.cancel();
+      }
+      return newMuteState;
+    });
+  };
+
   const value = useMemo(
     () => ({
       isChatOpen,
       openChat,
       closeChat,
+      isMuted,
+      toggleMute,
     }),
-    [isChatOpen]
+    [isChatOpen, isMuted]
   );
 
   return (
@@ -44,10 +54,6 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-/**
- * Hook customizado para acessar o contexto do chat.
- * Garante que está sendo usado dentro de um <AvatarChatProvider>.
- */
 export const useAvatarChat = () => {
   const context = useContext(AvatarChatContext);
   if (context === undefined) {
