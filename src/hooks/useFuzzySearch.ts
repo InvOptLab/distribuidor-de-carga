@@ -10,7 +10,7 @@ const fuseOptions = {
   // O 'limite' de similaridade (0.0 = acerto perfeito, 1.0 = aceita qualquer coisa)
   // Um valor entre 0.3 e 0.5 costuma ser ideal.
   // Isso significa que a busca não precisa ser perfeita.
-  threshold: 0.6,
+  threshold: 0.5,
 
   // Inclui a pontuação (score) no resultado
   includeScore: true,
