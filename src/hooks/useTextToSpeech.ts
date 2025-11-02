@@ -1,37 +1,51 @@
 import { useState, useCallback, useEffect } from "react";
+import { useAvatarChat } from "@/context/AvatarChat/AvatarChatContext"; // Importar o contexto
 
-/**
- * Hook para gerenciar a funcionalidade de Text-to-Speech (TTS).
- * Retorna o estado de fala e a função para iniciar a fala.
- */
 export const useTextToSpeech = () => {
-  // Este estado é crucial para o lip-sync
   const [isAvatarSpeaking, setIsAvatarSpeaking] = useState(false);
+  const { isMuted } = useAvatarChat();
 
-  /**
-   * Inicia a fala usando a Web Speech API.
-   * As callbacks onstart/onend controlam o estado isAvatarSpeaking.
-   */
-  const speak = useCallback((text: string) => {
-    // Para qualquer fala anterior
-    window.speechSynthesis.cancel();
+  const speak = useCallback(
+    (text: string) => {
+      // Sempre cancela falas anteriores
+      window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "pt-BR"; // Garante a voz correta
+      if (isMuted) {
+        // Se estiver mudo, "finja" que está falando para o GIF animar
+        setIsAvatarSpeaking(true);
 
-    utterance.onstart = () => {
-      setIsAvatarSpeaking(true);
-    };
+        // Estima um tempo de fala falso baseado no tamanho do texto
+        // (ex: 60ms por caractere, com um mínimo de 1 segundo)
+        const fakeSpeakTime = Math.max(1000, text.length * 60);
 
-    utterance.onend = () => {
-      setIsAvatarSpeaking(false);
-    };
+        setTimeout(() => {
+          setIsAvatarSpeaking(false);
+        }, fakeSpeakTime);
+      } else {
+        // Se NÃO estiver mudo, toca o áudio normalmente
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "pt-BR";
 
-    window.speechSynthesis.speak(utterance);
-  }, []);
+        utterance.onstart = () => {
+          setIsAvatarSpeaking(true);
+        };
 
-  // Efeito para garantir que a fala seja cancelada se o componente
-  // que usa o hook for desmontado
+        utterance.onend = () => {
+          setIsAvatarSpeaking(false);
+        };
+
+        // Limpa em caso de erro
+        utterance.onerror = () => {
+          setIsAvatarSpeaking(false);
+        };
+
+        window.speechSynthesis.speak(utterance);
+      }
+    },
+    [isMuted]
+  );
+
+  // Efeito para cancelar a fala se o componente for desmontado
   useEffect(() => {
     return () => {
       window.speechSynthesis.cancel();
