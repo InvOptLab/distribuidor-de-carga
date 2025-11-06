@@ -168,6 +168,10 @@ export type ConstraintParams = {
   [key: string]: IParameter<any>;
 };
 
+export type ObjectiveComponentParams = {
+  [key: string]: IParameter<any>;
+};
+
 export // Tipo do Callback: recebe um objeto parcial
 type EstatisticasCallback = (statsAtualizadas: Partial<Estatisticas>) => void;
 
