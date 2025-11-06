@@ -31,7 +31,7 @@ import {
   TipoTrava,
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { ContextoExecucao, getActiveFormularios } from "@/context/Global/utils";
-import { ObjectiveComponent } from "@/algoritmo/abstractions/ObjectiveComponent";
+import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 import { calculateManualSolution } from "@/algoritmo/communs/calculateManualSolution";
 import Algorithm from "@/algoritmo/abstractions/Algorithm";
 import Constraint from "@/algoritmo/abstractions/Constraint";
@@ -46,7 +46,7 @@ class InsercaoManual extends Algorithm<any> {
     constraints: Constraint<any>[],
     solution: Solucao | undefined,
     objectiveType: "min" | "max",
-    objectiveComponentes: ObjectiveComponent[],
+    objectiveComponentes: ObjectiveComponent<any>[],
     maiorPrioridade: number | undefined
   ) {
     super(
@@ -485,7 +485,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const saveAlterations = async () => {
     try {
-      const objectives: ObjectiveComponent[] = Array.from(
+      const objectives: ObjectiveComponent<any>[] = Array.from(
         objectiveComponents.values()
       ).filter((entry) => entry.isActive);
 

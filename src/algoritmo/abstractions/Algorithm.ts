@@ -7,7 +7,7 @@ import {
   Solucao,
 } from "../communs/interfaces/interfaces";
 import Constraint from "./Constraint";
-import { ObjectiveComponent } from "./ObjectiveComponent";
+import ObjectiveComponent from "./ObjectiveComponent";
 
 /**
  * Criar uma classe para o algoritmo
@@ -62,7 +62,7 @@ export default abstract class Algorithm<T> {
     constraints: Constraint<any>[],
     solution: Solucao | undefined,
     objectiveType: "min" | "max",
-    objectiveComponentes: ObjectiveComponent[],
+    objectiveComponentes: ObjectiveComponent<any>[],
     maiorPrioridade: number | undefined,
     enableStatistics: boolean
   ) {

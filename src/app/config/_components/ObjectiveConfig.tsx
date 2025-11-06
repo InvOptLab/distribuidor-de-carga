@@ -36,7 +36,7 @@ import {
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
 import { getPriorityColor } from "@/app/atribuicoes";
-import { ObjectiveComponent } from "@/algoritmo/abstractions/ObjectiveComponent";
+import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 
 export default function ObjectiveConfig() {
   const { objectiveComponents, setObjectiveComponents, maiorPrioridade } =
@@ -54,7 +54,7 @@ export default function ObjectiveConfig() {
 
   // Função mais robusta que verifica de múltiplas formas
   const componentHasMultiplierTable = (
-    component: ObjectiveComponent
+    component: ObjectiveComponent<any>
   ): boolean => {
     // Método 1: Verificar se a propriedade existe diretamente
     if ("tabelaMultiplicadores" in component) return true;

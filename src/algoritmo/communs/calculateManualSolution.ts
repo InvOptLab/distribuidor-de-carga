@@ -1,5 +1,5 @@
 import Constraint from "../abstractions/Constraint";
-import { ObjectiveComponent } from "../abstractions/ObjectiveComponent";
+import ObjectiveComponent from "../abstractions/ObjectiveComponent";
 import { ObjectiveFunction } from "../classes/ObjectiveFunction";
 import { Statistics } from "../classes/Statistics";
 import {
@@ -26,14 +26,19 @@ export async function calculateManualSolution(
   formularios: Formulario[],
   softConstraints: Map<string, Constraint<any>>,
   hardConstraints: Map<string, Constraint<any>>,
-  objectives: ObjectiveComponent[],
+  objectives: ObjectiveComponent<any>[],
   maxPriority: number
 ): Promise<Solucao> {
   // Instanciar a ObjectiveFunction para calcular a parte dos objetivos
   const objFunction = new ObjectiveFunction(objectives, "max");
 
   // Calcular a avaliação
-  let avaliacao = objFunction.calculate(atribuicoes, formularios, docentes);
+  let avaliacao = objFunction.calculate(
+    atribuicoes,
+    formularios,
+    docentes,
+    turmas
+  );
 
   // Adicionar as penalidades das restrições flexíveis
   for (const constraint of softConstraints.values()) {

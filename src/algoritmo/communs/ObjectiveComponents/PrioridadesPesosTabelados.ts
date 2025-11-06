@@ -2,9 +2,9 @@ import {
   OptimizationModel,
   Term,
 } from "@/algoritmo/metodos/MILP/optimization_model";
-import { ObjectiveComponent } from "../../abstractions/ObjectiveComponent";
 import { Atribuicao, Docente, Formulario } from "../interfaces/interfaces";
 import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
+import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 
 /**
  * Esse componente implementa a ideia de aplicar um multiplicador difirente para cada prioridade.
@@ -19,7 +19,7 @@ import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
  * Talvez seja interessante implementar uma outra ideia do Elias, trazendo as primeiras atibuições com valores
  * exponenciais e as demais algum outro fator, a fim de observar o comportamento.
  */
-export class PrioridadesPesosTabelados extends ObjectiveComponent {
+export class PrioridadesPesosTabelados extends ObjectiveComponent<null> {
   tabelaMultiplicadores: Map<number, number>;
 
   maiorPrioridade: number = undefined;
@@ -31,7 +31,8 @@ export class PrioridadesPesosTabelados extends ObjectiveComponent {
     description: string | undefined,
     multiplier: number | undefined,
     maiorPrioridade: number | undefined,
-    tabelaMultiplicadores: Map<number, number> | undefined
+    tabelaMultiplicadores: Map<number, number> | undefined,
+    parametros: null
   ) {
     super(name, isActive, type, description, multiplier);
 
@@ -45,6 +46,8 @@ export class PrioridadesPesosTabelados extends ObjectiveComponent {
     } else {
       this.tabelaMultiplicadores = tabelaMultiplicadores;
     }
+
+    this.params = parametros;
   }
 
   setTabelaMultiplicadores() {

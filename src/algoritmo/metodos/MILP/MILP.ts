@@ -8,7 +8,7 @@ import {
   HighsSolverResult,
   Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
-import { ObjectiveComponent } from "@/algoritmo/abstractions/ObjectiveComponent";
+import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 
 export interface modelSets {
   D: number[];
@@ -77,7 +77,7 @@ export class MILP extends ExactAlgorithm {
     constraints: Constraint<any>[],
     solution: Solucao | undefined,
     objectiveType: "min" | "max",
-    objectiveComponentes: ObjectiveComponent[],
+    objectiveComponentes: ObjectiveComponent<any>[],
     maiorPrioridade: number | undefined,
     enableStatistics: boolean,
 

@@ -3,8 +3,8 @@ import {
   OptimizationModel,
   Term,
 } from "@/algoritmo/metodos/MILP/optimization_model";
-import { ObjectiveComponent } from "../../abstractions/ObjectiveComponent";
 import { Atribuicao, Docente, Formulario } from "../interfaces/interfaces";
+import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 
 /**
  * Componente padrão utilizada. Maximizar as prioridades das atribuições.
@@ -12,7 +12,7 @@ import { Atribuicao, Docente, Formulario } from "../interfaces/interfaces";
  * $P_max = max(P) + 1$
  * $p_ij = P_max - p_ij$
  */
-export class PrioridadesDefault extends ObjectiveComponent {
+export class PrioridadesDefault extends ObjectiveComponent<null> {
   /**
    * Representa a maior prioridade encontrada no conjunto dos formulários.
    * Utilizada para "inverter" os valores das prioridades.
@@ -24,11 +24,14 @@ export class PrioridadesDefault extends ObjectiveComponent {
     type: "min" | "max",
     description: string | undefined,
     multiplier: number | undefined,
-    maiorPrioridade: number | undefined
+    maiorPrioridade: number | undefined,
+    parametros: null
   ) {
     super(name, isActive, type, description, multiplier);
 
     this.maiorPrioridade = maiorPrioridade;
+
+    this.params = parametros;
   }
 
   setMaiorPrioridade(formularios: Formulario[]): number {

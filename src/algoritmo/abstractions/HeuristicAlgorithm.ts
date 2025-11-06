@@ -3,7 +3,7 @@ import { Context, Solucao, Vizinho } from "../communs/interfaces/interfaces";
 import Algorithm from "./Algorithm";
 import Constraint from "./Constraint";
 import { NeighborhoodFunction } from "./NeighborhoodFunction";
-import { ObjectiveComponent } from "./ObjectiveComponent";
+import ObjectiveComponent from "./ObjectiveComponent";
 import { StopCriteria } from "./StopCriteria";
 
 export abstract class HeuristicAlgorithm extends Algorithm<Vizinho> {
@@ -19,7 +19,7 @@ export abstract class HeuristicAlgorithm extends Algorithm<Vizinho> {
     constraints: Constraint<any>[],
     solution: Solucao | undefined,
     objectiveType: "min" | "max",
-    objectiveComponentes: ObjectiveComponent[],
+    objectiveComponentes: ObjectiveComponent<any>[],
     maiorPrioridade: number | undefined,
     enableStatistics: boolean,
     neighborhoodFunctions: NeighborhoodFunction[],

@@ -1,6 +1,6 @@
 import Constraint from "@/algoritmo/abstractions/Constraint";
 import { NeighborhoodFunction } from "@/algoritmo/abstractions/NeighborhoodFunction";
-import { ObjectiveComponent } from "@/algoritmo/abstractions/ObjectiveComponent";
+import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 import { StopCriteria } from "@/algoritmo/abstractions/StopCriteria";
 import { AtribuicaoSemFormulario } from "@/algoritmo/communs/Constraints/AtribuicaoSemFormulario";
 import { CargaDeTrabalhoMaximaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMaximaDocente";
@@ -11,6 +11,7 @@ import { ValidaTravas } from "@/algoritmo/communs/Constraints/ValidaTravas";
 import { Add } from "@/algoritmo/communs/NeighborhoodGeneration/Add";
 import { Remove } from "@/algoritmo/communs/NeighborhoodGeneration/Remove";
 import { Swap } from "@/algoritmo/communs/NeighborhoodGeneration/Swap";
+import { MinimizarDiferencaSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaSaldos";
 import { PrioridadesDefault } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesDefault";
 import { PrioridadesPesosTabelados } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesPesosTabelados";
 import { IteracoesMaximas } from "@/algoritmo/communs/StopCriteria/IteracoesMaximas";
@@ -86,9 +87,9 @@ export interface AlgorithmInterface {
   >;
   tabuListType: "Solução" | "Movimento";
   setTabuListType: React.Dispatch<"Solução" | "Movimento">;
-  objectiveComponents: Map<string, ObjectiveComponent>;
+  objectiveComponents: Map<string, ObjectiveComponent<any>>;
   setObjectiveComponents: React.Dispatch<
-    React.SetStateAction<Map<string, ObjectiveComponent>>
+    React.SetStateAction<Map<string, ObjectiveComponent<any>>>
   >;
   maiorPrioridade: number;
   setMaiorPrioridade: React.Dispatch<React.SetStateAction<number>>;
@@ -123,8 +124,8 @@ const AlgorithmContext = createContext<AlgorithmInterface>({
   setAspirationFunctions: () => Map<string, AspirationCriteriaEntry>,
   tabuListType: "Solução",
   setTabuListType: () => "Ssolução",
-  objectiveComponents: new Map<string, ObjectiveComponent>(),
-  setObjectiveComponents: () => Map<string, ObjectiveComponent>,
+  objectiveComponents: new Map<string, ObjectiveComponent<any>>(),
+  setObjectiveComponents: () => Map<string, ObjectiveComponent<any>>,
   maiorPrioridade: 0,
   setMaiorPrioridade: () => 0,
   selectedAlgorithm: "tabu-search",
@@ -328,7 +329,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   );
 
   const [objectiveComponents, setObjectiveComponents] = useState(
-    new Map<string, ObjectiveComponent>([
+    new Map<string, ObjectiveComponent<any>>([
       [
         "Maximizar as prioridades",
         new PrioridadesDefault(
@@ -337,7 +338,8 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "max",
           "Maximizar as prioridades das atribuições realizadas",
           1000,
-          undefined
+          undefined,
+          null
         ),
       ],
       [
@@ -349,7 +351,19 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Maximizar as prioridades das atribuições com as prioridades assumindo valores pré-definidos, com o conceito aplicado na F1, onde o primeiro colocado recebe mais pontos que o segundo, e assim por diante, ponderando ainda mais as prioridades.",
           1,
           undefined,
-          undefined
+          undefined,
+          null
+        ),
+      ],
+      [
+        "Minimizar Diferenca entre os Saldos",
+        new MinimizarDiferencaSaldos(
+          "Minimizar diferenca entre os saldos",
+          false,
+          "min",
+          "Minimizar a diferença entre os saldos dos docentes.",
+          1,
+          null
         ),
       ],
     ])
