@@ -11,6 +11,8 @@ import {
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useGlobalContext } from "@/context/Global";
 import { HistoricoSolucao } from "@/context/Global/utils";
+import ChartContainer from "@/app/statistics/_components/ChartContainer";
+import { BarChartExportData } from "@/lib/chart-exporter";
 
 interface PriorityDistributionChartProps {
   solutionA: HistoricoSolucao;
@@ -129,6 +131,35 @@ export default function PriorityDistributionChart({
     },
   ];
 
+  const exportData: BarChartExportData = {
+    xAxis: {
+      // Pega os dados do eixo X do 'chartData' (linha 62)
+      data: chartData.map((item) => String(item.prioridade)),
+      // Pega a label da config do BarChart (linha 161)
+      label: "Prioridade (menor = melhor)",
+    },
+    yAxis: {
+      // Pega a label da config do BarChart (linha 167)
+      label: "Quantidade de Atribuições",
+    },
+    series: [
+      {
+        // Pega os dados da 'series' do 'chartData' (linha 62)
+        data: chartData.map((item) => item.solucaoA),
+        label: "Solução A",
+        color: "#1976d2",
+      },
+      {
+        // Pega os dados da 'series' do 'chartData' (linha 62)
+        data: chartData.map((item) => item.solucaoB),
+        label: "Solução B",
+        color: "#dc004e",
+      },
+    ],
+    // Habilita os valores nas barras, com base no 'barLabel' (linha 179)
+    showBarValues: true,
+  };
+
   return (
     <Card sx={{ mb: 3 }}>
       <CardContent>
@@ -200,33 +231,35 @@ export default function PriorityDistributionChart({
         {/* Gráfico */}
         <Box sx={{ width: "100%", height: 400 }}>
           {chartData.length > 0 ? (
-            <BarChart
-              dataset={chartData}
-              xAxis={[
-                {
-                  scaleType: "band",
-                  dataKey: "prioridade",
-                  label: "Prioridade (menor = melhor)",
-                },
-              ]}
-              yAxis={[
-                {
-                  label: "Quantidade de Atribuições",
-                },
-              ]}
-              grid={{ vertical: false, horizontal: true }}
-              series={series}
-              width={undefined}
-              height={400}
-              margin={{ left: 75, right: 75 }}
-              slotProps={{
-                legend: {
-                  direction: "row",
-                  position: { vertical: "top", horizontal: "middle" },
-                },
-              }}
-              barLabel="value"
-            />
+            <ChartContainer chartData={exportData}>
+              <BarChart
+                dataset={chartData}
+                xAxis={[
+                  {
+                    scaleType: "band",
+                    dataKey: "prioridade",
+                    label: "Prioridade (menor = melhor)",
+                  },
+                ]}
+                yAxis={[
+                  {
+                    label: "Quantidade de Atribuições",
+                  },
+                ]}
+                grid={{ vertical: false, horizontal: true }}
+                series={series}
+                width={undefined}
+                height={400}
+                margin={{ left: 75, right: 75 }}
+                slotProps={{
+                  legend: {
+                    direction: "row",
+                    position: { vertical: "top", horizontal: "middle" },
+                  },
+                }}
+                barLabel="value"
+              />
+            </ChartContainer>
           ) : (
             <Box
               sx={{
