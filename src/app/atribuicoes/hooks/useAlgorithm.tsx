@@ -300,7 +300,9 @@ export function useAlgorithm() {
         // Carga horária de cada turma j
         const c: number[] = activeTurmas.map((t) => t.carga);
         // Saldo de carga horária acumulado de cada docente i
-        const s: number[] = docentes.map((d) => d.saldo);
+        const s: number[] = activeDocentes.map((d) => {
+          if (d.ativo) return d.saldo;
+        });
         // Prioridades p_ij do docente i para a turma j
         const p: number[][] = [];
 
