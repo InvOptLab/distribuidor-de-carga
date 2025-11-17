@@ -14,6 +14,7 @@ import { Swap } from "@/algoritmo/communs/NeighborhoodGeneration/Swap";
 import { MinimizarDiferencaSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaSaldos";
 import { PrioridadesDefault } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesDefault";
 import { PrioridadesPesosTabelados } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesPesosTabelados";
+import { PrioridadesPonderadasPorSaldo } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesPonderadasPorSaldo";
 import { IteracoesMaximas } from "@/algoritmo/communs/StopCriteria/IteracoesMaximas";
 import IteracoesSemMelhoraAvaliacao from "@/algoritmo/communs/StopCriteria/IteracoesSemMelhoraAvaliacao";
 import { IteracoesSemModificacao } from "@/algoritmo/communs/StopCriteria/IteracoesSemModificacao";
@@ -364,6 +365,18 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Minimizar a diferença entre os saldos dos docentes.",
           1,
           null
+        ),
+      ],
+      [
+        "Maximizar as Prioridades Utilizando os Saldos",
+        new PrioridadesPonderadasPorSaldo(
+          "Maximizar as Prioridades Utilizando os Saldos",
+          false,
+          "max",
+          "Componente de Função Objetivo que implementa a lógica de 'Refinamento do Modelo: Ponderação pelo Saldo Efetivo'.",
+          1000,
+          undefined,
+          { alpha: 0.1 /*limiteInferiorSaldo: 0, limiteSuperiorSaldo: 0*/ }
         ),
       ],
     ])
