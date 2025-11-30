@@ -11,6 +11,7 @@ import { ValidaTravas } from "@/algoritmo/communs/Constraints/ValidaTravas";
 import { Add } from "@/algoritmo/communs/NeighborhoodGeneration/Add";
 import { Remove } from "@/algoritmo/communs/NeighborhoodGeneration/Remove";
 import { Swap } from "@/algoritmo/communs/NeighborhoodGeneration/Swap";
+import { MinimizarDiferencaCargaDidatica } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaCargaDidatica";
 import { MinimizarDiferencaSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaSaldos";
 import { PrioridadesDefault } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesDefault";
 import { PrioridadesPesosTabelados } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesPesosTabelados";
@@ -335,7 +336,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         "Maximizar as prioridades",
         new PrioridadesDefault(
           "Maximizar as prioridades",
-          true,
+          false,
           "max",
           "Maximizar as prioridades das atribuições realizadas",
           1000,
@@ -371,12 +372,23 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         "Maximizar as Prioridades Utilizando os Saldos",
         new PrioridadesPonderadasPorSaldo(
           "Maximizar as Prioridades Utilizando os Saldos",
-          false,
+          true,
           "max",
           "Componente de Função Objetivo que implementa a lógica de 'Refinamento do Modelo: Ponderação pelo Saldo Efetivo'.",
           1000,
           undefined,
           { alpha: 0.1 /*limiteInferiorSaldo: 0, limiteSuperiorSaldo: 0*/ }
+        ),
+      ],
+      [
+        "Minimizar da Diferença de Carga Didática",
+        new MinimizarDiferencaCargaDidatica(
+          "Minimizar da Diferença de Carga Didática",
+          false,
+          "min",
+          "Componente de Função Objetivo para Minimização da Diferença de Carga Didática.",
+          1,
+          null
         ),
       ],
     ])
@@ -388,7 +400,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   const [maiorPrioridade, setMaiorPrioridade] = useState<number>(0);
 
   const [selectedAlgorithm, setSelectedAlgorithm] =
-    useState<AlgorithmType>("tabu-search");
+    useState<AlgorithmType>("integer-solver");
 
   return (
     <AlgorithmContext.Provider
