@@ -346,3 +346,17 @@ export function getActiveFormularios(
       docentesAtivos.includes(formulario.nome_docente)
   );
 }
+
+/**
+ * Verifica se duas disciplinas têm conflito de horários
+ */
+export function disciplinasConflitam(d1: Disciplina, d2: Disciplina): boolean {
+  for (const h1 of d1.horarios) {
+    for (const h2 of d2.horarios) {
+      if (horariosSobrepoem(h1, h2)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
