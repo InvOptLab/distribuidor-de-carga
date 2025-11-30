@@ -30,8 +30,13 @@ const isGroupedPage = (page: IPages): page is IGroupedPage => {
 
 const navItems: IPages[] = [
   { name: "Home", link: "/" },
-  { name: "Carregar dados", link: "/inputfile" },
-  // { name: "Editar", link: "/edicao" },
+  {
+    name: "Dados",
+    options: [
+      { name: "Cadastrar", link: "/cadastro" },
+      { name: "Carregar dados", link: "/inputfile" },
+    ],
+  },
   { name: "Seleção", link: "/select" },
   { name: "Configurações", link: "/config" },
   {
