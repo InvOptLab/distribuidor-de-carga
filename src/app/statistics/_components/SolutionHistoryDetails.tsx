@@ -526,7 +526,30 @@ export default function SolutionHistoryDetails({
                   <Typography variant="h6" align="center" gutterBottom>
                     Histograma Quantidade de Atribuições por Prioridade
                   </Typography>
-                  <ChartContainer>
+                  <ChartContainer
+                    chartData={{
+                      xAxis: {
+                        data: Array.from(
+                          solucao.solucao.estatisticas.docentesPrioridade
+                            .keys()
+                            .map((item) => item.toString())
+                        ),
+                        label: "Prioridade",
+                      },
+                      yAxis: {
+                        label: "Prioridade",
+                      },
+                      series: [
+                        {
+                          label: "Prioridade",
+                          data: Array.from(
+                            solucao.solucao.estatisticas.docentesPrioridade.values()
+                          ),
+                        },
+                      ],
+                      showBarValues: true,
+                    }}
+                  >
                     <BarChart
                       key="histograma_quantidade_atribuicoes_por_prioridade"
                       xAxis={[
@@ -580,30 +603,30 @@ export default function SolutionHistoryDetails({
                   <Typography variant="h6" align="center" gutterBottom>
                     Gráfico Avaliação por Iteração
                   </Typography>
-                  <ChartContainer>
-                    <LineChart
-                      xAxis={[
-                        {
-                          data: Array.from(
-                            solucao.solucao.estatisticas.avaliacaoPorIteracao.keys()
-                          ),
-                          label: "Iteração",
-                        },
-                      ]}
-                      series={[
-                        {
-                          data: Array.from(
-                            solucao.solucao.estatisticas.avaliacaoPorIteracao.values()
-                          ),
-                          label: "Avaliação",
-                          color: "#1C77C3",
-                        },
-                      ]}
-                      grid={{ vertical: true, horizontal: true }}
-                      height={300}
-                      margin={{ left: 75, right: 75 }}
-                    />
-                  </ChartContainer>
+                  {/* <ChartContainer> */}
+                  <LineChart
+                    xAxis={[
+                      {
+                        data: Array.from(
+                          solucao.solucao.estatisticas.avaliacaoPorIteracao.keys()
+                        ),
+                        label: "Iteração",
+                      },
+                    ]}
+                    series={[
+                      {
+                        data: Array.from(
+                          solucao.solucao.estatisticas.avaliacaoPorIteracao.values()
+                        ),
+                        label: "Avaliação",
+                        color: "#1C77C3",
+                      },
+                    ]}
+                    grid={{ vertical: true, horizontal: true }}
+                    height={300}
+                    margin={{ left: 75, right: 75 }}
+                  />
+                  {/* </ChartContainer> */}
                 </CardContent>
               </Card>
             </Grid2>
@@ -632,35 +655,35 @@ export default function SolutionHistoryDetails({
                   <Typography variant="h6" align="center" gutterBottom>
                     Gráfico Tempo (ms) por Iteração
                   </Typography>
-                  <ChartContainer>
-                    <LineChart
-                      xAxis={[
-                        {
-                          data: Array.from(
-                            solucao.solucao.estatisticas.tempoPorIteracao.keys()
-                          ),
-                          label: "Iteração",
-                        },
-                      ]}
-                      // yAxis={[
-                      //   {
-                      //     label: "Tempo (ms)",
-                      //   },
-                      // ]}
-                      series={[
-                        {
-                          data: Array.from(
-                            solucao.solucao.estatisticas.tempoPorIteracao.values()
-                          ),
-                          label: "Tempo (ms)",
-                          color: "#F39237",
-                        },
-                      ]}
-                      grid={{ vertical: true, horizontal: true }}
-                      height={300}
-                      margin={{ left: 75, right: 75 }}
-                    />
-                  </ChartContainer>
+                  {/* <ChartContainer> */}
+                  <LineChart
+                    xAxis={[
+                      {
+                        data: Array.from(
+                          solucao.solucao.estatisticas.tempoPorIteracao.keys()
+                        ),
+                        label: "Iteração",
+                      },
+                    ]}
+                    // yAxis={[
+                    //   {
+                    //     label: "Tempo (ms)",
+                    //   },
+                    // ]}
+                    series={[
+                      {
+                        data: Array.from(
+                          solucao.solucao.estatisticas.tempoPorIteracao.values()
+                        ),
+                        label: "Tempo (ms)",
+                        color: "#F39237",
+                      },
+                    ]}
+                    grid={{ vertical: true, horizontal: true }}
+                    height={300}
+                    margin={{ left: 75, right: 75 }}
+                  />
+                  {/* </ChartContainer> */}
                 </CardContent>
               </Card>
             </Grid2>
@@ -689,14 +712,14 @@ export default function SolutionHistoryDetails({
                   <Typography variant="h6" align="center" gutterBottom>
                     Histograma Ocorrências de Restrições
                   </Typography>
-                  <ChartContainer>
-                    <ConstraintsBarCharts
-                      ocorrencias={selectOcorrenciasToDisplay(
-                        solucao.solucao.estatisticas.qtdOcorrenciasRestricoes,
-                        "restricoes"
-                      )}
-                    />
-                  </ChartContainer>
+                  {/* <ChartContainer> */}
+                  <ConstraintsBarCharts
+                    ocorrencias={selectOcorrenciasToDisplay(
+                      solucao.solucao.estatisticas.qtdOcorrenciasRestricoes,
+                      "restricoes"
+                    )}
+                  />
+                  {/* </ChartContainer> */}
                 </CardContent>
               </Card>
             </Grid2>

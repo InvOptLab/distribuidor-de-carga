@@ -1,7 +1,7 @@
 import { delay } from "@/algoritmo/communs/utils";
 import Constraint from "../../../abstractions/Constraint";
 import { NeighborhoodFunction } from "../../../abstractions/NeighborhoodFunction";
-import { ObjectiveComponent } from "../../../abstractions/ObjectiveComponent";
+import ObjectiveComponent from "../../../abstractions/ObjectiveComponent";
 import { StopCriteria } from "../../../abstractions/StopCriteria";
 import {
   Atribuicao,
@@ -74,7 +74,7 @@ export class TabuSearch extends HeuristicAlgorithm {
     aspirationFunctions: AspirationCriteria[],
     maiorPrioridade: number | undefined,
     objectiveType: "min" | "max",
-    objectiveComponentes: ObjectiveComponent[]
+    objectiveComponentes: ObjectiveComponent<any>[]
   ) {
     /**
      * Inicialização do contexto.
@@ -206,7 +206,8 @@ export class TabuSearch extends HeuristicAlgorithm {
       avaliacao += this.objectiveFunction.calculate(
         vizinho.atribuicoes,
         this.context.prioridades,
-        this.context.docentes
+        this.context.docentes,
+        this.context.turmas
       );
 
       // Atualiza o valor da avaliação do vizinho.

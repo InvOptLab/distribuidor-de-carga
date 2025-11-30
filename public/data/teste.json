@@ -2354,7 +2354,7 @@
     },
     {
       "nome": "Docente 32",
-      "ativo": true,
+      "ativo": false,
       "comentario": "",
       "agrupar": ""
     },
@@ -2402,7 +2402,7 @@
     },
     {
       "nome": "Docente 37",
-      "ativo": true,
+      "ativo": false,
       "comentario": "",
       "agrupar": ""
     },
@@ -2444,13 +2444,13 @@
     },
     {
       "nome": "Docente 11",
-      "ativo": true,
+      "ativo": false,
       "comentario": "",
       "agrupar": ""
     },
     {
       "nome": "Docente 33",
-      "ativo": true,
+      "ativo": false,
       "comentario": "",
       "agrupar": ""
     },
@@ -2522,7 +2522,7 @@
     },
     {
       "nome": "Docente 23",
-      "ativo": true,
+      "ativo": false,
       "comentario": "",
       "agrupar": ""
     },

@@ -28,7 +28,6 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 import { Estatisticas } from "@/algoritmo/communs/interfaces/interfaces";
 import { LineChart } from "@mui/x-charts";
-import ChartContainer from "@/app/statistics/_components/ChartContainer";
 
 export interface IProgressBar {
   total: number;
@@ -276,54 +275,52 @@ export default function AlgoritmoDialog({
             {/* Gráfico de Avaliação */}
             {tabValue === 0 && (
               <Box sx={{ width: "100%", height: 300 }}>
-                <ChartContainer>
-                  <LineChart
-                    xAxis={[
-                      {
-                        data: chartData.map((item) => item.iteracao),
-                        label: "Iteração",
-                      },
-                    ]}
-                    series={[
-                      {
-                        data: Array.from(
-                          chartData.map((item) => item.avaliacao)
-                        ),
-                        label: "Avaliação",
-                        color: "#4caf50",
-                      },
-                    ]}
-                    grid={{ vertical: true, horizontal: true }}
-                    height={300}
-                    margin={{ left: 75, right: 75 }}
-                  />
-                </ChartContainer>
+                {/* <ChartContainer> */}
+                <LineChart
+                  xAxis={[
+                    {
+                      data: chartData.map((item) => item.iteracao),
+                      label: "Iteração",
+                    },
+                  ]}
+                  series={[
+                    {
+                      data: Array.from(chartData.map((item) => item.avaliacao)),
+                      label: "Avaliação",
+                      color: "#4caf50",
+                    },
+                  ]}
+                  grid={{ vertical: true, horizontal: true }}
+                  height={300}
+                  margin={{ left: 75, right: 75 }}
+                />
+                {/* </ChartContainer> */}
               </Box>
             )}
 
             {/* Gráfico de Tempo */}
             {tabValue === 1 && (
               <Box sx={{ width: "100%", height: 300 }}>
-                <ChartContainer>
-                  <LineChart
-                    xAxis={[
-                      {
-                        data: chartData.map((item) => item.iteracao),
-                        label: "Iteração",
-                      },
-                    ]}
-                    series={[
-                      {
-                        data: Array.from(chartData.map((item) => item.tempo)),
-                        label: "Tempo",
-                        color: "#1C77C3",
-                      },
-                    ]}
-                    grid={{ vertical: true, horizontal: true }}
-                    height={300}
-                    margin={{ left: 75, right: 75 }}
-                  />
-                </ChartContainer>
+                {/* <ChartContainer> */}
+                <LineChart
+                  xAxis={[
+                    {
+                      data: chartData.map((item) => item.iteracao),
+                      label: "Iteração",
+                    },
+                  ]}
+                  series={[
+                    {
+                      data: Array.from(chartData.map((item) => item.tempo)),
+                      label: "Tempo",
+                      color: "#1C77C3",
+                    },
+                  ]}
+                  grid={{ vertical: true, horizontal: true }}
+                  height={300}
+                  margin={{ left: 75, right: 75 }}
+                />
+                {/* </ChartContainer> */}
               </Box>
             )}
           </Box>

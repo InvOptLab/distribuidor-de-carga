@@ -208,3 +208,29 @@ export function isHeuristicAlgorithm(
 ): alg is TabuSearch {
   return isTabuSearch(alg);
 }
+
+/**
+ * Calcula a carga didática atribuída a um docente.
+ * @param docente Docente a ter a carga calculada.
+ * @param atribuicoes Todo o conjunto de atribuições realizadas.
+ * @param turmas Todas as turmas ativas.
+ * @returns Um número que representa a carga didática atribuída ao docente.
+ */
+export function calcularCargaDidatica(
+  docente: Docente,
+  atribuicoes: Atribuicao[],
+  turmas: Disciplina[]
+): number {
+  const atribuicoesDocente = atribuicoes.filter((atribuicao) =>
+    atribuicao.docentes.includes(docente.nome)
+  );
+
+  let cargaDocente = 0;
+
+  for (const atribuicao of atribuicoesDocente) {
+    cargaDocente += turmas.find(
+      (turma) => turma.id === atribuicao.id_disciplina
+    ).carga;
+  }
+  return cargaDocente;
+}

@@ -1,12 +1,16 @@
 import {
   Atribuicao,
+  Disciplina,
   Docente,
   Formulario,
+  ObjectiveComponentParams,
 } from "../communs/interfaces/interfaces";
 import { modelSCP } from "../metodos/MILP/MILP";
 import { OptimizationModel, Term } from "../metodos/MILP/optimization_model";
 
-export abstract class ObjectiveComponent {
+export default abstract class ObjectiveComponent<
+  T extends ObjectiveComponentParams[] | any
+> {
   /**
    * Nome dado a componente da função objetivo
    */
@@ -29,6 +33,8 @@ export abstract class ObjectiveComponent {
    * somar o valor ao acumulado da função objetivo ou subtrairemos.
    */
   type: "min" | "max";
+
+  public params: T;
 
   constructor(
     name: string,
@@ -54,39 +60,19 @@ export abstract class ObjectiveComponent {
    * @param atribuicoes Conjunto que representa os docentes atribuídos as turmas.
    * @param formularios Conjunto contendo as prioridades que os docentes atribuíram as turmas.
    */
-  calculate(
+  abstract calculate(
     atribuicoes: Atribuicao[],
     formularios: Formulario[],
-    docentes?: Docente[]
-  ): number {
-    let custo = 0;
-
-    for (const atribuicao of atribuicoes) {
-      for (const docenteAtribuido of atribuicao.docentes) {
-        const docente: Docente = docentes.find(
-          (d) => d.nome === docenteAtribuido
-        );
-
-        /**
-         * Caso não exista um docente atribuído a turma, o processo deve ir para a próxima iteração.
-         * Penalização já aplicada anteriormente.
-         */
-        if (!docente) {
-          continue;
-        }
-
-        if (docente.formularios.get(atribuicao.id_disciplina)) {
-          custo +=
-            this.multiplier * docente.formularios.get(atribuicao.id_disciplina);
-        }
-      }
-    }
-    return custo;
-  }
+    docentes: Docente[],
+    turmas: Disciplina[]
+  ): number;
 
   /**
    * (NOVO) Método para formulação do componente na função objetivo do MILP.
    * Retorna os termos que devem ser somados/subtraídos.
    */
-  milpFormulation?(model: OptimizationModel, modelData: modelSCP): Term[];
+  abstract milpFormulation(
+    model: OptimizationModel,
+    modelData: modelSCP
+  ): Term[];
 }

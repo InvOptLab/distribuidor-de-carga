@@ -1,6 +1,7 @@
-import { ObjectiveComponent } from "../abstractions/ObjectiveComponent";
+import ObjectiveComponent from "../abstractions/ObjectiveComponent";
 import {
   Atribuicao,
+  Disciplina,
   Docente,
   Formulario,
 } from "../communs/interfaces/interfaces";
@@ -17,9 +18,9 @@ export class ObjectiveFunction {
    * processados pela função objetivo. Os valores serão somados ou subitraídos dependendo do tipo do componente
    * e da função objetivo.
    */
-  public components: Map<string, ObjectiveComponent> = new Map<
+  public components: Map<string, ObjectiveComponent<any>> = new Map<
     string,
-    ObjectiveComponent
+    ObjectiveComponent<any>
   >();
 
   /**
@@ -29,7 +30,10 @@ export class ObjectiveFunction {
    */
   type: "min" | "max";
 
-  constructor(objectiveComponents: ObjectiveComponent[], type: "min" | "max") {
+  constructor(
+    objectiveComponents: ObjectiveComponent<any>[],
+    type: "min" | "max"
+  ) {
     this.type = type;
 
     for (const component of objectiveComponents) {
@@ -57,16 +61,27 @@ export class ObjectiveFunction {
   calculate(
     atribuicoes: Atribuicao[],
     formularios: Formulario[],
-    docentes: Docente[]
+    docentes: Docente[],
+    turmas: Disciplina[]
   ): number {
     let valor = 0;
 
     for (const component of this.components.values()) {
       if (this.type === "max") {
         if (component.type === "max") {
-          valor += component.calculate(atribuicoes, formularios, docentes);
+          valor += component.calculate(
+            atribuicoes,
+            formularios,
+            docentes,
+            turmas
+          );
         } else {
-          valor -= component.calculate(atribuicoes, formularios, docentes); // Implica que quanto menor o valor, melhor será para o problema de max
+          valor -= component.calculate(
+            atribuicoes,
+            formularios,
+            docentes,
+            turmas
+          ); // Implica que quanto menor o valor, melhor será para o problema de max
         }
       }
     }

@@ -91,7 +91,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
      */
     for (const docente of docentes) {
       if (cargaDocente.get(docente.nome) < this.params.minLimit.value) {
-        avaliacao -= this.penalty * (docente.saldo > 1.0 ? 0.75 : 1.0);
+        avaliacao -= this.penalty * (docente.saldo > 2.0 ? 0.75 : 1.0);
       }
     }
 

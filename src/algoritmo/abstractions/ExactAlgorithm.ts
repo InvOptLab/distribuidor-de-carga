@@ -6,7 +6,7 @@ import {
   Solucao,
 } from "../communs/interfaces/interfaces";
 import Constraint from "./Constraint";
-import { ObjectiveComponent } from "./ObjectiveComponent";
+import ObjectiveComponent from "./ObjectiveComponent";
 import { Statistics } from "../classes/Statistics";
 import { reconstruirAtribuicoes } from "@/app/atribuicoes/hooks/useAlgorithm";
 
@@ -21,7 +21,7 @@ export abstract class ExactAlgorithm extends Algorithm<HighsSolverResult> {
     constraints: Constraint<any>[],
     solution: Solucao | undefined,
     objectiveType: "min" | "max",
-    objectiveComponentes: ObjectiveComponent[],
+    objectiveComponentes: ObjectiveComponent<any>[],
     maiorPrioridade: number | undefined,
     enableStatistics: boolean
   ) {
