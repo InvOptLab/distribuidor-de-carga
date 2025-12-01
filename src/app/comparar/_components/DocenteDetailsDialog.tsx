@@ -11,7 +11,7 @@ import {
   Chip,
   Card,
   CardContent,
-  Grid2 as Grid,
+  Grid as Grid,
   Divider,
   Table,
   TableBody,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid2, Paper } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import DocentesTreeView from "./DocentesTreeView";
 import DisciplinasTreeView from "./DisciplinasTreeView";
@@ -49,8 +49,8 @@ const DataTreeView: React.FC<DataTreeViewProps> = ({
   };
 
   return (
-    <Grid2 container spacing={2}>
-      <Grid2 size={5}>
+    <Grid container spacing={2}>
+      <Grid size={5}>
         <Paper
           sx={{
             height: "20em",
@@ -83,16 +83,16 @@ const DataTreeView: React.FC<DataTreeViewProps> = ({
             )}
           </SimpleTreeView>
         </Paper>
-      </Grid2>
-      <Grid2 size={7}>
+      </Grid>
+      <Grid size={7}>
         <TreeViewAssignments
           item={lastClickedItem}
           solucao={solucao}
           setHoveredCourese={setHoveredCourese}
           disciplinas={disciplinas}
         />
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 };
 

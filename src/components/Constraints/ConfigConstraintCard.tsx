@@ -6,7 +6,7 @@ import {
   Card,
   CardContent,
   FormControl,
-  Grid2,
+  Grid,
   IconButton,
   InputLabel,
   MenuItem,
@@ -188,9 +188,9 @@ export default function ConfigConstraintCard({
       }}
     >
       <CardContent sx={{ p: 3 }}>
-        <Grid2 container spacing={2}>
+        <Grid container spacing={2}>
           {/* Header */}
-          <Grid2 size={12}>
+          <Grid size={12}>
             <Stack
               direction="row"
               spacing={2}
@@ -255,14 +255,14 @@ export default function ConfigConstraintCard({
                 </Tooltip>
               </Stack>
             </Stack>
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={12}>
+          <Grid size={12}>
             <Divider />
-          </Grid2>
+          </Grid>
 
           {/* Configurações básicas */}
-          <Grid2 size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth size="small" disabled={selectDisabled}>
               <InputLabel>Tipo de Restrição</InputLabel>
               <Select
@@ -334,9 +334,9 @@ export default function ConfigConstraintCard({
                 </Typography>
               )}
             </FormControl>
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               type="number"
@@ -349,18 +349,18 @@ export default function ConfigConstraintCard({
               }}
               helperText="Peso da penalização quando violada"
             />
-          </Grid2>
+          </Grid>
 
           {/* Parâmetros da restrição */}
           {hasParams && (
-            <Grid2 size={12}>
+            <Grid size={12}>
               <ConstraintParameters
                 params={constraint.params}
                 onParamChange={handleParamChange}
               />
-            </Grid2>
+            </Grid>
           )}
-        </Grid2>
+        </Grid>
       </CardContent>
     </Card>
   );

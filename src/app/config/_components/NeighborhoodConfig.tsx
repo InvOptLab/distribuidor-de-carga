@@ -61,7 +61,7 @@ export default function NeighborhoodConfig() {
 
       <Grid container spacing={2}>
         {Array.from(neighborhoodFunctions.entries()).map(([key, func]) => (
-          <Grid item xs={12} sm={6} md={4} key={key}>
+          <Grid size={{ xs: 12, md: 6 }} key={key}>
             <Card
               variant="outlined"
               sx={{

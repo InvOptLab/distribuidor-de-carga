@@ -7,7 +7,7 @@ import {
   Typography,
   Box,
   Chip,
-  Grid2 as Grid,
+  Grid as Grid,
 } from "@mui/material";
 
 interface SolutionSummaryProps {

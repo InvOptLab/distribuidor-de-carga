@@ -16,7 +16,7 @@ import {
   CardContent,
   Tabs,
   Tab,
-  Grid2,
+  Grid,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
@@ -233,32 +233,32 @@ export default function AlgoritmoDialog({
         </Box>
 
         {/* Cards de métricas */}
-        <Grid2 container spacing={2} sx={{ mb: 3 }}>
-          <Grid2 size={{ xs: 12, sm: 4 }}>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <MetricCard
               title="Iterações"
               value={metrics.iteracoes}
               icon={<LoopIcon />}
               color="primary"
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 4 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <MetricCard
               title="Tempo Médio"
               value={metrics.tempoMedio}
               icon={<TimerIcon />}
               color="info"
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 4 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <MetricCard
               title="Melhor Avaliação"
               value={metrics.melhorAvaliacao}
               icon={<TrendingUpIcon />}
               color="success"
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
 
         {/* Tabs para diferentes visualizações */}
         {chartData.length > 0 && (
@@ -342,13 +342,13 @@ export default function AlgoritmoDialog({
         >
           Parar
         </Button>
-        <LoadingButton
+        <Button
           variant={processing ? "outlined" : "contained"}
           loading={processing}
           onClick={onApply}
         >
           Aplicar
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

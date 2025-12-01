@@ -170,7 +170,7 @@ export default function History() {
                 })
               )}
             >
-              {/* <Grid2
+              {/* <Grid
                 container
                 size={{ xs: 12 }}
                 spacing={1}
@@ -179,7 +179,7 @@ export default function History() {
                 key="grid_history_main"
               >
                 {renderHoverCourseChildren(hoveredCourse)}
-              </Grid2> */}
+              </Grid> */}
             </HoveredCourse>
           )}
         </div>

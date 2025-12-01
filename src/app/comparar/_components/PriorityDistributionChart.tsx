@@ -5,7 +5,7 @@ import {
   CardContent,
   Typography,
   Box,
-  Grid2 as Grid,
+  Grid as Grid,
   Chip,
 } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
@@ -253,8 +253,8 @@ export default function PriorityDistributionChart({
                 margin={{ left: 75, right: 75 }}
                 slotProps={{
                   legend: {
-                    direction: "row",
-                    position: { vertical: "top", horizontal: "middle" },
+                    direction: "vertical",
+                    position: { vertical: "top", horizontal: "center" },
                   },
                 }}
                 barLabel="value"

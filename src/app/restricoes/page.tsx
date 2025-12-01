@@ -5,7 +5,7 @@ import {
   Button,
   Chip,
   Container,
-  Grid2,
+  Grid,
   Paper,
   Typography,
 } from "@mui/material";
@@ -175,13 +175,13 @@ export default function Restricoes() {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Grid2 container spacing={3} alignItems="center" justifyContent="center">
-        {/* <Grid2 size={12}>
+      <Grid container spacing={3} alignItems="center" justifyContent="center">
+        {/* <Grid size={12}>
           <Typography variant="h4" align="center" color="text.secondary">
             Ajuste as configurações para definir as restrições
           </Typography>
-        </Grid2> */}
-        <Grid2 size={12} sx={{ mt: 4, textAlign: "center" }}>
+        </Grid> */}
+        <Grid size={12} sx={{ mt: 4, textAlign: "center" }}>
           {/* Condicional para exibir título somente se houver restrições */}
           {Array.from(availableConstraints.keys()).length > 0 && (
             <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
@@ -190,7 +190,7 @@ export default function Restricoes() {
           )}
 
           {/* Exibir as restrições disponíveis com animação */}
-          <Grid2 container spacing={2} justifyContent="center">
+          <Grid container spacing={2} justifyContent="center">
             {Array.from(availableConstraints.keys()).length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -220,7 +220,7 @@ export default function Restricoes() {
               </motion.div>
             ) : (
               Array.from(availableConstraints.keys()).map((name) => (
-                <Grid2 key={name}>
+                <Grid key={name}>
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -249,11 +249,11 @@ export default function Restricoes() {
                       }}
                     />
                   </motion.div>
-                </Grid2>
+                </Grid>
               ))
             )}
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
         {constraints.map((constraint) => (
           <ConstraintCard
             key={constraint.name}
@@ -267,7 +267,7 @@ export default function Restricoes() {
             constraint={constraint.constraint}
           />
         ))}
-        <Grid2
+        <Grid
           size={12}
           alignItems="right"
           justifyContent="right"
@@ -278,8 +278,8 @@ export default function Restricoes() {
           <Button variant="contained" onClick={() => saveConstraints()}>
             Salvar
           </Button>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     </Container>
   );
 }

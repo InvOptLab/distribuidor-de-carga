@@ -214,7 +214,7 @@ export default function TimetableFilters({
       <Box sx={{ flexGrow: 1, overflow: "auto" }}>
         <Grid container spacing={3}>
           {/* Filtros de Docentes */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="subtitle1" gutterBottom fontWeight="bold">
               Filtros de Docentes (Linhas)
             </Typography>
@@ -252,12 +252,12 @@ export default function TimetableFilters({
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Divider />
           </Grid>
 
           {/* Filtros de Disciplinas */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="subtitle1" gutterBottom fontWeight="bold">
               Filtros de Disciplinas (Colunas)
             </Typography>

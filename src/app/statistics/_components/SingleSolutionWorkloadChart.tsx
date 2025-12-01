@@ -285,8 +285,8 @@ export default function SingleSolutionWorkloadChart({
               margin={{ left: 75, right: 75, bottom: 80 }}
               slotProps={{
                 legend: {
-                  direction: "row",
-                  position: { vertical: "top", horizontal: "middle" },
+                  direction: "horizontal",
+                  position: { vertical: "top", horizontal: "center" },
                 },
               }}
               barLabel="value"

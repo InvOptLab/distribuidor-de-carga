@@ -5,7 +5,7 @@ import {
   Box,
   Button,
   Chip,
-  Grid2,
+  Grid,
   Paper,
   Typography,
   Alert,
@@ -266,10 +266,10 @@ export default function ConstraintsConfig() {
               borderColor: "primary.main",
             }}
           >
-            <Grid2 container spacing={1.5}>
+            <Grid container spacing={1.5}>
               <AnimatePresence>
                 {Array.from(availableConstraints.keys()).map((name) => (
-                  <Grid2 key={name}>
+                  <Grid key={name}>
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -300,10 +300,10 @@ export default function ConstraintsConfig() {
                         }}
                       />
                     </motion.div>
-                  </Grid2>
+                  </Grid>
                 ))}
               </AnimatePresence>
-            </Grid2>
+            </Grid>
           </Paper>
         </Box>
       )}
@@ -343,10 +343,10 @@ export default function ConstraintsConfig() {
             </Typography>
           </Paper>
         ) : (
-          <Grid2 container spacing={3}>
+          <Grid container spacing={3}>
             <AnimatePresence mode="popLayout">
               {activeConstraints.map((constraint) => (
-                <Grid2
+                <Grid
                   size={12}
                   key={`${constraint.name}-${
                     constraint.isHard ? "hard" : "soft"
@@ -366,10 +366,10 @@ export default function ConstraintsConfig() {
                       showInformations={addAlerta}
                     />
                   </motion.div>
-                </Grid2>
+                </Grid>
               ))}
             </AnimatePresence>
-          </Grid2>
+          </Grid>
         )}
       </Box>
 

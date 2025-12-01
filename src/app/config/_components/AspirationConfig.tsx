@@ -70,7 +70,7 @@ export default function AspirationConfig() {
 
       <Grid container spacing={2}>
         {Array.from(aspirationFunctions.entries()).map(([key, func]) => (
-          <Grid item xs={12} sm={6} key={key}>
+          <Grid size={{ xs: 12, sm: 6 }} key={key}>
             <Card
               variant="outlined"
               sx={{

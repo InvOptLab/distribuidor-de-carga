@@ -1,4 +1,4 @@
-import React, { EffectCallback, useEffect } from "react";
+import React, { EffectCallback, JSX, useEffect } from "react";
 
 type ExpectedReadyState =
   | ReadonlyArray<DocumentReadyState>

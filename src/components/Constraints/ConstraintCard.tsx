@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Grid2,
+  Grid,
   Paper,
   Typography,
   FormControl,
@@ -65,7 +65,7 @@ export default function ConstraintCard({
   };
 
   return (
-    <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+    <Grid size={{ xs: 12, sm: 6, md: 4 }}>
       <Paper
         elevation={3}
         sx={{
@@ -185,6 +185,6 @@ export default function ConstraintCard({
           </Tooltip>
         </Stack>
       </Paper>
-    </Grid2>
+    </Grid>
   );
 }
