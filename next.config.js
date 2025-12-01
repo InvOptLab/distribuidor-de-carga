@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // output: 'export',
   webpack: (config, { isServer }) => {
     
     // If client-side, don't polyfill `fs`
