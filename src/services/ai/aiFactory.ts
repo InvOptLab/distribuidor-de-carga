@@ -1,13 +1,15 @@
 import { GoogleGeminiProvider } from "./implementations/GoogleGeminiProvider";
-import { LangChainMemoryStore } from "./implementations/LangChainMemoryStore";
+// import { LangChainMemoryStore } from "./implementations/LangChainMemoryStore"; // Antigo
+import { SupabaseVectorStoreRepo } from "./implementations/SupabaseVectorStore"; // Novo
 import { RAGService } from "./RAGService";
 
-// Singleton para manter os dados na memória enquanto o servidor estiver rodando
-let vectorStoreInstance: LangChainMemoryStore | null = null;
+// Singleton não é estritamente necessário para conexão stateless,
+// mas ajuda a não re-instanciar o cliente do Supabase a cada request.
+let vectorStoreInstance: SupabaseVectorStoreRepo | null = null;
 
-function getVectorStore(): LangChainMemoryStore {
+function getVectorStore(): SupabaseVectorStoreRepo {
   if (!vectorStoreInstance) {
-    vectorStoreInstance = new LangChainMemoryStore();
+    vectorStoreInstance = new SupabaseVectorStoreRepo();
   }
   return vectorStoreInstance;
 }
