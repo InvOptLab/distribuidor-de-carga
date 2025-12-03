@@ -6,8 +6,6 @@ import {
   Box,
   Paper,
   Typography,
-  TextField,
-  InputAdornment,
   IconButton,
   Tooltip,
   Fade,
@@ -77,12 +75,22 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
   const { isAvatarSpeaking, speak, stop } = useTextToSpeech();
   const [userInput, setUserInput] = useState("");
   const chatHistoryRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (chatHistoryRef.current) {
       chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      const maxHeight = 120;
+      const newHeight = Math.min(textareaRef.current.scrollHeight, maxHeight);
+      textareaRef.current.style.height = `${newHeight}px`;
+    }
+  }, [userInput]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -251,57 +259,114 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
           onSubmit={handleSubmit}
           sx={{ flexShrink: 0, mt: 2 }}
         >
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Digite sua pergunta..."
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            disabled={isTyping || isAvatarSpeaking}
-            size="small"
+          <Box
             sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 3,
-                backgroundColor: "white",
-                transition: "all 0.2s ease",
-                "&:hover": {
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                },
-                "&.Mui-focused": {
-                  boxShadow: "0 4px 12px rgba(25, 118, 210, 0.15)",
-                },
+              display: "flex",
+              alignItems: "flex-end",
+              backgroundColor: "white",
+              borderRadius: 3,
+              border: "2px solid",
+              borderColor: "divider",
+              transition: "all 0.2s ease",
+              px: 2,
+              py: 1,
+              "&:hover": {
+                borderColor: "grey.400",
+              },
+              "&:focus-within": {
+                borderColor: "primary.main",
               },
             }}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Tooltip title="Enviar mensagem" arrow>
-                      <span>
-                        <IconButton
-                          type="submit"
-                          color="primary"
-                          disabled={
-                            isTyping ||
-                            isAvatarSpeaking ||
-                            userInput.trim() === ""
-                          }
-                          sx={{
-                            transition: "all 0.2s ease",
-                            "&:not(:disabled):hover": {
-                              transform: "scale(1.1)",
-                            },
-                          }}
-                        >
-                          <SendIcon />
-                        </IconButton>
-                      </span>
-                    </Tooltip>
-                  </InputAdornment>
-                ),
-              },
+          >
+            <Box
+              component="textarea"
+              ref={textareaRef}
+              value={userInput}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setUserInput(e.target.value)
+              }
+              onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+              disabled={isTyping || isAvatarSpeaking}
+              placeholder="Digite sua pergunta..."
+              rows={1}
+              sx={{
+                flex: 1,
+                border: "none",
+                outline: "none",
+                resize: "none",
+                fontFamily: "inherit",
+                fontSize: "0.9rem",
+                lineHeight: 1.5,
+                backgroundColor: "transparent",
+                color: "text.primary",
+                minHeight: "24px",
+                maxHeight: "120px",
+                py: 0.5,
+                overflowY: "auto",
+                scrollbarWidth: "none", // Firefox
+                msOverflowStyle: "none", // IE/Edge
+                "&::-webkit-scrollbar": {
+                  display: "none", // Chrome/Safari
+                },
+                "&::placeholder": {
+                  color: "text.secondary",
+                  opacity: 0.6,
+                },
+                "&:disabled": {
+                  color: "text.disabled",
+                  cursor: "not-allowed",
+                },
+              }}
+            />
+            <Tooltip title="Enviar mensagem (Enter)" arrow>
+              <span>
+                <IconButton
+                  type="submit"
+                  disabled={
+                    isTyping || isAvatarSpeaking || userInput.trim() === ""
+                  }
+                  sx={{
+                    ml: 1,
+                    flexShrink: 0,
+                    width: 36,
+                    height: 36,
+                    backgroundColor: userInput.trim()
+                      ? "primary.main"
+                      : "grey.200",
+                    color: userInput.trim() ? "white" : "grey.500",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      backgroundColor: userInput.trim()
+                        ? "primary.dark"
+                        : "grey.300",
+                    },
+                    "&:disabled": {
+                      backgroundColor: "grey.200",
+                      color: "grey.400",
+                    },
+                  }}
+                >
+                  <SendIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Box>
+          <Typography
+            variant="caption"
+            sx={{
+              color: "text.disabled",
+              mt: 0.5,
+              display: "block",
+              textAlign: "center",
             }}
-          />
+          >
+            Pressione Shift + Enter para nova linha
+          </Typography>
         </Box>
       </Box>
     </Box>
