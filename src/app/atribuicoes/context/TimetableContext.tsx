@@ -35,6 +35,7 @@ import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 import { calculateManualSolution } from "@/algoritmo/communs/calculateManualSolution";
 import Algorithm from "@/algoritmo/abstractions/Algorithm";
 import Constraint from "@/algoritmo/abstractions/Constraint";
+import { RoomConfig } from "@/context/Collaboration";
 
 /**
  * Remover essa classe depois desse local.
@@ -87,7 +88,15 @@ interface TimetableContextType {
   setTravas: (travas: Celula[]) => void;
   adicionarDocente: (id_disciplina: string, nome_docente: string) => void;
   removerDocente: (idDisciplina: string, docenteARemover: string) => void;
-  handleCellClick: (event: React.MouseEvent, celula: Celula) => void;
+  handleCellClick: (
+    event: React.MouseEvent,
+    celula: Celula,
+    params: {
+      isInRoom: boolean;
+      isOwner: boolean;
+      config: RoomConfig;
+    }
+  ) => void;
   handleColumnClick: (event: React.MouseEvent, trava: Celula) => void;
   handleRowClick: (event: React.MouseEvent, trava: Celula) => void;
   cleanStateAtribuicoes: () => void;
@@ -326,7 +335,28 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
   /**
    * Gerencia e aplica comportamentos ao clicar em uma célula da tabela
    */
-  const handleCellClick = (event: React.MouseEvent, celula: Celula) => {
+  const handleCellClick = (
+    event: React.MouseEvent,
+    celula: Celula,
+    params: {
+      isInRoom: boolean;
+      isOwner: boolean;
+      config: RoomConfig;
+    }
+  ) => {
+    // Lógica de Bloqueio (Security Check)
+    if (params.isInRoom) {
+      const canEdit = params.isOwner || params.config.guestsCanEdit;
+
+      if (!canEdit) {
+        addAlerta(
+          "Apenas o líder da sala pode realizar alterações.",
+          "warning"
+        );
+        return; // Interrompe o clique
+      }
+    }
+
     if (event.ctrlKey) {
       if (
         !travas.some((obj) => JSON.stringify(obj) === JSON.stringify(celula))

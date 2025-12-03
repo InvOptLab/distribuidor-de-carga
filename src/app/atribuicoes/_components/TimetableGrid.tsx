@@ -17,6 +17,7 @@ import {
   Disciplina,
   TipoTrava,
 } from "@/algoritmo/communs/interfaces/interfaces";
+import { useCollaboration } from "@/context/Collaboration";
 
 interface TimetableGridProps {
   setHoveredCourse: (disciplina: Disciplina | null) => void;
@@ -49,7 +50,6 @@ export default function TimetableGrid({
   const { filteredDisciplinas } = useTimetable();
   const { rows } = useTimetableRows();
 
-  // O hook agora não retorna mais 'setBorder'
   const {
     hover,
     setHover,
@@ -61,6 +61,9 @@ export default function TimetableGrid({
   } = useHoverEffects();
 
   const { handleCellClick, handleColumnClick, handleRowClick } = useTimetable();
+
+  //  Pegar infos da colaboração
+  const { isInRoom, isOwner, config } = useCollaboration();
 
   const handleMouseEnterDocente = (
     atribuicao: {
@@ -227,11 +230,19 @@ export default function TimetableGrid({
                         },
                       }}
                       onClick={(event) =>
-                        handleCellClick(event, {
-                          nome_docente: atribuicao.nome,
-                          id_disciplina: prioridade.id_disciplina,
-                          tipo_trava: TipoTrava.Cell,
-                        })
+                        handleCellClick(
+                          event,
+                          {
+                            nome_docente: atribuicao.nome,
+                            id_disciplina: prioridade.id_disciplina,
+                            tipo_trava: TipoTrava.Cell,
+                          },
+                          {
+                            isInRoom: isInRoom,
+                            isOwner: isOwner,
+                            config: config,
+                          }
+                        )
                       }
                       onMouseEnter={() =>
                         handleOnMouseEnter(
