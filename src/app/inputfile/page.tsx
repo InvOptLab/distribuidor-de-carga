@@ -8,7 +8,7 @@ import {
   Typography,
   CircularProgress,
   Container,
-  Grid2 as Grid,
+  Grid as Grid,
   Chip,
   Alert,
   List,

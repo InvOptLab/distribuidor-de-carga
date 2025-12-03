@@ -6,7 +6,7 @@ import {
   CardContent,
   Typography,
   Box,
-  Grid2 as Grid,
+  Grid as Grid,
   Chip,
   Tabs,
   Tab,
@@ -270,8 +270,8 @@ export default function ConstraintViolationsChart({
                   margin={{ left: 75, right: 75 }}
                   slotProps={{
                     legend: {
-                      direction: "row",
-                      position: { vertical: "top", horizontal: "middle" },
+                      direction: "vertical",
+                      position: { vertical: "top", horizontal: "center" },
                     },
                   }}
                   barLabel="value"
@@ -303,7 +303,7 @@ export default function ConstraintViolationsChart({
                 series={[
                   {
                     data: pieDataA,
-                    highlightScope: { faded: "global", highlighted: "item" },
+                    highlightScope: { fade: "global", highlight: "item" },
                     faded: {
                       innerRadius: 30,
                       additionalRadius: -30,
@@ -320,9 +320,9 @@ export default function ConstraintViolationsChart({
                 margin={{ right: 200 }}
                 slotProps={{
                   legend: {
-                    direction: "column",
-                    position: { vertical: "middle", horizontal: "right" },
-                    padding: 0,
+                    direction: "vertical",
+                    position: { vertical: "middle", horizontal: "end" },
+                    // padding: 0
                   },
                 }}
               />
@@ -351,7 +351,7 @@ export default function ConstraintViolationsChart({
                 series={[
                   {
                     data: pieDataB,
-                    highlightScope: { faded: "global", highlighted: "item" },
+                    highlightScope: { fade: "global", highlight: "item" },
                     faded: {
                       innerRadius: 30,
                       additionalRadius: -30,
@@ -368,9 +368,9 @@ export default function ConstraintViolationsChart({
                 margin={{ right: 200 }}
                 slotProps={{
                   legend: {
-                    direction: "column",
-                    position: { vertical: "middle", horizontal: "right" },
-                    padding: 0,
+                    direction: "vertical",
+                    position: { vertical: "middle", horizontal: "end" },
+                    // padding: 0,
                   },
                 }}
               />

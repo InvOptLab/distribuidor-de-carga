@@ -5,7 +5,7 @@ import {
   TreeDocente,
 } from "@/app/history/_components/SolutionHistoryStatistics";
 import { HistoricoSolucao, isDisciplina } from "@/context/Global/utils";
-import { Box, Grid2, Stack, styled, Typography } from "@mui/material";
+import { Box, Grid, Stack, styled, Typography } from "@mui/material";
 
 export interface ArtribuicoesViewProps {
   tipo: "docente" | "disciplina";
@@ -53,7 +53,7 @@ export function ArtribuicoesView({
       }
       entidade.atribuicoes.forEach((value, key) => {
         render.push(
-          <Grid2 key={`TreeViewAssignments_child_grid_${key}`}>
+          <Grid key={`TreeViewAssignments_child_grid_${key}`}>
             <HeaderCell
               disciplina={disciplinas.get(key)}
               //onHeaderClick={() => null}
@@ -76,7 +76,7 @@ export function ArtribuicoesView({
             >
               {value.formularios.get(id).prioridade}
             </Box>
-          </Grid2>
+          </Grid>
         );
       });
     }
@@ -87,7 +87,7 @@ export function ArtribuicoesView({
       if (isDisciplina(entidade)) {
         entidade.atribuicoes.forEach((value, key) => {
           render.push(
-            <Grid2 key={`TreeViewAssignments_child_grid_${id}_${key}`}>
+            <Grid key={`TreeViewAssignments_child_grid_${id}_${key}`}>
               <StyledStack spacing={1}>
                 <Typography
                   align="left"
@@ -124,7 +124,7 @@ export function ArtribuicoesView({
               >
                 {value.formularios.get(entidade.id)}
               </Box>
-            </Grid2>
+            </Grid>
           );
         });
       }
@@ -133,7 +133,7 @@ export function ArtribuicoesView({
     return render;
   };
   return (
-    <Grid2
+    <Grid
       container
       spacing={1}
       size={{ xs: 8 }}
@@ -143,6 +143,6 @@ export function ArtribuicoesView({
       key={"TreeViewAssignments_container_grid_1"}
     >
       {renderFormularios()}
-    </Grid2>
+    </Grid>
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Grid2, Tooltip } from "@mui/material";
+import { Button, Grid, Tooltip } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -25,14 +25,14 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
   const { solucaoAtual } = useSolutionHistory();
 
   return (
-    <Grid2
+    <Grid
       container
       spacing={1}
       justifyItems="center"
       alignItems="center"
       justifyContent="center"
     >
-      <Grid2 key="Play">
+      <Grid key="Play">
         <Tooltip
           title="Executar"
           slotProps={{
@@ -57,9 +57,9 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
             <PlayArrowIcon />
           </Button>
         </Tooltip>
-      </Grid2>
+      </Grid>
 
-      <Grid2 key="Clean">
+      <Grid key="Clean">
         <Tooltip
           title="Limpar"
           slotProps={{
@@ -80,9 +80,9 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
             <CleaningServicesIcon />
           </Button>
         </Tooltip>
-      </Grid2>
+      </Grid>
 
-      <Grid2 key="Download">
+      <Grid key="Download">
         <Tooltip
           title="Download"
           slotProps={{
@@ -103,9 +103,9 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
             <DownloadIcon />
           </Button>
         </Tooltip>
-      </Grid2>
+      </Grid>
 
-      <Grid2 key="Save">
+      <Grid key="Save">
         <Tooltip
           title="Salvar"
           slotProps={{
@@ -132,8 +132,8 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
             </Button>
           </span>
         </Tooltip>
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 };
 

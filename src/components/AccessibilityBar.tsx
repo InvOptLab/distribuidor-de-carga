@@ -39,9 +39,9 @@ const AccessibilityBar: React.FC = () => {
             </IconButton>
           </Tooltip>
         </Box>
-        <Link href="/acessibilidade" passHref legacyBehavior>
+        <Link href="/acessibilidade" passHref>
           <Button
-            component="a"
+            component="div"
             color="inherit"
             startIcon={<InfoIcon />}
             sx={{ textTransform: "none" }}

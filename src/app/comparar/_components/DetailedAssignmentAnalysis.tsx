@@ -17,7 +17,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Grid2 as Grid,
+  Grid as Grid,
   Tooltip,
   IconButton,
   Dialog,

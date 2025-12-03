@@ -17,7 +17,7 @@ import {
   Alert,
   Switch,
   FormGroup,
-  Grid2 as Grid,
+  Grid as Grid,
 } from "@mui/material";
 import { useAlgorithmContext } from "@/context/Algorithm";
 

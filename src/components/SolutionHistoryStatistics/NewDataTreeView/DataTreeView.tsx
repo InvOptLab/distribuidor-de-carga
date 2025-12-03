@@ -2,7 +2,7 @@ import {
   TreeDisciplina,
   TreeDocente,
 } from "@/app/history/_components/SolutionHistoryStatistics";
-import { Divider, Grid2, Paper, Typography } from "@mui/material";
+import { Divider, Grid, Paper, Typography } from "@mui/material";
 import DocenteTreeView from "./DocentesTreeView";
 import DisciplinasTreeView from "./DisciplinasTreeView";
 import { useState } from "react";
@@ -88,24 +88,24 @@ export default function NewDataTreeView({
   };
 
   return (
-    <Grid2 container size={{ xs: 12 }} spacing={2} key="grid_dataTreeView_1">
-      <Grid2 size={{ xs: 12, md: 6 }} key="grid_dataTreeView_2">
+    <Grid container size={{ xs: 12 }} spacing={2} key="grid_dataTreeView_1">
+      <Grid size={{ xs: 12, md: 6 }} key="grid_dataTreeView_2">
         <Paper elevation={2} sx={{ padding: 2 }}>
           <DocenteTreeView
             docentes={docentes}
             handleClickedItem={handleLastClickedItem}
           />
         </Paper>
-      </Grid2>
-      <Grid2 size={{ xs: 12, md: 6 }} key="grid_dataTreeView_3">
+      </Grid>
+      <Grid size={{ xs: 12, md: 6 }} key="grid_dataTreeView_3">
         <Paper elevation={2} sx={{ padding: 2 }}>
           <DisciplinasTreeView
             disciplinas={disciplinas}
             handleClickedItem={handleLastClickedItem}
           />
         </Paper>
-      </Grid2>
-      <Grid2 size={{ xs: 12, md: 6 }} spacing={1} key="grid_dataTreeView_4">
+      </Grid>
+      <Grid size={{ xs: 12, md: 6 }} spacing={1} key="grid_dataTreeView_4">
         <Paper elevation={2} sx={{ padding: 2 }}>
           <Typography variant="h6" textAlign="center" alignContent="flex-start">
             {textoView(lastClickedItem?.tipo, "formularios")}
@@ -124,8 +124,8 @@ export default function NewDataTreeView({
             setHoveredCourese={setHoveredCourese}
           />
         </Paper>
-      </Grid2>
-      <Grid2 size={{ xs: 12, md: 6 }} spacing={1} key="grid_dataTreeView_5">
+      </Grid>
+      <Grid size={{ xs: 12, md: 6 }} spacing={1} key="grid_dataTreeView_5">
         <Paper elevation={2} sx={{ padding: 2 }}>
           <Typography variant="h6" textAlign="center">
             {textoView(lastClickedItem?.tipo, "atribuicoes")}
@@ -143,7 +143,7 @@ export default function NewDataTreeView({
             setHoveredCourese={setHoveredCourese}
           />
         </Paper>
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 }

@@ -155,7 +155,7 @@ export default function Home() {
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               {funcionalidades.map((func, index) => (
-                <Grid item xs={12} md={6} key={index}>
+                <Grid size={{ xs: 12, md: 6 }} key={index}>
                   <Box display="flex" alignItems="flex-start">
                     <ListItemIcon sx={{ minWidth: 40 }}>
                       <CheckCircle color="success" />
@@ -170,7 +170,7 @@ export default function Home() {
 
         {/* Tecnologias e Repositório */}
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card elevation={2} sx={{ height: "100%" }}>
               <CardContent>
                 <Box display="flex" alignItems="center" gap={1} mb={2}>
@@ -189,7 +189,7 @@ export default function Home() {
             </Card>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card elevation={2} sx={{ height: "100%" }}>
               <CardContent>
                 <Box display="flex" alignItems="center" gap={1} mb={2}>
@@ -313,7 +313,7 @@ export default function Home() {
           </Typography>
           <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
             {autores.map((autor) => (
-              <Grid item key={autor.email}>
+              <Grid key={autor.email}>
                 <AuthProfile
                   name={autor.name}
                   email={autor.email}

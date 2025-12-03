@@ -104,7 +104,7 @@ export default function StopCriteriaConfig() {
 
       <Grid container spacing={2}>
         {Array.from(stopFunctions.entries()).map(([key, func]) => (
-          <Grid item xs={12} sm={6} key={key}>
+          <Grid size={{ xs: 12, sm: 6 }} key={key}>
             <Card
               variant="outlined"
               sx={{

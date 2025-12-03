@@ -6,7 +6,7 @@ import {
   CardContent,
   Typography,
   Box,
-  Grid2 as Grid,
+  Grid as Grid,
   Chip,
   IconButton,
   Collapse,

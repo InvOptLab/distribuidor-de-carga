@@ -32,7 +32,7 @@ import {
   DialogContent,
   DialogActions,
   type SelectChangeEvent,
-  Grid2,
+  Grid,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -666,8 +666,8 @@ function AdvancedFilterForm({
                     <Typography variant="body2" gutterBottom>
                       Selecione o intervalo de horário:
                     </Typography>
-                    <Grid2 container spacing={2}>
-                      <Grid2 size={{ xs: 6 }}>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 6 }}>
                         <TextField
                           fullWidth
                           size="small"
@@ -677,8 +677,8 @@ function AdvancedFilterForm({
                           onChange={(e) => setTimeStart(e.target.value)}
                           InputLabelProps={{ shrink: true }}
                         />
-                      </Grid2>
-                      <Grid2 size={{ xs: 6 }}>
+                      </Grid>
+                      <Grid size={{ xs: 6 }}>
                         <TextField
                           fullWidth
                           size="small"
@@ -688,8 +688,8 @@ function AdvancedFilterForm({
                           onChange={(e) => setTimeEnd(e.target.value)}
                           InputLabelProps={{ shrink: true }}
                         />
-                      </Grid2>
-                    </Grid2>
+                      </Grid>
+                    </Grid>
                     <Typography
                       variant="caption"
                       color="text.secondary"

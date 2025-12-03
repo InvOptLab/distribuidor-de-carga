@@ -5,7 +5,7 @@ import {
   Typography,
   Paper,
   Divider,
-  Grid2,
+  Grid,
   Card,
   CardContent,
   Accordion,
@@ -122,18 +122,18 @@ export default function SolutionHistoryDetails({
             elevation={3}
             sx={{ padding: 2, borderRadius: 2, marginBottom: 2 }}
           >
-            <Grid2 container spacing={2}>
-              <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="body1">
                   <b>Data e Hora:</b> {solucao.datetime}
                 </Typography>
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="body1">
                   <b>Inserção:</b> {solucao.tipoInsercao}
                 </Typography>
-              </Grid2>
-              <Grid2
+              </Grid>
+              <Grid
                 size={{ xs: 12, sm: 6, md: 4 }}
                 display="flex"
                 alignContent="center"
@@ -151,15 +151,15 @@ export default function SolutionHistoryDetails({
                 ) : (
                   <Chip label="Não" color="success" />
                 )}
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="body1">
                   <b>Avaliação:</b> {solucao.solucao.avaliacao}
                 </Typography>
-              </Grid2>
+              </Grid>
               {solucao.solucao.estatisticas &&
                 solucao.solucao.estatisticas.tempoExecucao && (
-                  <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                     <Tooltip
                       title={`${Math.floor(
                         solucao.solucao.estatisticas.tempoExecucao / 60000
@@ -174,9 +174,9 @@ export default function SolutionHistoryDetails({
                         {solucao.solucao.estatisticas.tempoExecucao} ms
                       </Typography>
                     </Tooltip>
-                  </Grid2>
+                  </Grid>
                 )}
-              <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="body1">
                   <b>Iterações:</b>{" "}
                   {solucao.solucao.estatisticas &&
@@ -184,8 +184,8 @@ export default function SolutionHistoryDetails({
                     ? solucao.solucao.estatisticas.iteracoes
                     : "Dado não informado!"}
                 </Typography>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           </Card>
         </Box>
 
@@ -201,8 +201,8 @@ export default function SolutionHistoryDetails({
               <Typography variant="h6">Parâmetros Globais</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Grid2 container spacing={2}>
-                <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key="tabuList">
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key="tabuList">
                   <Card
                     elevation={3}
                     sx={{
@@ -236,8 +236,8 @@ export default function SolutionHistoryDetails({
                       </Typography>
                     </Box>
                   </Card>
-                </Grid2>
-              </Grid2>
+                </Grid>
+              </Grid>
             </AccordionDetails>
           </Accordion>
         )}
@@ -248,12 +248,12 @@ export default function SolutionHistoryDetails({
               <Typography variant="h6">Restrições</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Grid2 container spacing={2}>
+              <Grid container spacing={2}>
                 {[
                   ...algoritmo.constraints.hard.values(),
                   ...algoritmo.constraints.soft.values(),
                 ].map((constraint) => (
-                  <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={constraint.name}>
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={constraint.name}>
                     <Card
                       elevation={3}
                       sx={{
@@ -307,9 +307,9 @@ export default function SolutionHistoryDetails({
                         )}
                       </Box>
                     </Card>
-                  </Grid2>
+                  </Grid>
                 ))}
-              </Grid2>
+              </Grid>
             </AccordionDetails>
           </Accordion>
         )}
@@ -322,10 +322,10 @@ export default function SolutionHistoryDetails({
                 <Typography variant="h6">Geração da Vizinhança</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Grid2 container spacing={2}>
+                <Grid container spacing={2}>
                   {Array.from(algoritmo.neighborhoodPipe.values()).map(
                     (genFunc) => (
-                      <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={genFunc.name}>
+                      <Grid size={{ xs: 12, sm: 6, md: 4 }} key={genFunc.name}>
                         <Card
                           elevation={3}
                           sx={{
@@ -352,10 +352,10 @@ export default function SolutionHistoryDetails({
                             {genFunc.description}
                           </Typography>
                         </Card>
-                      </Grid2>
+                      </Grid>
                     )
                   )}
-                </Grid2>
+                </Grid>
               </AccordionDetails>
             </Accordion>
           )}
@@ -366,7 +366,7 @@ export default function SolutionHistoryDetails({
               <Typography variant="h6">Interrupção</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Grid2 container spacing={2}>
+              <Grid container spacing={2}>
                 {Array.from(algoritmo.stopPipe.values()).map((stopFunc) => {
                   let details = null;
                   let icon = (
@@ -412,7 +412,7 @@ export default function SolutionHistoryDetails({
                   }
 
                   return (
-                    <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={stopFunc.name}>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={stopFunc.name}>
                       <Card
                         elevation={3}
                         sx={{
@@ -445,10 +445,10 @@ export default function SolutionHistoryDetails({
                           </Typography>
                         )}
                       </Card>
-                    </Grid2>
+                    </Grid>
                   );
                 })}
-              </Grid2>
+              </Grid>
             </AccordionDetails>
           </Accordion>
         )}
@@ -459,10 +459,10 @@ export default function SolutionHistoryDetails({
               <Typography variant="h6">Critérios de Aspiração</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Grid2 container spacing={2}>
+              <Grid container spacing={2}>
                 {Array.from(algoritmo.aspirationPipe.values()).map(
                   (aspirationFunc) => (
-                    <Grid2
+                    <Grid
                       size={{ xs: 12, sm: 6, md: 4 }}
                       key={aspirationFunc.name}
                     >
@@ -502,10 +502,10 @@ export default function SolutionHistoryDetails({
                           </Typography>
                         )}
                       </Card>
-                    </Grid2>
+                    </Grid>
                   )
                 )}
-              </Grid2>
+              </Grid>
             </AccordionDetails>
           </Accordion>
         )}
@@ -516,11 +516,11 @@ export default function SolutionHistoryDetails({
           Gráficos
         </Typography>
 
-        <Grid2 container spacing={3}>
+        <Grid container spacing={3}>
           {solucao.solucao.estatisticas &&
           solucao.solucao.estatisticas.docentesPrioridade &&
           solucao.solucao.estatisticas.docentesPrioridade.size > 0 ? (
-            <Grid2 size={{ xs: 12 }}>
+            <Grid size={{ xs: 12 }}>
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
@@ -578,9 +578,9 @@ export default function SolutionHistoryDetails({
                   </ChartContainer>
                 </CardContent>
               </Card>
-            </Grid2>
+            </Grid>
           ) : (
-            <Grid2 size={{ xs: 12 }}>
+            <Grid size={{ xs: 12 }}>
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
@@ -591,13 +591,13 @@ export default function SolutionHistoryDetails({
                   </Alert>
                 </CardContent>
               </Card>
-            </Grid2>
+            </Grid>
           )}
 
           {solucao.solucao.estatisticas &&
           solucao.solucao.estatisticas.avaliacaoPorIteracao &&
           solucao.solucao.estatisticas.avaliacaoPorIteracao.size > 0 ? (
-            <Grid2 size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
@@ -629,9 +629,9 @@ export default function SolutionHistoryDetails({
                   {/* </ChartContainer> */}
                 </CardContent>
               </Card>
-            </Grid2>
+            </Grid>
           ) : (
-            <Grid2 size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
@@ -643,13 +643,13 @@ export default function SolutionHistoryDetails({
                   </Alert>
                 </CardContent>
               </Card>
-            </Grid2>
+            </Grid>
           )}
 
           {solucao.solucao.estatisticas &&
           solucao.solucao.estatisticas.tempoPorIteracao &&
           solucao.solucao.estatisticas.tempoPorIteracao.size > 0 ? (
-            <Grid2 size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
@@ -686,9 +686,9 @@ export default function SolutionHistoryDetails({
                   {/* </ChartContainer> */}
                 </CardContent>
               </Card>
-            </Grid2>
+            </Grid>
           ) : (
-            <Grid2 size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
@@ -700,13 +700,13 @@ export default function SolutionHistoryDetails({
                   </Alert>
                 </CardContent>
               </Card>
-            </Grid2>
+            </Grid>
           )}
 
           {solucao.solucao.estatisticas &&
           solucao.solucao.estatisticas.qtdOcorrenciasRestricoes &&
           solucao.solucao.estatisticas.qtdOcorrenciasRestricoes.size > 0 ? (
-            <Grid2 size={{ xs: 12 }}>
+            <Grid size={{ xs: 12 }}>
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
@@ -722,9 +722,9 @@ export default function SolutionHistoryDetails({
                   {/* </ChartContainer> */}
                 </CardContent>
               </Card>
-            </Grid2>
+            </Grid>
           ) : (
-            <Grid2 size={{ xs: 12 }}>
+            <Grid size={{ xs: 12 }}>
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
@@ -736,9 +736,9 @@ export default function SolutionHistoryDetails({
                   </Alert>
                 </CardContent>
               </Card>
-            </Grid2>
+            </Grid>
           )}
-        </Grid2>
+        </Grid>
       </Paper>
     </Box>
   );

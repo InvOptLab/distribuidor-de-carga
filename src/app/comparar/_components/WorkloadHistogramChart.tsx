@@ -13,7 +13,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  Grid2 as Grid,
+  Grid as Grid,
   Divider,
 } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
@@ -392,8 +392,8 @@ export default function WorkloadHistogramChart({
               margin={{ left: 75, right: 75 }}
               slotProps={{
                 legend: {
-                  direction: "row",
-                  position: { vertical: "top", horizontal: "middle" },
+                  direction: "horizontal",
+                  position: { vertical: "top", horizontal: "center" },
                 },
               }}
               barLabel="value"

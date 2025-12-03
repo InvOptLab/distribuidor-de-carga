@@ -6,7 +6,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Box,
-  Grid2,
+  Grid,
   TextField,
   Typography,
   Switch,
@@ -46,7 +46,7 @@ export default function ConstraintParameters({
     // Boolean - Switch
     if (valueType === "boolean") {
       return (
-        <Grid2 size={12} key={paramKey}>
+        <Grid size={12} key={paramKey}>
           <FormControlLabel
             control={
               <Switch
@@ -73,14 +73,14 @@ export default function ConstraintParameters({
               </Box>
             }
           />
-        </Grid2>
+        </Grid>
       );
     }
 
     // Number - TextField numérico
     if (valueType === "number") {
       return (
-        <Grid2 size={{ xs: 12, md: 6 }} key={paramKey}>
+        <Grid size={{ xs: 12, md: 6 }} key={paramKey}>
           <TextField
             fullWidth
             type="number"
@@ -97,14 +97,14 @@ export default function ConstraintParameters({
               inputProps: { step: "any" },
             }}
           />
-        </Grid2>
+        </Grid>
       );
     }
 
     // String - TextField de texto
     if (valueType === "string") {
       return (
-        <Grid2 size={{ xs: 12, md: 6 }} key={paramKey}>
+        <Grid size={{ xs: 12, md: 6 }} key={paramKey}>
           <TextField
             fullWidth
             type="text"
@@ -117,7 +117,7 @@ export default function ConstraintParameters({
             size="small"
             helperText={param.description}
           />
-        </Grid2>
+        </Grid>
       );
     }
 
@@ -125,7 +125,7 @@ export default function ConstraintParameters({
     if (valueType === "object") {
       const jsonValue = JSON.stringify(param.value, null, 2);
       return (
-        <Grid2 size={12} key={paramKey}>
+        <Grid size={12} key={paramKey}>
           <TextField
             fullWidth
             multiline
@@ -145,17 +145,17 @@ export default function ConstraintParameters({
             helperText={param.description || "Formato JSON"}
             placeholder='{"key": "value"}'
           />
-        </Grid2>
+        </Grid>
       );
     }
 
     // Fallback para tipos desconhecidos
     return (
-      <Grid2 size={12} key={paramKey}>
+      <Grid size={12} key={paramKey}>
         <Typography variant="body2" color="error">
           Tipo de parâmetro não suportado: {valueType}
         </Typography>
-      </Grid2>
+      </Grid>
     );
   };
 
@@ -196,11 +196,11 @@ export default function ConstraintParameters({
         </Box>
       </AccordionSummary>
       <AccordionDetails sx={{ pt: 2 }}>
-        <Grid2 container spacing={2}>
+        <Grid container spacing={2}>
           {Object.entries(params).map(([key, param]) =>
             renderParameterField(key, param)
           )}
-        </Grid2>
+        </Grid>
       </AccordionDetails>
     </Accordion>
   );

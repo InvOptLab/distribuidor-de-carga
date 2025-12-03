@@ -294,7 +294,7 @@ export default function ObjectiveConfig() {
           const hasParams =
             component.params && Object.keys(component.params).length > 0;
           return (
-            <Grid item xs={12} md={6} key={name}>
+            <Grid size={{ xs: 12, md: 6 }} key={name}>
               <Card
                 variant="outlined"
                 sx={{

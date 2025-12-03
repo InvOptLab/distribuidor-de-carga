@@ -5,7 +5,7 @@ import {
   TreeDocente,
 } from "@/app/history/_components/SolutionHistoryStatistics";
 import { HistoricoSolucao, isDisciplina } from "@/context/Global/utils";
-import { Box, Grid2, Stack, styled, Typography } from "@mui/material";
+import { Box, Grid, Stack, styled, Typography } from "@mui/material";
 
 export interface FormulariosViewProps {
   tipo: "docente" | "disciplina";
@@ -57,7 +57,7 @@ export function FormulariosView({
       entidade.formularios.forEach((value, key) => {
         if (disciplinas.get(key)) {
           render.push(
-            <Grid2 key={`TreeViewAssignments_child_grid_${key}`}>
+            <Grid key={`TreeViewAssignments_child_grid_${key}`}>
               <HeaderCell
                 disciplina={disciplinas.get(key)}
                 //onHeaderClick={() => null}
@@ -80,7 +80,7 @@ export function FormulariosView({
               >
                 {value}
               </Box>
-            </Grid2>
+            </Grid>
           );
         }
       });
@@ -92,7 +92,7 @@ export function FormulariosView({
       if (isDisciplina(entidade)) {
         entidade.formularios.forEach((value, key) => {
           render.push(
-            <Grid2 key={`TreeViewAssignments_child_grid_${id}_${key}`}>
+            <Grid key={`TreeViewAssignments_child_grid_${id}_${key}`}>
               <StyledStack spacing={1}>
                 <Typography
                   align="left"
@@ -131,7 +131,7 @@ export function FormulariosView({
               >
                 {value.prioridade}
               </Box>
-            </Grid2>
+            </Grid>
           );
         });
       }
@@ -140,7 +140,7 @@ export function FormulariosView({
     return render;
   };
   return (
-    <Grid2
+    <Grid
       container
       spacing={1}
       size={{ xs: 8 }}
@@ -150,6 +150,6 @@ export function FormulariosView({
       key={"TreeViewAssignments_container_grid_2"}
     >
       {renderFormularios()}
-    </Grid2>
+    </Grid>
   );
 }

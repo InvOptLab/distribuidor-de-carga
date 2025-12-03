@@ -2,7 +2,7 @@ import { setCellColor } from "@/app/atribuicoes";
 import HeaderCell from "@/app/atribuicoes/_components/HeaderCell";
 import { TreeDisciplina } from "@/app/history/_components/SolutionHistoryStatistics";
 import { Disciplina, HistoricoSolucao } from "@/context/Global/utils";
-import { Box, Grid2, Paper, Stack, styled, Typography } from "@mui/material";
+import { Box, Grid, Paper, Stack, styled, Typography } from "@mui/material";
 import React from "react";
 
 // Props do DataTreeView
@@ -57,7 +57,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
             docente.formularios.has(disciplina.id) && item.id === docente.nome
         );
         render.push(
-          <Grid2 key={`TreeViewAssignments_child_grid_${disciplina.id}`}>
+          <Grid key={`TreeViewAssignments_child_grid_${disciplina.id}`}>
             <HeaderCell
               disciplina={disciplina}
               //onHeaderClick={() => null}
@@ -79,7 +79,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
             >
               {docente ? docente.formularios.get(disciplina.id) : ""}
             </Box>
-          </Grid2>
+          </Grid>
         );
       }
     }
@@ -90,7 +90,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
       for (const formulario of disciplina.formularios.keys()) {
         const docente = disciplina.formularios.get(formulario);
         render.push(
-          <Grid2
+          <Grid
             key={`TreeViewAssignments_child_grid_${disciplina.id}_${docente.nome}`}
           >
             <StyledStack spacing={1}>
@@ -126,7 +126,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
             >
               {docente ? docente.formularios.get(disciplina.id) : ""}
             </Box>
-          </Grid2>
+          </Grid>
         );
       }
     }
@@ -143,7 +143,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
         display: "flex",
       }}
     >
-      <Grid2
+      <Grid
         container
         spacing={2}
         size={{ xs: 8 }}
@@ -153,7 +153,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
         key={"TreeViewAssignments_container_grid"}
       >
         {!item && (
-          <Grid2
+          <Grid
             alignItems="center"
             justifyContent="center"
             key={"TreeViewAssignments_no_info_grid"}
@@ -161,10 +161,10 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
             <Typography variant="h6" color="error" align="center">
               Nenhuma informação selecionada!
             </Typography>
-          </Grid2>
+          </Grid>
         )}
         {item && renderAssignments()}
-      </Grid2>
+      </Grid>
     </Paper>
   );
 };

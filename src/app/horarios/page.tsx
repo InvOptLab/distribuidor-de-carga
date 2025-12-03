@@ -9,7 +9,7 @@ import {
   Alert,
   Card,
   CardContent,
-  Grid2 as Grid,
+  Grid as Grid,
   FormControl,
   InputLabel,
   Select,
