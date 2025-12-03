@@ -21,6 +21,8 @@ import {
   LinkedIn,
   Article,
 } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { fetchProfileImage } from "@/actions/image-actions";
 
 export interface IAuthProfileProps {
   name: string;
@@ -77,6 +79,22 @@ export default function AuthProfile({
     return "success";
   };
 
+  const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadImage() {
+      // Chama o servidor para baixar e converter a imagem
+
+      const base64Image = await fetchProfileImage(avatarUrl);
+
+      if (base64Image) {
+        setAvatarSrc(base64Image);
+      }
+    }
+
+    loadImage();
+  }, []); // Roda apenas uma vez ao montar o componente
+
   return (
     <Card
       sx={{
@@ -92,7 +110,7 @@ export default function AuthProfile({
         <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
           {/* Avatar e Nome */}
           <Avatar
-            src={avatarUrl}
+            src={avatarSrc}
             sx={{
               width: 100,
               height: 100,
@@ -102,7 +120,7 @@ export default function AuthProfile({
               boxShadow: 2,
             }}
           >
-            {!avatarUrl && initials}
+            {!avatarSrc && initials}
           </Avatar>
 
           <Box textAlign="center">

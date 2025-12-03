@@ -43,7 +43,10 @@ export default function Home() {
       orcid: "0009-0009-3773-9005",
       googleScholar:
         "https://scholar.google.com/citations?hl=pt-BR&user=uqZV3EkAAAAJ",
+      avatarUrl:
+        "https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=uqZV3EkAAAAJ&citpid=2",
     },
+
     {
       name: "Elias Salomão Helou Neto",
       email: "elias@icmc.usp.br",
@@ -59,6 +62,8 @@ export default function Home() {
       orcid: "0000-0001-5157-3851",
       googleScholar:
         "https://scholar.google.com/citations?hl=pt-BR&user=GjgcpdAAAAAJ",
+      avatarUrl:
+        "https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=GjgcpdAAAAAJ&citpid=2",
     },
   ];
 
@@ -326,6 +331,7 @@ export default function Home() {
                   googleScholar={autor.googleScholar}
                   linkedin={autor.linkedin}
                   orcid={autor.orcid}
+                  avatarUrl={autor.avatarUrl}
                 />
               </Grid>
             ))}
