@@ -154,9 +154,9 @@ function DesktopSubmenu({ item, pathname }: DesktopSubmenuProps) {
               minWidth: 180,
             }}
           >
-            <Link href={option.link} passHref legacyBehavior>
+            <Link href={option.link} passHref>
               <Button
-                component="a"
+                component="div"
                 fullWidth
                 disableRipple
                 disabled={pathname === option.link}
@@ -272,9 +272,9 @@ function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
                     : "transparent",
               }}
             >
-              <Link href={option.link} passHref legacyBehavior>
+              <Link href={option.link} passHref>
                 <Button
-                  component="a"
+                  component="div"
                   fullWidth
                   disableRipple
                   disabled={pathname === option.link}
@@ -392,9 +392,9 @@ export default function Navbar() {
                         paddingX: 2,
                       }}
                     >
-                      <Link href={item.link} passHref legacyBehavior>
+                      <Link href={item.link} passHref>
                         <Button
-                          component="a"
+                          component="div"
                           fullWidth
                           disableRipple
                           disabled={pathname === item.link}
@@ -474,14 +474,9 @@ export default function Navbar() {
                 );
               } else {
                 return (
-                  <Link
-                    href={item.link}
-                    key={item.name}
-                    passHref
-                    legacyBehavior
-                  >
+                  <Link href={item.link} key={item.name} passHref>
                     <Button
-                      component="a"
+                      component="div"
                       variant="text"
                       sx={{
                         position: "relative",
