@@ -1,4 +1,4 @@
-"use server"; // <--- Isso é mágico. Diz ao Next.js que esta função roda SOMENTE no servidor.
+"use server";
 
 import { createRAGService } from "@/services/ai/aiFactory";
 
