@@ -9,7 +9,7 @@ import { MemoryVectorStore } from "@langchain/classic/vectorstores/memory";
 export class LangChainMemoryStore implements IVectorStoreRepository {
   private vectorStore: MemoryVectorStore | null = null;
   private embeddings = new GoogleGenerativeAIEmbeddings({
-    modelName: "embedding-001",
+    modelName: "text-embedding-004",
   });
 
   async initialize(): Promise<void> {
