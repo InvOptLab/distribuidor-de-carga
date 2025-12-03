@@ -37,7 +37,7 @@ type Message = {
  */
 export const ChatDialog = () => {
   // --- 1. Hooks de Gerenciamento ---
-  const { isChatOpen, closeChat } = useAvatarChat();
+  const { isChatOpen, closeChat, isSearching, setSearching } = useAvatarChat();
   const { isAvatarSpeaking, speak } = useTextToSpeech();
   const { findBestMatch } = useFuzzySearch();
 
@@ -58,6 +58,7 @@ export const ChatDialog = () => {
 
   // --- Lógica Envio ---
   const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
+    setSearching(true);
     // Previne o reload da página, um erro comum!
     if (e) e.preventDefault();
 
@@ -85,6 +86,8 @@ export const ChatDialog = () => {
 
     // Limpa o input
     setUserInput("");
+
+    setSearching(false);
   };
 
   return (
@@ -106,7 +109,10 @@ export const ChatDialog = () => {
         <Stack spacing={2}>
           {/* 1. O AVATAR */}
           <Box sx={{ padding: 2, display: "flex", justifyContent: "center" }}>
-            <AvatarIcon isSpeaking={isAvatarSpeaking} />
+            <AvatarIcon
+              isSpeaking={isAvatarSpeaking}
+              isSearching={isSearching}
+            />
           </Box>
 
           {/* HISTÓRICO DE MENSAGENS */}

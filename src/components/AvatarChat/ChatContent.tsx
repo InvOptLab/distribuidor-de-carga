@@ -16,7 +16,8 @@ import { useAvatarChat } from "@/context/AvatarChat/AvatarChatContext";
 
 export const ChatContent = () => {
   // Hooks do Contexto (Estado Global)
-  const { messages, sendMessage, isTyping, isMuted } = useAvatarChat();
+  const { messages, sendMessage, isTyping, isMuted, isSearching } =
+    useAvatarChat();
 
   // Hooks de UI/Áudio
   const { isAvatarSpeaking, speak } = useTextToSpeech();
@@ -62,7 +63,10 @@ export const ChatContent = () => {
       {/* --- ÁREA DO AVATAR --- */}
       <Box sx={{ flexShrink: 0, mb: 2, textAlign: "center" }}>
         {/* O Avatar se move se estiver falando (TTS) ou processando (RAG) */}
-        <AvatarIcon isSpeaking={isAvatarSpeaking || isTyping} />
+        <AvatarIcon
+          isSpeaking={isAvatarSpeaking || isTyping}
+          isSearching={isSearching}
+        />
       </Box>
 
       <Stack spacing={2} sx={{ flexGrow: 1, overflow: "hidden" }}>

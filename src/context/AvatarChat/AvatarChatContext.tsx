@@ -27,8 +27,10 @@ interface AvatarChatContextType {
   toggleMute: () => void;
   messages: Message[];
   isTyping: boolean; // <--- NOVO: Estado para saber se o bot está pensando
-  sendMessage: (text: string) => Promise<string | undefined>; // <--- ALTERADO: Retorna a resposta (ou undefined se erro)
+  sendMessage: (text: string) => Promise<string | undefined>; // Retorna a resposta (ou undefined se erro)
   clearChat: () => void;
+  isSearching: boolean;
+  setSearching: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AvatarChatContext = createContext<AvatarChatContextType | undefined>(
@@ -39,6 +41,7 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isTyping, setIsTyping] = useState(false); // <--- Estado de loading
+  const [isSearching, setSearching] = useState(false);
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -56,6 +59,8 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
 
   const sendMessage = async (text: string): Promise<string | undefined> => {
     if (!text.trim()) return;
+
+    setSearching(true);
 
     // 1. Adiciona mensagem do usuário na tela (Optimistic UI)
     const userMessage: Message = {
@@ -99,6 +104,7 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
       return "Desculpe, tive um problema de conexão."; // Retorno de erro para áudio
     } finally {
       setIsTyping(false);
+      setSearching(false);
     }
   };
 
@@ -113,8 +119,10 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
       sendMessage,
       isTyping,
       clearChat,
+      isSearching,
+      setSearching,
     }),
-    [isChatOpen, isMuted, messages, isTyping]
+    [isChatOpen, isMuted, messages, isTyping, isSearching]
   );
 
   return (
