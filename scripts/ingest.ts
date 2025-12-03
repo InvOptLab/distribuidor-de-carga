@@ -28,7 +28,6 @@ async function main() {
   // 2. Clientes
   const client = createClient(sbUrl, sbKey);
 
-  // --- MUDANÇA PRINCIPAL AQUI ---
   const embeddings = new GoogleGenerativeAIEmbeddings({
     modelName: "text-embedding-004", // Modelo mais novo e estável
     apiKey: googleKey,
