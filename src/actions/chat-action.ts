@@ -12,7 +12,6 @@ export async function askAssistantAction(
   message: string
 ): Promise<ChatResponse> {
   try {
-    console.log("Pergunta");
     if (!message.trim()) {
       return { success: false, error: "A mensagem não pode estar vazia." };
     }

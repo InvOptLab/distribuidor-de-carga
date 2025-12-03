@@ -43,40 +43,26 @@ export default function ConstraintsConfig() {
 
   // Inicializar constraints ativas e disponíveis
   useEffect(() => {
-    // console.log("=== Inicializando ConstraintsConfig ===");
-    // console.log("hardConstraints:", hardConstraints);
-    // console.log("softConstraints:", softConstraints);
-    // console.log("allConstraints:", allConstraints);
-
     const active: Constraint<any>[] = [];
     const available = new Map(allConstraints);
 
     // Adicionar constraints hard ativas
     hardConstraints.forEach((constraint, key) => {
-      // console.log(`Adicionando constraint hard ativa: ${key}`);
       active.push(constraint);
       available.delete(key);
     });
 
     // Adicionar constraints soft ativas
     softConstraints.forEach((constraint, key) => {
-      // console.log(`Adicionando constraint soft ativa: ${key}`);
       active.push(constraint);
       available.delete(key);
     });
-
-    // console.log("Active constraints:", active);
-    // console.log("Available constraints:", available);
 
     setActiveConstraints(active);
     setAvailableConstraints(available);
   }, [hardConstraints, softConstraints, allConstraints]);
 
   const handleConstraintChange = (constraintInstance: Constraint<any>) => {
-    // console.log(
-    //   "handleConstraintChange chamado para:",
-    //   constraintInstance.name
-    // );
     // Atualizar a instância no array
     setActiveConstraints((prev) => {
       return prev.map((c) =>
@@ -86,26 +72,16 @@ export default function ConstraintsConfig() {
   };
 
   const removeConstraint = (name: string) => {
-    // console.log("=== removeConstraint chamado ===");
-    // console.log("Nome da constraint a remover:", name);
-    // console.log("Active constraints antes:", activeConstraints);
-
     const constraintToRemove = activeConstraints.find((c) => c.name === name);
     if (!constraintToRemove) {
       // console.error("Constraint não encontrada:", name);
       return;
     }
 
-    // console.log("Constraint encontrada:", constraintToRemove);
-
     // Remover do estado ativo usando filter para garantir imutabilidade
     setActiveConstraints((prev) => {
       const updated = prev.filter((c) => c.name !== name);
-      // console.log(
-      //   `Constraint ${name} removida. Total restante:`,
-      //   updated.length
-      // );
-      // console.log("Array atualizado:", updated);
+
       return updated;
     });
 
@@ -113,18 +89,16 @@ export default function ConstraintsConfig() {
     setAvailableConstraints((prev) => {
       const updated = new Map(prev);
       updated.set(name, constraintToRemove);
-      // console.log("Constraint adicionada de volta às disponíveis");
+
       return updated;
     });
 
     // Remover dos contextos
     if (constraintToRemove.isHard) {
-      // console.log("Removendo de hardConstraints");
       const newHardConstraints = new Map(hardConstraints);
       newHardConstraints.delete(name);
       setHardConstraints(newHardConstraints);
     } else {
-      // console.log("Removendo de softConstraints");
       const newSoftConstraints = new Map(softConstraints);
       newSoftConstraints.delete(name);
       setSoftConstraints(newSoftConstraints);
@@ -134,29 +108,21 @@ export default function ConstraintsConfig() {
   };
 
   const addConstraint = (name: string) => {
-    // console.log("=== addConstraint chamado ===");
-    // console.log("Nome da constraint a adicionar:", name);
-
     const constraintToAdd = availableConstraints.get(name);
     if (!constraintToAdd) {
-      // console.error("Constraint não encontrada nas disponíveis:", name);
       return;
     }
-
-    // console.log("Constraint encontrada:", constraintToAdd);
 
     // Remover das disponíveis
     setAvailableConstraints((prev) => {
       const updated = new Map(prev);
       updated.delete(name);
-      // console.log("Constraint removida das disponíveis");
       return updated;
     });
 
     // Adicionar às ativas
     setActiveConstraints((prev) => {
       const updated = [...prev, constraintToAdd];
-      // console.log("Constraint adicionada às ativas. Total:", updated.length);
       return updated;
     });
 

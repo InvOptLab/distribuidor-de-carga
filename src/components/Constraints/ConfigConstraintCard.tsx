@@ -56,48 +56,16 @@ export default function ConfigConstraintCard({
     // Acessar o construtor da classe
     const ConstraintClass = constraint.constructor as any;
 
-    // console.log("=== Verificando suporte de tipos ===");
-    // console.log("Constraint:", constraint.name);
-    // console.log("Constructor:", ConstraintClass);
-    // console.log("Constructor.prototype:", ConstraintClass.prototype);
-
     // Verificar se existem as flags no prototype
     if (ConstraintClass.prototype) {
-      // const hardSupport = ConstraintClass.prototype["hard"];
-      // const softSupport = ConstraintClass.prototype["soft"];
-
-      // console.log("hard flag:", hardSupport);
-      // console.log("soft flag:", softSupport);
-
-      // Definir suporte baseado nas flags do prototype
-      // if (typeof hardSupport !== "undefined") {
-      //   setSupportsHard(hardSupport === true);
-      // }
       setSupportsHard(!!ConstraintClass.prototype["hard"]);
       setSupportsSoft(!!ConstraintClass.prototype["soft"]);
-
-      // if (typeof softSupport !== "undefined") {
-      //   setSupportsSoft(softSupport === true);
-      // }
-
-      // console.log(
-      //   `Resultado - Supports Hard: ${hardSupport}, Supports Soft: ${softSupport}`
-      // );
     }
   }, [constraint]);
 
   // Verificar se a constraint tem parâmetros
   const hasParams =
     constraint.params && Object.keys(constraint.params).length > 0;
-
-  // console.log("ConstraintCard renderizando:");
-  // console.log("  - Nome:", constraint.name);
-  // console.log("  - Tipo:", tipo);
-  // console.log("  - Penalidade:", penalidade);
-  // console.log("  - Supports Hard:", supportsHard);
-  // console.log("  - Supports Soft:", supportsSoft);
-  // console.log("  - Params:", constraint.params);
-  // console.log("  - Has Params:", hasParams);
 
   const handleTipoChange = (event: SelectChangeEvent) => {
     const newTipo = event.target.value as "Hard" | "Soft";
@@ -124,15 +92,9 @@ export default function ConfigConstraintCard({
   };
 
   const handleParamChange = (paramKey: string, newValue: any) => {
-    // console.log(`Alterando parâmetro "${paramKey}" para:`, newValue);
-
     // Atualizar o valor diretamente na instância
     if (constraint.params && constraint.params[paramKey]) {
       constraint.params[paramKey].value = newValue;
-      // console.log(
-      //   `Parâmetro atualizado. Novo valor:`,
-      //   constraint.params[paramKey]
-      // );
 
       // Notificar mudança
       onChange(constraint);
@@ -144,7 +106,6 @@ export default function ConfigConstraintCard({
   };
 
   const handleDelete = () => {
-    // console.log(`ConstraintCard: Chamando onDelete para "${constraint.name}"`);
     onDelete(constraint.name);
   };
 

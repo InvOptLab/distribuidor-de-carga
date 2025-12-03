@@ -69,8 +69,6 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
     setIsTyping(true); // Ativa animação de "pensando" se você tiver
 
     try {
-      console.log("Try de fora");
-
       // 2. Chama a Server Action (Backend RAG)
       const response = await askAssistantAction(text);
 
