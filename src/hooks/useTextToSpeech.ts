@@ -52,5 +52,11 @@ export const useTextToSpeech = () => {
     };
   }, []);
 
-  return { isAvatarSpeaking, speak };
+  const stop = useCallback(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    setIsAvatarSpeaking(false);
+  }, []);
+
+  return { isAvatarSpeaking, speak, stop };
 };

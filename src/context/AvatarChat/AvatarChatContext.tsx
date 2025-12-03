@@ -1,13 +1,14 @@
 "use client";
 
-import { askAssistantAction } from "@/actions/chat-action";
-import React, {
+import type React from "react";
+import {
   createContext,
   useState,
   useContext,
-  ReactNode,
+  type ReactNode,
   useMemo,
 } from "react";
+import { askAssistantAction } from "@/actions/chat-action";
 
 // Definição dos tipos
 export type MessageSender = "user" | "bot";
@@ -19,6 +20,8 @@ export interface Message {
   timestamp: Date;
 }
 
+type ChatSize = "small" | "medium" | "large";
+
 interface AvatarChatContextType {
   isChatOpen: boolean;
   openChat: () => void;
@@ -26,11 +29,14 @@ interface AvatarChatContextType {
   isMuted: boolean;
   toggleMute: () => void;
   messages: Message[];
-  isTyping: boolean; // <--- NOVO: Estado para saber se o bot está pensando
-  sendMessage: (text: string) => Promise<string | undefined>; // Retorna a resposta (ou undefined se erro)
+  isTyping: boolean;
+  sendMessage: (text: string) => Promise<string | undefined>;
   clearChat: () => void;
   isSearching: boolean;
   setSearching: React.Dispatch<React.SetStateAction<boolean>>;
+  chatSize: ChatSize;
+  setChatSize: React.Dispatch<React.SetStateAction<ChatSize>>;
+  cycleSize: () => void;
 }
 
 const AvatarChatContext = createContext<AvatarChatContextType | undefined>(
@@ -40,8 +46,9 @@ const AvatarChatContext = createContext<AvatarChatContextType | undefined>(
 export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [isTyping, setIsTyping] = useState(false); // <--- Estado de loading
+  const [isTyping, setIsTyping] = useState(false);
   const [isSearching, setSearching] = useState(false);
+  const [chatSize, setChatSize] = useState<ChatSize>("medium");
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -55,14 +62,30 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
   const openChat = () => setIsChatOpen(true);
   const closeChat = () => setIsChatOpen(false);
   const toggleMute = () => setIsMuted((prev) => !prev);
-  const clearChat = () => setMessages([]);
+
+  const clearChat = () =>
+    setMessages([
+      {
+        id: "welcome",
+        text: "Olá! Eu sou o assistente virtual do Distribuidor de Carga. Como posso te ajudar hoje?",
+        sender: "bot",
+        timestamp: new Date(),
+      },
+    ]);
+
+  const cycleSize = () => {
+    setChatSize((prev) => {
+      if (prev === "small") return "medium";
+      if (prev === "medium") return "large";
+      return "small";
+    });
+  };
 
   const sendMessage = async (text: string): Promise<string | undefined> => {
     if (!text.trim()) return;
 
     setSearching(true);
 
-    // 1. Adiciona mensagem do usuário na tela (Optimistic UI)
     const userMessage: Message = {
       id: Date.now().toString(),
       text: text,
@@ -71,17 +94,16 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setIsTyping(true); // Ativa animação de "pensando" se você tiver
+    setIsTyping(true);
 
     try {
-      // 2. Chama a Server Action (Backend RAG)
       const response = await askAssistantAction(text);
 
       if (!response.success || !response.answer) {
         throw new Error(response.error || "Erro desconhecido");
       }
 
-      // 3. Adiciona resposta do bot
+      // Adiciona resposta do bot
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: response.answer,
@@ -90,8 +112,7 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
       };
 
       setMessages((prev) => [...prev, botMessage]);
-
-      return response.answer; // <--- Retorna o texto para o componente poder "Falar"
+      return response.answer; // Retorna o texto para o componente poder "Falar"
     } catch (error) {
       console.error(error);
       const errorMessage: Message = {
@@ -121,8 +142,11 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
       clearChat,
       isSearching,
       setSearching,
+      chatSize,
+      setChatSize,
+      cycleSize,
     }),
-    [isChatOpen, isMuted, messages, isTyping, isSearching]
+    [isChatOpen, isMuted, messages, isTyping, isSearching, chatSize]
   );
 
   return (

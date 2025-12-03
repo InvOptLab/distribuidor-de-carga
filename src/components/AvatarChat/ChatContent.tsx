@@ -1,49 +1,99 @@
-import React, { useState, useRef, useEffect } from "react";
+"use client";
+
+import type React from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Box,
-  Stack,
   Paper,
   Typography,
   TextField,
   InputAdornment,
   IconButton,
-  CircularProgress,
+  Tooltip,
+  Fade,
+  keyframes,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import { useTextToSpeech } from "@/hooks/useTextToSpeech";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AvatarIcon } from "./AvatarIcon";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { useAvatarChat } from "@/context/AvatarChat/AvatarChatContext";
 
-export const ChatContent = () => {
-  // Hooks do Contexto (Estado Global)
-  const { messages, sendMessage, isTyping, isMuted, isSearching } =
+const typingAnimation = keyframes`
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+`;
+
+const TypingIndicator = () => (
+  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, p: 1 }}>
+    {[0, 1, 2].map((i) => (
+      <Box
+        key={i}
+        sx={{
+          width: 8,
+          height: 8,
+          borderRadius: "50%",
+          backgroundColor: "primary.main",
+          animation: `${typingAnimation} 1.4s ease-in-out infinite`,
+          animationDelay: `${i * 0.2}s`,
+        }}
+      />
+    ))}
+  </Box>
+);
+
+const formatMessage = (text: string): React.ReactNode => {
+  // Regex para capturar **texto** (negrito) e _texto_ (itálico)
+  const parts = text.split(/(\*\*[^*]+\*\*|_[^_]+_)/g);
+
+  return parts.map((part, index) => {
+    // Negrito: **texto**
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    // Itálico: _texto_
+    if (part.startsWith("_") && part.endsWith("_")) {
+      return <em key={index}>{part.slice(1, -1)}</em>;
+    }
+    return part;
+  });
+};
+
+const formatTime = (date: Date) => {
+  return date.toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+interface ChatContentProps {
+  avatarSize?: number;
+}
+
+export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
+  const { messages, sendMessage, isTyping, isSearching, clearChat, isMuted } =
     useAvatarChat();
 
-  // Hooks de UI/Áudio
-  const { isAvatarSpeaking, speak } = useTextToSpeech();
+  const { isAvatarSpeaking, speak, stop } = useTextToSpeech();
   const [userInput, setUserInput] = useState("");
   const chatHistoryRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll sempre que mensagens mudarem
   useEffect(() => {
     if (chatHistoryRef.current) {
       chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  // Handler de envio
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!userInput.trim() || isTyping || isAvatarSpeaking) return;
 
     const textToSend = userInput;
-    setUserInput(""); // Limpa o input imediatamente
-    stop(); // Para qualquer fala anterior
+    setUserInput("");
+    stop();
 
-    // Chama o backend através do contexto e espera a resposta textual
     const botResponse = await sendMessage(textToSend);
 
-    // Se houver resposta e o som não estiver mudo, fala!
     if (botResponse && !isMuted) {
       speak(botResponse);
     }
@@ -52,81 +102,132 @@ export const ChatContent = () => {
   return (
     <Box
       sx={{
-        // width: 380,
-        height: 500,
         display: "flex",
         flexDirection: "column",
+        height: "100%",
         p: 2,
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#fafafa",
+        overflow: "hidden",
       }}
     >
-      {/* --- ÁREA DO AVATAR --- */}
-      <Box sx={{ flexShrink: 0, mb: 2, textAlign: "center" }}>
-        {/* O Avatar se move se estiver falando (TTS) ou processando (RAG) */}
+      <Box sx={{ flexShrink: 0, mb: 1, textAlign: "center" }}>
         <AvatarIcon
           isSpeaking={isAvatarSpeaking || isTyping}
           isSearching={isSearching}
+          size={avatarSize}
         />
       </Box>
 
-      <Stack spacing={2} sx={{ flexGrow: 1, overflow: "hidden" }}>
-        {/* --- HISTÓRICO DE MENSAGENS --- */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          minHeight: 0,
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            flexShrink: 0,
+            mb: 1,
+          }}
+        >
+          <Tooltip title="Limpar conversa" arrow>
+            <IconButton
+              size="small"
+              onClick={clearChat}
+              sx={{
+                color: "text.secondary",
+                "&:hover": { color: "error.main" },
+              }}
+            >
+              <DeleteOutlineIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
         <Paper
           ref={chatHistoryRef}
           elevation={0}
           sx={{
-            flexGrow: 1,
+            flex: 1,
+            minHeight: 0,
             p: 2,
             overflowY: "auto",
             backgroundColor: "white",
-            border: "1px solid #e0e0e0",
+            border: "1px solid",
+            borderColor: "divider",
             borderRadius: 2,
+            transition: "all 0.3s ease",
+            "&::-webkit-scrollbar": {
+              width: 6,
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "grey.100",
+              borderRadius: 3,
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "grey.400",
+              borderRadius: 3,
+              "&:hover": {
+                backgroundColor: "grey.500",
+              },
+            },
           }}
         >
-          {messages.length === 0 ? (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              align="center"
-              sx={{ mt: 4 }}
-            >
-              Olá! Como posso ajudar você hoje?
-            </Typography>
-          ) : (
-            messages.map((msg) => (
+          {messages.map((msg) => (
+            <Fade key={msg.id} in timeout={300}>
               <Box
-                key={msg.id}
                 sx={{
                   display: "flex",
-                  justifyContent:
-                    msg.sender === "user" ? "flex-end" : "flex-start",
-                  mb: 1.5,
+                  flexDirection: "column",
+                  alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
+                  mb: 2,
                 }}
               >
                 <Paper
                   elevation={0}
                   sx={{
                     p: 1.5,
+                    px: 2,
                     maxWidth: "85%",
                     backgroundColor:
-                      msg.sender === "user" ? "primary.main" : "grey.200",
+                      msg.sender === "user" ? "primary.main" : "grey.100",
                     color:
                       msg.sender === "user"
                         ? "primary.contrastText"
                         : "text.primary",
-                    borderRadius: "16px",
-                    borderTopRightRadius:
-                      msg.sender === "user" ? "4px" : "16px",
-                    borderTopLeftRadius: msg.sender === "user" ? "16px" : "4px",
+                    borderRadius: 2,
+                    borderTopRightRadius: msg.sender === "user" ? 4 : 16,
+                    borderTopLeftRadius: msg.sender === "user" ? 16 : 4,
+                    boxShadow:
+                      msg.sender === "user"
+                        ? "0 2px 8px rgba(25, 118, 210, 0.2)"
+                        : "0 2px 8px rgba(0, 0, 0, 0.05)",
                   }}
                 >
-                  <Typography variant="body2">{msg.text}</Typography>
+                  <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                    {formatMessage(msg.text)}
+                  </Typography>
                 </Paper>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.disabled",
+                    mt: 0.5,
+                    px: 1,
+                    fontSize: "0.7rem",
+                  }}
+                >
+                  {formatTime(msg.timestamp)}
+                </Typography>
               </Box>
-            ))
-          )}
+            </Fade>
+          ))}
 
-          {/* Indicador de Digitando (Loading do RAG) */}
           {isTyping && (
             <Box
               sx={{ display: "flex", justifyContent: "flex-start", mb: 1.5 }}
@@ -134,54 +235,75 @@ export const ChatContent = () => {
               <Paper
                 elevation={0}
                 sx={{
-                  p: 1.5,
                   backgroundColor: "grey.100",
-                  borderRadius: "16px",
+                  borderRadius: 2,
+                  borderTopLeftRadius: 4,
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <CircularProgress size={12} />
-                  <Typography variant="caption" color="text.secondary">
-                    Consultando manual...
-                  </Typography>
-                </Box>
+                <TypingIndicator />
               </Paper>
             </Box>
           )}
         </Paper>
 
-        {/* --- INPUT DO USUÁRIO --- */}
-        <Box component="form" onSubmit={handleSubmit}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ flexShrink: 0, mt: 2 }}
+        >
           <TextField
             fullWidth
             variant="outlined"
             placeholder="Digite sua pergunta..."
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            // Opcional: Desabilitar input enquanto o bot pensa
-            disabled={isTyping}
+            disabled={isTyping || isAvatarSpeaking}
+            size="small"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 3,
+                backgroundColor: "white",
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                },
+                "&.Mui-focused": {
+                  boxShadow: "0 4px 12px rgba(25, 118, 210, 0.15)",
+                },
+              },
+            }}
             slotProps={{
               input: {
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton
-                      type="submit"
-                      color="primary"
-                      // Desabilita envio se estiver vazio, ou bot pensando/falando
-                      disabled={
-                        isTyping || isAvatarSpeaking || userInput.trim() === ""
-                      }
-                      aria-label="Enviar pergunta"
-                    >
-                      <SendIcon />
-                    </IconButton>
+                    <Tooltip title="Enviar mensagem" arrow>
+                      <span>
+                        <IconButton
+                          type="submit"
+                          color="primary"
+                          disabled={
+                            isTyping ||
+                            isAvatarSpeaking ||
+                            userInput.trim() === ""
+                          }
+                          sx={{
+                            transition: "all 0.2s ease",
+                            "&:not(:disabled):hover": {
+                              transform: "scale(1.1)",
+                            },
+                          }}
+                        >
+                          <SendIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
                   </InputAdornment>
                 ),
               },
             }}
           />
         </Box>
-      </Stack>
+      </Box>
     </Box>
   );
 };
