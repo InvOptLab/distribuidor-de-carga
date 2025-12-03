@@ -14,8 +14,8 @@ export class GoogleGeminiProvider implements ILLMProvider {
     }
 
     this.model = new ChatGoogleGenerativeAI({
-      model: "gemini-1.5-flash",
-      temperature: 0,
+      model: "gemini-2.5-flash",
+      temperature: 0.3,
       apiKey: apiKey,
     });
   }
