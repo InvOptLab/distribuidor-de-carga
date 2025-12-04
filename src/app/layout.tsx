@@ -15,6 +15,7 @@ import { AvatarChatWidget } from "@/components/AvatarChat/AvatarChatWidget";
 import { CssBaseline } from "@mui/material";
 
 import "katex/dist/katex.min.css";
+import { CollaborationProvider } from "@/context/Collaboration";
 
 export default function RootLayout({
   children,
@@ -46,19 +47,21 @@ export default function RootLayout({
              */}
         <CssBaseline />
         <AvatarChatProvider>
-          <Navbar />
-          <GlobalWrapper>
-            <ProcessWrapper>
-              <AlgorithmWrapper>
-                <AlertsWrapper>
-                  <HistorySolutionProvider>
-                    <div style={{ padding: "15px" }}>{children}</div>
-                    <AvatarChatWidget />
-                  </HistorySolutionProvider>
-                </AlertsWrapper>
-              </AlgorithmWrapper>
-            </ProcessWrapper>
-          </GlobalWrapper>
+          <CollaborationProvider>
+            <Navbar />
+            <GlobalWrapper>
+              <ProcessWrapper>
+                <AlgorithmWrapper>
+                  <AlertsWrapper>
+                    <HistorySolutionProvider>
+                      <div style={{ padding: "15px" }}>{children}</div>
+                      <AvatarChatWidget />
+                    </HistorySolutionProvider>
+                  </AlertsWrapper>
+                </AlgorithmWrapper>
+              </ProcessWrapper>
+            </GlobalWrapper>
+          </CollaborationProvider>
         </AvatarChatProvider>
         {/* </ThemeProvider> */}
         {/* </ColorModeContext.Provider> */}

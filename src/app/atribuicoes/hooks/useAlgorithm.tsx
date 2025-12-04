@@ -23,6 +23,7 @@ import {
   Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { MILP } from "@/algoritmo/metodos/MILP/MILP";
+import { useCollaboration } from "@/context/Collaboration";
 
 /**
  * Converte a saída do solver HiGHS (baseada em índices e objeto 'Primal')
@@ -73,6 +74,47 @@ export function reconstruirAtribuicoes(
   return atribuicoesFinais;
 }
 
+// =========================================================
+// FUNÇÕES AUXILIARES DE CONVERSÃO (Map/Set <-> Array)
+// =========================================================
+
+const serializeContextData = (data: any) => {
+  return {
+    ...data,
+    // Converte Map de formulários dentro de cada Docente para Array
+    docentes: data.docentes.map((d: any) => ({
+      ...d,
+      formularios: d.formularios ? Array.from(d.formularios.entries()) : [],
+    })),
+    // Converte Set de conflitos dentro de cada Disciplina para Array
+    disciplinas: data.disciplinas.map((d: any) => ({
+      ...d,
+      conflitos: d.conflitos ? Array.from(d.conflitos) : [],
+    })),
+  };
+};
+
+const deserializeContextData = (data: any) => {
+  const result = { ...data };
+
+  // Verifica se o campo existe antes de tentar mapear
+  if (data.docentes) {
+    result.docentes = data.docentes.map((d: any) => ({
+      ...d,
+      formularios: new Map(d.formularios),
+    }));
+  }
+
+  if (data.disciplinas) {
+    result.disciplinas = data.disciplinas.map((d: any) => ({
+      ...d,
+      conflitos: new Set(d.conflitos),
+    }));
+  }
+
+  return result;
+};
+
 export function useAlgorithm() {
   const {
     docentes,
@@ -86,6 +128,8 @@ export function useAlgorithm() {
     setHistoricoSolucoes,
     updateAtribuicoes,
   } = useGlobalContext();
+
+  const { isInRoom, broadcastDataUpdate } = useCollaboration(); // Hooks de Colaboração
 
   const { maxPriority } = useTimetable();
 
@@ -106,11 +150,6 @@ export function useAlgorithm() {
   const [processing, setProcessing] = useState(false);
   const [interrompe, setInterrompe] = useState(false);
   const [disciplinasAlocadas, setDisciplinasAlocadas] = useState(0);
-  // const [estatisticasMonitoradas, setEstatisticasMonitoradas] = useState({
-  //   iteracoes: 0,
-  //   tempoPorIteracao: new Map<number, number>(),
-  //   avaliacaoPorIteracao: new Map<number, number>(),
-  // });
 
   /**
    * Em vez de um único objeto 'estatisticasMonitoradas',
@@ -468,7 +507,31 @@ export function useAlgorithm() {
       );
 
       updateSolutionId(setSolucaoAtual, idSolucao);
-      updateAtribuicoes(solucaoAtual.atribuicoes);
+      updateAtribuicoes(solucaoAtual.atribuicoes); // Atualiza localmente
+
+      // LÓGICA DE COLABORAÇÃO: Broadcast da solução para todos na sala
+      if (isInRoom) {
+        // broadcastDataUpdate(
+        //   {
+        //     atribuicoes: solucaoAtual.atribuicoes,
+        //     disciplinas: disciplinas,
+        //     docentes: docentes,
+        //     formularios: formularios,
+        //     travas: travas,
+        //   },
+        //   "FULL_DATA"
+        // );
+        broadcastDataUpdate(
+          serializeContextData({
+            atribuicoes: solucaoAtual.atribuicoes,
+            disciplinas: disciplinas,
+            docentes: docentes,
+            formularios: formularios,
+            travas: travas,
+          }),
+          "FULL_DATA"
+        );
+      }
 
       addAlerta("A solução foi aplicada com sucesso!", "success");
       handleCloseDialog();

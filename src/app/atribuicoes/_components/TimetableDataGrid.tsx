@@ -15,6 +15,7 @@ import {
   TipoTrava,
   type Disciplina,
 } from "@/context/Global/utils";
+import { useCollaboration } from "@/context/Collaboration";
 
 interface TimetableDataGridProps {
   setHoveredCourse: React.Dispatch<React.SetStateAction<Disciplina | null>>;
@@ -52,6 +53,9 @@ export default function TimetableDataGrid({
     setCellColor,
     verificaConflitosDocente,
   } = useHoverEffects();
+
+  //  Pegar infos da colaboração
+  const { isInRoom, isOwner, config } = useCollaboration();
 
   const rows = useMemo(() => {
     return filteredDocentes
@@ -240,7 +244,13 @@ export default function TimetableDataGrid({
 
           return (
             <Box
-              onClick={(event) => handleCellClick(event, celula)}
+              onClick={(event) =>
+                handleCellClick(event, celula, {
+                  isInRoom: isInRoom,
+                  isOwner: isOwner,
+                  config: config,
+                })
+              }
               onMouseEnter={() => {
                 handleOnMouseEnter(nomeDocente, disciplina.id);
                 onMouseLeaveGrid();

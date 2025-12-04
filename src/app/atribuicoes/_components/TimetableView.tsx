@@ -20,6 +20,7 @@ import HoveredDocente from "./HoveredDocente";
 // import TimetableGrid from "./TimetableGrid";
 // import TimetableDataGrid from "./TimetableDataGrid";
 import TimetableGrid from "./TimetableGrid";
+import { CollaborativeGridWrapper } from "./CollaborativeGridWrapper";
 
 const customTheme = createTheme({
   components: {
@@ -198,22 +199,24 @@ export default function TimetableView() {
           />
         </Drawer>
 
-        <Paper
-          sx={{
-            // width: "100%",
-            // overflow: "hidden",
-            flex: 1, // <-- CHAVE: Faz o Paper preencher o espaço restante
-            display: "flex", // Para que o TableContainer possa usar height: 100%
-          }}
-        >
-          {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
-            <TimetableGrid //TimetableDataGrid -> Futuro
-              setHoveredCourse={handleCourseEnter}
-              setHoveredDocente={handleDocenteEnter}
-              onMouseLeaveGrid={handleMouseLeave}
-            />
-          )}
-        </Paper>
+        <CollaborativeGridWrapper>
+          <Paper
+            sx={{
+              // width: "100%",
+              // overflow: "hidden",
+              flex: 1, // <-- CHAVE: Faz o Paper preencher o espaço restante
+              display: "flex", // Para que o TableContainer possa usar height: 100%
+            }}
+          >
+            {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
+              <TimetableGrid //TimetableDataGrid -> Futuro
+                setHoveredCourse={handleCourseEnter}
+                setHoveredDocente={handleDocenteEnter}
+                onMouseLeaveGrid={handleMouseLeave}
+              />
+            )}
+          </Paper>
+        </CollaborativeGridWrapper>
       </Box>
 
       <AlgoritmoDialog
