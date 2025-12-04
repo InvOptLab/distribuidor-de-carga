@@ -35,7 +35,11 @@ import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 import { calculateManualSolution } from "@/algoritmo/communs/calculateManualSolution";
 import Algorithm from "@/algoritmo/abstractions/Algorithm";
 import Constraint from "@/algoritmo/abstractions/Constraint";
-import { RoomConfig } from "@/context/Collaboration";
+import {
+  RoomConfig,
+  serializeContextData,
+  useCollaboration,
+} from "@/context/Collaboration";
 
 /**
  * Remover essa classe depois desse local.
@@ -128,7 +132,10 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
   const { cleanSolucaoAtual } = useSolutionHistory();
   const { addAlerta } = useAlertsContext();
 
-  // Filter states
+  // LÓGICA DE COLABORAÇÃO: Consumir o hook
+  const { broadcastAssignmentChange, broadcastDataUpdate, isInRoom } =
+    useCollaboration();
+
   const [docenteFilters, setDocenteFilters] = useState<DocenteFilters>({
     search: "",
     rules: [],
@@ -286,29 +293,42 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const adicionarDocente = useCallback(
     (id_disciplina: string, nome_docente: string) => {
-      const disciplina: Atribuicao = atribuicoes.filter(
-        (atribuicao) => atribuicao.id_disciplina == id_disciplina
-      )[0];
-      if (disciplina) {
-        setAtribuicoes((prevAtribuicoes) =>
-          prevAtribuicoes.map((atribuicao) =>
-            atribuicao.id_disciplina === id_disciplina
-              ? {
-                  ...atribuicao,
-                  docentes: [...atribuicao.docentes, nome_docente],
-                }
-              : atribuicao
-          )
+      let novaAtribuicaoParaBroadcast: Atribuicao | null = null;
+
+      // Atualiza o estado local
+      setAtribuicoes((prevAtribuicoes) => {
+        const index = prevAtribuicoes.findIndex(
+          (a) => a.id_disciplina === id_disciplina
         );
-      } else {
-        const newAtribuicao: Atribuicao = {
-          id_disciplina: id_disciplina,
-          docentes: [nome_docente],
-        };
-        setAtribuicoes([...atribuicoes, newAtribuicao]);
+
+        if (index !== -1) {
+          // Atualiza existente
+          const updated = {
+            ...prevAtribuicoes[index],
+            docentes: [...prevAtribuicoes[index].docentes, nome_docente],
+          };
+          novaAtribuicaoParaBroadcast = updated;
+
+          const novoArray = [...prevAtribuicoes];
+          novoArray[index] = updated;
+          return novoArray;
+        } else {
+          // Cria nova
+          const nova = {
+            id_disciplina: id_disciplina,
+            docentes: [nome_docente],
+          };
+          novaAtribuicaoParaBroadcast = nova;
+          return [...prevAtribuicoes, nova];
+        }
+      });
+
+      // LÓGICA DE COLABORAÇÃO: Broadcast após atualização local
+      if (isInRoom && novaAtribuicaoParaBroadcast) {
+        broadcastAssignmentChange(novaAtribuicaoParaBroadcast, "update");
       }
     },
-    [atribuicoes, setAtribuicoes]
+    [setAtribuicoes, isInRoom, broadcastAssignmentChange]
   );
 
   /**
@@ -316,20 +336,31 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const removerDocente = useCallback(
     (idDisciplina: string, docenteARemover: string) => {
-      setAtribuicoes((prevAtribuicoes) =>
-        prevAtribuicoes.map((atribuicao) =>
-          atribuicao.id_disciplina == idDisciplina
-            ? {
-                ...atribuicao,
-                docentes: atribuicao.docentes.filter(
-                  (docente) => docente != docenteARemover
-                ),
-              }
-            : atribuicao
-        )
+      const index = atribuicoes.findIndex(
+        (a) => a.id_disciplina === idDisciplina
       );
+
+      if (index !== -1) {
+        // 1. Calcular
+        const updatedAtribuicao = {
+          ...atribuicoes[index],
+          docentes: atribuicoes[index].docentes.filter(
+            (docente) => docente != docenteARemover
+          ),
+        };
+        const newAtribuicoesList = [...atribuicoes];
+        newAtribuicoesList[index] = updatedAtribuicao;
+
+        // 2. Atualizar Local
+        setAtribuicoes(newAtribuicoesList);
+
+        // 3. Broadcast
+        if (isInRoom) {
+          broadcastAssignmentChange(updatedAtribuicao, "update");
+        }
+      }
     },
-    [setAtribuicoes]
+    [atribuicoes, setAtribuicoes, isInRoom, broadcastAssignmentChange]
   );
 
   /**
@@ -344,32 +375,50 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       config: RoomConfig;
     }
   ) => {
-    // Lógica de Bloqueio (Security Check)
+    // Security Check
     if (params.isInRoom) {
       const canEdit = params.isOwner || params.config.guestsCanEdit;
-
       if (!canEdit) {
         addAlerta(
           "Apenas o líder da sala pode realizar alterações.",
           "warning"
         );
-        return; // Interrompe o clique
+        return;
       }
     }
 
     if (event.ctrlKey) {
-      if (
-        !travas.some((obj) => JSON.stringify(obj) === JSON.stringify(celula))
-      ) {
-        setTravas([...travas, celula]);
+      // Lógica de TRAVAS (Locks)
+      let newTravas = [...travas];
+      const exists = travas.some(
+        (obj) => JSON.stringify(obj) === JSON.stringify(celula)
+      );
+
+      if (!exists) {
+        newTravas.push(celula);
       } else {
-        setTravas([
-          ...travas.filter(
-            (obj) => JSON.stringify(obj) !== JSON.stringify(celula)
-          ),
-        ]);
+        newTravas = newTravas.filter(
+          (obj) => JSON.stringify(obj) !== JSON.stringify(celula)
+        );
+      }
+
+      setTravas(newTravas);
+
+      // Broadcast Específico para Travas (FULL_DATA com travas atualizadas)
+      if (isInRoom) {
+        broadcastDataUpdate(
+          serializeContextData({
+            docentes,
+            disciplinas,
+            formularios,
+            atribuicoes, // Estado atual
+            travas: newTravas, // Novo estado de travas
+          }),
+          "FULL_DATA"
+        );
       }
     } else {
+      // Lógica de Atribuição (Add/Remove)
       if (
         !travas.some(
           (trava) =>
@@ -388,14 +437,16 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
               (docente) => docente == celula.nome_docente
             ))
         ) {
-          adicionarDocente(celula.id_disciplina, celula.nome_docente);
+          adicionarDocente(celula.id_disciplina, celula.nome_docente!);
         } else {
-          removerDocente(celula.id_disciplina, celula.nome_docente);
+          removerDocente(celula.id_disciplina, celula.nome_docente!);
         }
       }
     }
 
     cleanSolucaoAtual();
+
+    // REMOVIDO: O broadcast genérico aqui sobrescrevia as mudanças de adicionar/remover
   };
 
   /**
@@ -403,9 +454,12 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const handleColumnClick = (event: React.MouseEvent, trava: Celula) => {
     if (event.ctrlKey) {
-      if (
-        !travas.some((obj) => JSON.stringify(obj) === JSON.stringify(trava))
-      ) {
+      let newTravas = [...travas];
+      const exists = travas.some(
+        (obj) => JSON.stringify(obj) === JSON.stringify(trava)
+      );
+
+      if (!exists) {
         if (trava.tipo_trava == TipoTrava.Column) {
           const travar: Celula[] = docentes.map((docente) => ({
             id_disciplina: trava.id_disciplina,
@@ -413,20 +467,35 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
             tipo_trava: TipoTrava.ColumnCell,
           }));
           travar.push(trava);
-          setTravas([...travas, ...travar]);
+          newTravas = [...newTravas, ...travar];
         }
       } else {
         if (trava.tipo_trava == TipoTrava.Column) {
-          const newTravas = travas.filter(
+          newTravas = newTravas.filter(
             (obj) =>
               (obj.tipo_trava !== TipoTrava.ColumnCell &&
                 obj.tipo_trava !== TipoTrava.Column) ||
               obj.id_disciplina != trava.id_disciplina
           );
-          setTravas(newTravas);
         }
       }
+
+      setTravas(newTravas);
       cleanSolucaoAtual();
+
+      // Broadcast Travas
+      if (isInRoom) {
+        broadcastDataUpdate(
+          serializeContextData({
+            docentes,
+            disciplinas,
+            formularios,
+            atribuicoes,
+            travas: newTravas,
+          }),
+          "FULL_DATA"
+        );
+      }
     }
   };
 
@@ -435,9 +504,12 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const handleRowClick = (event: React.MouseEvent, trava: Celula) => {
     if (event.ctrlKey) {
-      if (
-        !travas.some((obj) => JSON.stringify(obj) === JSON.stringify(trava))
-      ) {
+      let newTravas = [...travas];
+      const exists = travas.some(
+        (obj) => JSON.stringify(obj) === JSON.stringify(trava)
+      );
+
+      if (!exists) {
         if (trava.tipo_trava == TipoTrava.Row) {
           const travar: Celula[] = disciplinas.map((disciplina) => ({
             id_disciplina: disciplina.id,
@@ -445,20 +517,35 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
             tipo_trava: TipoTrava.RowCell,
           }));
           travar.push(trava);
-          setTravas([...travas, ...travar]);
+          newTravas = [...newTravas, ...travar];
         }
       } else {
         if (trava.tipo_trava == TipoTrava.Row) {
-          const newTravas = travas.filter(
+          newTravas = newTravas.filter(
             (obj) =>
               (obj.tipo_trava !== TipoTrava.RowCell &&
                 obj.tipo_trava !== TipoTrava.Row) ||
               obj.nome_docente != trava.nome_docente
           );
-          setTravas(newTravas);
         }
       }
+
+      setTravas(newTravas);
       cleanSolucaoAtual();
+
+      // Broadcast Travas
+      if (isInRoom) {
+        broadcastDataUpdate(
+          serializeContextData({
+            docentes,
+            disciplinas,
+            formularios,
+            atribuicoes,
+            travas: newTravas,
+          }),
+          "FULL_DATA"
+        );
+      }
     }
   };
 
@@ -508,6 +595,21 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
 
     setAtribuicoes(atribuicoesLimpa);
     addAlerta("A solução foi limpa com sucesso!", "success");
+
+    // LÓGICA DE COLABORAÇÃO: Broadcast da limpeza
+    if (isInRoom) {
+      // Envia todo o conjunto de atribuições atualizado (limpo)
+      broadcastDataUpdate(
+        serializeContextData({
+          atribuicoes: atribuicoesLimpa,
+          disciplinas: disciplinas,
+          docentes: docentes,
+          formularios: formularios,
+          travas: travas,
+        }),
+        "FULL_DATA"
+      );
+    }
   };
 
   /**
