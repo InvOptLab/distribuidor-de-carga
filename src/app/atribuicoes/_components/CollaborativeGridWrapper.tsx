@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCollaboration, type RoomConfig } from "@/context/Collaboration";
 import {
   Paper,
@@ -34,6 +34,48 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SyncIcon from "@mui/icons-material/Sync";
+import { useGlobalContext } from "@/context/Global";
+
+// =========================================================
+// FUNÇÕES AUXILIARES DE CONVERSÃO (Map/Set <-> Array)
+// =========================================================
+
+const serializeContextData = (data: any) => {
+  return {
+    ...data,
+    // Converte Map de formulários dentro de cada Docente para Array
+    docentes: data.docentes.map((d: any) => ({
+      ...d,
+      formularios: d.formularios ? Array.from(d.formularios.entries()) : [],
+    })),
+    // Converte Set de conflitos dentro de cada Disciplina para Array
+    disciplinas: data.disciplinas.map((d: any) => ({
+      ...d,
+      conflitos: d.conflitos ? Array.from(d.conflitos) : [],
+    })),
+  };
+};
+
+const deserializeContextData = (data: any) => {
+  const result = { ...data };
+
+  // Verifica se o campo existe antes de tentar mapear
+  if (data.docentes) {
+    result.docentes = data.docentes.map((d: any) => ({
+      ...d,
+      formularios: new Map(d.formularios),
+    }));
+  }
+
+  if (data.disciplinas) {
+    result.disciplinas = data.disciplinas.map((d: any) => ({
+      ...d,
+      conflitos: new Set(d.conflitos),
+    }));
+  }
+
+  return result;
+};
 
 // Função para gerar cor consistente baseada no nome
 const stringToColor = (string: string) => {
@@ -111,12 +153,122 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
     config,
     updateConfig,
     requestDataFromOwner,
+    onDataRequest,
+    broadcastDataUpdate,
+    onDataUpdate,
+    onAssignmentChange,
+    broadcastAssignmentChange,
   } = useCollaboration();
+
+  // Consumir o estado global para sincronização
+  const {
+    docentes,
+    disciplinas,
+    atribuicoes,
+    formularios,
+    travas,
+    setDocentes,
+    setDisciplinas,
+    setAtribuicoes,
+    setFormularios,
+    setTravas,
+  } = useGlobalContext();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(true);
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [tempConfig, setTempConfig] = useState<RoomConfig>(config);
+
+  // =========================================================
+  // LÓGICA DE SINCRONIZAÇÃO
+  // =========================================================
+
+  // LÍDER: Serializa e Envia Dados Completos (FULL_DATA) quando solicitado
+  // Apenas o líder responde a "Pedidos de Dados" de novos entrantes.
+  useEffect(() => {
+    if (!isInRoom || !isOwner) return;
+
+    const unsubscribe = onDataRequest(() => {
+      const rawData = {
+        docentes,
+        disciplinas,
+        atribuicoes,
+        formularios,
+        travas,
+      };
+
+      // Convertemos Map/Set para Array antes de enviar
+      const serializedPayload = serializeContextData(rawData);
+
+      console.log("📤 Líder enviando dados serializados...", serializedPayload);
+      broadcastDataUpdate(serializedPayload, "FULL_DATA");
+    });
+
+    return () => unsubscribe();
+  }, [
+    isInRoom,
+    isOwner,
+    onDataRequest,
+    broadcastDataUpdate,
+    docentes,
+    disciplinas,
+    atribuicoes,
+    formularios,
+    travas,
+  ]);
+
+  // TODOS (Líder e Convidados): Recebem atualizações
+  // IMPORTANTE: Removido '|| isOwner' para que o líder também receba edits dos convidados.
+  useEffect(() => {
+    if (!isInRoom) return;
+
+    // Escuta pacotes de dados (FULL_DATA ou parciais)
+    // Ex: Alguém rodou o algoritmo ou limpou a grade -> envia FULL_DATA
+    const unsubscribeData = onDataUpdate((payload) => {
+      if (payload.type === "FULL_DATA" && payload.data) {
+        console.log("📥 Recebendo dados sincronizados:", payload.data);
+        const hydratedData = deserializeContextData(payload.data);
+
+        if (hydratedData.docentes) setDocentes(hydratedData.docentes);
+        if (hydratedData.disciplinas) setDisciplinas(hydratedData.disciplinas);
+        if (hydratedData.atribuicoes) setAtribuicoes(hydratedData.atribuicoes);
+        if (hydratedData.formularios) setFormularios(hydratedData.formularios);
+        if (hydratedData.travas) setTravas(hydratedData.travas);
+      }
+    });
+
+    // Escuta mudanças pontuais na grade (Click/Add/Remove)
+    const unsubscribeAssignment = onAssignmentChange((payload) => {
+      if (payload.assignment) {
+        console.log("📥 Atualização de atribuição recebida:", payload);
+        setAtribuicoes((prev) => {
+          const index = prev.findIndex(
+            (a) => a.id_disciplina === payload.assignment.id_disciplina
+          );
+          if (index !== -1) {
+            const newArr = [...prev];
+            newArr[index] = payload.assignment;
+            return newArr;
+          }
+          return [...prev, payload.assignment];
+        });
+      }
+    });
+
+    return () => {
+      unsubscribeData();
+      unsubscribeAssignment();
+    };
+  }, [
+    isInRoom,
+    onDataUpdate,
+    onAssignmentChange,
+    setDocentes,
+    setDisciplinas,
+    setAtribuicoes,
+    setFormularios,
+    setTravas,
+  ]);
 
   // Se não estiver em sala, apenas renderiza a grade normal sem wrapper
   if (!isInRoom) return <>{children}</>;
@@ -128,7 +280,6 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
     }
   };
 
-  // Determinar permissão de edição
   const canEdit = isOwner || config.guestsCanEdit;
 
   const handleOpenConfig = () => {
