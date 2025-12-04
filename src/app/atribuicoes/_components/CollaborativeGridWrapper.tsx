@@ -2,7 +2,12 @@
 
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import { useCollaboration, type RoomConfig } from "@/context/Collaboration";
+import {
+  deserializeContextData,
+  serializeContextData,
+  useCollaboration,
+  type RoomConfig,
+} from "@/context/Collaboration";
 import {
   Paper,
   Typography,
@@ -24,6 +29,7 @@ import {
   FormControlLabel,
   Switch,
 } from "@mui/material";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import CrownIcon from "@mui/icons-material/EmojiEvents";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -35,47 +41,6 @@ import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SyncIcon from "@mui/icons-material/Sync";
 import { useGlobalContext } from "@/context/Global";
-
-// =========================================================
-// FUNÇÕES AUXILIARES DE CONVERSÃO (Map/Set <-> Array)
-// =========================================================
-
-const serializeContextData = (data: any) => {
-  return {
-    ...data,
-    // Converte Map de formulários dentro de cada Docente para Array
-    docentes: data.docentes.map((d: any) => ({
-      ...d,
-      formularios: d.formularios ? Array.from(d.formularios.entries()) : [],
-    })),
-    // Converte Set de conflitos dentro de cada Disciplina para Array
-    disciplinas: data.disciplinas.map((d: any) => ({
-      ...d,
-      conflitos: d.conflitos ? Array.from(d.conflitos) : [],
-    })),
-  };
-};
-
-const deserializeContextData = (data: any) => {
-  const result = { ...data };
-
-  // Verifica se o campo existe antes de tentar mapear
-  if (data.docentes) {
-    result.docentes = data.docentes.map((d: any) => ({
-      ...d,
-      formularios: new Map(d.formularios),
-    }));
-  }
-
-  if (data.disciplinas) {
-    result.disciplinas = data.disciplinas.map((d: any) => ({
-      ...d,
-      conflitos: new Set(d.conflitos),
-    }));
-  }
-
-  return result;
-};
 
 // Função para gerar cor consistente baseada no nome
 const stringToColor = (string: string) => {
@@ -183,6 +148,18 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
   // LÓGICA DE SINCRONIZAÇÃO
   // =========================================================
 
+  // LÍDER: Serializa e Envia Dados Completos (incluindo filtros se estiverem no context)
+  // Nota: Filtros estão no TimetableContext, aqui pegamos do GlobalContext.
+  // A sincronização inicial de filtros é tratada no listener de REQUEST_DATA no TimetableContext
+  // ou precisamos injetar os filtros aqui?
+  // O TimetableContext trata de dados específicos de grade/filtros.
+  // O CollaborativeGridWrapper trata de dados Globais.
+  // Idealmente, a sincronização de filtros ocorre no TimetableContext.
+
+  // No entanto, para consistência, o GlobalContext contém os DADOS.
+  // Os filtros estão apenas no TimetableContext.
+  // Vamos manter a sincronização de filtros no TimetableContext.
+
   // LÍDER: Serializa e Envia Dados Completos (FULL_DATA) quando solicitado
   // Apenas o líder responde a "Pedidos de Dados" de novos entrantes.
   useEffect(() => {
@@ -281,6 +258,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
   };
 
   const canEdit = isOwner || config.guestsCanEdit;
+  const canFilter = isOwner || config.guestsCanFilter;
 
   const handleOpenConfig = () => {
     setTempConfig(config);
@@ -404,29 +382,33 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
               />
             </Tooltip>
 
-            {/* Indicador de permissão de edição */}
-            <Tooltip
-              title={
-                canEdit
-                  ? "Você pode editar a grade"
-                  : "Apenas visualização - o líder não liberou edição para convidados"
-              }
-            >
-              <Chip
-                icon={
-                  canEdit ? (
-                    <EditIcon sx={{ fontSize: 14 }} />
-                  ) : (
-                    <VisibilityIcon sx={{ fontSize: 14 }} />
-                  )
+            {/* Indicadores de Permissão */}
+            <Box sx={{ display: "flex", gap: 0.5 }}>
+              <Tooltip
+                title={canEdit ? "Edição Permitida" : "Edição Bloqueada"}
+              >
+                <Chip
+                  icon={<EditIcon sx={{ fontSize: 14 }} />}
+                  label={canEdit ? "Pode Editar" : "Leitura"}
+                  size="small"
+                  color={canEdit ? "success" : "default"}
+                />
+              </Tooltip>
+              <Tooltip
+                title={
+                  canFilter
+                    ? "Filtros Permitidos"
+                    : "Filtros Bloqueados (Sincronizados com Líder)"
                 }
-                label={canEdit ? "Pode Editar" : "Somente Leitura"}
-                size="small"
-                variant="outlined"
-                color={canEdit ? "success" : "default"}
-                sx={{ fontSize: "0.7rem" }}
-              />
-            </Tooltip>
+              >
+                <Chip
+                  icon={<FilterListIcon sx={{ fontSize: 14 }} />}
+                  label={canFilter ? "Pode Filtrar" : "Filtro Sync"}
+                  size="small"
+                  color={canFilter ? "info" : "default"}
+                />
+              </Tooltip>
+            </Box>
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
@@ -621,21 +603,19 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
         </Collapse>
       </Paper>
 
-      {/* ÁREA DA GRADE COM RASTREAMENTO */}
+      {/* ÁREA DA GRADE */}
       <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
         style={{ position: "relative", flex: 1, display: "flex" }}
       >
-        {/* Renderiza a Grade Original */}
         {children}
-
-        {/* Renderiza os Cursores por cima */}
         {Object.values(cursors).map((c: any) => (
           <RemoteCursor key={c.userId} cursor={c} />
         ))}
       </div>
 
+      {/* DIALOG DE CONFIGURAÇÃO ATUALIZADO */}
       <Dialog
         open={configDialogOpen}
         onClose={() => setConfigDialogOpen(false)}
@@ -653,20 +633,17 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                 Configurações da Sala
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Gerencie as permissões e comportamentos
+                Gerencie as permissões
               </Typography>
             </Box>
           </Box>
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ pt: 2 }}>
+          <Box sx={{ pt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+            {/* Switch de Edição */}
             <Paper
               variant="outlined"
-              sx={{
-                p: 2,
-                borderRadius: 2,
-                bgcolor: alpha("#1976d2", 0.03),
-              }}
+              sx={{ p: 2, borderRadius: 2, bgcolor: alpha("#1976d2", 0.03) }}
             >
               <FormControlLabel
                 control={
@@ -687,9 +664,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                       Convidados podem editar
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Quando ativado, todos os convidados poderão fazer
-                      alterações na grade de atribuições. Quando desativado,
-                      apenas você (líder) poderá editar.
+                      Permite que convidados alterem a grade de atribuições.
                     </Typography>
                   </Box>
                 }
@@ -697,33 +672,51 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
               />
             </Paper>
 
-            <Box
-              sx={{
-                mt: 2,
-                p: 2,
-                bgcolor: alpha("#ff9800", 0.1),
-                borderRadius: 2,
-              }}
+            {/* NOVO: Switch de Filtro */}
+            <Paper
+              variant="outlined"
+              sx={{ p: 2, borderRadius: 2, bgcolor: alpha("#1976d2", 0.03) }}
             >
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={tempConfig.guestsCanFilter ?? false}
+                    onChange={(e) =>
+                      setTempConfig({
+                        ...tempConfig,
+                        guestsCanFilter: e.target.checked,
+                      })
+                    }
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body1" fontWeight="medium">
+                      Convidados podem filtrar
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Se ativado, convidados podem aplicar seus próprios filtros
+                      e também enviá-los para outros. Se desativado, eles apenas
+                      seguem os filtros do líder.
+                    </Typography>
+                  </Box>
+                }
+                sx={{ alignItems: "flex-start", m: 0 }}
+              />
+            </Paper>
+
+            <Box sx={{ p: 2, bgcolor: alpha("#ff9800", 0.1), borderRadius: 2 }}>
               <Typography variant="body2" color="warning.dark">
-                <strong>Nota:</strong> As alterações serão aplicadas
-                imediatamente para todos os participantes da sala.
+                <strong>Nota:</strong> As alterações são aplicadas
+                imediatamente.
               </Typography>
             </Box>
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button
-            onClick={() => setConfigDialogOpen(false)}
-            sx={{ borderRadius: 2 }}
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleSaveConfig}
-            variant="contained"
-            sx={{ borderRadius: 2, fontWeight: "bold" }}
-          >
+          <Button onClick={() => setConfigDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={handleSaveConfig} variant="contained">
             Salvar Configurações
           </Button>
         </DialogActions>
