@@ -35,8 +35,9 @@ import {
 } from "@mui/icons-material";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
-import { ObjectiveComponent } from "@/TabuSearch/Classes/Abstract/ObjectiveComponent";
 import { getPriorityColor } from "@/app/atribuicoes";
+import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
+import ConstraintParameters from "@/components/Constraints/ConstraintParameters";
 
 export default function ObjectiveConfig() {
   const { objectiveComponents, setObjectiveComponents, maiorPrioridade } =
@@ -54,7 +55,7 @@ export default function ObjectiveConfig() {
 
   // Função mais robusta que verifica de múltiplas formas
   const componentHasMultiplierTable = (
-    component: ObjectiveComponent
+    component: ObjectiveComponent<any>
   ): boolean => {
     // Método 1: Verificar se a propriedade existe diretamente
     if ("tabelaMultiplicadores" in component) return true;
@@ -243,6 +244,26 @@ export default function ObjectiveConfig() {
 
   const totalComponents = objectiveComponents.size;
 
+  const handleObjectiveParamChange = (
+    componentName: string,
+    paramKey: string,
+    newValue: any
+  ) => {
+    const newComponents = new Map(objectiveComponents);
+    const component = newComponents.get(componentName);
+
+    if (component && component.params && component.params[paramKey]) {
+      // Atualiza o valor do parâmetro diretamente na instância
+      component.params[paramKey].value = newValue;
+      newComponents.set(componentName, component);
+      setObjectiveComponents(newComponents);
+    } else {
+      console.error(
+        `Parâmetro "${paramKey}" não encontrado no componente "${componentName}"`
+      );
+    }
+  };
+
   return (
     <Box>
       <Alert severity="info" sx={{ mb: 1 }}>
@@ -269,194 +290,216 @@ export default function ObjectiveConfig() {
       </Box>
 
       <Grid container spacing={2}>
-        {Array.from(objectiveComponents.entries()).map(([name, component]) => (
-          <Grid item xs={12} md={6} key={name}>
-            <Card
-              variant="outlined"
-              sx={{
-                height: "100%",
-                opacity: component.isActive ? 1 : 0.6,
-                border: component.isActive ? 2 : 1,
-                borderColor: component.isActive ? "primary.main" : "divider",
-                transition: "all 0.3s ease",
-              }}
-            >
-              <CardContent>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    mb: 2,
-                  }}
-                >
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="h6" gutterBottom>
-                      {component.name}
-                    </Typography>
-                    <Box
-                      sx={{ display: "flex", gap: 1, mb: 1, flexWrap: "wrap" }}
-                    >
-                      <Chip
-                        label={component.type.toUpperCase()}
-                        color={
-                          component.type === "min" ? "primary" : "secondary"
-                        }
-                        size="small"
-                      />
-                      <Chip
-                        label={component.isActive ? "Ativa" : "Inativa"}
-                        color={component.isActive ? "success" : "default"}
-                        size="small"
-                      />
-                      {componentHasMultiplierTable(component) && (
+        {Array.from(objectiveComponents.entries()).map(([name, component]) => {
+          const hasParams =
+            component.params && Object.keys(component.params).length > 0;
+          return (
+            <Grid size={{ xs: 12, md: 6 }} key={name}>
+              <Card
+                variant="outlined"
+                sx={{
+                  height: "100%",
+                  opacity: component.isActive ? 1 : 0.6,
+                  border: component.isActive ? 2 : 1,
+                  borderColor: component.isActive ? "primary.main" : "divider",
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      mb: 2,
+                    }}
+                  >
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="h6" gutterBottom>
+                        {component.name}
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 1,
+                          mb: 1,
+                          flexWrap: "wrap",
+                        }}
+                      >
                         <Chip
-                          label={
-                            isUsingDefaultMultipliers(name)
-                              ? "Padrão"
-                              : "Customizada"
-                          }
+                          label={component.type.toUpperCase()}
                           color={
-                            isUsingDefaultMultipliers(name) ? "info" : "warning"
+                            component.type === "min" ? "primary" : "secondary"
                           }
                           size="small"
-                          variant="outlined"
                         />
+                        <Chip
+                          label={component.isActive ? "Ativa" : "Inativa"}
+                          color={component.isActive ? "success" : "default"}
+                          size="small"
+                        />
+                        {componentHasMultiplierTable(component) && (
+                          <Chip
+                            label={
+                              isUsingDefaultMultipliers(name)
+                                ? "Padrão"
+                                : "Customizada"
+                            }
+                            color={
+                              isUsingDefaultMultipliers(name)
+                                ? "info"
+                                : "warning"
+                            }
+                            size="small"
+                            variant="outlined"
+                          />
+                        )}
+                      </Box>
+                      {component.description && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 2, minHeight: 40 }}
+                        >
+                          {component.description}
+                        </Typography>
                       )}
                     </Box>
-                    {component.description && (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 2, minHeight: 40 }}
-                      >
-                        {component.description}
-                      </Typography>
-                    )}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      {component.description && (
+                        <Tooltip title={component.description}>
+                          <IconButton
+                            size="small"
+                            onClick={() =>
+                              addAlerta(
+                                component.description ||
+                                  "Sem descrição disponível",
+                                "info",
+                                8
+                              )
+                            }
+                          >
+                            <InfoIcon fontSize="small" color="info" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Box>
                   </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {component.description && (
-                      <Tooltip title={component.description}>
-                        <IconButton
-                          size="small"
-                          onClick={() =>
-                            addAlerta(
-                              component.description ||
-                                "Sem descrição disponível",
-                              "info",
-                              8
-                            )
-                          }
-                        >
-                          <InfoIcon fontSize="small" color="info" />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </Box>
-                </Box>
 
-                <Box sx={{ mb: 2 }}>
-                  <TextField
-                    label="Multiplicador"
-                    type="number"
-                    value={component.multiplier || 0}
-                    onChange={(e) =>
-                      handleMultiplierChange(name, e.target.value)
-                    }
-                    disabled={!component.isActive}
-                    size="small"
-                    fullWidth
-                    slotProps={{ htmlInput: { min: 0, step: 1 } }}
-                    helperText="Peso da componente na função objetivo"
-                  />
-                </Box>
-
-                {componentHasMultiplierTable(component) && (
-                  <Box sx={{ mb: 2, display: "flex", gap: 1 }}>
-                    <Tooltip title="Configurar tabela de multiplicadores por prioridade">
-                      <Button
-                        variant={
-                          isUsingDefaultMultipliers(name)
-                            ? "contained"
-                            : "outlined"
-                        }
-                        startIcon={<TableChartIcon />}
-                        onClick={() => openMultiplierDialog(name)}
-                        //disabled={!component.isActive}
-                        size="small"
-                        color={
-                          isUsingDefaultMultipliers(name) ? "info" : "primary"
-                        }
-                        sx={{ flex: 1 }}
-                      >
-                        Configurar Tabela
-                      </Button>
-                    </Tooltip>
-
-                    <Tooltip
-                      title={`Usar cálculo padrão: 2^(${maiorPrioridade} - p)`}
-                    >
-                      <Button
-                        variant={
-                          isUsingDefaultMultipliers(name)
-                            ? "outlined"
-                            : "contained"
-                        }
-                        startIcon={<RestartAltIcon />}
-                        onClick={() => defaultMultipliers(name)}
-                        disabled={!component.isActive}
-                        size="small"
-                        color={
-                          isUsingDefaultMultipliers(name) ? "primary" : "info"
-                        }
-                        sx={{ flex: 1 }}
-                      >
-                        Usar Padrão
-                      </Button>
-                    </Tooltip>
-                  </Box>
-                )}
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={component.isActive}
-                      onChange={() =>
-                        handleComponentToggle(name, component.isActive)
+                  <Box sx={{ mb: 2 }}>
+                    <TextField
+                      label="Multiplicador"
+                      type="number"
+                      value={component.multiplier || 0}
+                      onChange={(e) =>
+                        handleMultiplierChange(name, e.target.value)
                       }
-                      disabled={component.isActive && activeCount === 1}
-                      color="primary"
+                      disabled={!component.isActive}
+                      size="small"
+                      fullWidth
+                      slotProps={{ htmlInput: { min: 0, step: 1 } }}
+                      helperText="Peso da componente na função objetivo"
                     />
-                  }
-                  label={component.isActive ? "Ativo" : "Inativo"}
-                />
+                  </Box>
 
-                {component.isActive && activeCount === 1 && (
-                  <Typography
-                    variant="caption"
-                    color="warning.main"
-                    display="block"
-                    sx={{ mt: 1 }}
-                  >
-                    Pelo menos uma componente deve permanecer ativa
-                  </Typography>
-                )}
-                {componentHasMultiplierTable(component) &&
-                  isUsingDefaultMultipliers(name) && (
+                  {componentHasMultiplierTable(component) && (
+                    <Box sx={{ mb: 2, display: "flex", gap: 1 }}>
+                      <Tooltip title="Configurar tabela de multiplicadores por prioridade">
+                        <Button
+                          variant={
+                            isUsingDefaultMultipliers(name)
+                              ? "contained"
+                              : "outlined"
+                          }
+                          startIcon={<TableChartIcon />}
+                          onClick={() => openMultiplierDialog(name)}
+                          //disabled={!component.isActive}
+                          size="small"
+                          color={
+                            isUsingDefaultMultipliers(name) ? "info" : "primary"
+                          }
+                          sx={{ flex: 1 }}
+                        >
+                          Configurar Tabela
+                        </Button>
+                      </Tooltip>
+
+                      <Tooltip
+                        title={`Usar cálculo padrão: 2^(${maiorPrioridade} - p)`}
+                      >
+                        <Button
+                          variant={
+                            isUsingDefaultMultipliers(name)
+                              ? "outlined"
+                              : "contained"
+                          }
+                          startIcon={<RestartAltIcon />}
+                          onClick={() => defaultMultipliers(name)}
+                          disabled={!component.isActive}
+                          size="small"
+                          color={
+                            isUsingDefaultMultipliers(name) ? "primary" : "info"
+                          }
+                          sx={{ flex: 1 }}
+                        >
+                          Usar Padrão
+                        </Button>
+                      </Tooltip>
+                    </Box>
+                  )}
+
+                  {hasParams && (
+                    <Box sx={{ mb: 2 }}>
+                      <ConstraintParameters
+                        params={component.params}
+                        onParamChange={(paramKey, newValue) =>
+                          handleObjectiveParamChange(name, paramKey, newValue)
+                        }
+                      />
+                    </Box>
+                  )}
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={component.isActive}
+                        onChange={() =>
+                          handleComponentToggle(name, component.isActive)
+                        }
+                        disabled={component.isActive && activeCount === 1}
+                        color="primary"
+                      />
+                    }
+                    label={component.isActive ? "Ativo" : "Inativo"}
+                  />
+
+                  {component.isActive && activeCount === 1 && (
                     <Typography
                       variant="caption"
-                      color="info.main"
+                      color="warning.main"
                       display="block"
                       sx={{ mt: 1 }}
                     >
-                      Usando cálculo exponencial: 2^({maiorPrioridade} -
-                      prioridade)
+                      Pelo menos uma componente deve permanecer ativa
                     </Typography>
                   )}
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+                  {componentHasMultiplierTable(component) &&
+                    isUsingDefaultMultipliers(name) && (
+                      <Typography
+                        variant="caption"
+                        color="info.main"
+                        display="block"
+                        sx={{ mt: 1 }}
+                      >
+                        Usando cálculo exponencial: 2^({maiorPrioridade} -
+                        prioridade)
+                      </Typography>
+                    )}
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
       </Grid>
 
       {/* Dialog para Tabela de Multiplicadores */}

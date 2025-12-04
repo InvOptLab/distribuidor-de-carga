@@ -16,7 +16,7 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
-import SameObjective from "@/TabuSearch/AspirationCriteria/SameObjective";
+import SameObjective from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/SameObjective";
 
 export default function AspirationConfig() {
   const { aspirationFunctions, setAspirationFunctions } = useAlgorithmContext();
@@ -70,7 +70,7 @@ export default function AspirationConfig() {
 
       <Grid container spacing={2}>
         {Array.from(aspirationFunctions.entries()).map(([key, func]) => (
-          <Grid item xs={12} sm={6} key={key}>
+          <Grid size={{ xs: 12, sm: 6 }} key={key}>
             <Card
               variant="outlined"
               sx={{

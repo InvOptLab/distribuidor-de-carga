@@ -1,13 +1,16 @@
+import { Statistics } from "@/algoritmo/classes/Statistics";
 import {
-  ajustaDisciplinas,
   Atribuicao,
   Celula,
   Disciplina,
   DisciplinaETL,
   Docente,
   Formulario,
-  HistoricoSolucao,
   Solucao,
+} from "@/algoritmo/communs/interfaces/interfaces";
+import {
+  ajustaDisciplinas,
+  HistoricoSolucao,
   TipoInsercao,
 } from "@/context/Global/utils";
 import { Dispatch, SetStateAction } from "react";
@@ -233,13 +236,36 @@ export function processSolucao(
         solucaoImportacao.solucao.estatisticas.avaliacaoPorIteracao
       );
 
-      solucaoHistorico.solucao.estatisticas = {
-        avaliacaoPorIteracao: avaliacaoPorIteracao,
-        tempoPorIteracao: tempoPorIteracao,
-        interrupcao: solucaoImportacao.solucao.estatisticas.interrupcao,
-        iteracoes: solucaoImportacao.solucao.estatisticas.iteracoes,
-        tempoExecucao: solucaoImportacao.solucao.estatisticas.tempoExecucao,
-      };
+      // solucaoHistorico.solucao.estatisticas = {
+      //   avaliacaoPorIteracao: avaliacaoPorIteracao,
+      //   tempoPorIteracao: tempoPorIteracao,
+      //   interrupcao: solucaoImportacao.solucao.estatisticas.interrupcao,
+      //   iteracoes: solucaoImportacao.solucao.estatisticas.iteracoes,
+      //   tempoExecucao: solucaoImportacao.solucao.estatisticas.tempoExecucao,
+      // };
+
+      solucaoHistorico.solucao.estatisticas = new Statistics();
+
+      for (
+        let i = 0;
+        i < solucaoImportacao.solucao.estatisticas.iteracoes;
+        i++
+      ) {
+        solucaoHistorico.solucao.estatisticas.addIteracaoData(
+          i,
+          avaliacaoPorIteracao.get(i),
+          tempoPorIteracao.get(i)
+        );
+      }
+
+      solucaoHistorico.solucao.estatisticas.interrupcao =
+        solucaoImportacao.solucao.estatisticas.interrupcao;
+
+      solucaoHistorico.solucao.estatisticas.iteracoes =
+        solucaoImportacao.solucao.estatisticas.iteracoes;
+
+      solucaoHistorico.solucao.estatisticas.tempoExecucao =
+        solucaoImportacao.solucao.estatisticas.tempoExecucao;
     }
 
     /**

@@ -16,9 +16,9 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
-import { IteracoesMaximas } from "@/TabuSearch/StopCriteria/IteracoesMaximas";
-import { IteracoesSemModificacao } from "@/TabuSearch/StopCriteria/IteracoesSemModificacao";
-import IteracoesSemMelhoraAvaliacao from "@/TabuSearch/StopCriteria/IteracoesSemMelhoraAvaliacao";
+import { IteracoesMaximas } from "@/algoritmo/communs/StopCriteria/IteracoesMaximas";
+import { IteracoesSemModificacao } from "@/algoritmo/communs/StopCriteria/IteracoesSemModificacao";
+import IteracoesSemMelhoraAvaliacao from "@/algoritmo/communs/StopCriteria/IteracoesSemMelhoraAvaliacao";
 
 export default function StopCriteriaConfig() {
   const { stopFunctions, setStopFunctions } = useAlgorithmContext();
@@ -104,7 +104,7 @@ export default function StopCriteriaConfig() {
 
       <Grid container spacing={2}>
         {Array.from(stopFunctions.entries()).map(([key, func]) => (
-          <Grid item xs={12} sm={6} key={key}>
+          <Grid size={{ xs: 12, sm: 6 }} key={key}>
             <Card
               variant="outlined"
               sx={{

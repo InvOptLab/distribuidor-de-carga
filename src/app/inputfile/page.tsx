@@ -8,7 +8,7 @@ import {
   Typography,
   CircularProgress,
   Container,
-  Grid2 as Grid,
+  Grid as Grid,
   Chip,
   Alert,
   List,
@@ -672,7 +672,11 @@ export default function InputFileUpload() {
           Dados Existentes Detectados
         </DialogTitle>
         <DialogContent>
-          <Alert severity="warning" sx={{ mb: 2 }}>
+          <Alert
+            severity="warning"
+            color="warning"
+            sx={{ mb: 2, color: "text.primary" }}
+          >
             Você já possui dados carregados. Carregar novos dados irá substituir
             todos os dados atuais.
           </Alert>

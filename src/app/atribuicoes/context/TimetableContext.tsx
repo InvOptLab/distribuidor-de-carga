@@ -8,21 +8,13 @@ import {
   useCallback,
   useState,
   useMemo,
+  useRef,
+  useEffect,
 } from "react";
 import { useGlobalContext } from "@/context/Global";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
 import { useAlertsContext } from "@/context/Alerts";
 import { useAlgorithmContext } from "@/context/Algorithm";
-import {
-  type Atribuicao,
-  type Celula,
-  type Disciplina,
-  type Docente,
-  TipoTrava,
-  type ContextoExecucao,
-  getActiveFormularios,
-} from "@/context/Global/utils";
-import { TabuSearch } from "@/TabuSearch/Classes/TabuSearch";
 import { DisciplinaFilters, DocenteFilters, FilterRule } from "../types/types";
 import {
   exportJson,
@@ -30,6 +22,60 @@ import {
   removeInativos,
   saveAtribuicoesInHistoryState,
 } from "..";
+import {
+  Atribuicao,
+  Celula,
+  Context,
+  Disciplina,
+  Docente,
+  Estatisticas,
+  Solucao,
+  TipoTrava,
+} from "@/algoritmo/communs/interfaces/interfaces";
+import { ContextoExecucao, getActiveFormularios } from "@/context/Global/utils";
+import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
+import { calculateManualSolution } from "@/algoritmo/communs/calculateManualSolution";
+import Algorithm from "@/algoritmo/abstractions/Algorithm";
+import Constraint from "@/algoritmo/abstractions/Constraint";
+import {
+  deserializeContextData,
+  RoomConfig,
+  serializeContextData,
+  useCollaboration,
+} from "@/context/Collaboration";
+
+/**
+ * Remover essa classe depois desse local.
+ */
+class InsercaoManual extends Algorithm<any> {
+  constructor(
+    name: string,
+    context: Context,
+    constraints: Constraint<any>[],
+    solution: Solucao | undefined,
+    objectiveType: "min" | "max",
+    objectiveComponentes: ObjectiveComponent<any>[],
+    maiorPrioridade: number | undefined
+  ) {
+    super(
+      name,
+      context,
+      constraints,
+      solution,
+      objectiveType,
+      objectiveComponentes,
+      maiorPrioridade,
+      true
+    );
+  }
+
+  execute(): Promise<any> {
+    return;
+  }
+  protected filtrarEstatisticas(): Partial<Estatisticas> {
+    return;
+  }
+}
 
 interface TimetableContextType {
   docentes: Docente[];
@@ -49,7 +95,15 @@ interface TimetableContextType {
   setTravas: (travas: Celula[]) => void;
   adicionarDocente: (id_disciplina: string, nome_docente: string) => void;
   removerDocente: (idDisciplina: string, docenteARemover: string) => void;
-  handleCellClick: (event: React.MouseEvent, celula: Celula) => void;
+  handleCellClick: (
+    event: React.MouseEvent,
+    celula: Celula,
+    params: {
+      isInRoom: boolean;
+      isOwner: boolean;
+      config: RoomConfig;
+    }
+  ) => void;
   handleColumnClick: (event: React.MouseEvent, trava: Celula) => void;
   handleRowClick: (event: React.MouseEvent, trava: Celula) => void;
   cleanStateAtribuicoes: () => void;
@@ -76,20 +130,22 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     setHistoricoSolucoes,
   } = useGlobalContext();
 
-  const {
-    parametros,
-    hardConstraints,
-    softConstraints,
-    neighborhoodFunctions,
-    stopFunctions,
-    aspirationFunctions,
-    tabuListType,
-    objectiveComponents,
-  } = useAlgorithmContext();
+  const { hardConstraints, softConstraints, objectiveComponents } =
+    useAlgorithmContext();
   const { cleanSolucaoAtual } = useSolutionHistory();
   const { addAlerta } = useAlertsContext();
 
-  // Filter states
+  // LÓGICA DE COLABORAÇÃO
+  const {
+    broadcastAssignmentChange,
+    broadcastDataUpdate,
+    onDataUpdate,
+    onDataRequest, // Líder deve escutar pedidos
+    isInRoom,
+    config,
+    isOwner,
+  } = useCollaboration();
+
   const [docenteFilters, setDocenteFilters] = useState<DocenteFilters>({
     search: "",
     rules: [],
@@ -101,6 +157,130 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       rules: [],
     }
   );
+
+  // =======================================================
+  // SINCRONIZAÇÃO DE FILTROS E DADOS
+  // =======================================================
+
+  // Escutar Atualizações de Dados (Incluindo Filtros)
+  useEffect(() => {
+    if (!isInRoom) return;
+
+    const unsubscribe = onDataUpdate((payload) => {
+      if (payload.type === "FULL_DATA" && payload.data) {
+        const hydrated = deserializeContextData(payload.data);
+
+        // Atualiza filtros se vierem no pacote e se forem diferentes
+        // (Isso permite que o líder force o filtro nos convidados se config.guestsCanFilter = false)
+        // Se guestsCanFilter = true, ainda assim sincronizamos para manter "visão compartilhada"
+
+        // Aplica Filtros Remotos
+        if (hydrated.docenteFilters) {
+          // Verifica se mudou para evitar loop infinito de re-render/re-broadcast
+          setDocenteFilters((prev) =>
+            JSON.stringify(prev) !== JSON.stringify(hydrated.docenteFilters)
+              ? hydrated.docenteFilters
+              : prev
+          );
+        }
+        if (hydrated.disciplinaFilters) {
+          setDisciplinaFilters((prev) =>
+            JSON.stringify(prev) !== JSON.stringify(hydrated.disciplinaFilters)
+              ? hydrated.disciplinaFilters
+              : prev
+          );
+        }
+      }
+    });
+
+    // Líder: Responder a pedidos de dados com o estado ATUAL dos filtros também
+    const unsubscribeReq = onDataRequest(() => {
+      if (isOwner) {
+        // O CollaborativeGridWrapper manda os dados globais, mas os filtros estão AQUI.
+        // Precisamos mandar os filtros. Podemos mandar um pacote parcial ou completo.
+        // Para garantir consistência, mandamos tudo o que temos acesso ou um pacote de filtros.
+        broadcastDataUpdate(
+          serializeContextData({
+            docentes,
+            disciplinas,
+            atribuicoes,
+            formularios,
+            travas,
+            docenteFilters,
+            disciplinaFilters,
+          }),
+          "FULL_DATA"
+        );
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      unsubscribeReq();
+    };
+  }, [
+    isInRoom,
+    isOwner,
+    broadcastDataUpdate,
+    onDataUpdate,
+    onDataRequest,
+    docenteFilters,
+    disciplinaFilters,
+    docentes,
+    disciplinas,
+    atribuicoes,
+    formularios,
+    travas,
+  ]);
+
+  // Broadcast de Filtros quando mudam Localmente
+  // Usamos useEffect para monitorar mudanças no state de filtros e enviar
+  // Mas precisamos evitar enviar se a mudança veio de um update remoto (loop).
+  // A lógica simplificada de "check diff" no receiver ajuda, mas aqui verificamos permissão.
+
+  const lastBroadcastedFiltersRef = useRef({ d: "", di: "" });
+
+  useEffect(() => {
+    if (!isInRoom) return;
+
+    // Verifica permissão: Só envia se for Dono OU se Convidados Puderem Filtrar
+    const canBroadcastFilter = isOwner || config.guestsCanFilter;
+
+    if (canBroadcastFilter) {
+      const currentString = JSON.stringify({
+        d: docenteFilters,
+        di: disciplinaFilters,
+      });
+
+      // Evita broadcast se não mudou (ou se acabou de receber do remote e é igual)
+      if (currentString !== lastBroadcastedFiltersRef.current.d) {
+        // Debounce ou envio direto? Direto para responsividade.
+        // Enviamos um FULL_DATA com os filtros atualizados.
+        // Note: O ideal seria um evento "FILTER_UPDATE", mas FULL_DATA funciona com o merge no deserialize.
+        broadcastDataUpdate(
+          serializeContextData({
+            docenteFilters,
+            disciplinaFilters,
+            // Opcional: mandar o resto para garantir integridade, mas pode ser pesado.
+            // O deserialize trata campos ausentes, então podemos mandar só filtros.
+          }),
+          "FULL_DATA"
+        );
+
+        lastBroadcastedFiltersRef.current.d = currentString;
+      }
+    } else {
+      // Se não tem permissão e mudou (ex: tentou mudar na UI), deveríamos reverter?
+      // Por enquanto, assumimos que a UI deve bloquear, mas se mudar, não propaga.
+    }
+  }, [
+    docenteFilters,
+    disciplinaFilters,
+    isInRoom,
+    isOwner,
+    config.guestsCanFilter,
+    broadcastDataUpdate,
+  ]);
 
   // Calculate maxPriority based on active docentes and disciplinas
   const maxPriority = useMemo(() => {
@@ -247,29 +427,42 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const adicionarDocente = useCallback(
     (id_disciplina: string, nome_docente: string) => {
-      const disciplina: Atribuicao = atribuicoes.filter(
-        (atribuicao) => atribuicao.id_disciplina == id_disciplina
-      )[0];
-      if (disciplina) {
-        setAtribuicoes((prevAtribuicoes) =>
-          prevAtribuicoes.map((atribuicao) =>
-            atribuicao.id_disciplina === id_disciplina
-              ? {
-                  ...atribuicao,
-                  docentes: [...atribuicao.docentes, nome_docente],
-                }
-              : atribuicao
-          )
+      let novaAtribuicaoParaBroadcast: Atribuicao | null = null;
+
+      // Atualiza o estado local
+      setAtribuicoes((prevAtribuicoes) => {
+        const index = prevAtribuicoes.findIndex(
+          (a) => a.id_disciplina === id_disciplina
         );
-      } else {
-        const newAtribuicao: Atribuicao = {
-          id_disciplina: id_disciplina,
-          docentes: [nome_docente],
-        };
-        setAtribuicoes([...atribuicoes, newAtribuicao]);
+
+        if (index !== -1) {
+          // Atualiza existente
+          const updated = {
+            ...prevAtribuicoes[index],
+            docentes: [...prevAtribuicoes[index].docentes, nome_docente],
+          };
+          novaAtribuicaoParaBroadcast = updated;
+
+          const novoArray = [...prevAtribuicoes];
+          novoArray[index] = updated;
+          return novoArray;
+        } else {
+          // Cria nova
+          const nova = {
+            id_disciplina: id_disciplina,
+            docentes: [nome_docente],
+          };
+          novaAtribuicaoParaBroadcast = nova;
+          return [...prevAtribuicoes, nova];
+        }
+      });
+
+      // LÓGICA DE COLABORAÇÃO: Broadcast após atualização local
+      if (isInRoom && novaAtribuicaoParaBroadcast) {
+        broadcastAssignmentChange(novaAtribuicaoParaBroadcast, "update");
       }
     },
-    [atribuicoes, setAtribuicoes]
+    [setAtribuicoes, isInRoom, broadcastAssignmentChange]
   );
 
   /**
@@ -277,39 +470,89 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const removerDocente = useCallback(
     (idDisciplina: string, docenteARemover: string) => {
-      setAtribuicoes((prevAtribuicoes) =>
-        prevAtribuicoes.map((atribuicao) =>
-          atribuicao.id_disciplina == idDisciplina
-            ? {
-                ...atribuicao,
-                docentes: atribuicao.docentes.filter(
-                  (docente) => docente != docenteARemover
-                ),
-              }
-            : atribuicao
-        )
+      const index = atribuicoes.findIndex(
+        (a) => a.id_disciplina === idDisciplina
       );
+
+      if (index !== -1) {
+        // 1. Calcular
+        const updatedAtribuicao = {
+          ...atribuicoes[index],
+          docentes: atribuicoes[index].docentes.filter(
+            (docente) => docente != docenteARemover
+          ),
+        };
+        const newAtribuicoesList = [...atribuicoes];
+        newAtribuicoesList[index] = updatedAtribuicao;
+
+        // 2. Atualizar Local
+        setAtribuicoes(newAtribuicoesList);
+
+        // 3. Broadcast
+        if (isInRoom) {
+          broadcastAssignmentChange(updatedAtribuicao, "update");
+        }
+      }
     },
-    [setAtribuicoes]
+    [atribuicoes, setAtribuicoes, isInRoom, broadcastAssignmentChange]
   );
 
   /**
    * Gerencia e aplica comportamentos ao clicar em uma célula da tabela
    */
-  const handleCellClick = (event: React.MouseEvent, celula: Celula) => {
+  const handleCellClick = (
+    event: React.MouseEvent,
+    celula: Celula,
+    params: {
+      isInRoom: boolean;
+      isOwner: boolean;
+      config: RoomConfig;
+    }
+  ) => {
+    // Security Check
+    if (params.isInRoom) {
+      const canEdit = params.isOwner || params.config.guestsCanEdit;
+      if (!canEdit) {
+        addAlerta(
+          "Apenas o líder da sala pode realizar alterações.",
+          "warning"
+        );
+        return;
+      }
+    }
+
     if (event.ctrlKey) {
-      if (
-        !travas.some((obj) => JSON.stringify(obj) === JSON.stringify(celula))
-      ) {
-        setTravas([...travas, celula]);
+      // Lógica de TRAVAS (Locks)
+      let newTravas = [...travas];
+      const exists = travas.some(
+        (obj) => JSON.stringify(obj) === JSON.stringify(celula)
+      );
+
+      if (!exists) {
+        newTravas.push(celula);
       } else {
-        setTravas([
-          ...travas.filter(
-            (obj) => JSON.stringify(obj) !== JSON.stringify(celula)
-          ),
-        ]);
+        newTravas = newTravas.filter(
+          (obj) => JSON.stringify(obj) !== JSON.stringify(celula)
+        );
+      }
+
+      setTravas(newTravas);
+
+      // Broadcast Específico para Travas (FULL_DATA com travas atualizadas)
+      if (isInRoom) {
+        broadcastDataUpdate(
+          serializeContextData({
+            docentes,
+            disciplinas,
+            formularios,
+            atribuicoes, // Estado atual
+            travas: newTravas, // Novo estado de travas
+          }),
+          "FULL_DATA"
+        );
       }
     } else {
+      // Lógica de Atribuição (Add/Remove)
       if (
         !travas.some(
           (trava) =>
@@ -328,14 +571,16 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
               (docente) => docente == celula.nome_docente
             ))
         ) {
-          adicionarDocente(celula.id_disciplina, celula.nome_docente);
+          adicionarDocente(celula.id_disciplina, celula.nome_docente!);
         } else {
-          removerDocente(celula.id_disciplina, celula.nome_docente);
+          removerDocente(celula.id_disciplina, celula.nome_docente!);
         }
       }
     }
 
     cleanSolucaoAtual();
+
+    // REMOVIDO: O broadcast genérico aqui sobrescrevia as mudanças de adicionar/remover
   };
 
   /**
@@ -343,9 +588,12 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const handleColumnClick = (event: React.MouseEvent, trava: Celula) => {
     if (event.ctrlKey) {
-      if (
-        !travas.some((obj) => JSON.stringify(obj) === JSON.stringify(trava))
-      ) {
+      let newTravas = [...travas];
+      const exists = travas.some(
+        (obj) => JSON.stringify(obj) === JSON.stringify(trava)
+      );
+
+      if (!exists) {
         if (trava.tipo_trava == TipoTrava.Column) {
           const travar: Celula[] = docentes.map((docente) => ({
             id_disciplina: trava.id_disciplina,
@@ -353,20 +601,35 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
             tipo_trava: TipoTrava.ColumnCell,
           }));
           travar.push(trava);
-          setTravas([...travas, ...travar]);
+          newTravas = [...newTravas, ...travar];
         }
       } else {
         if (trava.tipo_trava == TipoTrava.Column) {
-          const newTravas = travas.filter(
+          newTravas = newTravas.filter(
             (obj) =>
               (obj.tipo_trava !== TipoTrava.ColumnCell &&
                 obj.tipo_trava !== TipoTrava.Column) ||
               obj.id_disciplina != trava.id_disciplina
           );
-          setTravas(newTravas);
         }
       }
+
+      setTravas(newTravas);
       cleanSolucaoAtual();
+
+      // Broadcast Travas
+      if (isInRoom) {
+        broadcastDataUpdate(
+          serializeContextData({
+            docentes,
+            disciplinas,
+            formularios,
+            atribuicoes,
+            travas: newTravas,
+          }),
+          "FULL_DATA"
+        );
+      }
     }
   };
 
@@ -375,9 +638,12 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const handleRowClick = (event: React.MouseEvent, trava: Celula) => {
     if (event.ctrlKey) {
-      if (
-        !travas.some((obj) => JSON.stringify(obj) === JSON.stringify(trava))
-      ) {
+      let newTravas = [...travas];
+      const exists = travas.some(
+        (obj) => JSON.stringify(obj) === JSON.stringify(trava)
+      );
+
+      if (!exists) {
         if (trava.tipo_trava == TipoTrava.Row) {
           const travar: Celula[] = disciplinas.map((disciplina) => ({
             id_disciplina: disciplina.id,
@@ -385,20 +651,35 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
             tipo_trava: TipoTrava.RowCell,
           }));
           travar.push(trava);
-          setTravas([...travas, ...travar]);
+          newTravas = [...newTravas, ...travar];
         }
       } else {
         if (trava.tipo_trava == TipoTrava.Row) {
-          const newTravas = travas.filter(
+          newTravas = newTravas.filter(
             (obj) =>
               (obj.tipo_trava !== TipoTrava.RowCell &&
                 obj.tipo_trava !== TipoTrava.Row) ||
               obj.nome_docente != trava.nome_docente
           );
-          setTravas(newTravas);
         }
       }
+
+      setTravas(newTravas);
       cleanSolucaoAtual();
+
+      // Broadcast Travas
+      if (isInRoom) {
+        broadcastDataUpdate(
+          serializeContextData({
+            docentes,
+            disciplinas,
+            formularios,
+            atribuicoes,
+            travas: newTravas,
+          }),
+          "FULL_DATA"
+        );
+      }
     }
   };
 
@@ -448,61 +729,45 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
 
     setAtribuicoes(atribuicoesLimpa);
     addAlerta("A solução foi limpa com sucesso!", "success");
+
+    // LÓGICA DE COLABORAÇÃO: Broadcast da limpeza
+    if (isInRoom) {
+      // Envia todo o conjunto de atribuições atualizado (limpo)
+      broadcastDataUpdate(
+        serializeContextData({
+          atribuicoes: atribuicoesLimpa,
+          disciplinas: disciplinas,
+          docentes: docentes,
+          formularios: formularios,
+          travas: travas,
+        }),
+        "FULL_DATA"
+      );
+    }
   };
 
   /**
-   * Salva as alterações atuais no histórico
+   * Salva as alterações atuais no histórico (maunal)
    */
   const saveAlterations = async () => {
     try {
-      const neighborhood = Array.from(neighborhoodFunctions.values())
-        .filter((entry) => entry.isActive)
-        .map((entry) => entry.instance);
-
-      const stop = Array.from(stopFunctions.values())
-        .filter((entry) => entry.isActive)
-        .map((entry) => entry.instance);
-
-      const aspiration = Array.from(aspirationFunctions.values())
-        .filter((entry) => entry.isActive)
-        .map((entry) => entry.instance);
-
-      const objectives = Array.from(objectiveComponents.values()).filter(
-        (entry) => entry.isActive
-      );
+      const objectives: ObjectiveComponent<any>[] = Array.from(
+        objectiveComponents.values()
+      ).filter((entry) => entry.isActive);
 
       const ativos = removeInativos(docentes, disciplinas, atribuicoes);
 
-      const buscaTabu = new TabuSearch(
+      const solucaoManual: Solucao = await calculateManualSolution(
         ativos.atribuicoes,
         ativos.docentes,
         ativos.turmas,
         travas,
         formularios,
-        [...hardConstraints.values(), ...softConstraints.values()],
-        { atribuicoes: ativos.atribuicoes },
-        neighborhood,
-        tabuListType,
-        tabuListType === "Solução"
-          ? parametros.tabuTenure.size
-          : parametros.tabuTenure.tenures,
-        stop,
-        aspiration,
-        maxPriority,
-        objectives
+        softConstraints, // Map de restrições soft
+        hardConstraints, // Map de restrições hard
+        objectives,
+        maxPriority
       );
-
-      const avaliacao = (
-        await buscaTabu.evaluateNeighbors([
-          {
-            atribuicoes: ativos.atribuicoes,
-            isTabu: false,
-            movimentos: { add: [], drop: [] },
-          },
-        ])
-      )[0].avaliacao;
-
-      buscaTabu.generateStatistics();
 
       const contextoExecucao: ContextoExecucao = {
         disciplinas: [...disciplinas],
@@ -512,14 +777,35 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         formularios: formularios,
       };
 
+      /**
+       * Precisa ser revisto, talvez uma opção seja criar um método "manual" para facilitar a inserção.
+       */
+      const algorithm = new InsercaoManual(
+        "manual-insert",
+        {
+          atribuicoes: ativos.atribuicoes,
+          docentes: ativos.docentes,
+          turmas: ativos.turmas,
+          prioridades: formularios,
+          travas: travas,
+          maiorPrioridade: maxPriority,
+        },
+        [...hardConstraints.values(), ...softConstraints.values()],
+        solucaoManual,
+        "max",
+        [...objectiveComponents.values()],
+        maxPriority
+      );
+
       saveAtribuicoesInHistoryState(
-        atribuicoes,
-        avaliacao,
+        solucaoManual.atribuicoes,
+        solucaoManual.avaliacao,
         historicoSolucoes,
         setHistoricoSolucoes,
         setSolucaoAtual,
         contextoExecucao,
-        buscaTabu
+        algorithm,
+        solucaoManual.estatisticas
       );
 
       addAlerta("As atribuições foram adicionadas ao histórico!", "success");

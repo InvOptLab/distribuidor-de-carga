@@ -1,3 +1,6 @@
+import Algorithm from "@/algoritmo/abstractions/Algorithm";
+import { Statistics } from "@/algoritmo/classes/Statistics";
+import { Solucao } from "@/algoritmo/communs/interfaces/interfaces";
 import {
   Atribuicao,
   Celula,
@@ -5,11 +8,9 @@ import {
   Disciplina,
   Docente,
   HistoricoSolucao,
-  Solucao,
   TipoInsercao,
 } from "@/context/Global/utils";
 import { addNewSolutionToHistory } from "@/context/SolutionHistory/utils";
-import { TabuSearch } from "@/TabuSearch/Classes/TabuSearch";
 
 /**
  * Função que define a colocação da célula na tabela
@@ -152,7 +153,6 @@ export function exportJson(
       carga: disciplina.carga ? disciplina.carga : 1,
       trava: disciplina.trava,
     };
-    console.log(disciplina.conflitos);
     // disciplinasDTO[disciplina.id] = disc;
     disciplinasDTO[disciplina.id] = {
       ...disc,
@@ -280,13 +280,14 @@ export function saveAtribuicoesInHistoryState(
   setHistoricoSolucoes,
   setSolucaoAtual,
   contextoExecucao: ContextoExecucao,
-  algorithm?: TabuSearch
+  algorithm?: Algorithm<any>,
+  statistics?: Statistics
 ) {
   const novaSolucao: Solucao = {
     atribuicoes: atribuicoes,
     avaliacao: avaliacao,
     algorithm: algorithm,
-    estatisticas: algorithm.statistics,
+    estatisticas: statistics,
   };
 
   const id = addNewSolutionToHistory(

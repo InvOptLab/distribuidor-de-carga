@@ -1,6 +1,6 @@
 "use client";
 
-import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
+import type React from "react";
 import {
   Box,
   FormControl,
@@ -8,20 +8,55 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
+  type SelectChangeEvent,
   Typography,
   Card,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { useState } from "react";
 import SolutionHistoryDetails from "./_components/SolutionHistoryDetails";
+import SingleSolutionWorkloadChart from "./_components/SingleSolutionWorkloadChart";
+import { useGlobalContext } from "@/context/Global";
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`statistics-tabpanel-${index}`}
+      aria-labelledby={`statistics-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+    </div>
+  );
+}
 
 export default function Statistics() {
-  const { historicoSolucoes } = useSolutionHistory();
+  const { historicoSolucoes } = useGlobalContext();
   const [solutionId, setSolutionId] = useState("");
+  const [currentTab, setCurrentTab] = useState(0);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSolutionId(event.target.value as string);
   };
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setCurrentTab(newValue);
+  };
+
+  const selectedSolution = solutionId
+    ? historicoSolucoes.get(solutionId)
+    : undefined;
 
   return (
     <Box
@@ -32,7 +67,6 @@ export default function Statistics() {
         alignItems: "center",
       }}
     >
-      {/* Card para seleção de soluções */}
       <Card
         elevation={3}
         sx={{
@@ -70,12 +104,38 @@ export default function Statistics() {
         </FormControl>
       </Card>
 
-      {/* Detalhes da Solução Selecionada */}
-      {solutionId && (
-        <SolutionHistoryDetails
-          key={solutionId}
-          solucao={historicoSolucoes.get(solutionId)}
-        />
+      {solutionId && selectedSolution && (
+        <Box sx={{ width: "100%" }}>
+          <Card elevation={2} sx={{ mb: 2 }}>
+            <Tabs
+              value={currentTab}
+              onChange={handleTabChange}
+              aria-label="statistics tabs"
+              variant="fullWidth"
+              sx={{
+                borderBottom: 1,
+                borderColor: "divider",
+              }}
+            >
+              <Tab label="Detalhes da Solução" id="statistics-tab-0" />
+              <Tab label="Análise de Carga Didática" id="statistics-tab-1" />
+            </Tabs>
+          </Card>
+
+          <TabPanel value={currentTab} index={0}>
+            <SolutionHistoryDetails
+              key={`details-${solutionId}`}
+              solucao={selectedSolution}
+            />
+          </TabPanel>
+
+          <TabPanel value={currentTab} index={1}>
+            <SingleSolutionWorkloadChart
+              key={`workload-${solutionId}`}
+              solution={selectedSolution}
+            />
+          </TabPanel>
+        </Box>
       )}
     </Box>
   );

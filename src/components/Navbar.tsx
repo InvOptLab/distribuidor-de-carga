@@ -5,11 +5,10 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Container, IconButton, Menu, MenuItem, useTheme } from "@mui/material";
+import { Button, Container, IconButton, Menu, MenuItem } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 interface ISimplePage {
@@ -31,8 +30,13 @@ const isGroupedPage = (page: IPages): page is IGroupedPage => {
 
 const navItems: IPages[] = [
   { name: "Home", link: "/" },
-  { name: "Carregar dados", link: "/inputfile" },
-  // { name: "Editar", link: "/edicao" },
+  {
+    name: "Dados",
+    options: [
+      { name: "Cadastrar", link: "/cadastro" },
+      { name: "Carregar dados", link: "/inputfile" },
+    ],
+  },
   { name: "Seleção", link: "/select" },
   { name: "Configurações", link: "/config" },
   {
@@ -40,12 +44,14 @@ const navItems: IPages[] = [
     options: [
       { name: "Tabela", link: "/atribuicoes" },
       { name: "Atribuição em Blocos", link: "/atribuicaoBlocos" },
+      { name: "Planilha", link: "/planilha" },
     ],
   },
   { name: "Histórico", link: "/history" },
   { name: "Estatísticas", link: "/statistics" },
   { name: "Comparar Soluções", link: "/comparar" },
-  // { name: "Calendário", link: "/horarios" },
+  { name: "Calendário", link: "/horarios" },
+  { name: "Salas", link: "/salas" },
 ];
 
 // Componente para itens de submenu no desktop
@@ -133,7 +139,7 @@ function DesktopSubmenu({ item, pathname }: DesktopSubmenuProps) {
         }}
         sx={{
           "& .MuiPaper-root": {
-            backgroundColor: "#1976D2",
+            backgroundColor: "primary.main",
             border: "1px solid rgba(255, 255, 255, 0.1)",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
           },
@@ -149,9 +155,9 @@ function DesktopSubmenu({ item, pathname }: DesktopSubmenuProps) {
               minWidth: 180,
             }}
           >
-            <Link href={option.link} passHref legacyBehavior>
+            <Link href={option.link} passHref>
               <Button
-                component="a"
+                component="div"
                 fullWidth
                 disableRipple
                 disabled={pathname === option.link}
@@ -267,9 +273,9 @@ function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
                     : "transparent",
               }}
             >
-              <Link href={option.link} passHref legacyBehavior>
+              <Link href={option.link} passHref>
                 <Button
-                  component="a"
+                  component="div"
                   fullWidth
                   disableRipple
                   disabled={pathname === option.link}
@@ -311,7 +317,6 @@ function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
 
 export default function Navbar() {
   const pathname = usePathname();
-  const theme = useTheme();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -330,7 +335,8 @@ export default function Navbar() {
       component="nav"
       position="sticky"
       sx={{
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: "primary.main",
+        color: "primary.contrastText",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
       }}
     >
@@ -361,7 +367,8 @@ export default function Navbar() {
               sx={{
                 display: { xs: "block", md: "none" },
                 "& .MuiPaper-root": {
-                  backgroundColor: "#1976D2",
+                  backgroundColor: "primary.main", //"#1976D2",
+                  color: "primary.contrastText",
                   maxHeight: "70vh",
                   overflowY: "auto",
                 },
@@ -386,9 +393,9 @@ export default function Navbar() {
                         paddingX: 2,
                       }}
                     >
-                      <Link href={item.link} passHref legacyBehavior>
+                      <Link href={item.link} passHref>
                         <Button
-                          component="a"
+                          component="div"
                           fullWidth
                           disableRipple
                           disabled={pathname === item.link}
@@ -468,14 +475,9 @@ export default function Navbar() {
                 );
               } else {
                 return (
-                  <Link
-                    href={item.link}
-                    key={item.name}
-                    passHref
-                    legacyBehavior
-                  >
+                  <Link href={item.link} key={item.name} passHref>
                     <Button
-                      component="a"
+                      component="div"
                       variant="text"
                       sx={{
                         position: "relative",

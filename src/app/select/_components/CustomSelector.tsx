@@ -25,7 +25,6 @@ import {
   Chip,
   Switch,
   FormControlLabel,
-  Grid,
   Button,
   Tooltip,
   Dialog,
@@ -33,6 +32,7 @@ import {
   DialogContent,
   DialogActions,
   type SelectChangeEvent,
+  Grid,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -300,12 +300,12 @@ export default function CustomSelector({
         sx={{ px: 2, py: 1 }}
         avatar={
           <Checkbox
-            onClick={handleToggleAll(filteredItems)} // CORREÇÃO: Usar filteredItems
-            checked={isAllFilteredSelected} // CORREÇÃO: Usar estado calculado dos filtrados
-            indeterminate={isIndeterminate} // CORREÇÃO: Usar estado calculado dos filtrados
+            onClick={handleToggleAll(filteredItems)} // Usar filteredItems
+            checked={isAllFilteredSelected} // Usar estado calculado dos filtrados
+            indeterminate={isIndeterminate} // Usar estado calculado dos filtrados
             disabled={filteredItems.length === 0}
-            inputProps={{
-              "aria-label": "all items selected",
+            slotProps={{
+              input: { "aria-label": "Todos os itens selecionados." },
             }}
           />
         }
@@ -320,7 +320,7 @@ export default function CustomSelector({
           </Box>
         }
         subheader={
-          // CORREÇÃO: Mostrar contadores baseados nos itens filtrados
+          // Mostrar contadores baseados nos itens filtrados
           <>
             {`${filteredCheckedCount}/${filteredItems.length} selecionados`}
             {filteredItems.length !== items.length && (
@@ -350,8 +350,9 @@ export default function CustomSelector({
           sx={{
             borderRadius: "4px",
             "& .MuiOutlinedInput-root": {
-              backgroundColor: "#f0f0f0",
+              backgroundColor: "background.default", //"#f0f0f0",
               borderRadius: 2,
+              color: "text.primary",
               "& fieldset": {
                 borderColor: "#ddd",
               },
@@ -359,7 +360,7 @@ export default function CustomSelector({
                 borderColor: "#bbb",
               },
               "&.Mui-focused fieldset": {
-                borderColor: "#1976d2",
+                borderColor: "primaty.main",
               },
             },
           }}
@@ -451,7 +452,7 @@ export default function CustomSelector({
 
           return (
             <ListItemButton
-              key={isDisciplina(value) ? value.id : value.nome}
+              key={isDisciplina(value) ? `${value.id}` : value.nome}
               role="listitem"
               onClick={() => handleToggle(value)}
             >
@@ -460,9 +461,7 @@ export default function CustomSelector({
                   checked={checked.indexOf(value) !== -1}
                   tabIndex={-1}
                   disableRipple
-                  inputProps={{
-                    "aria-labelledby": labelId,
-                  }}
+                  slotProps={{ input: { "aria-labelledby": labelId } }}
                 />
               </ListItemIcon>
               <ListItemText
@@ -668,7 +667,7 @@ function AdvancedFilterForm({
                       Selecione o intervalo de horário:
                     </Typography>
                     <Grid container spacing={2}>
-                      <Grid item xs={6}>
+                      <Grid size={{ xs: 6 }}>
                         <TextField
                           fullWidth
                           size="small"
@@ -679,7 +678,7 @@ function AdvancedFilterForm({
                           InputLabelProps={{ shrink: true }}
                         />
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid size={{ xs: 6 }}>
                         <TextField
                           fullWidth
                           size="small"

@@ -1,0 +1,105 @@
+import ObjectiveComponent from "../abstractions/ObjectiveComponent";
+import {
+  Atribuicao,
+  Disciplina,
+  Docente,
+  Formulario,
+} from "../communs/interfaces/interfaces";
+import { modelSCP } from "../metodos/MILP/MILP";
+import { OptimizationModel, Term } from "../metodos/MILP/optimization_model";
+
+/**
+ * Classe que representa o custo da função objetivo.
+ * Depois pode ser pensado se as penalizações devem vir para essa classe.
+ */
+export class ObjectiveFunction {
+  /**
+   * Componentes da função objetivo. Os componentes serão responsáveis por apresentar os custos a serem
+   * processados pela função objetivo. Os valores serão somados ou subitraídos dependendo do tipo do componente
+   * e da função objetivo.
+   */
+  public components: Map<string, ObjectiveComponent<any>> = new Map<
+    string,
+    ObjectiveComponent<any>
+  >();
+
+  /**
+   * Tipo principal da função objetivo.
+   * Caso o tipo seja "min" e o componente seja "max", o custo gerado por esse componente deve ser subtraído, caso seja "min", somado.
+   * Já se o tipo seja "max" e o componente "max", deverá ser somado, e se for "min", subitraído.
+   */
+  type: "min" | "max";
+
+  constructor(
+    objectiveComponents: ObjectiveComponent<any>[],
+    type: "min" | "max"
+  ) {
+    this.type = type;
+
+    for (const component of objectiveComponents) {
+      this.components.set(component.name, component);
+    }
+  }
+
+  /**
+   * Calcula o valor final da função objetivo baseado nos componentes.
+   *
+   * Verificar melhor esse pensamento depois (com o Elias)
+   * ObjF - Type - "max":
+   *    ObjC - "min" -> subtraio
+   *    ObjC - "max" -> soma
+   *
+   *  ObjF - Type - "min":
+   *    ObjC - "min" -> soma
+   *    ObjC - "max" -> soma
+   *
+   * @param atribuicoes
+   * @param formularios
+   * @param docentes
+   * @returns
+   */
+  calculate(
+    atribuicoes: Atribuicao[],
+    formularios: Formulario[],
+    docentes: Docente[],
+    turmas: Disciplina[]
+  ): number {
+    let valor = 0;
+
+    for (const component of this.components.values()) {
+      if (this.type === "max") {
+        if (component.type === "max") {
+          valor += component.calculate(
+            atribuicoes,
+            formularios,
+            docentes,
+            turmas
+          );
+        } else {
+          valor -= component.calculate(
+            atribuicoes,
+            formularios,
+            docentes,
+            turmas
+          ); // Implica que quanto menor o valor, melhor será para o problema de max
+        }
+      }
+    }
+
+    return valor;
+  }
+
+  /**
+   *
+   * @param model
+   */
+  milpFormulation(model: OptimizationModel, modelSCP: modelSCP) {
+    const objectiveTerms: Term[] = [];
+    /**
+     * Gero todos os termos das componentes da função objetivo
+     */
+    for (const component of this.components.values()) {
+      objectiveTerms.push(...component.milpFormulation(model, modelSCP));
+    }
+  }
+}

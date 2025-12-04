@@ -1,20 +1,27 @@
 "use client";
 
-import { Box, Grid2, Paper, Typography } from "@mui/material";
+import { Fade, Drawer, Box, Paper } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { ReactNode, useState } from "react";
-import TimetableGrid from "./TimetableGrid";
-import AlgoritmoDialog from "@/components/AlgorithmDialog";
+import { useEffect, useRef, useState } from "react";
+
 import CleanAlertDialog from "./CleanAlertDialog";
-import HoveredCourse from "./HoveredCourse";
-import HoveredDocente from "./HoveredDocente";
+
 import TimetableFilters from "./TimetableFilters";
+import ActionBar from "./ActionBar";
 import { useAlgorithm } from "../hooks/useAlgorithm";
-import type { Disciplina, Docente } from "@/context/Global/utils";
+
 import { useTimetable } from "../context/TimetableContext";
 import { useGlobalContext } from "@/context/Global";
+import { Disciplina, Docente } from "@/algoritmo/communs/interfaces/interfaces";
+import AlgoritmoDialog from "@/components/AlgorithmDialog";
+import HoveredCourse from "./HoveredCourse";
+import HoveredDocente from "./HoveredDocente";
+// import TimetableDataGrid from "./TimetableDataGrid";
+// import TimetableGrid from "./TimetableGrid";
+// import TimetableDataGrid from "./TimetableDataGrid";
+import TimetableGrid from "./TimetableGrid";
+import { CollaborativeGridWrapper } from "./CollaborativeGridWrapper";
 
-// Customizar todos os TableCell
 const customTheme = createTheme({
   components: {
     MuiTableCell: {
@@ -49,13 +56,66 @@ export default function TimetableView() {
     handleCloseDialog,
     applySolution,
     interruptExecution,
+    estatisticasMonitoradas,
   } = useAlgorithm();
 
-  const { formularios, docentes } = useGlobalContext();
+  const { formularios, docentes, disciplinas, atribuicoes } =
+    useGlobalContext();
 
   const [openCleanDialog, setOpenCleanDialog] = useState(false);
   const [hoveredCourse, setHoveredCourse] = useState<Disciplina | null>(null);
   const [hoveredDocente, setHoveredDocente] = useState<Docente | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const enterTimer = useRef<NodeJS.Timeout | null>(null);
+  const leaveTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const ENTER_DELAY_MS = 100;
+  const LEAVE_DELAY_MS = 100;
+
+  const courseCardContentRef = useRef<HTMLDivElement>(null);
+  const docenteCardContentRef = useRef<HTMLDivElement>(null);
+
+  const clearTimers = () => {
+    if (enterTimer.current) {
+      clearTimeout(enterTimer.current);
+      enterTimer.current = null;
+    }
+    if (leaveTimer.current) {
+      clearTimeout(leaveTimer.current);
+      leaveTimer.current = null;
+    }
+  };
+
+  const handleCourseEnter = (disciplina: Disciplina | null) => {
+    if (!disciplina) return;
+    clearTimers();
+    enterTimer.current = setTimeout(() => {
+      setHoveredCourse(disciplina);
+      setHoveredDocente(null);
+    }, ENTER_DELAY_MS);
+  };
+
+  const handleDocenteEnter = (nome: string | null) => {
+    clearTimers();
+    if (!nome) return;
+
+    const docente = docentes.find((d) => d.nome === nome);
+    if (!docente) return;
+
+    enterTimer.current = setTimeout(() => {
+      setHoveredDocente(docente);
+      setHoveredCourse(null);
+    }, ENTER_DELAY_MS);
+  };
+
+  const handleMouseLeave = () => {
+    clearTimers();
+    leaveTimer.current = setTimeout(() => {
+      setHoveredCourse(null);
+      setHoveredDocente(null);
+    }, LEAVE_DELAY_MS);
+  };
 
   const handleCleanDialogClose = () => {
     setOpenCleanDialog(false);
@@ -66,113 +126,98 @@ export default function TimetableView() {
     setOpenCleanDialog(false);
   };
 
-  const setHoveredCourseInChildren = (nome: string | null) => {
-    const docente = docentes.find((d) => d.nome === nome);
+  const hasActiveFilters =
+    docenteFilters.search ||
+    docenteFilters.rules.length > 0 ||
+    disciplinaFilters.search ||
+    disciplinaFilters.rules.length > 0;
 
-    setHoveredDocente(docente);
-  };
+  useEffect(() => {
+    const handleWheel = (event: WheelEvent) => {
+      if (hoveredDocente && docenteCardContentRef.current) {
+        event.preventDefault();
+        docenteCardContentRef.current.scrollTop += event.deltaY;
+      } else if (hoveredCourse && courseCardContentRef.current) {
+        event.preventDefault();
+        courseCardContentRef.current.scrollTop += event.deltaY;
+      }
+    };
 
-  function renderHoverCourseChildren(hoveredCourse: Disciplina): ReactNode {
-    const turmaFormularios = formularios.filter(
-      (f) => f.id_disciplina === hoveredCourse.id
-    );
+    if (hoveredDocente || hoveredCourse) {
+      window.addEventListener("wheel", handleWheel, { passive: false });
+    }
 
-    return turmaFormularios.map((f) => {
-      const docente = docentes.find((d) => d.nome === f.nome_docente);
-      return (
-        <Grid2 size={6} key={`${f.nome_docente}_${f.id_disciplina}`}>
-          <Box
-            key={`box_hover_${f.nome_docente}_${f.id_disciplina}`}
-            display="flex"
-            alignItems="center"
-          >
-            <Typography
-              key={`typography_hover_saldo_${f.nome_docente}_${f.id_disciplina}`}
-              variant="body2"
-              sx={{
-                fontFamily: "monospace",
-                whiteSpace: "nowrap",
-              }}
-              color={docente?.saldo < 0 ? "error" : "success"}
-            >
-              (
-              {(docente?.saldo < 0 ? "" : "+") +
-                docente?.saldo.toFixed(1).replace(".", ",")}
-              )&emsp;
-            </Typography>
-            <Typography
-              key={`typography_hover_${f.nome_docente}_${f.id_disciplina}`}
-              variant="body2"
-            >
-              {f.nome_docente} : {f.prioridade}
-            </Typography>
-          </Box>
-        </Grid2>
-      );
-    });
-  }
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+    };
+  }, [hoveredDocente, hoveredCourse]);
 
-  // function renderHoverDocenteChildren(hoveredDocente: Docente): ReactNode {
-  //   const turmaFormularios = formularios.filter(
-  //     (f) => f.nome_docente === hoveredDocente.nome
-  //   );
-
-  //   return turmaFormularios.map((f) => {
-  //     const disciplina = disciplinas.find((d) => d.id === f.id_disciplina);
-  //     return (
-  //       <Grid2 size={6} key={`${f.nome_docente}_${f.id_disciplina}`}>
-  //         <Box
-  //           key={`box_hover_${f.nome_docente}_${f.id_disciplina}`}
-  //           display="flex"
-  //           alignItems="center"
-  //         >
-  //           <Typography
-  //             key={`typography_hover_saldo_${f.nome_docente}_${f.id_disciplina}`}
-  //             variant="body2"
-  //             sx={{
-  //               fontFamily: "monospace",
-  //               whiteSpace: "nowrap",
-  //             }}
-  //             //color={docente?.saldo < 0 ? "error" : "success"}
-  //           >
-  //             ({disciplina?.carga.toFixed(1).replace(".", ",")}
-  //             )&emsp;
-  //           </Typography>
-  //           <Typography
-  //             key={`typography_hover_${f.nome_docente}_${f.id_disciplina}`}
-  //             variant="body2"
-  //           >
-  //             {f.id_disciplina} : {f.prioridade}
-  //           </Typography>
-  //         </Box>
-  //       </Grid2>
-  //     );
-  //   });
-  // }
   return (
     <ThemeProvider theme={customTheme}>
-      <div className="space-y-4">
-        <TimetableFilters
-          docenteFilters={docenteFilters}
-          disciplinaFilters={disciplinaFilters}
-          onDocenteFiltersChange={setDocenteFilters}
-          onDisciplinaFiltersChange={setDisciplinaFilters}
-          onClearFilters={clearFilters}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          // Define a altura total do layout da grade.
+          // '100%' funciona se o layout pai (ex: em page.tsx ou layout.tsx)
+          // já tiver uma altura definida.
+          // Uma alternativa comum é 'calc(100vh - 80px)' (se sua navbar tiver 80px)
+          // Vamos usar o valor que você tinha (88vh), mas aplicando-o ao
+          // contêiner inteiro, não apenas à grade.
+          height: "90vh",
+          width: "100%",
+          gap: 1, // Substitui o 'space-y-4' (gap: 2 = 16px)
+        }}
+      >
+        <ActionBar
+          onExecute={executeProcess}
+          onClean={() => setOpenCleanDialog(true)}
+          onDownload={downalodJson}
+          onSave={saveAlterations}
+          onToggleFilters={() => setFiltersOpen(!filtersOpen)}
+          hasActiveFilters={!!hasActiveFilters}
         />
 
-        <Paper sx={{ width: "100%", overflow: "hidden" }}>
-          {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
-            <TimetableGrid
-              onExecute={executeProcess}
-              onClean={() => setOpenCleanDialog(true)}
-              onDownload={downalodJson}
-              onSave={saveAlterations}
-              setHoveredCourse={setHoveredCourse}
-              setHoveredDocente={setHoveredCourseInChildren}
-            />
-          )}
-        </Paper>
-      </div>
+        <Drawer
+          anchor="right"
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          sx={{
+            "& .MuiDrawer-paper": {
+              width: { xs: "100%", sm: 400, md: 500 },
+              padding: 2,
+            },
+          }}
+        >
+          <TimetableFilters
+            docenteFilters={docenteFilters}
+            disciplinaFilters={disciplinaFilters}
+            onDocenteFiltersChange={setDocenteFilters}
+            onDisciplinaFiltersChange={setDisciplinaFilters}
+            onClearFilters={clearFilters}
+            onClose={() => setFiltersOpen(false)}
+          />
+        </Drawer>
+
+        <CollaborativeGridWrapper>
+          <Paper
+            sx={{
+              // width: "100%",
+              // overflow: "hidden",
+              flex: 1, // <-- CHAVE: Faz o Paper preencher o espaço restante
+              display: "flex", // Para que o TableContainer possa usar height: 100%
+            }}
+          >
+            {filteredDocentes.length > 0 && filteredDisciplinas.length > 0 && (
+              <TimetableGrid //TimetableDataGrid -> Futuro
+                setHoveredCourse={handleCourseEnter}
+                setHoveredDocente={handleDocenteEnter}
+                onMouseLeaveGrid={handleMouseLeave}
+              />
+            )}
+          </Paper>
+        </CollaborativeGridWrapper>
+      </Box>
 
       <AlgoritmoDialog
         open={openDialog}
@@ -185,25 +230,45 @@ export default function TimetableView() {
           total: filteredDisciplinas.filter((disciplina) => disciplina.ativo)
             .length,
         }}
+        estatisticasMonitoradas={estatisticasMonitoradas}
       />
 
-      {hoveredCourse && (
-        <HoveredCourse
-          disciplina={hoveredCourse}
-          setHoveredCourese={setHoveredCourse}
+      <Fade in={!!hoveredCourse} timeout={150}>
+        <div
+          style={{ position: "fixed", zIndex: 99, bottom: "6vh", right: "2vw" }}
         >
-          {renderHoverCourseChildren(hoveredCourse)}
-        </HoveredCourse>
-      )}
+          {hoveredCourse && (
+            <HoveredCourse
+              ref={courseCardContentRef}
+              disciplina={hoveredCourse}
+              formularios={formularios}
+              docentes={docentes}
+              onMouseEnter={clearTimers}
+              onMouseLeave={handleMouseLeave}
+            />
+          )}
+        </div>
+      </Fade>
 
-      {hoveredDocente && (
-        <HoveredDocente
-          docente={hoveredDocente}
-          setHoveredDocente={setHoveredDocente}
+      <Fade in={!!hoveredDocente} timeout={150}>
+        <div
+          style={{ position: "fixed", zIndex: 99, bottom: "6vh", right: "2vw" }}
         >
-          {/* {renderHoverDocenteChildren(hoveredDocente)} */}
-        </HoveredDocente>
-      )}
+          {hoveredDocente && (
+            <HoveredDocente
+              ref={docenteCardContentRef}
+              docente={hoveredDocente}
+              disciplinas={disciplinas}
+              formularios={formularios}
+              atribuicoes={atribuicoes.filter((atribuicao) =>
+                atribuicao.docentes.includes(hoveredDocente.nome)
+              )}
+              onMouseEnter={clearTimers}
+              onMouseLeave={handleMouseLeave}
+            />
+          )}
+        </div>
+      </Fade>
 
       <CleanAlertDialog
         openDialog={openCleanDialog}

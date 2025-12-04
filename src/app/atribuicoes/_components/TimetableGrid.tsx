@@ -7,35 +7,49 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import { useTimetableRows } from "../hooks/useTimetableRows";
 import { useHoverEffects } from "../hooks/useHoverEffects";
-import ButtonGroupHeader from "./ButtonGroupHeader";
 import HeaderCell from "./HeaderCell";
-import { TipoTrava } from "@/context/Global/utils";
-import { Typography } from "@mui/material";
-import type { Disciplina } from "@/context/Global/utils";
 import { useTimetable } from "../context/TimetableContext";
+import {
+  Disciplina,
+  TipoTrava,
+} from "@/algoritmo/communs/interfaces/interfaces";
+import { useCollaboration } from "@/context/Collaboration";
 
 interface TimetableGridProps {
-  onExecute: () => void;
-  onClean: () => void;
-  onDownload: () => void;
-  onSave: () => void;
   setHoveredCourse: (disciplina: Disciplina | null) => void;
   setHoveredDocente: (docente: string | null) => void;
+  onMouseLeaveGrid: () => void;
 }
 
+// Estilos reutilizáveis para a coluna sticky
+const stickyHeaderCellSx = {
+  position: "sticky",
+  left: 0,
+  backgroundColor: "background.paper", // Evita transparência no scroll
+  zIndex: 3, // Header da coluna sticky
+  borderRight: "1px solid rgba(224, 224, 224, 1)",
+  borderBottom: "1px solid rgba(224, 224, 224, 1)",
+};
+
+const stickyBodyCellSx = {
+  ...stickyHeaderCellSx,
+  zIndex: 1, // Célula do body sticky
+  maxWidth: "11rem",
+  padding: 0, // Remover padding da célula para o Typography controlar
+};
+
 export default function TimetableGrid({
-  onExecute,
-  onClean,
-  onDownload,
-  onSave,
   setHoveredCourse,
   setHoveredDocente,
+  onMouseLeaveGrid,
 }: TimetableGridProps) {
   const { filteredDisciplinas } = useTimetable();
   const { rows } = useTimetableRows();
+
   const {
     hover,
     setHover,
@@ -44,57 +58,60 @@ export default function TimetableGrid({
     setHeaderCollor,
     setColumnCollor,
     setCellColor,
-    setBorder,
   } = useHoverEffects();
 
   const { handleCellClick, handleColumnClick, handleRowClick } = useTimetable();
 
-  const handleMouseEnterDocente = (atribuicao: {
-    nome: string;
-    prioridades: {
-      id_disciplina: string;
-      prioridade: number;
-    }[];
-  }) => {
+  //  Pegar infos da colaboração
+  const { isInRoom, isOwner, config } = useCollaboration();
+
+  const handleMouseEnterDocente = (
+    atribuicao: {
+      nome: string;
+      prioridades: {
+        id_disciplina: string;
+        prioridade: number;
+      }[];
+    } | null
+  ) => {
     if (atribuicao) {
       handleOnMouseEnterDocente(atribuicao.nome);
-
       setHoveredDocente(atribuicao.nome);
     } else {
       handleOnMouseEnterDocente(null);
-
-      setHoveredDocente(null);
+      onMouseLeaveGrid();
     }
   };
 
   return (
-    <TableContainer sx={{ maxHeight: "88vh", overflow: "scroll" }}>
-      <Table
-        sx={{ width: "fit-content", height: "fit-content" }}
-        aria-label="sticky table"
-        stickyHeader
-      >
+    <TableContainer
+      sx={{
+        height: "calc(100vh - 200px)", // Preenche o <Paper> pai
+        width: "100%", // Preenche o <Paper> pai
+        overflow: "auto", // Adiciona scrolls X e Y
+        borderTop: "1px solid rgba(224, 224, 224, 1)",
+        borderLeft: "1px solid rgba(224, 224, 224, 1)",
+      }}
+      onMouseLeave={onMouseLeaveGrid}
+    >
+      <Table aria-label="sticky table" stickyHeader>
         <TableHead>
           <TableRow>
+            {/* CÉLULA HEADER DOCENTES (STICKY) */}
             <TableCell
               sx={{
+                ...stickyHeaderCellSx,
                 minWidth: "9rem",
                 maxWidth: "11rem",
-                position: "sticky",
-                left: 0,
-                backgroundColor: "white",
-                zIndex: 3,
                 textAlign: "center",
+                fontWeight: "bold",
+                fontSize: "0.875rem",
               }}
             >
-              <ButtonGroupHeader
-                key="button_group_timetabling"
-                onExecute={onExecute}
-                onClean={onClean}
-                download={onDownload}
-                saveAlterations={onSave}
-              />
+              Docentes
             </TableCell>
+
+            {/* CÉLULAS HEADER DISCIPLINAS */}
             {filteredDisciplinas.map(
               (disciplina) =>
                 disciplina.ativo && (
@@ -106,16 +123,16 @@ export default function TimetableGrid({
                         tipo_trava: TipoTrava.Column,
                       })
                     }
-                    style={{
+                    sx={{
+                      // 'style' com 'setBorder' foi removido
                       backgroundColor: "white",
                       margin: 0,
-                      padding: 1,
-                      ...setBorder(
-                        hover,
-                        { docente: null, id_disciplina: disciplina.id },
-                        "coluna"
-                      ),
+                      padding: 0, // O HeaderCell controla seu padding
+                      borderBottom: "1px solid rgba(224, 224, 224, 1)",
+                      borderRight: "1px solid rgba(224, 224, 224, 1)",
+                      verticalAlign: "top",
                     }}
+                    onMouseLeave={onMouseLeaveGrid}
                   >
                     <HeaderCell
                       key={disciplina.id}
@@ -130,20 +147,18 @@ export default function TimetableGrid({
         </TableHead>
         <TableBody>
           {rows().map((atribuicao) => (
-            <TableRow key={atribuicao.nome} sx={{ maxHeight: "2rem" }}>
+            <TableRow
+              key={atribuicao.nome}
+              sx={{
+                maxHeight: "2rem",
+                "&:hover": { backgroundColor: "transparent" }, // Desativa hover padrão
+              }}
+            >
+              {/* CÉLULA BODY DOCENTES (STICKY) */}
               <TableCell
                 component="th"
                 scope="row"
-                sx={{
-                  maxWidth: "11rem",
-                  position: "sticky",
-                  left: 0,
-                  backgroundColor: "white",
-                  zIndex: 1,
-                  textOverflow: "ellipsis",
-                  padding: 0,
-                  paddingRight: 1,
-                }}
+                sx={stickyBodyCellSx}
                 onClick={(e) =>
                   handleRowClick(e, {
                     nome_docente: atribuicao.nome,
@@ -156,22 +171,23 @@ export default function TimetableGrid({
                 <Typography
                   align="left"
                   variant="body2"
+                  noWrap
                   sx={{
                     fontWeight: "bold",
-                    backgroundColor: setColumnCollor(atribuicao.nome),
-                    padding: "3px",
+                    backgroundColor: setColumnCollor(atribuicao.nome), // Highlight da linha
+                    padding: "6px 10px",
                     width: "100%",
-                    ...setBorder(
-                      hover,
-                      { docente: atribuicao.nome, id_disciplina: null },
-                      "linha"
-                    ),
+                    height: "100%",
+                    transition: "background-color 0.2s ease",
+                    // '...setBorder' foi removido
                   }}
-                  noWrap
+                  onMouseLeave={() => handleMouseEnterDocente(null)}
                 >
                   {atribuicao.nome}
                 </Typography>
               </TableCell>
+
+              {/* CÉLULAS BODY DADOS (PRIORIDADES) */}
               {atribuicao.prioridades.map(
                 (prioridade) =>
                   filteredDisciplinas.find(
@@ -183,33 +199,50 @@ export default function TimetableGrid({
                       key={
                         atribuicao.nome +
                         "_" +
-                        prioridade +
+                        prioridade.prioridade +
                         "_" +
                         prioridade.id_disciplina
                       }
                       align="center"
-                      style={{
+                      sx={{
+                        // 'style' com 'setBorder' foi removido
                         backgroundColor: setCellColor(prioridade.prioridade, {
                           nome_docente: atribuicao.nome,
                           id_disciplina: prioridade.id_disciplina,
                           tipo_trava: TipoTrava.Cell,
                         }),
                         padding: "2px",
-                        ...setBorder(
-                          hover,
-                          {
-                            docente: atribuicao.nome,
-                            id_disciplina: prioridade.id_disciplina,
-                          },
-                          "celula"
-                        ),
+                        borderBottom: "1px solid rgba(224, 224, 224, 1)",
+                        borderRight: "1px solid rgba(224, 224, 224, 1)",
+                        transition: "background-color 0.2s ease",
+                        // Highlight sutil para linha/coluna hover
+                        ...(hover.docente === atribuicao.nome && {
+                          boxShadow: "inset 0 0 0 4px rgba(25, 118, 210, 0.5)",
+                        }),
+                        ...(hover.id_disciplina ===
+                          prioridade.id_disciplina && {
+                          boxShadow: "inset 0 0 0 4px rgba(25, 118, 210, 0.5)",
+                        }),
+                        // Efeito de hover na célula individual
+                        "&:hover": {
+                          boxShadow: "inset 0 0 0 5px rgba(25, 118, 210, 0.9)",
+                          zIndex: 2,
+                        },
                       }}
                       onClick={(event) =>
-                        handleCellClick(event, {
-                          nome_docente: atribuicao.nome,
-                          id_disciplina: prioridade.id_disciplina,
-                          tipo_trava: TipoTrava.Cell,
-                        })
+                        handleCellClick(
+                          event,
+                          {
+                            nome_docente: atribuicao.nome,
+                            id_disciplina: prioridade.id_disciplina,
+                            tipo_trava: TipoTrava.Cell,
+                          },
+                          {
+                            isInRoom: isInRoom,
+                            isOwner: isOwner,
+                            config: config,
+                          }
+                        )
                       }
                       onMouseEnter={() =>
                         handleOnMouseEnter(
@@ -217,9 +250,10 @@ export default function TimetableGrid({
                           prioridade.id_disciplina
                         )
                       }
-                      onMouseLeave={() =>
-                        setHover({ docente: "", id_disciplina: "" })
-                      }
+                      onMouseLeave={() => {
+                        setHover({ docente: "", id_disciplina: "" });
+                        onMouseLeaveGrid();
+                      }}
                     >
                       {prioridade.prioridade}
                     </TableCell>

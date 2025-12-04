@@ -1,4 +1,6 @@
 import { BarChart } from "@mui/x-charts";
+import ChartContainer from "./ChartContainer";
+import { BarChartExportData } from "@/lib/chart-exporter";
 
 interface ConstraintsBarChartsProps {
   ocorrencias: Map<
@@ -13,8 +15,8 @@ interface ConstraintsBarChartsProps {
 export default function ConstraintsBarCharts({
   ocorrencias,
 }: ConstraintsBarChartsProps) {
-  const xLabels = [];
-  const values = [];
+  const xLabels: string[] = [];
+  const values: number[] = [];
 
   for (const constraint of ocorrencias.values()) {
     for (const item of constraint) {
@@ -23,40 +25,57 @@ export default function ConstraintsBarCharts({
     }
   }
 
+  const exportData: BarChartExportData = {
+    xAxis: {
+      data: xLabels,
+      label: "Restrições",
+    },
+    yAxis: {
+      label: "Quantidade",
+    },
+    series: [
+      {
+        data: values,
+        label: "Ocorrências",
+        color: "#D63230",
+      },
+    ],
+    showBarValues: true,
+  };
+
   return (
-    <BarChart
-      xAxis={[
-        {
-          scaleType: "band",
-          data: xLabels /*.map((label) => label.replace(/ /g, "\n"))*/, // Força quebra de linha em espaços
-          tickLabelStyle: {
-            whiteSpace: "pre-wrap", // Permite quebras de linha
-            textAnchor: "middle", // Centraliza os rótulos
-            fontSize: 12, // Ajusta tamanho da fonte
-            wordWrap: "break-word",
+    <ChartContainer chartData={exportData}>
+      <BarChart
+        xAxis={[
+          {
+            scaleType: "band",
+            data: xLabels,
+            tickLabelStyle: {
+              whiteSpace: "pre-wrap",
+              textAnchor: "middle",
+              fontSize: 12,
+              wordWrap: "break-word",
+            },
+            label: "Restrições",
           },
-          // colorMap: {
-          //   type: "ordinal",
-          //   colors: generateColors(xLabels.length),
-          // },
-          label: "Restrições",
-        },
-      ]}
-      yAxis={[
-        {
-          label: "Quantidade",
-        },
-      ]}
-      series={[
-        {
-          data: values,
-          label: "Ocorrências",
-        },
-      ]}
-      height={300}
-      grid={{ vertical: false, horizontal: true }}
-      margin={{ left: 75, right: 75 }}
-      barLabel="value"
-    />
+        ]}
+        yAxis={[
+          {
+            label: "Quantidade",
+          },
+        ]}
+        series={[
+          {
+            data: values,
+            label: "Ocorrências",
+            color: "#D63230",
+          },
+        ]}
+        height={300}
+        grid={{ vertical: false, horizontal: true }}
+        margin={{ left: 75, right: 75 }}
+        barLabel="value"
+      />
+    </ChartContainer>
   );
 }

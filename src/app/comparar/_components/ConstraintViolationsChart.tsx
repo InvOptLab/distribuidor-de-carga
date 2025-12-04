@@ -6,7 +6,7 @@ import {
   CardContent,
   Typography,
   Box,
-  Grid2 as Grid,
+  Grid as Grid,
   Chip,
   Tabs,
   Tab,
@@ -15,6 +15,8 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { useState } from "react";
 import WorkloadHistogramChart from "./WorkloadHistogramChart";
+import ChartContainer from "@/app/statistics/_components/ChartContainer";
+import { BarChartExportData } from "@/lib/chart-exporter";
 
 interface ConstraintViolationsChartProps {
   solutionA: HistoricoSolucao;
@@ -142,6 +144,35 @@ export default function ConstraintViolationsChart({
     },
   ];
 
+  const exportData: BarChartExportData = {
+    xAxis: {
+      // Pega os dados do eixo X do 'barChartData'
+      data: barChartData.map((item) => item.constraint),
+      // Pega a label da config do BarChart (linha 238)
+      label: "Restrições",
+    },
+    yAxis: {
+      // Pega a label da config do BarChart (linha 243)
+      label: "Número de Violações",
+    },
+    series: [
+      {
+        // Pega os dados da 'solucaoA' do 'barChartData'
+        data: barChartData.map((item) => item.solucaoA),
+        label: "Solução A",
+        color: "#1976d2", // Cor da 'barSeries'
+      },
+      {
+        // Pega os dados da 'solucaoB' do 'barChartData'
+        data: barChartData.map((item) => item.solucaoB),
+        label: "Solução B",
+        color: "#dc004e", // Cor da 'barSeries'
+      },
+    ],
+    // Habilita os valores nas barras, com base no 'barLabel' (linha 256)
+    showBarValues: true,
+  };
+
   return (
     <Card sx={{ mb: 3 }}>
       <CardContent>
@@ -218,33 +249,35 @@ export default function ConstraintViolationsChart({
         {currentTab === 0 && (
           <Box sx={{ width: "100%", height: 400 }}>
             {barChartData.length > 0 ? (
-              <BarChart
-                dataset={barChartData}
-                xAxis={[
-                  {
-                    scaleType: "band",
-                    dataKey: "constraint",
-                    label: "Restrições",
-                  },
-                ]}
-                yAxis={[
-                  {
-                    label: "Número de Violações",
-                  },
-                ]}
-                series={barSeries}
-                width={undefined}
-                height={400}
-                margin={{ left: 75, right: 75 }}
-                slotProps={{
-                  legend: {
-                    direction: "row",
-                    position: { vertical: "top", horizontal: "middle" },
-                  },
-                }}
-                barLabel="value"
-                grid={{ vertical: false, horizontal: true }}
-              />
+              <ChartContainer chartData={exportData}>
+                <BarChart
+                  dataset={barChartData}
+                  xAxis={[
+                    {
+                      scaleType: "band",
+                      dataKey: "constraint",
+                      label: "Restrições",
+                    },
+                  ]}
+                  yAxis={[
+                    {
+                      label: "Número de Violações",
+                    },
+                  ]}
+                  series={barSeries}
+                  width={undefined}
+                  height={400}
+                  margin={{ left: 75, right: 75 }}
+                  slotProps={{
+                    legend: {
+                      direction: "vertical",
+                      position: { vertical: "top", horizontal: "center" },
+                    },
+                  }}
+                  barLabel="value"
+                  grid={{ vertical: false, horizontal: true }}
+                />
+              </ChartContainer>
             ) : (
               <Box
                 sx={{
@@ -270,7 +303,7 @@ export default function ConstraintViolationsChart({
                 series={[
                   {
                     data: pieDataA,
-                    highlightScope: { faded: "global", highlighted: "item" },
+                    highlightScope: { fade: "global", highlight: "item" },
                     faded: {
                       innerRadius: 30,
                       additionalRadius: -30,
@@ -287,9 +320,9 @@ export default function ConstraintViolationsChart({
                 margin={{ right: 200 }}
                 slotProps={{
                   legend: {
-                    direction: "column",
-                    position: { vertical: "middle", horizontal: "right" },
-                    padding: 0,
+                    direction: "vertical",
+                    position: { vertical: "middle", horizontal: "end" },
+                    // padding: 0
                   },
                 }}
               />
@@ -318,7 +351,7 @@ export default function ConstraintViolationsChart({
                 series={[
                   {
                     data: pieDataB,
-                    highlightScope: { faded: "global", highlighted: "item" },
+                    highlightScope: { fade: "global", highlight: "item" },
                     faded: {
                       innerRadius: 30,
                       additionalRadius: -30,
@@ -335,9 +368,9 @@ export default function ConstraintViolationsChart({
                 margin={{ right: 200 }}
                 slotProps={{
                   legend: {
-                    direction: "column",
-                    position: { vertical: "middle", horizontal: "right" },
-                    padding: 0,
+                    direction: "vertical",
+                    position: { vertical: "middle", horizontal: "end" },
+                    // padding: 0,
                   },
                 }}
               />

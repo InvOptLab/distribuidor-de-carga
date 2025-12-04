@@ -1,118 +1,249 @@
+"use client";
+
 import {
-  Grid2,
-  IconButton,
-  Link,
-  Paper,
-  Stack,
-  Tooltip,
+  Card,
+  CardContent,
   Typography,
-  Divider,
   Box,
-  styled,
+  Link,
+  Avatar,
+  Chip,
+  Divider,
+  Stack,
 } from "@mui/material";
-
-import EmailIcon from "@mui/icons-material/Email";
-import DescriptionIcon from "@mui/icons-material/Description";
-
-import { motion } from "framer-motion";
+import {
+  Email,
+  School,
+  Business,
+  AccountBalance,
+  WorkOutline,
+  Language,
+  LinkedIn,
+  Article,
+} from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { fetchProfileImage } from "@/actions/image-actions";
 
 export interface IAuthProfileProps {
   name: string;
   email: string;
   lattes: string;
+  institution: string; // ex: "USP"
+  institute: string; // ex: "ICMC"
+  department?: string; // ex: "SME" (opcional)
+  role: string; // ex: "Aluno de mestrado", "Orientador", "Coorientador"
+  researchArea?: string; // ex: "Otimização Combinatória" (opcional)
+  linkedin?: string; // Link do LinkedIn (opcional)
+  orcid?: string; // ID do ORCID (opcional)
+  googleScholar?: string; // Link do Google Scholar (opcional)
+  avatarUrl?: string; // URL da foto (opcional)
 }
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  transition: theme.transitions.create(["transform"], {
-    duration: theme.transitions.duration.standard,
-  }),
-  "&:hover": {
-    transform: "scale3d(1.1, 1.1, 1)",
-    transition: theme.transitions.duration.standard,
-  },
-}));
+/**
+ * Componente para exibir o perfil detalhado de um autor
+ * Exibe informações acadêmicas, institucionais e links para perfis profissionais
+ */
+export default function AuthProfile({
+  name,
+  email,
+  lattes,
+  institution,
+  institute,
+  department,
+  role,
+  researchArea,
+  linkedin,
+  orcid,
+  googleScholar,
+  avatarUrl,
+}: IAuthProfileProps) {
+  // Gera iniciais do nome para o avatar
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
 
-export default function AuthProfile(props: IAuthProfileProps) {
+  // Define a cor do chip baseado no papel
+  const getRoleColor = (
+    role: string
+  ): "primary" | "secondary" | "success" | "info" => {
+    if (role.toLowerCase().includes("orientador")) return "primary";
+    if (role.toLowerCase().includes("coorientador")) return "secondary";
+    if (
+      role.toLowerCase().includes("aluno") ||
+      role.toLowerCase().includes("mestrando")
+    )
+      return "info";
+    return "success";
+  };
+
+  const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadImage() {
+      // Chama o servidor para baixar e converter a imagem
+
+      const base64Image = await fetchProfileImage(avatarUrl);
+
+      if (base64Image) {
+        setAvatarSrc(base64Image);
+      }
+    }
+
+    loadImage();
+  }, []); // Roda apenas uma vez ao montar o componente
+
   return (
-    <motion.div
-      // initial={{ opacity: 0, scale: 0.5 }}
-      // animate={{ opacity: 1, scale: 1 }}
-      // transition={{
-      //     duration: 0.3,
-      //     ease: [0, 0.71, 0.2, 1.01],
-      //     scale: {
-      //     type: "spring",
-      //     damping: 5,
-      //     stiffness: 100,
-      //     restDelta: 0.001
-      //     }
-      // }}
-
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{
-        duration: 0.8,
-        delay: 0.2,
-        ease: [0, 0.71, 0.2, 1.01],
+    <Card
+      sx={{
+        width: 340,
+        transition: "all 0.3s ease-in-out",
+        "&:hover": {
+          transform: "translateY(-8px)",
+          boxShadow: 6,
+        },
       }}
     >
-      <StyledPaper elevation={2}>
-        <Grid2
-          size="grow"
-          alignContent="center"
-          textAlign="center"
-          justifyContent="center"
-          padding="5px"
-          minWidth="15rem"
-        >
-          {/* Logo / Imagem */}
-          <Box
-            component="img"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Webysther_20170627_-_Logo_ICMC-USP.svg/1920px-Webysther_20170627_-_Logo_ICMC-USP.svg.png"
-            sx={{ height: "100px", width: "200px" }}
-          />
-          <Divider />
-          {/* Informações básicas */}
-          <Typography
-            variant="h6"
-            color="textSecondary"
-            textAlign="center"
-            aria-label="Nome de um dos autores."
+      <CardContent>
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+          {/* Avatar e Nome */}
+          <Avatar
+            src={avatarSrc}
+            sx={{
+              width: 100,
+              height: 100,
+              bgcolor: "primary.main",
+              fontSize: "2rem",
+              fontWeight: "bold",
+              boxShadow: 2,
+            }}
           >
-            {props.name}
-          </Typography>
-          <Link
-            href={`mailto:${props.email}`}
-            underline="none"
-            textAlign="center"
-            alignContent="center"
-          >
-            {props.email}
-          </Link>
-          <Divider />
-          {/* Botões na parte inferior do profile */}
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ justifyContent: "center", alignItems: "center" }}
-          >
-            <Tooltip title="Email">
-              <IconButton aria-label="Email" href={`mailto:${props.email}`}>
-                <EmailIcon fontSize="medium" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Currículo Lattes">
-              <IconButton
-                aria-label="Lattes"
-                href={props.lattes}
-                target="_blank"
-              >
-                <DescriptionIcon fontSize="medium" />
-              </IconButton>
-            </Tooltip>
+            {!avatarSrc && initials}
+          </Avatar>
+
+          <Box textAlign="center">
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              {name}
+            </Typography>
+            <Chip
+              label={role}
+              color={getRoleColor(role)}
+              size="small"
+              sx={{ fontWeight: 500 }}
+            />
+          </Box>
+
+          <Divider sx={{ width: "100%", my: 1 }} />
+
+          {/* Informações Institucionais */}
+          <Stack spacing={1.5} width="100%">
+            <Box display="flex" alignItems="center" gap={1.5}>
+              <AccountBalance fontSize="small" color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                <strong>{institution}</strong>
+              </Typography>
+            </Box>
+
+            <Box display="flex" alignItems="center" gap={1.5}>
+              <Business fontSize="small" color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                {institute}
+                {department && ` - ${department}`}
+              </Typography>
+            </Box>
+
+            {researchArea && (
+              <Box display="flex" alignItems="center" gap={1.5}>
+                <WorkOutline fontSize="small" color="primary" />
+                <Typography variant="body2" color="text.secondary">
+                  {researchArea}
+                </Typography>
+              </Box>
+            )}
           </Stack>
-        </Grid2>
-      </StyledPaper>
-    </motion.div>
+
+          <Divider sx={{ width: "100%", my: 1 }} />
+
+          {/* Links e Contatos */}
+          <Stack spacing={1.5} width="100%">
+            <Box display="flex" alignItems="center" gap={1.5}>
+              <Email fontSize="small" color="action" />
+              <Link
+                href={`mailto:${email}`}
+                underline="hover"
+                color="text.secondary"
+                sx={{ fontSize: "0.875rem", wordBreak: "break-all" }}
+              >
+                {email}
+              </Link>
+            </Box>
+
+            <Box display="flex" alignItems="center" gap={1.5}>
+              <School fontSize="small" color="action" />
+              <Link
+                href={lattes}
+                target="_blank"
+                rel="noopener noreferrer"
+                underline="hover"
+                color="text.secondary"
+                sx={{ fontSize: "0.875rem" }}
+              >
+                Currículo Lattes
+              </Link>
+            </Box>
+
+            {orcid && (
+              <Box display="flex" alignItems="center" gap={1.5}>
+                <Article fontSize="small" color="action" />
+                <Link
+                  href={`https://orcid.org/${orcid}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  underline="hover"
+                  color="text.secondary"
+                  sx={{ fontSize: "0.875rem" }}
+                >
+                  ORCID: {orcid}
+                </Link>
+              </Box>
+            )}
+
+            {googleScholar && (
+              <Box display="flex" alignItems="center" gap={1.5}>
+                <Language fontSize="small" color="action" />
+                <Link
+                  href={googleScholar}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  underline="hover"
+                  color="text.secondary"
+                  sx={{ fontSize: "0.875rem" }}
+                >
+                  Google Scholar
+                </Link>
+              </Box>
+            )}
+
+            {linkedin && (
+              <Box display="flex" alignItems="center" gap={1.5}>
+                <LinkedIn fontSize="small" color="action" />
+                <Link
+                  href={linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  underline="hover"
+                  color="text.secondary"
+                  sx={{ fontSize: "0.875rem" }}
+                >
+                  LinkedIn
+                </Link>
+              </Box>
+            )}
+          </Stack>
+        </Box>
+      </CardContent>
+    </Card>
   );
 }

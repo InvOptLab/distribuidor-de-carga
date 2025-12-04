@@ -4,7 +4,7 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid2 as Grid,
+  Grid as Grid,
   Box,
   Chip,
   LinearProgress,

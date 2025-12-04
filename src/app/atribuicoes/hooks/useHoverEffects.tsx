@@ -45,48 +45,48 @@ export function useHoverEffects() {
       )
     ) {
       if (id_disciplina === hover.id_disciplina) {
-        return `rgba(132, 118, 210, 0.12)`;
+        // Cor de trava + hover
+        return `rgba(132, 118, 210, 0.25)`;
       }
+      // Cor de trava
       return `rgba(224, 224, 224, 0.6)`;
     } else if (id_disciplina === hover.id_disciplina) {
+      // Cor de hover normal
       return `rgba(25, 118, 210, 0.12)`;
     } else {
-      return "white";
+      // Cor padrão transparente para herdar do TableCell
+      return "transparent";
     }
   };
 
   /**
-   * Define a cor da coluna do docente
+   * Define a cor da coluna do docente (célula sticky)
    */
   const setColumnCollor = (nome_docente: string) => {
-    if (
-      travas.some(
-        (obj) =>
-          obj.nome_docente === nome_docente && obj.tipo_trava === TipoTrava.Row
-      )
-    ) {
-      if (nome_docente === hover.docente) {
-        if (verificaConflitosDocente(nome_docente)) {
-          return `rgba(255, 118, 210, 0.30)`;
-        }
-        return `rgba(132, 118, 210, 0.12)`;
-      }
+    const temConflito = verificaConflitosDocente(nome_docente);
+    const estaTravada = travas.some(
+      (obj) =>
+        obj.nome_docente === nome_docente && obj.tipo_trava === TipoTrava.Row
+    );
+    const estaHover = nome_docente === hover.docente;
 
-      if (verificaConflitosDocente(nome_docente)) {
-        return `rgba(255, 200, 200, 1)`;
+    if (estaTravada) {
+      if (estaHover) {
+        if (temConflito) return `rgba(255, 118, 210, 0.30)`; // Trava + Hover + Conflito
+        return `rgba(132, 118, 210, 0.20)`; // Trava + Hover
       }
-      return `rgba(224, 224, 224, 0.6)`;
-    } else if (nome_docente === hover.docente) {
-      if (verificaConflitosDocente(nome_docente)) {
-        return `rgba(255, 110, 200, 0.60)`;
-      }
-      return `rgba(25, 118, 210, 0.12)`;
-    } else {
-      if (verificaConflitosDocente(nome_docente)) {
-        return `rgba(255, 0, 0, 0.5)`;
-      }
-      return "white";
+      if (temConflito) return `rgba(255, 200, 200, 1)`; // Trava + Conflito
+      return `rgba(224, 224, 224, 0.6)`; // Apenas Trava
     }
+
+    if (estaHover) {
+      if (temConflito) return `rgba(255, 110, 200, 0.60)`; // Hover + Conflito
+      return `rgba(25, 118, 210, 0.12)`; // Apenas Hover
+    }
+
+    if (temConflito) return `rgba(255, 0, 0, 0.3)`; // Apenas Conflito
+
+    return "transparent"; // Padrão (usa o fundo do paper)
   };
 
   /**
@@ -125,54 +125,7 @@ export function useHoverEffects() {
     }
   };
 
-  /**
-   * Define as bordas dos elementos no hover
-   */
-  const setBorder = (
-    hover: { docente: string; id_disciplina: string },
-    atribuicao: {
-      docente: string;
-      id_disciplina: string;
-    },
-    tipo: "celula" | "coluna" | "linha"
-  ) => {
-    const style = {
-      borderTop: "1px solid rgba(224, 224, 224, 1)",
-      borderRight: "1px solid rgba(224, 224, 224, 1)",
-      borderBottom: "1px solid rgba(224, 224, 224, 1)",
-      borderLeft: "1px solid rgba(224, 224, 224, 1)",
-    };
-
-    if (tipo === "celula") {
-      if (hover.docente === atribuicao.docente) {
-        style.borderTop = "1px solid rgba(25, 118, 210, 1)";
-        style.borderBottom = "1px solid rgba(25, 118, 210, 1)";
-      }
-
-      if (hover.id_disciplina === atribuicao.id_disciplina) {
-        style.borderLeft = "1px solid rgba(25, 118, 210, 1)";
-        style.borderRight = "1px solid rgba(25, 118, 210, 1)";
-      }
-    }
-
-    if (tipo === "coluna") {
-      if (hover.id_disciplina === atribuicao.id_disciplina) {
-        style.borderLeft = "1px solid rgba(25, 118, 210, 1)";
-        style.borderRight = "1px solid rgba(25, 118, 210, 1)";
-      }
-    }
-
-    if (tipo === "linha") {
-      if (hover.docente === atribuicao.docente) {
-        style.borderTop = "1px solid rgba(25, 118, 210, 1)";
-        style.borderBottom = "1px solid rgba(25, 118, 210, 1)";
-      } else {
-        return { border: "initial" };
-      }
-    }
-
-    return style;
-  };
+  // ***** A FUNÇÃO setBorder FOI REMOVIDA *****
 
   /**
    * Verifica se um docente tem conflitos de horário
@@ -191,6 +144,7 @@ export function useHoverEffects() {
         const disciplinaPivo: any = filteredDisciplinas.find(
           (disciplina) => disciplina.id === atribuicoesDocente[i]
         );
+        if (!disciplinaPivo) continue; // Adicionado para segurança
 
         for (let j = i + 1; j < atribuicoesDocente.length; j++) {
           const disciplinaAtual: any = filteredDisciplinas.find(
@@ -215,7 +169,7 @@ export function useHoverEffects() {
     setHeaderCollor,
     setColumnCollor,
     setCellColor,
-    setBorder,
+    // setBorder foi removido
     verificaConflitosDocente,
   };
 }

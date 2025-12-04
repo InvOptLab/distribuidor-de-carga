@@ -5,7 +5,7 @@ import {
   Docente,
   getActiveFormularios,
 } from "@/context/Global/utils";
-import { Grid2 } from "@mui/material";
+import { Grid } from "@mui/material";
 import {
   getDisciplinasAtribuicoes,
   getDocentesAtribuicoes,
@@ -72,49 +72,11 @@ const SolutionHistoryStatistics: React.FC<SolutionHistoryStatisticsProps> = ({
     )
   );
 
-  //const qtdDisciplinasAtivas: number = solucao.contexto.disciplinas.filter(disciplina => disciplina.ativo).length
-  // const qtdDocentesTravados: number = solucao.contexto.travas.filter(
-  //   (trava) =>
-  //     trava.tipo_trava === TipoTrava.Row &&
-  //     docentesAtribuicoes.has(trava.nome_docente)
-  // ).length;
-  // const qtdDisciplinasTravadas: number = solucao.contexto.travas.filter(
-  //   (trava) =>
-  //     trava.tipo_trava === TipoTrava.Column &&
-  //     disciplinasAtribuicoes.has(trava.id_disciplina)
-  // ).length;
-
   return (
-    <Grid2 container spacing={2} key={`grid2_container_${id}`}>
+    <Grid container spacing={2} key={`Grid_container_${id}`}>
       {/* Componente DataTreeView com as informações dos docentes e atribuições */}
-      {/* <Grid2 size={{ xs: 12 }}>
-        <DataTreeView
-          docentes={atribuicoesProcessadas.treeDocentes}
-          //atribuicoes={solucao.solucao.atribuicoes}
-          disciplinas={atribuicoesProcessadas.treeDisciplinas}
-          solucao={solucao}
-          setHoveredCourese={setHoveredCourese}
-          entidade="Docente"
-        />
-      </Grid2>
-      <Grid2 size={{ xs: 12 }}>
-        <DataTreeView
-          docentes={atribuicoesProcessadas.treeDocentes}
-          //atribuicoes={solucao.solucao.atribuicoes}
-          disciplinas={atribuicoesProcessadas.treeDisciplinas}
-          solucao={solucao}
-          setHoveredCourese={setHoveredCourese}
-          entidade="Disciplina"
-        />
-      </Grid2> */}
 
-      {/* Título e Gráficos de Relação Ativos X Inativos */}
-      {/* <Grid2 size={{ xs: 12 }}>
-        <Typography variant="h6" gutterBottom align="center">
-          Relação Ativos X Inativos
-        </Typography>
-      </Grid2> */}
-      <Grid2 size={{ xs: 12, md: 12 }}>
+      <Grid size={{ xs: 12, md: 12 }}>
         <NewDataTreeView
           key="new_data_tree_view"
           disciplinas={atribuicoesProcessadas.treeDisciplinas}
@@ -122,10 +84,10 @@ const SolutionHistoryStatistics: React.FC<SolutionHistoryStatisticsProps> = ({
           solucao={solucao}
           setHoveredCourese={setHoveredCourese}
         />
-      </Grid2>
+      </Grid>
       {/* Gráficos lado a lado dentro do Paper */}
-      {/* <Grid2 container size={{ xs: 12 }} spacing={2}>
-        <Grid2 size={{ xs: 12, md: 6 }}>
+      {/* <Grid container size={{ xs: 12 }} spacing={2}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper elevation={2} sx={{ padding: 2 }}>
             <StatusPieChart
               key="docentes_ativos_inativos"
@@ -137,9 +99,9 @@ const SolutionHistoryStatistics: React.FC<SolutionHistoryStatisticsProps> = ({
               lockedCount={qtdDocentesTravados}
             />
           </Paper>
-        </Grid2>
+        </Grid>
 
-        <Grid2 size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper elevation={2} sx={{ padding: 2 }}>
             <StatusPieChart
               key="disciplinas_ativos_inativos"
@@ -152,16 +114,16 @@ const SolutionHistoryStatistics: React.FC<SolutionHistoryStatisticsProps> = ({
               lockedCount={qtdDisciplinasTravadas}
             />
           </Paper>
-        </Grid2>
-      </Grid2> */}
+        </Grid>
+      </Grid> */}
 
       {/* Renderizar o LineChartsSelector se as estatísticas estiverem disponíveis */}
       {/* {solucao.solucao.estatisticas !== undefined && (
-        <Grid2 size={{ xs: 12 }}>
+        <Grid size={{ xs: 12 }}>
           <LineChartsSelector solucao={solucao} />
-        </Grid2>
+        </Grid>
       )} */}
-    </Grid2>
+    </Grid>
   );
 };
 

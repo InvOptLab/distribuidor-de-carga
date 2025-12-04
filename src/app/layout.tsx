@@ -9,29 +9,62 @@ import { AlgorithmWrapper } from "@/context/Algorithm";
 import { GlobalWrapper } from "@/context/Global";
 import { ProcessWrapper } from "@/context/Process";
 import { HistorySolutionProvider } from "./history/context/history.context";
+import { AvatarChatProvider } from "@/context/AvatarChat/AvatarChatContext";
+import { AvatarChatWidget } from "@/components/AvatarChat/AvatarChatWidget";
+
+import { CssBaseline } from "@mui/material";
+
+import "katex/dist/katex.min.css";
+import { CollaborationProvider } from "@/context/Collaboration";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const [mode, setMode] = useState<PaletteMode>("light");
+  // const colorMode = useMemo<IColorModeContext>(
+  //   () => ({
+  //     toggleColorMode: () => {
+  //       setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  //     },
+  //     mode,
+  //   }),
+  //   [mode]
+  // );
+
+  // const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+
   return (
     <html lang="pt-br">
       <body style={{ margin: 0 }}>
         {/* <AccessibilityProvider>
           <AccessibilityBar /> */}
-        <Navbar />
-        <GlobalWrapper>
-          <ProcessWrapper>
-            <AlgorithmWrapper>
-              <AlertsWrapper>
-                <HistorySolutionProvider>
-                  <div style={{ padding: "15px" }}>{children}</div>
-                </HistorySolutionProvider>
-              </AlertsWrapper>
-            </AlgorithmWrapper>
-          </ProcessWrapper>
-        </GlobalWrapper>
+        {/* <ColorModeContext.Provider value={colorMode}> */}
+        {/* <ThemeProvider theme={null}> */}
+        {/* CssBaseline normaliza o CSS e aplica o 'background.default' 
+              da sua paleta ao <body> automaticamente!
+             */}
+        <CssBaseline />
+        <AvatarChatProvider>
+          <CollaborationProvider>
+            <Navbar />
+            <GlobalWrapper>
+              <ProcessWrapper>
+                <AlgorithmWrapper>
+                  <AlertsWrapper>
+                    <HistorySolutionProvider>
+                      <div style={{ padding: "15px" }}>{children}</div>
+                      <AvatarChatWidget />
+                    </HistorySolutionProvider>
+                  </AlertsWrapper>
+                </AlgorithmWrapper>
+              </ProcessWrapper>
+            </GlobalWrapper>
+          </CollaborationProvider>
+        </AvatarChatProvider>
+        {/* </ThemeProvider> */}
+        {/* </ColorModeContext.Provider> */}
         {/* <VLibras forceOnload /> */}
         {/* </AccessibilityProvider> */}
       </body>

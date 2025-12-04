@@ -1,5 +1,5 @@
-import { TabuSearch } from "@/TabuSearch/Classes/TabuSearch";
-
+import Algorithm from "@/algoritmo/abstractions/Algorithm";
+import { Horario, Solucao } from "@/algoritmo/communs/interfaces/interfaces";
 export interface Docente {
   nome: string;
   saldo?: number;
@@ -79,13 +79,6 @@ export interface Celula {
   trava?: boolean;
 }
 
-// Ver se o melhor lugar para essa interface é aqui
-export interface Horario {
-  dia: "Seg." | "Ter." | "Qua." | "Qui." | "Sex." | "Sáb." | "";
-  inicio: string;
-  fim: string;
-}
-
 export interface ContextoExecucao {
   docentes: Docente[];
   disciplinas: Disciplina[];
@@ -104,15 +97,6 @@ export interface Estatisticas {
   qtdOcorrenciasRestricoes?: Map<string, { label: string; qtd: number }[]>;
 }
 
-export interface Solucao {
-  atribuicoes: Atribuicao[];
-  avaliacao?: number;
-  idHistorico?: string;
-  estatisticas?: Estatisticas;
-  isTabu?: boolean;
-  algorithm?: TabuSearch;
-}
-
 export enum TipoInsercao {
   Algoritmo = "Algoritmo",
   Manual = "Manual",
@@ -125,19 +109,7 @@ export interface HistoricoSolucao {
   solucao: Solucao;
   tipoInsercao: TipoInsercao;
   contexto: ContextoExecucao;
-}
-
-/**
- * Mudar para outro contexto
- */
-
-export interface Parametros {
-  k1: number;
-  k2: number;
-  k3: number;
-  k4: number;
-  k5: number;
-  k6: number;
+  algorithm?: Algorithm<any>;
 }
 
 /**
@@ -373,4 +345,18 @@ export function getActiveFormularios(
       disciplinasAtivas.includes(formulario.id_disciplina) &&
       docentesAtivos.includes(formulario.nome_docente)
   );
+}
+
+/**
+ * Verifica se duas disciplinas têm conflito de horários
+ */
+export function disciplinasConflitam(d1: Disciplina, d2: Disciplina): boolean {
+  for (const h1 of d1.horarios) {
+    for (const h2 of d2.horarios) {
+      if (horariosSobrepoem(h1, h2)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }

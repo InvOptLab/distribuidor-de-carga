@@ -8,7 +8,7 @@ import {
   Docente,
   Formulario,
 } from "@/context/Global/utils";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import HoveredDocente from "../atribuicoes/_components/HoveredDocente";
 
 function generateAtribuicoesMap(
@@ -142,6 +142,32 @@ export default function DocentesPage() {
     }
   };
 
+  // Refs dos timers
+  const enterTimer = useRef<NodeJS.Timeout | null>(null);
+  const leaveTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const LEAVE_DELAY_MS = 200; // Atraso para sair (dá tempo de mover o mouse para o card)
+
+  // Limpa qualquer timer pendente
+  const clearTimers = () => {
+    if (enterTimer.current) {
+      clearTimeout(enterTimer.current);
+      enterTimer.current = null;
+    }
+    if (leaveTimer.current) {
+      clearTimeout(leaveTimer.current);
+      leaveTimer.current = null;
+    }
+  };
+
+  // Handler para SAIR (seja do trigger ou do próprio card)
+  const handleMouseLeave = () => {
+    clearTimers();
+    leaveTimer.current = setTimeout(() => {
+      setHoveredDocente(null);
+    }, LEAVE_DELAY_MS);
+  };
+
   return (
     <Box p={4}>
       <DocentesView
@@ -156,7 +182,9 @@ export default function DocentesPage() {
       {hoveredDocente && (
         <HoveredDocente
           docente={hoveredDocente}
-          setHoveredDocente={setHoveredDocente}
+          // setHoveredDocente={setHoveredDocente}
+          onMouseEnter={clearTimers}
+          onMouseLeave={handleMouseLeave}
         />
       )}
     </Box>
