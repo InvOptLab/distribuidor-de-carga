@@ -13,6 +13,51 @@ import { supabase } from "@/lib/supabaseClient";
 import { usePathname, useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
+import {
+  Atribuicao,
+  Celula,
+  Disciplina,
+  Docente,
+  Formulario,
+} from "@/algoritmo/communs/interfaces/interfaces";
+import { useAlertsContext } from "../Alerts";
+
+export const serializeContextData = (data: any) => {
+  return {
+    ...data,
+    // Converte Map de formulários dentro de cada Docente para Array
+    docentes: data.docentes.map((d: any) => ({
+      ...d,
+      formularios: d.formularios ? Array.from(d.formularios.entries()) : [],
+    })),
+    // Converte Set de conflitos dentro de cada Disciplina para Array
+    disciplinas: data.disciplinas.map((d: any) => ({
+      ...d,
+      conflitos: d.conflitos ? Array.from(d.conflitos) : [],
+    })),
+  };
+};
+
+export const deserializeContextData = (data: any) => {
+  const result = { ...data };
+
+  // Verifica se o campo existe antes de tentar mapear
+  if (data.docentes) {
+    result.docentes = data.docentes.map((d: any) => ({
+      ...d,
+      formularios: new Map(d.formularios),
+    }));
+  }
+
+  if (data.disciplinas) {
+    result.disciplinas = data.disciplinas.map((d: any) => ({
+      ...d,
+      conflitos: new Set(d.conflitos),
+    }));
+  }
+
+  return result;
+};
 
 // Tipos
 export type RoomConfig = {
@@ -31,7 +76,13 @@ type UserCursor = {
 
 type DataUpdatePayload = {
   type: "FULL_DATA" | "PARTIAL_DATA";
-  data: any;
+  data: {
+    docentes: Docente[];
+    disciplinas: Disciplina[];
+    atribuicoes: Atribuicao[];
+    formularios: Formulario[];
+    travas: Celula[];
+  };
   timestamp: number;
 };
 
@@ -59,7 +110,16 @@ type CollaborationContextType = {
   leaveRoom: () => Promise<void>;
   updateConfig: (newConfig: RoomConfig) => Promise<void>;
   broadcastMouse: (x: number, y: number) => void;
-  broadcastDataUpdate: (data: any, type?: "FULL_DATA" | "PARTIAL_DATA") => void;
+  broadcastDataUpdate: (
+    data: {
+      docentes: Docente[];
+      disciplinas: Disciplina[];
+      atribuicoes: Atribuicao[];
+      formularios: Formulario[];
+      travas: Celula[];
+    },
+    type?: "FULL_DATA" | "PARTIAL_DATA"
+  ) => void;
   broadcastAssignmentChange: (
     assignment: any,
     action: "add" | "remove" | "update"
@@ -98,6 +158,9 @@ export const CollaborationProvider = ({
     "#" + Math.floor(Math.random() * 16777215).toString(16)
   );
 
+  // Contexto de Alertas
+  const { addAlerta } = useAlertsContext();
+
   const dataUpdateCallbacksRef = useRef<
     Set<(payload: DataUpdatePayload) => void>
   >(new Set());
@@ -107,7 +170,7 @@ export const CollaborationProvider = ({
   const dataRequestCallbacksRef = useRef<Set<() => void>>(new Set());
 
   // =========================================================
-  // 1. LÓGICA DE CRIAR SALA - Adicionado initialConfig
+  // LÓGICA DE CRIAR SALA
   // =========================================================
   const createRoom = async (
     rName: string,
@@ -139,7 +202,7 @@ export const CollaborationProvider = ({
   };
 
   // =========================================================
-  // 2. LÓGICA DE ENTRAR NA SALA
+  // LÓGICA DE ENTRAR NA SALA
   // =========================================================
   const joinRoom = async (rName: string, uName: string) => {
     const { data: room, error: roomError } = await supabase
@@ -166,7 +229,7 @@ export const CollaborationProvider = ({
   };
 
   // =========================================================
-  // 3. CONEXÃO REALTIME - Adicionados novos eventos
+  // CONEXÃO REALTIME
   // =========================================================
   const enterRealtime = async (rId: string, uName: string, owner: boolean) => {
     const channel = supabase.channel(`room:${rId}`, {
@@ -228,6 +291,7 @@ export const CollaborationProvider = ({
         },
         () => {
           alert("O dono encerrou a sala.");
+          addAlerta("O dono encerrou a sala.", "error");
           leaveRoomLogic(false);
         }
       )
@@ -274,7 +338,7 @@ export const CollaborationProvider = ({
   }, [pathname, userName, isOwner, userId]);
 
   // =========================================================
-  // 4. SAIR DA SALA
+  // SAIR DA SALA
   // =========================================================
   const leaveRoomLogic = async (deleteFromDb = true) => {
     if (channelRef.current) supabase.removeChannel(channelRef.current);
@@ -301,7 +365,7 @@ export const CollaborationProvider = ({
   const leaveRoom = async () => leaveRoomLogic(true);
 
   // =========================================================
-  // 5. UTILITÁRIOS (Mouse e Config)
+  // UTILITÁRIOS (Mouse e Config)
   // =========================================================
   const broadcastMouse = (x: number, y: number) => {
     if (channelRef.current) {
@@ -323,12 +387,21 @@ export const CollaborationProvider = ({
   };
 
   // =========================================================
-  // 6. NOVAS FUNÇÕES DE SINCRONIZAÇÃO
+  // FUNÇÕES DE SINCRONIZAÇÃO
   // =========================================================
 
   // Broadcast de atualização de dados (líder -> todos)
   const broadcastDataUpdate = useCallback(
-    (data: any, type: "FULL_DATA" | "PARTIAL_DATA" = "FULL_DATA") => {
+    (
+      data: {
+        docentes: Docente[];
+        disciplinas: Disciplina[];
+        atribuicoes: Atribuicao[];
+        formularios: Formulario[];
+        travas: Celula[];
+      },
+      type: "FULL_DATA" | "PARTIAL_DATA" = "FULL_DATA"
+    ) => {
       if (!channelRef.current) return;
 
       const payload: DataUpdatePayload = {
