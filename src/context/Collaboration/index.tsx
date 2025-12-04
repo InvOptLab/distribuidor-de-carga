@@ -13,55 +13,11 @@ import { supabase } from "@/lib/supabaseClient";
 import { usePathname, useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
-import {
-  Atribuicao,
-  Celula,
-  Disciplina,
-  Docente,
-  Formulario,
-} from "@/algoritmo/communs/interfaces/interfaces";
-import { useAlertsContext } from "../Alerts";
-
-export const serializeContextData = (data: any) => {
-  return {
-    ...data,
-    // Converte Map de formulários dentro de cada Docente para Array
-    docentes: data.docentes.map((d: any) => ({
-      ...d,
-      formularios: d.formularios ? Array.from(d.formularios.entries()) : [],
-    })),
-    // Converte Set de conflitos dentro de cada Disciplina para Array
-    disciplinas: data.disciplinas.map((d: any) => ({
-      ...d,
-      conflitos: d.conflitos ? Array.from(d.conflitos) : [],
-    })),
-  };
-};
-
-export const deserializeContextData = (data: any) => {
-  const result = { ...data };
-
-  // Verifica se o campo existe antes de tentar mapear
-  if (data.docentes) {
-    result.docentes = data.docentes.map((d: any) => ({
-      ...d,
-      formularios: new Map(d.formularios),
-    }));
-  }
-
-  if (data.disciplinas) {
-    result.disciplinas = data.disciplinas.map((d: any) => ({
-      ...d,
-      conflitos: new Set(d.conflitos),
-    }));
-  }
-
-  return result;
-};
 
 // Tipos
 export type RoomConfig = {
   guestsCanEdit: boolean;
+  guestsCanFilter: boolean;
 };
 
 type UserCursor = {
@@ -76,13 +32,7 @@ type UserCursor = {
 
 type DataUpdatePayload = {
   type: "FULL_DATA" | "PARTIAL_DATA";
-  data: {
-    docentes: Docente[];
-    disciplinas: Disciplina[];
-    atribuicoes: Atribuicao[];
-    formularios: Formulario[];
-    travas: Celula[];
-  };
+  data: any;
   timestamp: number;
 };
 
@@ -110,16 +60,7 @@ type CollaborationContextType = {
   leaveRoom: () => Promise<void>;
   updateConfig: (newConfig: RoomConfig) => Promise<void>;
   broadcastMouse: (x: number, y: number) => void;
-  broadcastDataUpdate: (
-    data: {
-      docentes: Docente[];
-      disciplinas: Disciplina[];
-      atribuicoes: Atribuicao[];
-      formularios: Formulario[];
-      travas: Celula[];
-    },
-    type?: "FULL_DATA" | "PARTIAL_DATA"
-  ) => void;
+  broadcastDataUpdate: (data: any, type?: "FULL_DATA" | "PARTIAL_DATA") => void;
   broadcastAssignmentChange: (
     assignment: any,
     action: "add" | "remove" | "update"
@@ -133,6 +74,52 @@ type CollaborationContextType = {
 };
 
 const CollaborationContext = createContext<CollaborationContextType>({} as any);
+
+// =========================================================
+// FUNÇÕES AUXILIARES DE CONVERSÃO (Map/Set <-> Array)
+// =========================================================
+
+export const serializeContextData = (data: any) => {
+  return {
+    ...data,
+    // Converte Map de formulários dentro de cada Docente para Array
+    docentes: data.docentes?.map((d: any) => ({
+      ...d,
+      formularios: d.formularios ? Array.from(d.formularios.entries()) : [],
+    })),
+    // Converte Set de conflitos dentro de cada Disciplina para Array
+    disciplinas: data.disciplinas?.map((d: any) => ({
+      ...d,
+      conflitos: d.conflitos ? Array.from(d.conflitos) : [],
+    })),
+    // Filtros são objetos simples, passam direto, mas garantimos que estão no payload
+    docenteFilters: data.docenteFilters,
+    disciplinaFilters: data.disciplinaFilters,
+  };
+};
+
+export const deserializeContextData = (data: any) => {
+  const result = { ...data };
+
+  // Verifica se o campo existe antes de tentar mapear
+  if (data.docentes) {
+    result.docentes = data.docentes.map((d: any) => ({
+      ...d,
+      formularios: new Map(d.formularios),
+    }));
+  }
+
+  if (data.disciplinas) {
+    result.disciplinas = data.disciplinas.map((d: any) => ({
+      ...d,
+      conflitos: new Set(d.conflitos),
+    }));
+  }
+
+  // Filtros já vêm no formato correto (JSON), não precisam de conversão especial
+
+  return result;
+};
 
 export const CollaborationProvider = ({
   children,
@@ -148,7 +135,12 @@ export const CollaborationProvider = ({
   const [userId] = useState(() => uuidv4());
   const [userName, setUserName] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
-  const [config, setConfig] = useState<RoomConfig>({ guestsCanEdit: false });
+
+  // Configuração padrão atualizada
+  const [config, setConfig] = useState<RoomConfig>({
+    guestsCanEdit: false,
+    guestsCanFilter: false,
+  });
 
   // Estados de Realtime
   const [cursors, setCursors] = useState<Record<string, UserCursor>>({});
@@ -157,9 +149,6 @@ export const CollaborationProvider = ({
   const myColor = useRef(
     "#" + Math.floor(Math.random() * 16777215).toString(16)
   );
-
-  // Contexto de Alertas
-  const { addAlerta } = useAlertsContext();
 
   const dataUpdateCallbacksRef = useRef<
     Set<(payload: DataUpdatePayload) => void>
@@ -177,7 +166,10 @@ export const CollaborationProvider = ({
     uName: string,
     initialConfig?: RoomConfig
   ) => {
-    const roomConfig = initialConfig || { guestsCanEdit: false };
+    const roomConfig = initialConfig || {
+      guestsCanEdit: false,
+      guestsCanFilter: false,
+    };
 
     const { data, error } = await supabase
       .from("rooms")
@@ -196,7 +188,7 @@ export const CollaborationProvider = ({
     setRoomName(data.name);
     setUserName(uName);
     setIsOwner(true);
-    setConfig(data.config || { guestsCanEdit: false });
+    setConfig(data.config || { guestsCanEdit: false, guestsCanFilter: false });
 
     await enterRealtime(data.id, uName, true);
   };
@@ -223,7 +215,7 @@ export const CollaborationProvider = ({
     setRoomName(room.name);
     setUserName(uName);
     setIsOwner(false);
-    setConfig(room.config || { guestsCanEdit: false });
+    setConfig(room.config || { guestsCanEdit: false, guestsCanFilter: false });
 
     await enterRealtime(room.id, uName, false);
   };
@@ -252,20 +244,17 @@ export const CollaborationProvider = ({
         setCursors(newCursors);
       })
       .on("broadcast", { event: "DATA_UPDATE" }, ({ payload }) => {
-        console.log("📥 Dados recebidos:", payload);
         dataUpdateCallbacksRef.current.forEach((cb) =>
           cb(payload as DataUpdatePayload)
         );
       })
       .on("broadcast", { event: "ASSIGNMENT_CHANGE" }, ({ payload }) => {
-        console.log("📥 Atribuição alterada:", payload);
         assignmentChangeCallbacksRef.current.forEach((cb) =>
           cb(payload as AssignmentUpdatePayload)
         );
       })
       .on("broadcast", { event: "REQUEST_DATA" }, ({ payload }) => {
         if (owner) {
-          console.log("📥 Solicitação de dados recebida de:", payload.userId);
           dataRequestCallbacksRef.current.forEach((cb) => cb());
         }
       })
@@ -291,7 +280,6 @@ export const CollaborationProvider = ({
         },
         () => {
           alert("O dono encerrou a sala.");
-          addAlerta("O dono encerrou a sala.", "error");
           leaveRoomLogic(false);
         }
       )
@@ -322,7 +310,6 @@ export const CollaborationProvider = ({
     channelRef.current = channel;
   };
 
-  // Atualiza a 'pathname' no presence quando navega
   useEffect(() => {
     if (channelRef.current && userName) {
       channelRef.current.track({
@@ -365,7 +352,7 @@ export const CollaborationProvider = ({
   const leaveRoom = async () => leaveRoomLogic(true);
 
   // =========================================================
-  // UTILITÁRIOS (Mouse e Config)
+  // UTILITÁRIOS
   // =========================================================
   const broadcastMouse = (x: number, y: number) => {
     if (channelRef.current) {
@@ -386,22 +373,8 @@ export const CollaborationProvider = ({
     await supabase.from("rooms").update({ config: newConfig }).eq("id", roomId);
   };
 
-  // =========================================================
-  // FUNÇÕES DE SINCRONIZAÇÃO
-  // =========================================================
-
-  // Broadcast de atualização de dados (líder -> todos)
   const broadcastDataUpdate = useCallback(
-    (
-      data: {
-        docentes: Docente[];
-        disciplinas: Disciplina[];
-        atribuicoes: Atribuicao[];
-        formularios: Formulario[];
-        travas: Celula[];
-      },
-      type: "FULL_DATA" | "PARTIAL_DATA" = "FULL_DATA"
-    ) => {
+    (data: any, type: "FULL_DATA" | "PARTIAL_DATA" = "FULL_DATA") => {
       if (!channelRef.current) return;
 
       const payload: DataUpdatePayload = {
@@ -415,13 +388,10 @@ export const CollaborationProvider = ({
         event: "DATA_UPDATE",
         payload,
       });
-
-      console.log("📤 Dados enviados:", payload);
     },
     []
   );
 
-  // Broadcast de mudança de atribuição (qualquer -> todos)
   const broadcastAssignmentChange = useCallback(
     (assignment: any, action: "add" | "remove" | "update") => {
       if (!channelRef.current) return;
@@ -438,13 +408,10 @@ export const CollaborationProvider = ({
         event: "ASSIGNMENT_CHANGE",
         payload,
       });
-
-      console.log("📤 Atribuição enviada:", payload);
     },
     []
   );
 
-  // Solicitar dados ao dono (convidado -> líder)
   const requestDataFromOwner = useCallback(() => {
     if (!channelRef.current || isOwner) return;
 
@@ -453,11 +420,8 @@ export const CollaborationProvider = ({
       event: "REQUEST_DATA",
       payload: { userId, userName },
     });
-
-    console.log("📤 Solicitando dados ao líder...");
   }, [isOwner, userId, userName]);
 
-  // Registrar callback para atualizações de dados
   const onDataUpdate = useCallback(
     (callback: (payload: DataUpdatePayload) => void) => {
       dataUpdateCallbacksRef.current.add(callback);
@@ -468,7 +432,6 @@ export const CollaborationProvider = ({
     []
   );
 
-  // Registrar callback para mudanças de atribuição
   const onAssignmentChange = useCallback(
     (callback: (payload: AssignmentUpdatePayload) => void) => {
       assignmentChangeCallbacksRef.current.add(callback);
@@ -479,7 +442,6 @@ export const CollaborationProvider = ({
     []
   );
 
-  // Registrar callback para solicitações de dados (usado pelo líder)
   const onDataRequest = useCallback((callback: () => void) => {
     dataRequestCallbacksRef.current.add(callback);
     return () => {
