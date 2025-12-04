@@ -1,16 +1,18 @@
 "use client";
 
-import React, {
+import type React from "react";
+import {
   createContext,
   useContext,
   useState,
   useEffect,
   useRef,
+  useCallback,
 } from "react";
-import { supabase } from "@/lib/supabaseClient"; // Seu cliente singleton
+import { supabase } from "@/lib/supabaseClient";
 import { usePathname, useRouter } from "next/navigation";
-import { RealtimeChannel } from "@supabase/supabase-js";
-import { v4 as uuidv4 } from "uuid"; // npm install uuid e @types/uuid
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import { v4 as uuidv4 } from "uuid";
 
 // Tipos
 export type RoomConfig = {
@@ -23,7 +25,21 @@ type UserCursor = {
   color: string;
   name: string;
   userId: string;
-  pathname: string; // Importante para o filtro de página
+  pathname: string;
+  isOwner?: boolean;
+};
+
+type DataUpdatePayload = {
+  type: "FULL_DATA" | "PARTIAL_DATA";
+  data: any;
+  timestamp: number;
+};
+
+type AssignmentUpdatePayload = {
+  type: "ASSIGNMENT_CHANGE";
+  assignment: any;
+  action: "add" | "remove" | "update";
+  timestamp: number;
 };
 
 type CollaborationContextType = {
@@ -34,12 +50,26 @@ type CollaborationContextType = {
   usersInRoom: number;
   config: RoomConfig;
   cursors: Record<string, UserCursor>;
-  createRoom: (roomName: string, userName: string) => Promise<void>;
+  createRoom: (
+    roomName: string,
+    userName: string,
+    initialConfig?: RoomConfig
+  ) => Promise<void>;
   joinRoom: (roomName: string, userName: string) => Promise<void>;
   leaveRoom: () => Promise<void>;
   updateConfig: (newConfig: RoomConfig) => Promise<void>;
   broadcastMouse: (x: number, y: number) => void;
-  broadcastDataUpdate: (payload: any) => void;
+  broadcastDataUpdate: (data: any, type?: "FULL_DATA" | "PARTIAL_DATA") => void;
+  broadcastAssignmentChange: (
+    assignment: any,
+    action: "add" | "remove" | "update"
+  ) => void;
+  requestDataFromOwner: () => void;
+  onDataUpdate: (callback: (payload: DataUpdatePayload) => void) => () => void;
+  onAssignmentChange: (
+    callback: (payload: AssignmentUpdatePayload) => void
+  ) => () => void;
+  onDataRequest: (callback: () => void) => () => void;
 };
 
 const CollaborationContext = createContext<CollaborationContextType>({} as any);
@@ -55,7 +85,7 @@ export const CollaborationProvider = ({
   // Estados Locais
   const [roomId, setRoomId] = useState<string | null>(null);
   const [roomName, setRoomName] = useState<string | null>(null);
-  const [userId] = useState(() => uuidv4()); // ID único da sessão do navegador
+  const [userId] = useState(() => uuidv4());
   const [userName, setUserName] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
   const [config, setConfig] = useState<RoomConfig>({ guestsCanEdit: false });
@@ -68,14 +98,32 @@ export const CollaborationProvider = ({
     "#" + Math.floor(Math.random() * 16777215).toString(16)
   );
 
+  const dataUpdateCallbacksRef = useRef<
+    Set<(payload: DataUpdatePayload) => void>
+  >(new Set());
+  const assignmentChangeCallbacksRef = useRef<
+    Set<(payload: AssignmentUpdatePayload) => void>
+  >(new Set());
+  const dataRequestCallbacksRef = useRef<Set<() => void>>(new Set());
+
   // =========================================================
-  // 1. LÓGICA DE CRIAR SALA
+  // 1. LÓGICA DE CRIAR SALA - Adicionado initialConfig
   // =========================================================
-  const createRoom = async (rName: string, uName: string) => {
-    // Insere no banco (O banco valida se o nome é único)
+  const createRoom = async (
+    rName: string,
+    uName: string,
+    initialConfig?: RoomConfig
+  ) => {
+    const roomConfig = initialConfig || { guestsCanEdit: false };
+
     const { data, error } = await supabase
       .from("rooms")
-      .insert({ name: rName, owner_id: userId, owner_name: uName })
+      .insert({
+        name: rName,
+        owner_id: userId,
+        owner_name: uName,
+        config: roomConfig,
+      })
       .select()
       .single();
 
@@ -85,16 +133,15 @@ export const CollaborationProvider = ({
     setRoomName(data.name);
     setUserName(uName);
     setIsOwner(true);
-    setConfig(data.config);
+    setConfig(data.config || { guestsCanEdit: false });
 
-    await enterRealtime(data.id, uName);
+    await enterRealtime(data.id, uName, true);
   };
 
   // =========================================================
   // 2. LÓGICA DE ENTRAR NA SALA
   // =========================================================
   const joinRoom = async (rName: string, uName: string) => {
-    // Busca a sala
     const { data: room, error: roomError } = await supabase
       .from("rooms")
       .select("*")
@@ -103,7 +150,6 @@ export const CollaborationProvider = ({
 
     if (roomError || !room) throw new Error("Sala não encontrada.");
 
-    // Tenta entrar (O banco valida nome único via participants table)
     const { error: partError } = await supabase
       .from("participants")
       .insert({ room_id: room.id, user_id: userId, name: uName });
@@ -114,28 +160,25 @@ export const CollaborationProvider = ({
     setRoomName(room.name);
     setUserName(uName);
     setIsOwner(false);
-    setConfig(room.config);
+    setConfig(room.config || { guestsCanEdit: false });
 
-    await enterRealtime(room.id, uName);
+    await enterRealtime(room.id, uName, false);
   };
 
   // =========================================================
-  // 3. CONEXÃO REALTIME (Mouses + Eventos)
+  // 3. CONEXÃO REALTIME - Adicionados novos eventos
   // =========================================================
-  const enterRealtime = async (rId: string, uName: string) => {
-    // Canal específico da sala
+  const enterRealtime = async (rId: string, uName: string, owner: boolean) => {
     const channel = supabase.channel(`room:${rId}`, {
       config: { presence: { key: userId } },
     });
 
     channel
-      // A) OUVIR PRESENÇA (Mouses + Contagem)
       .on("presence", { event: "sync" }, () => {
         const state = channel.presenceState();
         const activeUsers = Object.keys(state).length;
         setUsersInRoom(activeUsers);
 
-        // Mapeia cursores
         const newCursors: Record<string, UserCursor> = {};
         Object.values(state).forEach((pres: any) => {
           const p = pres[0];
@@ -145,13 +188,24 @@ export const CollaborationProvider = ({
         });
         setCursors(newCursors);
       })
-      // B) OUVIR COMANDOS DE DADOS (Sync)
-      .on("broadcast", { event: "DATA_UPDATE" }, (payload) => {
-        console.log("📥 Dados recebidos do dono:", payload);
-        // AQUI VOCÊ CONECTA COM SEU CONTEXTO DE TIMETABLE
-        // Ex: updateLocalGrid(payload.data);
+      .on("broadcast", { event: "DATA_UPDATE" }, ({ payload }) => {
+        console.log("📥 Dados recebidos:", payload);
+        dataUpdateCallbacksRef.current.forEach((cb) =>
+          cb(payload as DataUpdatePayload)
+        );
       })
-      // C) OUVIR CONFIGURAÇÕES
+      .on("broadcast", { event: "ASSIGNMENT_CHANGE" }, ({ payload }) => {
+        console.log("📥 Atribuição alterada:", payload);
+        assignmentChangeCallbacksRef.current.forEach((cb) =>
+          cb(payload as AssignmentUpdatePayload)
+        );
+      })
+      .on("broadcast", { event: "REQUEST_DATA" }, ({ payload }) => {
+        if (owner) {
+          console.log("📥 Solicitação de dados recebida de:", payload.userId);
+          dataRequestCallbacksRef.current.forEach((cb) => cb());
+        }
+      })
       .on(
         "postgres_changes",
         {
@@ -164,7 +218,6 @@ export const CollaborationProvider = ({
           setConfig(payload.new.config);
         }
       )
-      // D) OUVIR SALA DELETADA (Kick)
       .on(
         "postgres_changes",
         {
@@ -175,7 +228,7 @@ export const CollaborationProvider = ({
         },
         () => {
           alert("O dono encerrou a sala.");
-          leaveRoomLogic(false); // Sai sem tentar deletar do banco
+          leaveRoomLogic(false);
         }
       )
       .subscribe(async (status) => {
@@ -187,7 +240,18 @@ export const CollaborationProvider = ({
             x: 0,
             y: 0,
             pathname: window.location.pathname,
+            isOwner: owner,
           });
+
+          if (!owner) {
+            setTimeout(() => {
+              channel.send({
+                type: "broadcast",
+                event: "REQUEST_DATA",
+                payload: { userId, userName: uName },
+              });
+            }, 500);
+          }
         }
       });
 
@@ -204,9 +268,10 @@ export const CollaborationProvider = ({
         x: 0,
         y: 0,
         pathname,
+        isOwner,
       });
     }
-  }, [pathname]);
+  }, [pathname, userName, isOwner, userId]);
 
   // =========================================================
   // 4. SAIR DA SALA
@@ -216,10 +281,8 @@ export const CollaborationProvider = ({
 
     if (deleteFromDb && roomId) {
       if (isOwner) {
-        // Se dono sai, deleta a sala (Cascade apaga participantes)
         await supabase.from("rooms").delete().eq("id", roomId);
       } else {
-        // Se convidado sai, deleta participante
         await supabase
           .from("participants")
           .delete()
@@ -228,12 +291,11 @@ export const CollaborationProvider = ({
       }
     }
 
-    // Reset local
     setRoomId(null);
     setRoomName(null);
     setIsOwner(false);
     setCursors({});
-    router.push("/salas"); // Volta pra lista
+    router.push("/salas");
   };
 
   const leaveRoom = async () => leaveRoomLogic(true);
@@ -243,7 +305,6 @@ export const CollaborationProvider = ({
   // =========================================================
   const broadcastMouse = (x: number, y: number) => {
     if (channelRef.current) {
-      // Atualiza meu estado no Presence (Supabase faz o throttle)
       channelRef.current.track({
         userId,
         name: userName,
@@ -251,6 +312,7 @@ export const CollaborationProvider = ({
         x,
         y,
         pathname,
+        isOwner,
       });
     }
   };
@@ -260,14 +322,97 @@ export const CollaborationProvider = ({
     await supabase.from("rooms").update({ config: newConfig }).eq("id", roomId);
   };
 
-  const broadcastDataUpdate = async (data: any) => {
-    if (!channelRef.current) return;
+  // =========================================================
+  // 6. NOVAS FUNÇÕES DE SINCRONIZAÇÃO
+  // =========================================================
+
+  // Broadcast de atualização de dados (líder -> todos)
+  const broadcastDataUpdate = useCallback(
+    (data: any, type: "FULL_DATA" | "PARTIAL_DATA" = "FULL_DATA") => {
+      if (!channelRef.current) return;
+
+      const payload: DataUpdatePayload = {
+        type,
+        data,
+        timestamp: Date.now(),
+      };
+
+      channelRef.current.send({
+        type: "broadcast",
+        event: "DATA_UPDATE",
+        payload,
+      });
+
+      console.log("📤 Dados enviados:", payload);
+    },
+    []
+  );
+
+  // Broadcast de mudança de atribuição (qualquer -> todos)
+  const broadcastAssignmentChange = useCallback(
+    (assignment: any, action: "add" | "remove" | "update") => {
+      if (!channelRef.current) return;
+
+      const payload: AssignmentUpdatePayload = {
+        type: "ASSIGNMENT_CHANGE",
+        assignment,
+        action,
+        timestamp: Date.now(),
+      };
+
+      channelRef.current.send({
+        type: "broadcast",
+        event: "ASSIGNMENT_CHANGE",
+        payload,
+      });
+
+      console.log("📤 Atribuição enviada:", payload);
+    },
+    []
+  );
+
+  // Solicitar dados ao dono (convidado -> líder)
+  const requestDataFromOwner = useCallback(() => {
+    if (!channelRef.current || isOwner) return;
+
     channelRef.current.send({
       type: "broadcast",
-      event: "DATA_UPDATE",
-      payload: data,
+      event: "REQUEST_DATA",
+      payload: { userId, userName },
     });
-  };
+
+    console.log("📤 Solicitando dados ao líder...");
+  }, [isOwner, userId, userName]);
+
+  // Registrar callback para atualizações de dados
+  const onDataUpdate = useCallback(
+    (callback: (payload: DataUpdatePayload) => void) => {
+      dataUpdateCallbacksRef.current.add(callback);
+      return () => {
+        dataUpdateCallbacksRef.current.delete(callback);
+      };
+    },
+    []
+  );
+
+  // Registrar callback para mudanças de atribuição
+  const onAssignmentChange = useCallback(
+    (callback: (payload: AssignmentUpdatePayload) => void) => {
+      assignmentChangeCallbacksRef.current.add(callback);
+      return () => {
+        assignmentChangeCallbacksRef.current.delete(callback);
+      };
+    },
+    []
+  );
+
+  // Registrar callback para solicitações de dados (usado pelo líder)
+  const onDataRequest = useCallback((callback: () => void) => {
+    dataRequestCallbacksRef.current.add(callback);
+    return () => {
+      dataRequestCallbacksRef.current.delete(callback);
+    };
+  }, []);
 
   return (
     <CollaborationContext.Provider
@@ -285,6 +430,11 @@ export const CollaborationProvider = ({
         updateConfig,
         broadcastMouse,
         broadcastDataUpdate,
+        broadcastAssignmentChange,
+        requestDataFromOwner,
+        onDataUpdate,
+        onAssignmentChange,
+        onDataRequest,
       }}
     >
       {children}
