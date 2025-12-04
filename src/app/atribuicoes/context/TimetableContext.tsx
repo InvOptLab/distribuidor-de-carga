@@ -8,6 +8,8 @@ import {
   useCallback,
   useState,
   useMemo,
+  useRef,
+  useEffect,
 } from "react";
 import { useGlobalContext } from "@/context/Global";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
@@ -36,6 +38,7 @@ import { calculateManualSolution } from "@/algoritmo/communs/calculateManualSolu
 import Algorithm from "@/algoritmo/abstractions/Algorithm";
 import Constraint from "@/algoritmo/abstractions/Constraint";
 import {
+  deserializeContextData,
   RoomConfig,
   serializeContextData,
   useCollaboration,
@@ -132,9 +135,16 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
   const { cleanSolucaoAtual } = useSolutionHistory();
   const { addAlerta } = useAlertsContext();
 
-  // LÓGICA DE COLABORAÇÃO: Consumir o hook
-  const { broadcastAssignmentChange, broadcastDataUpdate, isInRoom } =
-    useCollaboration();
+  // LÓGICA DE COLABORAÇÃO
+  const {
+    broadcastAssignmentChange,
+    broadcastDataUpdate,
+    onDataUpdate,
+    onDataRequest, // Líder deve escutar pedidos
+    isInRoom,
+    config,
+    isOwner,
+  } = useCollaboration();
 
   const [docenteFilters, setDocenteFilters] = useState<DocenteFilters>({
     search: "",
@@ -147,6 +157,130 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       rules: [],
     }
   );
+
+  // =======================================================
+  // SINCRONIZAÇÃO DE FILTROS E DADOS
+  // =======================================================
+
+  // Escutar Atualizações de Dados (Incluindo Filtros)
+  useEffect(() => {
+    if (!isInRoom) return;
+
+    const unsubscribe = onDataUpdate((payload) => {
+      if (payload.type === "FULL_DATA" && payload.data) {
+        const hydrated = deserializeContextData(payload.data);
+
+        // Atualiza filtros se vierem no pacote e se forem diferentes
+        // (Isso permite que o líder force o filtro nos convidados se config.guestsCanFilter = false)
+        // Se guestsCanFilter = true, ainda assim sincronizamos para manter "visão compartilhada"
+
+        // Aplica Filtros Remotos
+        if (hydrated.docenteFilters) {
+          // Verifica se mudou para evitar loop infinito de re-render/re-broadcast
+          setDocenteFilters((prev) =>
+            JSON.stringify(prev) !== JSON.stringify(hydrated.docenteFilters)
+              ? hydrated.docenteFilters
+              : prev
+          );
+        }
+        if (hydrated.disciplinaFilters) {
+          setDisciplinaFilters((prev) =>
+            JSON.stringify(prev) !== JSON.stringify(hydrated.disciplinaFilters)
+              ? hydrated.disciplinaFilters
+              : prev
+          );
+        }
+      }
+    });
+
+    // Líder: Responder a pedidos de dados com o estado ATUAL dos filtros também
+    const unsubscribeReq = onDataRequest(() => {
+      if (isOwner) {
+        // O CollaborativeGridWrapper manda os dados globais, mas os filtros estão AQUI.
+        // Precisamos mandar os filtros. Podemos mandar um pacote parcial ou completo.
+        // Para garantir consistência, mandamos tudo o que temos acesso ou um pacote de filtros.
+        broadcastDataUpdate(
+          serializeContextData({
+            docentes,
+            disciplinas,
+            atribuicoes,
+            formularios,
+            travas,
+            docenteFilters,
+            disciplinaFilters,
+          }),
+          "FULL_DATA"
+        );
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      unsubscribeReq();
+    };
+  }, [
+    isInRoom,
+    isOwner,
+    broadcastDataUpdate,
+    onDataUpdate,
+    onDataRequest,
+    docenteFilters,
+    disciplinaFilters,
+    docentes,
+    disciplinas,
+    atribuicoes,
+    formularios,
+    travas,
+  ]);
+
+  // Broadcast de Filtros quando mudam Localmente
+  // Usamos useEffect para monitorar mudanças no state de filtros e enviar
+  // Mas precisamos evitar enviar se a mudança veio de um update remoto (loop).
+  // A lógica simplificada de "check diff" no receiver ajuda, mas aqui verificamos permissão.
+
+  const lastBroadcastedFiltersRef = useRef({ d: "", di: "" });
+
+  useEffect(() => {
+    if (!isInRoom) return;
+
+    // Verifica permissão: Só envia se for Dono OU se Convidados Puderem Filtrar
+    const canBroadcastFilter = isOwner || config.guestsCanFilter;
+
+    if (canBroadcastFilter) {
+      const currentString = JSON.stringify({
+        d: docenteFilters,
+        di: disciplinaFilters,
+      });
+
+      // Evita broadcast se não mudou (ou se acabou de receber do remote e é igual)
+      if (currentString !== lastBroadcastedFiltersRef.current.d) {
+        // Debounce ou envio direto? Direto para responsividade.
+        // Enviamos um FULL_DATA com os filtros atualizados.
+        // Note: O ideal seria um evento "FILTER_UPDATE", mas FULL_DATA funciona com o merge no deserialize.
+        broadcastDataUpdate(
+          serializeContextData({
+            docenteFilters,
+            disciplinaFilters,
+            // Opcional: mandar o resto para garantir integridade, mas pode ser pesado.
+            // O deserialize trata campos ausentes, então podemos mandar só filtros.
+          }),
+          "FULL_DATA"
+        );
+
+        lastBroadcastedFiltersRef.current.d = currentString;
+      }
+    } else {
+      // Se não tem permissão e mudou (ex: tentou mudar na UI), deveríamos reverter?
+      // Por enquanto, assumimos que a UI deve bloquear, mas se mudar, não propaga.
+    }
+  }, [
+    docenteFilters,
+    disciplinaFilters,
+    isInRoom,
+    isOwner,
+    config.guestsCanFilter,
+    broadcastDataUpdate,
+  ]);
 
   // Calculate maxPriority based on active docentes and disciplinas
   const maxPriority = useMemo(() => {
