@@ -88,6 +88,7 @@ export default function LobbyPage() {
 
   const [initialConfig, setInitialConfig] = useState<RoomConfig>({
     guestsCanEdit: false,
+    guestsCanFilter: false,
   });
 
   // Se já estiver em sala, redireciona para a grade
@@ -135,7 +136,7 @@ export default function LobbyPage() {
       setCreateOpen(false);
       setInputRoomName("");
       setInputUserName("");
-      setInitialConfig({ guestsCanEdit: false });
+      setInitialConfig({ guestsCanEdit: false, guestsCanFilter: false });
     } catch (e: any) {
       setCreateError(e.message || "Erro ao criar sala");
     }
@@ -227,7 +228,10 @@ export default function LobbyPage() {
                   startIcon={<AddIcon />}
                   onClick={() => {
                     setCreateError("");
-                    setInitialConfig({ guestsCanEdit: false });
+                    setInitialConfig({
+                      guestsCanEdit: false,
+                      guestsCanFilter: false,
+                    });
                     setCreateOpen(true);
                   }}
                   sx={{
@@ -467,6 +471,17 @@ export default function LobbyPage() {
                             />
                           </Tooltip>
                         )}
+                        {room.config?.guestsCanFilter && (
+                          <Tooltip title="Convidados podem editar os filtros">
+                            <Chip
+                              size="small"
+                              label="Filtros liberada"
+                              color="info"
+                              variant="outlined"
+                              sx={{ fontSize: "0.65rem", height: 20 }}
+                            />
+                          </Tooltip>
+                        )}
                       </Box>
                     </CardContent>
                     <CardActions sx={{ px: 2, pb: 2 }}>
@@ -597,6 +612,42 @@ export default function LobbyPage() {
                     <Typography variant="caption" color="text.secondary">
                       Permite que convidados façam alterações na grade. Você
                       pode alterar isso depois.
+                    </Typography>
+                  </Box>
+                }
+                sx={{ alignItems: "flex-start", m: 0 }}
+              />
+            </Paper>
+
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                bgcolor: alpha("#1976d2", 0.03),
+              }}
+            >
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={initialConfig.guestsCanFilter}
+                    onChange={(e) =>
+                      setInitialConfig({
+                        ...initialConfig,
+                        guestsCanFilter: e.target.checked,
+                      })
+                    }
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2" fontWeight="medium">
+                      Convidados podem filtrar
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Permite que convidados façam alterações nos filtros grade.
+                      Você pode alterar isso depois.
                     </Typography>
                   </Box>
                 }
