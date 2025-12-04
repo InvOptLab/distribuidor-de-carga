@@ -51,6 +51,7 @@ const navItems: IPages[] = [
   { name: "Estatísticas", link: "/statistics" },
   { name: "Comparar Soluções", link: "/comparar" },
   { name: "Calendário", link: "/horarios" },
+  { name: "Salas", link: "/salas" },
 ];
 
 // Componente para itens de submenu no desktop
