@@ -37,6 +37,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-draggable": "^4.5.0",
+    "react-force-graph-2d": "^1.29.0",
     "react-katex": "^3.1.0",
     "styled-components": "^6.1.19",
     "xlsx": "^0.18.5"
