@@ -45,6 +45,7 @@ const navItems: IPages[] = [
       { name: "Tabela", link: "/atribuicoes" },
       { name: "Atribuição em Blocos", link: "/atribuicaoBlocos" },
       { name: "Planilha", link: "/planilha" },
+      { name: "Análise de Rede", link: "/analiseRede" },
     ],
   },
   { name: "Histórico", link: "/history" },
