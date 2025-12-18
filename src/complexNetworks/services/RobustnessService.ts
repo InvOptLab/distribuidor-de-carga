@@ -46,9 +46,13 @@ export class RobustnessService {
       totalDocentes: docentes.length,
       totalTurmas: turmas.length,
       networkDensity: density,
-      orphanClasses,
-      leafNodes,
-      criticalTeachers,
+      orphanClasses: orphanClasses,
+      leafNodes: leafNodes,
+      criticalTeachers: criticalTeachers,
+      // Retornamos vazio pois esta responsabilidade é do CommunityDetectionService.
+      // O Hook useNetworkHealth irá sobrescrever estes campos.
+      communities: [],
+      nodeCommunities: new Map(),
     };
   }
 
