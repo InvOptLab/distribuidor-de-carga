@@ -39,11 +39,13 @@ const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
 interface NetworkVisualizerProps {
   graph: BipartiteGraph;
   report: RobustnessReport;
+  hiddenCommunities: string[];
 }
 
 export default function NetworkVisualizer({
   graph,
   report,
+  hiddenCommunities,
 }: NetworkVisualizerProps) {
   const theme = useTheme();
   const { simulateCascadingFailure } = useNetworkHealth(); // Pegamos a função de simulação
@@ -97,71 +99,102 @@ export default function NetworkVisualizer({
     if (viewMode !== "simulation") setSimulationResult(null);
   }, [viewMode]);
 
-  // Prepara dados do gráfico
+  // Transforma os dados do BipartiteGraph para o formato do react-force-graph
   const graphData = useMemo(() => {
     const nodes: any[] = [];
     const links: any[] = [];
 
-    // Helpers de cor
+    // Otimização: Criar um mapa rápido de ID da Comunidade -> Cor
+    // Isso evita usar .find() dentro do loop de nós, melhorando muito a performance
+    const communityColorMap = new Map<string, string>();
+    if (report && report.communities) {
+      report.communities.forEach((c) => communityColorMap.set(c.id, c.color));
+    }
+
+    // Helper: Verifica se o nó deve ser exibido
+    const isNodeVisible = (nodeId: string) => {
+      const communityId = report.nodeCommunities.get(nodeId);
+      // Se tiver comunidade E ela estiver na lista de ocultas -> False
+      if (communityId && hiddenCommunities.includes(communityId)) {
+        return false;
+      }
+      return true;
+    };
+
+    // Helper: Define cores para o modo de simulação
     const getSimulationColor = (id: string) => {
       if (!simulationResult) return theme.palette.action.disabled;
 
-      // Se for o professor ou turma selecionados (Causa)
+      // 1. Nós Foco (Causa)
       if (
         id === simulationResult.sourceTeacherId ||
         id === simulationResult.targetClassId
       ) {
-        return theme.palette.info.main; // Azul (Foco)
+        return theme.palette.info.main; // Azul
       }
 
-      // Se for um nó afetado (Consequência)
+      // 2. Nós Afetados (Consequência)
       const affected = simulationResult.affectedNodes.find((n) => n.id === id);
       if (affected) {
         return affected.status === "ORPHAN" ? "#FF0000" : "#FFA500"; // Vermelho ou Laranja
       }
 
-      return "#eeeeee"; // Apagar o resto para dar destaque (Ghost effect)
+      // 3. Todo o resto (Ghost effect)
+      return "#eeeeee";
     };
 
-    // --- NODES ---
-    const allNodes = [...graph.getAllDocentes(), ...graph.getAllTurmas()];
+    // --- 1. PROCESSAMENTO DOS NÓS ---
+    // Filtramos primeiro para garantir que só processamos o que é visível
+    const visibleDocentes = graph
+      .getAllDocentes()
+      .filter((d) => isNodeVisible(d.id));
+    const visibleTurmas = graph
+      .getAllTurmas()
+      .filter((t) => isNodeVisible(t.id));
 
-    allNodes.forEach((n) => {
+    const allVisibleNodes = [...visibleDocentes, ...visibleTurmas];
+
+    allVisibleNodes.forEach((n) => {
       let color = theme.palette.grey[500];
       let val = 1;
 
+      // Lógica de Cores baseada no Modo
       if (viewMode === "simulation") {
         if (simulationResult) {
           color = getSimulationColor(n.id);
-          // Aumentar levemente os nós envolvidos
-          if (color !== "#eeeeee") val = 3;
+          if (color !== "#eeeeee") val = 3; // Destaque de tamanho nos afetados
         } else {
-          // Estado neutro da simulação (antes de clicar)
+          // Estado neutro da simulação
           color =
             n.type === NodeType.DOCENTE
               ? theme.palette.primary.light
               : theme.palette.secondary.light;
         }
       } else if (viewMode === "community") {
-        const community = report.communities.find((c) =>
-          c.nodes.includes(n.id)
-        );
-        color = community ? community.color : "#ccc";
+        // Otimização aplicada aqui: Busca direta no Map
+        const communityId = report.nodeCommunities.get(n.id);
+        if (communityId && communityColorMap.has(communityId)) {
+          color = communityColorMap.get(communityId)!;
+        } else {
+          color = "#ccc";
+        }
         val = n.type === NodeType.DOCENTE ? graph.getDegree(n.id) : 1;
       } else {
-        // Risk Mode
+        // Risk Mode (Padrão)
         const isCritical = report.criticalTeachers.some(
           (c) => c.docenteId === n.id
         );
         const isLeaf = report.leafNodes.includes(n.id);
-        if (n.type === NodeType.DOCENTE)
+
+        if (n.type === NodeType.DOCENTE) {
           color = isCritical
             ? theme.palette.error.main
             : theme.palette.primary.main;
-        else
+        } else {
           color = isLeaf
             ? theme.palette.warning.main
             : theme.palette.secondary.main;
+        }
         val = n.type === NodeType.DOCENTE ? graph.getDegree(n.id) : 1;
       }
 
@@ -174,43 +207,53 @@ export default function NetworkVisualizer({
       });
     });
 
-    // --- LINKS ---
-    // Precisamos recriar os links
+    // --- 2. PROCESSAMENTO DOS LINKS ---
+    // Criamos um Set para verificação O(1) de quem está visível
+    const visibleNodeIds = new Set(nodes.map((n) => n.id));
     const processedEdges = new Set<string>();
-    graph.getAllDocentes().forEach((docente) => {
+
+    // Iteramos apenas sobre os docentes que sabemos que estão visíveis
+    // (Isso corrige o bug de iterar sobre graph.getAllDocentes() sem checar visibilidade)
+    visibleDocentes.forEach((docente) => {
       const neighbors = graph.getNeighbors(docente.id);
+
       neighbors.forEach((turmaId) => {
-        const edgeId = `${docente.id}-${turmaId}`;
-        if (!processedEdges.has(edgeId)) {
-          // No modo simulação, destacamos a aresta clicada
-          let linkColor = theme.palette.divider;
-          let linkWidth = 1;
+        // Só cria o link se o ALVO (Turma) também estiver visível
+        if (visibleNodeIds.has(turmaId)) {
+          const edgeId = `${docente.id}-${turmaId}`;
 
-          if (viewMode === "simulation" && simulationResult) {
-            const isSelectedEdge =
-              docente.id === simulationResult.sourceTeacherId &&
-              turmaId === simulationResult.targetClassId;
-            if (isSelectedEdge) {
-              linkColor = theme.palette.info.main;
-              linkWidth = 4;
-            } else {
-              linkColor = "rgba(0,0,0,0.05)"; // Quase invisível
+          if (!processedEdges.has(edgeId)) {
+            let linkColor = theme.palette.divider;
+            let linkWidth = 1;
+
+            // Estilização do Link na Simulação
+            if (viewMode === "simulation" && simulationResult) {
+              const isSelectedEdge =
+                docente.id === simulationResult.sourceTeacherId &&
+                turmaId === simulationResult.targetClassId;
+
+              if (isSelectedEdge) {
+                linkColor = theme.palette.info.main;
+                linkWidth = 4;
+              } else {
+                linkColor = "rgba(0,0,0,0.05)"; // Quase invisível
+              }
             }
-          }
 
-          links.push({
-            source: docente.id,
-            target: turmaId,
-            color: linkColor,
-            width: linkWidth,
-          });
-          processedEdges.add(edgeId);
+            links.push({
+              source: docente.id,
+              target: turmaId,
+              color: linkColor,
+              width: linkWidth,
+            });
+            processedEdges.add(edgeId);
+          }
         }
       });
     });
 
     return { nodes, links };
-  }, [graph, report, theme, viewMode, simulationResult]);
+  }, [graph, report, theme, viewMode, simulationResult, hiddenCommunities]);
 
   return (
     <Box position="relative">

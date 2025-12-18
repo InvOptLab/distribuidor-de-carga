@@ -14,15 +14,28 @@ import {
 import { useNetworkHealth } from "./hooks/useNetworkHealth";
 import NetworkDashboard from "./_components/NetworkDashboard";
 import NetworkVisualizer from "./_components/NetworkVisualizer";
+import CommunityDetails from "./_components/CommunityDetails";
 import Link from "next/link";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import HubIcon from "@mui/icons-material/Hub";
-import CommunityDetails from "./_components/CommunityDetails";
 
 export default function NetworkAnalysisPage() {
   const { report, graph, isLoading, hasData } = useNetworkHealth();
   const [tabIndex, setTabIndex] = useState(0);
+
+  // Comunidades Ocultas ---
+  // Usamos lógica de "quem está oculto" para começar exibindo tudo por padrão (lista vazia)
+  const [hiddenCommunities, setHiddenCommunities] = useState<string[]>([]);
+
+  const handleToggleCommunity = (communityId: string) => {
+    setHiddenCommunities(
+      (prev) =>
+        prev.includes(communityId)
+          ? prev.filter((id) => id !== communityId) // Se já estava oculto, remove da lista (mostra)
+          : [...prev, communityId] // Se estava visível, adiciona na lista (oculta)
+    );
+  };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
@@ -68,14 +81,10 @@ export default function NetworkAnalysisPage() {
       ) : report && graph ? (
         <>
           <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
-            <Tabs
-              value={tabIndex}
-              onChange={handleTabChange}
-              aria-label="network analysis tabs"
-            >
+            <Tabs value={tabIndex} onChange={handleTabChange}>
               <Tab
                 icon={<AnalyticsIcon />}
-                label="Diagnóstico (Dashboard)"
+                label="Diagnóstico"
                 iconPosition="start"
               />
               <Tab
@@ -86,19 +95,24 @@ export default function NetworkAnalysisPage() {
             </Tabs>
           </Box>
 
-          {/* Conteúdo das Abas */}
           {tabIndex === 0 && <NetworkDashboard report={report} />}
 
           {tabIndex === 1 && (
             <>
-              {/* O Visualizador Gráfico */}
-              <NetworkVisualizer graph={graph} report={report} />
+              {/* Passamos o estado de ocultação para o Visualizador filtrar os nós */}
+              <NetworkVisualizer
+                graph={graph}
+                report={report}
+                hiddenCommunities={hiddenCommunities} // <--- NOVO PROP
+              />
 
-              {/* Só mostramos os detalhes se houver comunidades detectadas */}
               {report.communities.length > 0 && (
+                /* Passamos a função de toggle para o Card ativar/desativar */
                 <CommunityDetails
                   graph={graph}
                   communities={report.communities}
+                  hiddenCommunities={hiddenCommunities} // <--- NOVO PROP
+                  onToggleCommunity={handleToggleCommunity} // <--- NOVO PROP
                 />
               )}
             </>
