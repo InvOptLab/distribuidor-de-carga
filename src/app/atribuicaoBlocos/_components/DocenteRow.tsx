@@ -1,13 +1,26 @@
-import { Box, Typography, Stack } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Stack,
+  LinearProgress,
+  Avatar,
+  Collapse,
+  Divider,
+  Grid,
+  Chip,
+} from "@mui/material";
 import { motion } from "framer-motion";
-import TurmaItem from "./TurmaItem";
-import SelectedTurma from "./SelectedTurma";
+import TurmaCard from "./TurmaCard";
 import { Disciplina } from "@/context/Global/utils";
+import { useMemo } from "react";
 
 type Props = {
   nome: string;
   turmas: Disciplina[];
   selecionado: boolean;
+  cargaDidatica: number;
+  saldo: number; // Nova prop
+  maxCarga?: number;
   onClick: () => void;
   onDeleteAtribuicao: (nome_docente: string, id_disciplina: string) => void;
   turmasNaoAtribuidas: Disciplina[];
@@ -19,110 +32,246 @@ export default function DocenteRow({
   nome,
   turmas,
   selecionado,
+  cargaDidatica,
+  saldo,
+  maxCarga = 0,
   onClick,
   onDeleteAtribuicao,
   turmasNaoAtribuidas,
   onAddAtribuicao,
   onHoveredDocente,
 }: Props) {
+  // Arredondamento da carga para visualização
+  const cargaFormatada = Number(cargaDidatica).toFixed(2);
+  const metaFormatada = maxCarga > 0 ? Number(maxCarga).toFixed(2) : "--";
+
+  // Lógica da Barra de Progresso
+  const progress =
+    maxCarga > 0 ? Math.min((cargaDidatica / maxCarga) * 100, 100) : 0;
+  const isOverload = maxCarga > 0 && cargaDidatica > maxCarga;
+
+  // Lógica de Cor do Saldo
+  const saldoColor =
+    saldo > 0 ? "success.main" : saldo < 0 ? "error.main" : "text.primary";
+
+  const saldoTexto = saldo > 0 ? `+${saldo.toFixed(2)}` : saldo.toFixed(2);
+
+  // Lógica de Conflito (inalterada)
+  const turmasComConflito = useMemo(() => {
+    const idsAtribuidos = new Set(turmas.map((t) => t.id));
+    const conflitos = new Set<string>();
+
+    turmas.forEach((t) => {
+      if (t.conflitos) {
+        t.conflitos.forEach((conflitoId) => {
+          if (idsAtribuidos.has(conflitoId)) {
+            conflitos.add(t.id);
+          }
+        });
+      }
+    });
+    return conflitos;
+  }, [turmas]);
+
   return (
     <motion.div
-      layout="size"
-      onClick={onClick}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.1 }}
-      style={{
-        padding: "8px",
-        cursor: "pointer",
-        backgroundColor: selecionado ? "#e3f2fd" : "transparent",
-        borderLeft: selecionado
-          ? "4px solid #1976d2"
-          : "4px solid rgba(0, 0, 0, 0.5)",
-        borderBottom: selecionado
-          ? "1px solid #1976d2"
-          : "1px solid rgba(0, 0, 0, 0.5)",
-        borderRadius: "4px",
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        flexWrap: "nowrap",
-      }}
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      style={{ marginBottom: "16px" }}
     >
       <Box
-        mb={1}
+        onClick={onClick}
         onMouseEnter={() => onHoveredDocente(nome)}
         onMouseLeave={() => onHoveredDocente(null)}
+        sx={{
+          p: 2,
+          cursor: "pointer",
+          bgcolor: selecionado ? "#fff" : "#f9fafb",
+          border: selecionado ? "1px solid #1976d2" : "1px solid #e0e0e0",
+          borderRadius: 3,
+          boxShadow: selecionado
+            ? "0 4px 12px rgba(25, 118, 210, 0.15)"
+            : "none",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            bgcolor: "#fff",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          },
+        }}
       >
-        <Typography
-          variant="body1"
-          overflow="hidden"
-          textOverflow="ellipsis"
-          whiteSpace="nowrap"
-          width="11rem"
-        >
-          {nome}
-        </Typography>
-      </Box>
+        <Grid container alignItems="center" spacing={2}>
+          <Grid>
+            <Avatar
+              sx={{
+                bgcolor: selecionado ? "primary.main" : "grey.400",
+                width: 48,
+                height: 48,
+              }}
+            >
+              {nome.charAt(0).toUpperCase()}
+            </Avatar>
+          </Grid>
 
-      <Box display="flex" flexDirection="column" alignItems="flex-start">
-        {/* Turmas atribuídas */}
-        <Stack direction="row" spacing={1} overflow="auto" pb={1}>
-          {turmas.map((turma) =>
-            selecionado ? (
-              <SelectedTurma
-                key={turma.id + "_atribuida"}
-                nome={turma.nome}
-                codigo={turma.codigo}
-                turma={Number(turma.turma)}
-                horarios={turma.horarios}
-                curso={turma.cursos}
-                ementa="www.google.com"
-                id={turma.id}
-                nivel={turma.nivel}
-                noturna={turma.noturna}
-                onRemove={() => onDeleteAtribuicao(nome, turma.id)}
-                grupo="SME"
-                prioridade={turma.prioridade}
-                atribuida={true}
+          <Grid>
+            <Box display="flex" alignItems="center" gap={2}>
+              <Typography
+                variant="h6"
+                color={selecionado ? "text.primary" : "text.secondary"}
+              >
+                {nome}
+              </Typography>
+              {/* Display do Saldo */}
+              <Chip
+                label={`Saldo: ${saldoTexto}`}
+                size="small"
+                variant="outlined"
+                sx={{
+                  fontWeight: "bold",
+                  color: saldoColor,
+                  borderColor: saldoColor,
+                  opacity: 0.8,
+                }}
               />
-            ) : (
-              <TurmaItem
-                key={turma.id + "_naoselecionado"}
-                nome={turma.nome}
-                codigo={turma.codigo}
-                turma={turma.turma}
-                horarios={turma.horarios}
-                destaque={false}
-              />
-            )
-          )}
-        </Stack>
+            </Box>
 
-        {/* Turmas não atribuídas (somente se selecionado) */}
-        {selecionado && (
-          <Stack direction="row" spacing={1} overflow="auto" pt={1}>
-            {turmasNaoAtribuidas.map((turma) => (
-              <SelectedTurma
-                key={turma.id + "_naoatribuida" + turma.cursos}
-                nome={turma.nome}
-                codigo={turma.codigo}
-                turma={Number(turma.turma)}
-                horarios={turma.horarios}
-                curso={turma.cursos}
-                ementa="www.google.com"
-                id={turma.id}
-                nivel={turma.nivel}
-                noturna={turma.noturna}
-                onAdd={() => onAddAtribuicao(nome, turma.id)}
-                grupo="SME"
-                prioridade={turma.prioridade}
-                atribuida={false}
-                docentes={turma.docentes}
-              />
-            ))}
-          </Stack>
-        )}
+            <Box display="flex" alignItems="center" mt={0.5} maxWidth={350}>
+              <Box width="100%" mr={2}>
+                <LinearProgress
+                  variant="determinate"
+                  value={progress}
+                  color={
+                    isOverload
+                      ? "error"
+                      : progress >= 100
+                      ? "success"
+                      : "primary"
+                  }
+                  sx={{ height: 6, borderRadius: 3 }}
+                />
+              </Box>
+              <Box minWidth={85}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  fontWeight="bold"
+                >
+                  {cargaFormatada}h{" "}
+                  <Typography component="span" variant="caption">
+                    / {metaFormatada}h
+                  </Typography>
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+
+        <Collapse in={selecionado} timeout="auto" unmountOnExit>
+          <Box mt={3}>
+            <Divider sx={{ mb: 2 }} />
+
+            <Typography
+              variant="subtitle2"
+              color="primary"
+              gutterBottom
+              sx={{
+                textTransform: "uppercase",
+                letterSpacing: 1,
+                fontSize: "0.75rem",
+              }}
+            >
+              Turmas Atribuídas
+            </Typography>
+
+            <Stack
+              direction="row"
+              spacing={2}
+              overflow="auto"
+              pb={2}
+              sx={{ minHeight: 180 }}
+            >
+              {turmas.length > 0 ? (
+                turmas.map((turma) => (
+                  <TurmaCard
+                    key={turma.id}
+                    {...turma}
+                    carga={turma.carga || 0}
+                    nivel={turma.nivel}
+                    noturna={turma.noturna}
+                    ingles={turma.ingles}
+                    docentesAtribuidos={turma.docentes || []}
+                    isAtribuida={true}
+                    hasConflict={turmasComConflito.has(turma.id)}
+                    curso={turma.cursos}
+                    onAction={() => onDeleteAtribuicao(nome, turma.id)}
+                  />
+                ))
+              ) : (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  width="100%"
+                  bgcolor="grey.50"
+                  borderRadius={2}
+                  border="1px dashed #ccc"
+                  py={4}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Nenhuma turma atribuída
+                  </Typography>
+                </Box>
+              )}
+            </Stack>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              gutterBottom
+              sx={{
+                textTransform: "uppercase",
+                letterSpacing: 1,
+                fontSize: "0.75rem",
+              }}
+            >
+              Disponíveis para atribuição
+            </Typography>
+
+            <Stack
+              direction="row"
+              spacing={2}
+              overflow="auto"
+              pb={1}
+              sx={{ minHeight: 180 }}
+            >
+              {turmasNaoAtribuidas.length > 0 ? (
+                turmasNaoAtribuidas.map((turma) => (
+                  <TurmaCard
+                    key={turma.id}
+                    {...turma}
+                    carga={turma.carga || 0}
+                    nivel={turma.nivel}
+                    noturna={turma.noturna}
+                    ingles={turma.ingles}
+                    docentesAtribuidos={turma.docentes || []}
+                    isAtribuida={false}
+                    curso={turma.cursos}
+                    onAction={() => onAddAtribuicao(nome, turma.id)}
+                  />
+                ))
+              ) : (
+                <Box p={2}>
+                  <Typography variant="body2" color="text.secondary">
+                    Sem sugestões no momento
+                  </Typography>
+                </Box>
+              )}
+            </Stack>
+          </Box>
+        </Collapse>
       </Box>
     </motion.div>
   );
