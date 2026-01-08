@@ -1,13 +1,12 @@
-import { useState, useRef, useEffect } from "react";
-import { Stack, Box, Button, IconButton, Tooltip } from "@mui/material";
+import { useRef, useEffect } from "react";
+import { Stack, Box, Button } from "@mui/material";
 import { LayoutGroup } from "framer-motion";
 import DocenteRow from "./DocenteRow";
 import { Disciplina } from "@/context/Global/utils";
 import { KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
-import { Docente } from "@/algoritmo/communs/interfaces/interfaces";
 
 interface Props {
-  docentes: Docente[];
+  docentes: { nome: string; saldo?: number }[];
   atribuicoesMap: Map<string, Disciplina[]>;
   naoAtribuidasMap: Map<string, Disciplina[]>;
   cargaDidaticaMap: Map<string, number>;
@@ -15,6 +14,9 @@ interface Props {
   onDeleteAtribuicao: (nome: string, id: string) => void;
   onAddAtribuicao: (nome: string, id: string) => void;
   onHoveredDocente: (nome: string | null) => void;
+  selectedIndex: number;
+  onChangeIndex: (index: number) => void;
+  canNavigate: boolean; // Controla se os botões funcionam
 }
 
 export default function DocentesView({
@@ -26,11 +28,11 @@ export default function DocentesView({
   onDeleteAtribuicao,
   onAddAtribuicao,
   onHoveredDocente,
+  selectedIndex,
+  onChangeIndex,
+  canNavigate,
 }: Props) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const total = docentes.length;
-
-  // Referência para os elementos da lista para permitir scroll automático
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const scrollToDocente = (nome: string) => {
@@ -44,20 +46,24 @@ export default function DocentesView({
   };
 
   const handleSelect = (index: number) => {
-    setSelectedIndex(index);
-    // O scroll ocorre via useEffect quando selectedIndex muda,
-    // ou podemos chamar diretamente aqui se preferir.
+    if (canNavigate) {
+      onChangeIndex(index);
+    }
   };
 
   const next = () => {
-    setSelectedIndex((prev) => (prev + 1) % total);
+    if (canNavigate) {
+      onChangeIndex((selectedIndex + 1) % total);
+    }
   };
 
   const prev = () => {
-    setSelectedIndex((prev) => (prev - 1 + total) % total);
+    if (canNavigate) {
+      onChangeIndex((selectedIndex - 1 + total) % total);
+    }
   };
 
-  // Efeito para scrollar sempre que o índice mudar via botões
+  // Sincroniza o scroll sempre que o selectedIndex mudar (seja local ou remoto)
   useEffect(() => {
     const docente = docentes[selectedIndex];
     if (docente) {
@@ -65,15 +71,13 @@ export default function DocentesView({
     }
   }, [selectedIndex, docentes]);
 
-  console.log(maxCarga);
-
   return (
     <Box sx={{ width: "100%", maxWidth: 1200, margin: "0 auto" }}>
-      {/* Botão Anterior (Sticky ou fixo acima da lista para fácil acesso) */}
       <Box display="flex" justifyContent="center" mb={2}>
         <Button
           variant="contained"
           onClick={prev}
+          disabled={!canNavigate} // Desabilita se não tiver permissão
           startIcon={<KeyboardArrowUp />}
           sx={{ borderRadius: 8, textTransform: "none", px: 4 }}
         >
@@ -88,8 +92,7 @@ export default function DocentesView({
           overflowY: "auto",
           scrollBehavior: "smooth",
           px: 1,
-          pb: 10, // Espaço extra no final para não esconder atrás de FABs ou rodapés
-          // Custom Scrollbar
+          pb: 10,
           "&::-webkit-scrollbar": { width: "8px" },
           "&::-webkit-scrollbar-track": {
             background: "#f1f1f1",
@@ -115,11 +118,11 @@ export default function DocentesView({
               >
                 <DocenteRow
                   nome={docente.nome}
+                  saldo={docente.saldo || 0}
                   turmas={atribuicoesMap.get(docente.nome) || []}
                   turmasNaoAtribuidas={naoAtribuidasMap.get(docente.nome) || []}
                   cargaDidatica={cargaDidaticaMap.get(docente.nome) || 0}
                   maxCarga={maxCarga}
-                  saldo={docente.saldo || 0}
                   selecionado={isSelected}
                   onClick={() => handleSelect(i)}
                   onDeleteAtribuicao={onDeleteAtribuicao}
@@ -132,11 +135,11 @@ export default function DocentesView({
         </LayoutGroup>
       </Stack>
 
-      {/* Botão Próximo (Abaixo da lista) */}
       <Box display="flex" justifyContent="center" mt={2}>
         <Button
           variant="contained"
           onClick={next}
+          disabled={!canNavigate} // Desabilita se não tiver permissão
           endIcon={<KeyboardArrowDown />}
           sx={{ borderRadius: 8, textTransform: "none", px: 4 }}
         >

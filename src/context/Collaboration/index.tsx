@@ -30,6 +30,13 @@ type UserCursor = {
   isOwner?: boolean;
 };
 
+// Payload para mudança de seleção
+type SelectionUpdatePayload = {
+  type: "SELECTION_CHANGE";
+  index: number;
+  timestamp: number;
+};
+
 type DataUpdatePayload = {
   type: "FULL_DATA" | "PARTIAL_DATA";
   data: any;
@@ -65,10 +72,14 @@ type CollaborationContextType = {
     assignment: any,
     action: "add" | "remove" | "update"
   ) => void;
+  broadcastSelectionChange: (index: number) => void;
   requestDataFromOwner: () => void;
   onDataUpdate: (callback: (payload: DataUpdatePayload) => void) => () => void;
   onAssignmentChange: (
     callback: (payload: AssignmentUpdatePayload) => void
+  ) => () => void;
+  onSelectionChange: (
+    callback: (payload: SelectionUpdatePayload) => void
   ) => () => void;
   onDataRequest: (callback: () => void) => () => void;
 };
@@ -155,6 +166,9 @@ export const CollaborationProvider = ({
   >(new Set());
   const assignmentChangeCallbacksRef = useRef<
     Set<(payload: AssignmentUpdatePayload) => void>
+  >(new Set());
+  const selectionChangeCallbacksRef = useRef<
+    Set<(payload: SelectionUpdatePayload) => void>
   >(new Set());
   const dataRequestCallbacksRef = useRef<Set<() => void>>(new Set());
 
@@ -251,6 +265,11 @@ export const CollaborationProvider = ({
       .on("broadcast", { event: "ASSIGNMENT_CHANGE" }, ({ payload }) => {
         assignmentChangeCallbacksRef.current.forEach((cb) =>
           cb(payload as AssignmentUpdatePayload)
+        );
+      })
+      .on("broadcast", { event: "SELECTION_CHANGE" }, ({ payload }) => {
+        selectionChangeCallbacksRef.current.forEach((cb) =>
+          cb(payload as SelectionUpdatePayload)
         );
       })
       .on("broadcast", { event: "REQUEST_DATA" }, ({ payload }) => {
@@ -412,6 +431,15 @@ export const CollaborationProvider = ({
     []
   );
 
+  const broadcastSelectionChange = useCallback((index: number) => {
+    if (!channelRef.current) return;
+    channelRef.current.send({
+      type: "broadcast",
+      event: "SELECTION_CHANGE",
+      payload: { type: "SELECTION_CHANGE", index, timestamp: Date.now() },
+    });
+  }, []);
+
   const requestDataFromOwner = useCallback(() => {
     if (!channelRef.current || isOwner) return;
 
@@ -442,6 +470,16 @@ export const CollaborationProvider = ({
     []
   );
 
+  const onSelectionChange = useCallback(
+    (callback: (payload: SelectionUpdatePayload) => void) => {
+      selectionChangeCallbacksRef.current.add(callback);
+      return () => {
+        selectionChangeCallbacksRef.current.delete(callback);
+      };
+    },
+    []
+  );
+
   const onDataRequest = useCallback((callback: () => void) => {
     dataRequestCallbacksRef.current.add(callback);
     return () => {
@@ -466,9 +504,11 @@ export const CollaborationProvider = ({
         broadcastMouse,
         broadcastDataUpdate,
         broadcastAssignmentChange,
+        broadcastSelectionChange,
         requestDataFromOwner,
         onDataUpdate,
         onAssignmentChange,
+        onSelectionChange,
         onDataRequest,
       }}
     >

@@ -3,8 +3,8 @@ import { Box, Container, Typography } from "@mui/material";
 import DocentesView from "./_components/DocentesView";
 import { useGlobalContext } from "@/context/Global";
 import { useAlgorithmContext } from "@/context/Algorithm";
-import { useCollaboration } from "@/context/Collaboration"; // Contexto de colaboração
-import { CollaborativeGridWrapper } from "../atribuicoes/_components/CollaborativeGridWrapper"; // Wrapper de UI Colaborativa
+import { useCollaboration } from "@/context/Collaboration";
+import { CollaborativeGridWrapper } from "../atribuicoes/_components/CollaborativeGridWrapper";
 import {
   Atribuicao,
   Disciplina,
@@ -13,7 +13,7 @@ import {
 } from "@/context/Global/utils";
 import { CargaDeTrabalhoMaximaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMaximaDocente";
 import { calcularCargaDidatica } from "@/algoritmo/communs/utils";
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import HoveredDocente from "../atribuicoes/_components/HoveredDocente";
 
 function generateAtribuicoesMap(
@@ -23,34 +23,27 @@ function generateAtribuicoesMap(
   formularios: Formulario[]
 ): Map<string, Disciplina[]> {
   const docentesMap = new Map<string, Disciplina[]>();
-
   for (const docente of docentes) {
     const atribuicoesDocente = atribuicoes.filter(
       (a) => a.docentes.includes(docente.nome) && docente.ativo
     );
-
     const turmasDocente: Disciplina[] = [];
     for (const atribuicao of atribuicoesDocente) {
       const turmaOriginal = turmas.find(
         (t) => t.id === atribuicao.id_disciplina && t.ativo
       );
-
       if (!turmaOriginal) continue;
-
       const turma = structuredClone(turmaOriginal);
-
       const formulario = formularios.find(
         (f) =>
           f.id_disciplina === atribuicao.id_disciplina &&
           f.nome_docente === docente.nome
       );
       turma.prioridade = !formulario ? 0 : formulario.prioridade;
-
       turmasDocente.push(turma);
     }
     docentesMap.set(docente.nome, turmasDocente);
   }
-
   return docentesMap;
 }
 
@@ -61,34 +54,27 @@ function generateNaoAtribuidasMap(
   formularios: Formulario[]
 ) {
   const docentesMap = new Map<string, Disciplina[]>();
-
   for (const docente of docentes) {
     const naoAtirbuidas: Disciplina[] = [];
-
     const idTurmaAtribuicoesDocente = atribuicoes
       .filter((a) => a.docentes.includes(docente.nome) && docente.ativo)
       .map((a) => a.id_disciplina);
-
     const formulariosTurmasNaoAtribuidas = formularios.filter(
       (f) =>
         !idTurmaAtribuicoesDocente.includes(f.id_disciplina) &&
         f.nome_docente === docente.nome
     );
-
     for (const formulario of formulariosTurmasNaoAtribuidas) {
       const turmaOriginal = turmas.find(
         (t) => t.id === formulario.id_disciplina
       );
       if (!turmaOriginal || !turmaOriginal.ativo) continue;
-
       const turma = structuredClone(turmaOriginal);
-
       turma.prioridade = formulario.prioridade;
       const atribuicaoExistente = atribuicoes.find(
         (a) => a.id_disciplina === formulario.id_disciplina
       );
       turma.docentes = atribuicaoExistente ? atribuicaoExistente.docentes : [];
-
       naoAtirbuidas.push(turma);
     }
     docentesMap.set(docente.nome, naoAtirbuidas);
@@ -110,7 +96,41 @@ export default function DocentesPage() {
   const constraints = new Map([...softConstraints, ...hardConstraints]);
 
   // Hooks de Colaboração
-  const { broadcastAssignmentChange, isInRoom } = useCollaboration();
+  const {
+    isInRoom,
+    isOwner,
+    config,
+    broadcastAssignmentChange,
+    broadcastSelectionChange,
+    onSelectionChange,
+  } = useCollaboration();
+
+  // Estado Local da Seleção
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  // Lógica de Permissão de Navegação
+  const canNavigate = !isInRoom || isOwner || config.guestsCanEdit;
+
+  // Handler de Navegação (Local + Remoto)
+  const handleIndexChange = (index: number) => {
+    if (canNavigate) {
+      setSelectedIndex(index);
+      if (isInRoom) {
+        broadcastSelectionChange(index);
+      }
+    }
+  };
+
+  // Efeito para ouvir mudanças remotas de seleção
+  useEffect(() => {
+    if (isInRoom) {
+      const unsubscribe = onSelectionChange((payload) => {
+        // Atualiza o índice localmente quando recebe um evento da sala
+        setSelectedIndex(payload.index);
+      });
+      return () => unsubscribe();
+    }
+  }, [isInRoom, onSelectionChange]);
 
   const maxCargaDidatica = useMemo(() => {
     const constraint = constraints.get("Carga de Trabalho Máxima");
@@ -118,22 +138,20 @@ export default function DocentesPage() {
       return constraint.params.maxLimit.value;
     }
     return 0;
-  }, [softConstraints]);
+  }, [constraints]);
 
   const docentesAtivos = docentes.filter((d) => d.ativo);
   const turmasAtivas = disciplinas.filter((d) => d.ativo);
 
   const onDeleteAtribuicao = (nome_docente: string, id_disciplina: string) => {
-    // Atualização Local
-    updateAtribuicoesDocente(nome_docente, id_disciplina);
+    if (!canNavigate) return; // Segurança extra
 
-    // Atualização Remota (Broadcast)
+    updateAtribuicoesDocente(nome_docente, id_disciplina);
     if (isInRoom) {
       const atribuicaoAtual = atribuicoes.find(
         (a) => a.id_disciplina === id_disciplina
       );
       if (atribuicaoAtual) {
-        // Reproduz a lógica de remoção para enviar o objeto final
         const novosDocentes = atribuicaoAtual.docentes.filter(
           (d) => d !== nome_docente
         );
@@ -147,31 +165,26 @@ export default function DocentesPage() {
   };
 
   const onAddAtribuicao = (nome_docente: string, id_disciplina: string) => {
-    // Encontrar a atribuição alvo
+    if (!canNavigate) return; // Segurança extra
+
     const atribuicaoAtual = atribuicoes.find(
       (a) => a.id_disciplina === id_disciplina
     );
-
     if (atribuicaoAtual) {
-      // Lógica de negócio: Substituir lista atual pelo novo docente (conforme comportamento original)
       const novosDocentes = [nome_docente];
       const atribuicaoAtualizada = {
         ...atribuicaoAtual,
         docentes: novosDocentes,
       };
 
-      // Atualização Local
       const newAtribuicoes = [...atribuicoes];
       const index = newAtribuicoes.findIndex(
         (a) => a.id_disciplina === id_disciplina
       );
-
       if (index !== -1) {
         newAtribuicoes[index] = atribuicaoAtualizada;
         updateAtribuicoes(newAtribuicoes);
       }
-
-      // Atualização Remota (Broadcast)
       if (isInRoom) {
         broadcastAssignmentChange(atribuicaoAtualizada, "update");
       }
@@ -184,7 +197,6 @@ export default function DocentesPage() {
     atribuicoes,
     formularios
   );
-
   const naoAtribuidasMap = generateNaoAtribuidasMap(
     docentesAtivos,
     turmasAtivas,
@@ -199,19 +211,14 @@ export default function DocentesPage() {
   });
 
   const [hoveredDocente, setHoveredDocente] = useState<Docente | null>(null);
-
   const enterTimer = useRef<NodeJS.Timeout | null>(null);
   const leaveTimer = useRef<NodeJS.Timeout | null>(null);
   const LEAVE_DELAY_MS = 200;
 
   const handleMouseActionsDocente = (nome: string | null) => {
-    if (nome === null) {
-      setHoveredDocente(null);
-    } else {
-      setHoveredDocente(docentes.find((d) => d.nome === nome) || null);
-    }
+    if (nome === null) setHoveredDocente(null);
+    else setHoveredDocente(docentes.find((d) => d.nome === nome) || null);
   };
-
   const clearTimers = () => {
     if (enterTimer.current) {
       clearTimeout(enterTimer.current);
@@ -222,7 +229,6 @@ export default function DocentesPage() {
       leaveTimer.current = null;
     }
   };
-
   const handleMouseLeave = () => {
     clearTimers();
     leaveTimer.current = setTimeout(() => {
@@ -231,15 +237,8 @@ export default function DocentesPage() {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "#f4f6f8",
-        py: 4,
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f4f6f8", py: 4 }}>
       <Container maxWidth="xl">
-        {/* Wrapper Colaborativo: Adiciona barra de status e cursores */}
         <CollaborativeGridWrapper>
           <Box width="100%">
             <Box mb={4}>
@@ -247,7 +246,9 @@ export default function DocentesPage() {
                 Atribuição em Blocos
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Gerencie as atribuições sequencialmente ou navegue pela lista.
+                {isInRoom
+                  ? "Modo Colaborativo: Navegação sincronizada."
+                  : "Gerencie as atribuições sequencialmente ou navegue pela lista."}
               </Typography>
             </Box>
 
@@ -260,17 +261,21 @@ export default function DocentesPage() {
               onDeleteAtribuicao={onDeleteAtribuicao}
               onAddAtribuicao={onAddAtribuicao}
               onHoveredDocente={handleMouseActionsDocente}
+              // Novas props de controle de estado
+              selectedIndex={selectedIndex}
+              onChangeIndex={handleIndexChange}
+              canNavigate={canNavigate}
             />
           </Box>
         </CollaborativeGridWrapper>
 
-        {hoveredDocente && (
+        {/* {hoveredDocente && (
           <HoveredDocente
             docente={hoveredDocente}
             onMouseEnter={clearTimers}
             onMouseLeave={handleMouseLeave}
           />
-        )}
+        )} */}
       </Container>
     </Box>
   );
