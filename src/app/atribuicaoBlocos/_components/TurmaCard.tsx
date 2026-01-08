@@ -19,8 +19,9 @@ import {
   NightsStay as NightIcon,
   School as SchoolIcon, // Para Nível
   Language as LangIcon, // Para Inglês
-  HourglassEmpty as CargaIcon,
 } from "@mui/icons-material";
+
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 
 type Props = {
   nome: string;
@@ -139,7 +140,7 @@ export default function TurmaCard({
               </Tooltip>
             )}
             {nivel && (
-              <Tooltip title={nivel}>
+              <Tooltip title={nivel === "g" ? "Graduação" : "Pós-graduação"}>
                 <Chip
                   label={nivel.substring(0, 4)}
                   size="small"
@@ -164,16 +165,20 @@ export default function TurmaCard({
 
         {/* Informações de Carga e Prioridade */}
         <Stack direction="row" spacing={1} alignItems="center" my={1}>
-          <Chip
-            icon={<CargaIcon sx={{ fontSize: "0.8rem !important" }} />}
-            label={`${carga}h`}
-            size="small"
-            sx={{
-              height: 20,
-              fontSize: "0.7rem",
-              bgcolor: alpha("#000", 0.05),
-            }}
-          />
+          <Tooltip title={`Carga didática da turma ${codigo}-${turma}.`}>
+            <Chip
+              icon={
+                <FitnessCenterIcon sx={{ fontSize: "0.8rem !important" }} />
+              }
+              label={`${carga}`}
+              size="small"
+              sx={{
+                height: 20,
+                fontSize: "0.7rem",
+                bgcolor: alpha("#000", 0.05),
+              }}
+            />
+          </Tooltip>
           <Chip
             label={`Prioridade ${prioridade}`}
             size="small"
