@@ -57,17 +57,11 @@ export default function DocenteRow({
   const saldoTexto = saldo > 0 ? `+${saldo.toFixed(2)}` : saldo.toFixed(2);
 
   // Lógica de Conflito (inalterada)
-  const turmasComConflito = useMemo(() => {
-    const idsAtribuidos = new Set(turmas.map((t) => t.id));
+  const idsComConflito = useMemo(() => {
     const conflitos = new Set<string>();
-
     turmas.forEach((t) => {
       if (t.conflitos) {
-        t.conflitos.forEach((conflitoId) => {
-          if (idsAtribuidos.has(conflitoId)) {
-            conflitos.add(t.id);
-          }
-        });
+        t.conflitos.forEach((idConflito) => conflitos.add(idConflito));
       }
     });
     return conflitos;
@@ -202,7 +196,7 @@ export default function DocenteRow({
                     ingles={turma.ingles}
                     docentesAtribuidos={turma.docentes || []}
                     isAtribuida={true}
-                    hasConflict={turmasComConflito.has(turma.id)}
+                    hasConflict={idsComConflito.has(turma.id)}
                     curso={turma.cursos}
                     onAction={() => onDeleteAtribuicao(nome, turma.id)}
                   />
@@ -259,6 +253,7 @@ export default function DocenteRow({
                     docentesAtribuidos={turma.docentes || []}
                     isAtribuida={false}
                     curso={turma.cursos}
+                    hasConflict={idsComConflito.has(turma.id)}
                     onAction={() => onAddAtribuicao(nome, turma.id)}
                   />
                 ))
