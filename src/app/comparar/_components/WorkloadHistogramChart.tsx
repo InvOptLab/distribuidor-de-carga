@@ -312,7 +312,7 @@ export default function WorkloadHistogramChart({
     <Card>
       <CardContent>
         <Typography variant="h6" gutterBottom>
-          Histograma de Carga de Trabalho dos Docentes
+          Histograma de Carga Didática dos Docentes
         </Typography>
 
         {/* Estatísticas Resumidas */}
@@ -377,8 +377,7 @@ export default function WorkloadHistogramChart({
                 {
                   scaleType: "band",
                   dataKey: "carga",
-                  label:
-                    "Carga de Trabalho (arredondada para 2 casas decimais)",
+                  label: "Carga Didática (arredondada para 2 casas decimais)",
                 },
               ]}
               yAxis={[
@@ -409,7 +408,7 @@ export default function WorkloadHistogramChart({
               }}
             >
               <Typography variant="body1" color="text.secondary">
-                Nenhum dado de carga de trabalho encontrado
+                Nenhum dado de carga didática encontrado
               </Typography>
             </Box>
           )}
@@ -474,7 +473,7 @@ export default function WorkloadHistogramChart({
         {/* Análise Comparativa */}
         <Box sx={{ mt: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
           <Typography variant="subtitle2" gutterBottom>
-            Análise Comparativa de Carga de Trabalho:
+            Análise Comparativa de Carga Didática:
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
             <Chip
