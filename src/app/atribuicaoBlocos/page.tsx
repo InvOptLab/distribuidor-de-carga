@@ -241,7 +241,7 @@ export default function DocentesPage() {
       <Container maxWidth="xl">
         <CollaborativeGridWrapper>
           <Box width="100%">
-            <Box mb={4}>
+            {/* <Box mb={4}>
               <Typography variant="h4" fontWeight="bold" color="text.primary">
                 Atribuição em Blocos
               </Typography>
@@ -250,7 +250,7 @@ export default function DocentesPage() {
                   ? "Modo Colaborativo: Navegação sincronizada."
                   : "Gerencie as atribuições sequencialmente ou navegue pela lista."}
               </Typography>
-            </Box>
+            </Box> */}
 
             <DocentesView
               docentes={docentesAtivos}
