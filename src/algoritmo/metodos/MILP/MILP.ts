@@ -81,7 +81,7 @@ export class MILP extends ExactAlgorithm {
     maiorPrioridade: number | undefined,
     enableStatistics: boolean,
 
-    modelSets: modelSets
+    modelSets: modelSets,
   ) {
     super(
       name,
@@ -91,7 +91,7 @@ export class MILP extends ExactAlgorithm {
       objectiveType,
       objectiveComponentes,
       maiorPrioridade,
-      enableStatistics
+      enableStatistics,
     );
 
     this.name = name;
@@ -103,26 +103,26 @@ export class MILP extends ExactAlgorithm {
     // --- Cálculo de Parâmetros Derivados ---
     this.modelConsts.BigM = this.modelSets.c.reduce((sum, val) => sum + val, 0);
     this.modelConsts.omega = this.modelSets.D.map((i) =>
-      this.modelSets.s[i] > 2 ? 0.75 : 1
+      this.modelSets.s[i] > 2 ? 0.75 : 1,
     );
     this.modelConsts.eta = this.modelSets.D.map((i) =>
-      this.modelSets.s[i] < -1 ? 0.75 : 1
+      this.modelSets.s[i] < -1 ? 0.75 : 1,
     );
 
     this.modelConsts.Pmax = Math.max(...this.modelSets.p.flat()) + 1;
 
     this.modelConsts.P = this.modelSets.D.map((i) =>
       this.modelSets.T.map(
-        (j) => (this.modelSets.p[i][j] > 0 ? 1 : 0)
+        (j) => (this.modelSets.p[i][j] > 0 ? 1 : 0),
         // this.modelSets.p[i][j] !== this.modelConsts.Pmax - 1 ? 1 : 0
-      )
+      ),
     );
 
     // --- Criação das Variáveis de Decisão ---
     this.modelParamns.x = this.modelSets.D.map((i) =>
       this.modelSets.T.map((j) =>
-        this.model.addVariable(`x_${i}_${j}`, { type: "Binary" })
-      )
+        this.model.addVariable(`x_${i}_${j}`, { type: "Binary" }),
+      ),
     );
 
     /**
@@ -130,12 +130,12 @@ export class MILP extends ExactAlgorithm {
      */
     this.modelParamns.b = this.modelSets.D.map((i) =>
       this.modelSets.T.map((j) =>
-        this.model.addVariable(`b_${i}_${j}`, { type: "Binary" })
-      )
+        this.model.addVariable(`b_${i}_${j}`, { type: "Binary" }),
+      ),
     );
 
     this.modelParamns.u = this.modelSets.T.map((j) =>
-      this.model.addVariable(`u_${j}`, { type: "Binary" })
+      this.model.addVariable(`u_${j}`, { type: "Binary" }),
     );
 
     this.modelParamns.v = this.modelSets.D.map((i) =>
@@ -147,16 +147,16 @@ export class MILP extends ExactAlgorithm {
             });
           }
           return null;
-        })
-      )
+        }),
+      ),
     );
 
     this.modelParamns.z = this.modelSets.D.map((i) =>
-      this.model.addVariable(`z_${i}`, { type: "Binary" })
+      this.model.addVariable(`z_${i}`, { type: "Binary" }),
     );
 
     this.modelParamns.w = this.modelSets.D.map((i) =>
-      this.model.addVariable(`w_${i}`, { type: "Continuous", lb: 0 })
+      this.model.addVariable(`w_${i}`, { type: "Continuous", lb: 0 }),
     );
   }
 
@@ -167,7 +167,7 @@ export class MILP extends ExactAlgorithm {
   protected buildModel(): void {
     // 1. Define o sentido da otimização
     this.model.setObjectiveSense(
-      this.objectiveFunction.type === "min" ? "minimize" : "maximize"
+      this.objectiveFunction.type === "min" ? "minimize" : "maximize",
     );
 
     // 2. Adiciona Componentes da Função Objetivo
@@ -234,10 +234,15 @@ export class MILP extends ExactAlgorithm {
    * Implementação da execução do solver
    */
   protected async runSolver(): Promise<HighsSolverResult> {
+    // const highs_settings = {
+    //   // In node, locateFile is not needed
+    //   // In the browser, point locateFile to the URL of the wasm file (see below)
+    //   locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file,
+    // };
+
     const highs_settings = {
-      // In node, locateFile is not needed
-      // In the browser, point locateFile to the URL of the wasm file (see below)
-      locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file,
+      // Arquivo na raiz da pasta public:
+      locateFile: (file) => "/assets/" + file,
     };
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const highs_promise = require("highs")(highs_settings);
@@ -246,6 +251,16 @@ export class MILP extends ExactAlgorithm {
 
     const lpString = this.model.toCplexLpFormat();
     console.log(lpString);
-    return highs.solve(lpString, {});
+
+    // TODO Rebuildar o Highs pois o log não está presente no retorno.
+    // prettier-ignore
+    const sol = highs.solve(lpString, {
+      "log_to_console": true,
+      "mip_report_level": 2,
+    });
+
+    console.log(sol);
+
+    return sol;
   }
 }
