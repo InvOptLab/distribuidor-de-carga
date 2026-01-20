@@ -20,24 +20,24 @@ function generateAtribuicoesMap(
   docentes: Docente[],
   turmas: Disciplina[],
   atribuicoes: Atribuicao[],
-  formularios: Formulario[]
+  formularios: Formulario[],
 ): Map<string, Disciplina[]> {
   const docentesMap = new Map<string, Disciplina[]>();
   for (const docente of docentes) {
     const atribuicoesDocente = atribuicoes.filter(
-      (a) => a.docentes.includes(docente.nome) && docente.ativo
+      (a) => a.docentes.includes(docente.nome) && docente.ativo,
     );
     const turmasDocente: Disciplina[] = [];
     for (const atribuicao of atribuicoesDocente) {
       const turmaOriginal = turmas.find(
-        (t) => t.id === atribuicao.id_disciplina && t.ativo
+        (t) => t.id === atribuicao.id_disciplina && t.ativo,
       );
       if (!turmaOriginal) continue;
       const turma = structuredClone(turmaOriginal);
       const formulario = formularios.find(
         (f) =>
           f.id_disciplina === atribuicao.id_disciplina &&
-          f.nome_docente === docente.nome
+          f.nome_docente === docente.nome,
       );
       turma.prioridade = !formulario ? 0 : formulario.prioridade;
       turmasDocente.push(turma);
@@ -51,7 +51,7 @@ function generateNaoAtribuidasMap(
   docentes: Docente[],
   turmas: Disciplina[],
   atribuicoes: Atribuicao[],
-  formularios: Formulario[]
+  formularios: Formulario[],
 ) {
   const docentesMap = new Map<string, Disciplina[]>();
   for (const docente of docentes) {
@@ -62,17 +62,17 @@ function generateNaoAtribuidasMap(
     const formulariosTurmasNaoAtribuidas = formularios.filter(
       (f) =>
         !idTurmaAtribuicoesDocente.includes(f.id_disciplina) &&
-        f.nome_docente === docente.nome
+        f.nome_docente === docente.nome,
     );
     for (const formulario of formulariosTurmasNaoAtribuidas) {
       const turmaOriginal = turmas.find(
-        (t) => t.id === formulario.id_disciplina
+        (t) => t.id === formulario.id_disciplina,
       );
       if (!turmaOriginal || !turmaOriginal.ativo) continue;
       const turma = structuredClone(turmaOriginal);
       turma.prioridade = formulario.prioridade;
       const atribuicaoExistente = atribuicoes.find(
-        (a) => a.id_disciplina === formulario.id_disciplina
+        (a) => a.id_disciplina === formulario.id_disciplina,
       );
       turma.docentes = atribuicaoExistente ? atribuicaoExistente.docentes : [];
       naoAtirbuidas.push(turma);
@@ -133,7 +133,7 @@ export default function DocentesPage() {
   }, [isInRoom, onSelectionChange]);
 
   const maxCargaDidatica = useMemo(() => {
-    const constraint = constraints.get("Carga de Trabalho Máxima");
+    const constraint = constraints.get("Carga Didática Máxima");
     if (constraint instanceof CargaDeTrabalhoMaximaDocente) {
       return constraint.params.maxLimit.value;
     }
@@ -149,11 +149,11 @@ export default function DocentesPage() {
     updateAtribuicoesDocente(nome_docente, id_disciplina);
     if (isInRoom) {
       const atribuicaoAtual = atribuicoes.find(
-        (a) => a.id_disciplina === id_disciplina
+        (a) => a.id_disciplina === id_disciplina,
       );
       if (atribuicaoAtual) {
         const novosDocentes = atribuicaoAtual.docentes.filter(
-          (d) => d !== nome_docente
+          (d) => d !== nome_docente,
         );
         const atribuicaoAtualizada = {
           ...atribuicaoAtual,
@@ -168,7 +168,7 @@ export default function DocentesPage() {
     if (!canNavigate) return; // Segurança extra
 
     const atribuicaoAtual = atribuicoes.find(
-      (a) => a.id_disciplina === id_disciplina
+      (a) => a.id_disciplina === id_disciplina,
     );
     if (atribuicaoAtual) {
       const novosDocentes = [nome_docente];
@@ -179,7 +179,7 @@ export default function DocentesPage() {
 
       const newAtribuicoes = [...atribuicoes];
       const index = newAtribuicoes.findIndex(
-        (a) => a.id_disciplina === id_disciplina
+        (a) => a.id_disciplina === id_disciplina,
       );
       if (index !== -1) {
         newAtribuicoes[index] = atribuicaoAtualizada;
@@ -195,13 +195,13 @@ export default function DocentesPage() {
     docentesAtivos,
     turmasAtivas,
     atribuicoes,
-    formularios
+    formularios,
   );
   const naoAtribuidasMap = generateNaoAtribuidasMap(
     docentesAtivos,
     turmasAtivas,
     atribuicoes,
-    formularios
+    formularios,
   );
 
   const cargaDidaticaMap = new Map<string, number>();
