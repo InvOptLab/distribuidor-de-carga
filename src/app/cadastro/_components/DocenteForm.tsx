@@ -60,7 +60,7 @@ export default function DocenteForm({
 
   const [formulariosTemp, setFormulariosTemp] = useState<FormularioTemp[]>([]);
   const [selectedDisciplina, setSelectedDisciplina] = useState<string | null>(
-    null
+    null,
   );
   const [prioridade, setPrioridade] = useState<number | "">("");
 
@@ -121,18 +121,18 @@ export default function DocenteForm({
     }
 
     const prioridadeExiste = formulariosTemp.some(
-      (f) => f.prioridade === prioridade
+      (f) => f.prioridade === prioridade,
     );
     if (prioridadeExiste) {
       addAlerta(
         `A prioridade ${prioridade} já foi atribuída a outra turma. Cada prioridade deve ser única.`,
-        "error"
+        "error",
       );
       return;
     }
 
     const disciplinaExiste = formulariosTemp.some(
-      (f) => f.id_disciplina === selectedDisciplina
+      (f) => f.id_disciplina === selectedDisciplina,
     );
     if (disciplinaExiste) {
       addAlerta("Esta turma já foi adicionada aos formulários", "warning");
@@ -156,7 +156,7 @@ export default function DocenteForm({
 
     addAlerta(
       `Formulário adicionado: ${disc.nome} com prioridade ${prioridade}`,
-      "info"
+      "info",
     );
     setSelectedDisciplina(null);
     setPrioridade("");
@@ -187,7 +187,7 @@ export default function DocenteForm({
     const docenteExiste = docentes.some(
       (d) =>
         d.nome.toLowerCase() === nome.trim().toLowerCase() &&
-        d.nome !== originalNome
+        d.nome !== originalNome,
     );
     if (docenteExiste) {
       addAlerta("Já existe um docente com este nome", "error");
@@ -219,36 +219,36 @@ export default function DocenteForm({
       originalNome === nome.trim()
     ) {
       novosDocentes = docentes.map((d) =>
-        d.nome === originalNome ? novoDocente : d
+        d.nome === originalNome ? novoDocente : d,
       );
       // Atualiza formulários - remove os antigos e adiciona os novos
       novosFormularios = formularios.filter(
-        (f) => f.nome_docente !== originalNome
+        (f) => f.nome_docente !== originalNome,
       );
       novosFormularios.push(
         ...formulariosTemp.map((f) => ({
           id_disciplina: f.id_disciplina,
           nome_docente: nome.trim(),
           prioridade: f.prioridade,
-        }))
+        })),
       );
       addAlerta(`Docente "${nome}" atualizado com sucesso!`, "success");
     } else if (excluirAntigo && originalNome) {
       novosDocentes = docentes.filter((d) => d.nome !== originalNome);
       novosDocentes.push(novoDocente);
       novosFormularios = formularios.filter(
-        (f) => f.nome_docente !== originalNome
+        (f) => f.nome_docente !== originalNome,
       );
       novosFormularios.push(
         ...formulariosTemp.map((f) => ({
           id_disciplina: f.id_disciplina,
           nome_docente: nome.trim(),
           prioridade: f.prioridade,
-        }))
+        })),
       );
       addAlerta(
         `Docente "${originalNome}" excluído e "${nome}" criado com sucesso!`,
-        "success"
+        "success",
       );
     } else {
       novosDocentes = [...docentes, novoDocente];
@@ -279,34 +279,69 @@ export default function DocenteForm({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          pb: 2,
+          borderBottom: "2px solid",
+          borderColor: "primary.light",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <SchoolIcon color="primary" />
-          <Typography variant="h6">
-            {docenteParaEditar ? "Editar Docente" : "Cadastrar Novo Docente"}
-          </Typography>
-          <Tooltip title="Preencha os dados do docente e adicione as turmas de interesse com suas respectivas prioridades">
-            <IconButton size="small">
-              <InfoIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box
+            sx={{
+              p: 1,
+              borderRadius: 1.5,
+              backgroundColor: "info.light",
+              color: "info.main",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <SchoolIcon fontSize="small" />
+          </Box>
+          <Box>
+            <Typography variant="h6" fontWeight={600}>
+              {docenteParaEditar ? "Editar Docente" : "Novo Docente"}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Preencha os dados e configure as preferências de turmas
+            </Typography>
+          </Box>
         </Box>
         {onClose && (
           <Tooltip title="Fechar formulário">
-            <IconButton onClick={onClose}>
+            <IconButton onClick={onClose} sx={{ color: "text.secondary" }}>
               <CloseIcon />
             </IconButton>
           </Tooltip>
         )}
       </Box>
 
-      <Paper elevation={2} sx={{ p: 3 }}>
-        <Typography variant="subtitle1" gutterBottom fontWeight="bold">
-          Dados do Docente
-        </Typography>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 2,
+          background:
+            "linear-gradient(135deg, rgba(25, 103, 210, 0.02) 0%, transparent 100%)",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+          <Box
+            sx={{
+              width: 4,
+              height: 24,
+              borderRadius: 1,
+              backgroundColor: "primary.main",
+            }}
+          />
+          <Typography variant="subtitle1" fontWeight={600}>
+            Dados Pessoais
+          </Typography>
+        </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Tooltip
             title="Nome completo do docente (identificador único)"
             placement="right"
@@ -386,27 +421,49 @@ export default function DocenteForm({
         </Box>
       </Paper>
 
-      <Paper elevation={2} sx={{ p: 3 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 2,
+          background:
+            "linear-gradient(135deg, rgba(25, 103, 210, 0.02) 0%, transparent 100%)",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            mb: 2,
           }}
         >
-          <Typography variant="subtitle1" fontWeight="bold">
-            Formulários (Prioridades)
-          </Typography>
-          <Tooltip title="Adicione as turmas que o docente tem interesse em lecionar, atribuindo uma prioridade única para cada uma. Quanto menor o número, maior a prioridade.">
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box
+              sx={{
+                width: 4,
+                height: 24,
+                borderRadius: 1,
+                backgroundColor: "info.main",
+              }}
+            />
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600}>
+                Alocação de Turmas
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Defina as prioridades de preferência do docente
+              </Typography>
+            </Box>
+          </Box>
+          <Tooltip title="Quanto menor o número, maior a prioridade. Cada prioridade deve ser única.">
             <IconButton size="small">
               <InfoIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         </Box>
-
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Selecione as turmas e defina a ordem de preferência do docente
-        </Typography>
 
         <Box
           sx={{
@@ -425,7 +482,7 @@ export default function DocenteForm({
             <Autocomplete
               sx={{ flex: 2, minWidth: 200 }}
               options={disciplinas.filter(
-                (d) => !formulariosTemp.some((f) => f.id_disciplina === d.id)
+                (d) => !formulariosTemp.some((f) => f.id_disciplina === d.id),
               )}
               getOptionLabel={(option) =>
                 `${option.nome} - Turma ${option.turma} (${option.codigo})`
@@ -553,6 +610,14 @@ export default function DocenteForm({
             limparFormulario();
             addAlerta("Formulário limpo", "info");
           }}
+          sx={{
+            px: 3,
+            py: 1.25,
+            transition: "all 0.2s",
+            "&:hover": {
+              backgroundColor: "action.hover",
+            },
+          }}
         >
           Limpar
         </Button>
@@ -569,8 +634,18 @@ export default function DocenteForm({
               color="primary"
               onClick={handleSubmit}
               disabled={!nome.trim()}
+              sx={{
+                px: 3,
+                py: 1.25,
+                fontWeight: 600,
+                transition: "all 0.2s",
+                "&:hover:not(:disabled)": {
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 8px 16px rgba(25, 103, 210, 0.3)",
+                },
+              }}
             >
-              {docenteParaEditar ? "Salvar Alterações" : "Salvar Docente"}
+              {docenteParaEditar ? "Atualizar Docente" : "Criar Docente"}
             </Button>
           </span>
         </Tooltip>

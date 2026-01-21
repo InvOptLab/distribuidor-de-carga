@@ -90,7 +90,7 @@ export default function SolutionHistoryDetails({
     >();
 
     for (const [key, constraint] of ocorrencias.entries()) {
-      if (key === "Carga de Trabalho") {
+      if (key === "Carga Didática") {
         if (type === "restricoes") {
           data.set(key, constraint.slice(0, 2));
         } else {

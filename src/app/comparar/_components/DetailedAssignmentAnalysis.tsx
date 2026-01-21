@@ -419,7 +419,7 @@ export default function DetailedAssignmentAnalysis({
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <WorkIcon fontSize="small" color="primary" />
                   <Typography variant="body2">
-                    <strong>C:</strong> Carga de trabalho atual
+                    <strong>C:</strong> Carga didática atual
                   </Typography>
                 </Box>
               </Grid>

@@ -54,7 +54,7 @@ export default function ConstraintViolationsChart({
       let processedViolations = violationList;
 
       // Para "Carga de Trabalho", usar apenas os 2 primeiros elementos (valores agrupados)
-      if (constraintName === "Carga de Trabalho") {
+      if (constraintName === "Carga Didática") {
         processedViolations = violationList.slice(0, 2);
       }
 
@@ -242,7 +242,7 @@ export default function ConstraintViolationsChart({
           <Tab label="Comparação por Barras" />
           <Tab label="Distribuição - Solução A" />
           <Tab label="Distribuição - Solução B" />
-          <Tab label="Histograma - Carga de Trabalho" />
+          <Tab label="Histograma - Carga Didática" />
         </Tabs>
 
         {/* Gráfico de Barras Comparativo */}

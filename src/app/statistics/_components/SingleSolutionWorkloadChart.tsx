@@ -262,8 +262,7 @@ export default function SingleSolutionWorkloadChart({
                 {
                   scaleType: "band",
                   dataKey: "carga",
-                  label:
-                    "Carga de Trabalho (arredondada para 2 casas decimais)",
+                  label: "Carga Didática (arredondada para 2 casas decimais)",
                 },
               ]}
               yAxis={[
@@ -302,7 +301,7 @@ export default function SingleSolutionWorkloadChart({
               }}
             >
               <Typography variant="body1" color="text.secondary">
-                Nenhum dado de carga de trabalho encontrado
+                Nenhum dado de carga didática encontrado
               </Typography>
             </Box>
           )}

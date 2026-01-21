@@ -196,10 +196,10 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
       // ],
       // Adicione outras restrições conforme necessário
       [
-        "Carga de Trabalho Mínima",
+        "Carga Didática Mínima",
         new CargaDeTrabalhoMinimaDocente(
-          "Carga de Trabalho Mínima",
-          "Penaliza a avaliação da solução para cada docente que não tenha atingido o mínimo de carga de trabalho atribuída (1.0).",
+          "Carga Didática Mínima",
+          "Penaliza a avaliação da solução para cada docente que não tenha atingido o mínimo de carga didática atribuída (1.0).",
           false,
           10000,
           true,
@@ -207,10 +207,10 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         ),
       ],
       [
-        "Carga de Trabalho Máxima",
+        "Carga Didática Máxima",
         new CargaDeTrabalhoMaximaDocente(
-          "Carga de Trabalho Máxima",
-          "Penaliza a avaliação da solução para cada docente que tenha ultrapassado o limite de carga de trabalho atribuída (2.0).",
+          "Carga Didática Máxima",
+          "Penaliza a avaliação da solução para cada docente que tenha ultrapassado o limite de carga didática atribuída (2.0).",
           false,
           10000,
           true,

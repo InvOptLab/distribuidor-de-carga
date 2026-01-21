@@ -121,13 +121,13 @@ export default function TurmaForm({
     if (novoInicio >= novoFim) {
       addAlerta(
         "O horário de início deve ser anterior ao horário de fim",
-        "error"
+        "error",
       );
       return;
     }
 
     const horarioExiste = horarios.some(
-      (h) => h.dia === novoDia && h.inicio === novoInicio && h.fim === novoFim
+      (h) => h.dia === novoDia && h.inicio === novoInicio && h.fim === novoFim,
     );
     if (horarioExiste) {
       addAlerta("Este horário já foi adicionado", "warning");
@@ -143,7 +143,7 @@ export default function TurmaForm({
     setHorarios([...horarios, novoHorario]);
     addAlerta(
       `Horário adicionado: ${novoDia} ${novoInicio}-${novoFim}`,
-      "info"
+      "info",
     );
   };
 
@@ -152,7 +152,7 @@ export default function TurmaForm({
     setHorarios(horarios.filter((_, i) => i !== index));
     addAlerta(
       `Horário removido: ${removed.dia} ${removed.inicio}-${removed.fim}`,
-      "info"
+      "info",
     );
   };
 
@@ -193,12 +193,12 @@ export default function TurmaForm({
       (d) =>
         d.codigo.toLowerCase() === codigo.trim().toLowerCase() &&
         d.turma === turma &&
-        d.id !== originalId
+        d.id !== originalId,
     );
     if (turmaExiste && !excluirAntigo) {
       addAlerta(
         `Já existe a turma ${turma} para a disciplina ${codigo}`,
-        "error"
+        "error",
       );
       return;
     }
@@ -265,7 +265,7 @@ export default function TurmaForm({
       if (excluirAntigo && originalId) {
         // Remove atribuição antiga
         const novasAtribuicoes = atribuicoes.filter(
-          (a) => a.id_disciplina !== originalId
+          (a) => a.id_disciplina !== originalId,
         );
         novasAtribuicoes.push({ id_disciplina: idFinal, docentes: [] });
         setAtribuicoes(novasAtribuicoes);
@@ -288,31 +288,31 @@ export default function TurmaForm({
           `Turma atualizada com ${
             conflitosEncontrados.length
           } conflito(s) de horário: ${nomesConflitantes.join(", ")}`,
-          "warning"
+          "warning",
         );
       } else {
         addAlerta(
           `Turma criada com ${
             conflitosEncontrados.length
           } conflito(s) de horário: ${nomesConflitantes.join(", ")}`,
-          "warning"
+          "warning",
         );
       }
     } else {
       if (excluirAntigo) {
         addAlerta(
           `Turma "${originalId}" excluída e nova turma "${nome} - Turma ${turma}" criada com sucesso!`,
-          "success"
+          "success",
         );
       } else if (turmaParaEditar) {
         addAlerta(
           `Turma "${nome} - Turma ${turma}" atualizada com sucesso!`,
-          "success"
+          "success",
         );
       } else {
         addAlerta(
           `Turma "${nome} - Turma ${turma}" criada com sucesso!`,
-          "success"
+          "success",
         );
       }
     }
@@ -329,39 +329,73 @@ export default function TurmaForm({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          pb: 2,
+          borderBottom: "2px solid",
+          borderColor: "primary.light",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <ClassIcon color="primary" />
-          <Typography variant="h6">
-            {turmaParaEditar ? "Editar Turma" : "Cadastrar Nova Turma"}
-          </Typography>
-          <Tooltip title="Preencha os dados da turma. Os conflitos de horário serão calculados automaticamente.">
-            <IconButton size="small">
-              <InfoIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box
+            sx={{
+              p: 1,
+              borderRadius: 1.5,
+              backgroundColor: "primary.light",
+              color: "primary.main",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ClassIcon fontSize="small" />
+          </Box>
+          <Box>
+            <Typography variant="h6" fontWeight={600}>
+              {turmaParaEditar ? "Editar Turma" : "Nova Turma"}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Preencha os dados e configure os horários
+            </Typography>
+          </Box>
         </Box>
         {onClose && (
           <Tooltip title="Fechar formulário">
-            <IconButton onClick={onClose}>
+            <IconButton onClick={onClose} sx={{ color: "text.secondary" }}>
               <CloseIcon />
             </IconButton>
           </Tooltip>
         )}
       </Box>
 
-      <Paper elevation={2} sx={{ p: 3 }}>
-        <Typography variant="subtitle1" gutterBottom fontWeight="bold">
-          Dados da Disciplina
-        </Typography>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 2,
+          background:
+            "linear-gradient(135deg, rgba(25, 103, 210, 0.02) 0%, transparent 100%)",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+          <Box
+            sx={{
+              width: 4,
+              height: 24,
+              borderRadius: 1,
+              backgroundColor: "primary.main",
+            }}
+          />
+          <Typography variant="subtitle1" fontWeight={600}>
+            Informações da Disciplina
+          </Typography>
+        </Box>
 
         <Box
           sx={{
             display: "grid",
             gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
             gap: 2,
-            mt: 2,
           }}
         >
           {turmaParaEditar && (
@@ -536,27 +570,49 @@ export default function TurmaForm({
         </Box>
       </Paper>
 
-      <Paper elevation={2} sx={{ p: 3 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 2,
+          background:
+            "linear-gradient(135deg, rgba(25, 103, 210, 0.02) 0%, transparent 100%)",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            mb: 2,
           }}
         >
-          <Typography variant="subtitle1" fontWeight="bold">
-            Horários de Aula
-          </Typography>
-          <Tooltip title="Adicione os dias e horários em que as aulas serão ministradas. Os conflitos com outras turmas serão calculados automaticamente.">
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box
+              sx={{
+                width: 4,
+                height: 24,
+                borderRadius: 1,
+                backgroundColor: "success.main",
+              }}
+            />
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600}>
+                Horários de Aula
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Conflitos serão detectados automaticamente
+              </Typography>
+            </Box>
+          </Box>
+          <Tooltip title="Adicione todos os dias e horários em que as aulas serão ministradas.">
             <IconButton size="small">
               <InfoIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         </Box>
-
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Defina os dias e horários das aulas
-        </Typography>
 
         <Box
           sx={{
@@ -677,7 +733,7 @@ export default function TurmaForm({
                 const conflitos = disciplinas.filter(
                   (d) =>
                     d.id !== originalId &&
-                    disciplinasConflitam(tempDisciplina, d)
+                    disciplinasConflitam(tempDisciplina, d),
                 );
 
                 if (conflitos.length === 0) {
@@ -701,6 +757,14 @@ export default function TurmaForm({
             limparFormulario();
             addAlerta("Formulário limpo", "info");
           }}
+          sx={{
+            px: 3,
+            py: 1.25,
+            transition: "all 0.2s",
+            "&:hover": {
+              backgroundColor: "action.hover",
+            },
+          }}
         >
           Limpar
         </Button>
@@ -717,8 +781,18 @@ export default function TurmaForm({
               color="primary"
               onClick={handleSubmit}
               disabled={!codigo.trim() || !nome.trim() || horarios.length === 0}
+              sx={{
+                px: 3,
+                py: 1.25,
+                fontWeight: 600,
+                transition: "all 0.2s",
+                "&:hover:not(:disabled)": {
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 8px 16px rgba(25, 103, 210, 0.3)",
+                },
+              }}
             >
-              {turmaParaEditar ? "Salvar Alterações" : "Salvar Turma"}
+              {turmaParaEditar ? "Atualizar Turma" : "Criar Turma"}
             </Button>
           </span>
         </Tooltip>
