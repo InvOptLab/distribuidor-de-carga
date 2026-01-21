@@ -97,7 +97,8 @@ export function DocenteSelectionDialog({
       .forEach((docente) => {
         const formulario = formularios.find(
           (f) =>
-            f.id_disciplina === disciplina.id && f.nome_docente === docente.nome
+            f.id_disciplina === disciplina.id &&
+            f.nome_docente === docente.nome,
         );
 
         if (formulario) {
@@ -120,10 +121,10 @@ export function DocenteSelectionDialog({
    * - Preto: demais casos
    */
   const getSaldoColor = (saldo?: number): string => {
-    if (saldo === undefined) return "text.primary";
-    if (saldo > 2) return "success.main";
-    if (saldo < -1) return "error.main";
-    return "text.primary";
+    if (saldo === undefined) return "main";
+    if (saldo > 2) return "success";
+    if (saldo < -1) return "error";
+    return "main";
   };
 
   /**
@@ -202,11 +203,11 @@ export function DocenteSelectionDialog({
                   variant="body2"
                   component="span"
                   sx={{
-                    color: getSaldoColor(docente.saldo),
                     fontWeight: "medium",
                   }}
+                  color={getSaldoColor(docente.saldo)}
                 >
-                  Saldo: {docente.saldo ?? 0}
+                  Saldo: {docente.saldo.toFixed(2) ?? 0}
                 </Typography>
               </Box>
             }
