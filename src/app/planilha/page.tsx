@@ -12,6 +12,8 @@ import { usePlanilhaColumns } from "@/hooks/use-planilha-columns";
 import { PlanilhaTable } from "@/components/Planilha/PlanilhaTable";
 import { ColumnManager } from "@/components/Planilha/ColumnManager";
 import { exportToExcel } from "./excel-export";
+import { CollaborativeGridWrapper } from "@/app/atribuicoes/_components/CollaborativeGridWrapper";
+import { useCollaboration } from "@/context/Collaboration";
 
 /**
  * Página principal da Planilha
@@ -26,11 +28,15 @@ import { exportToExcel } from "./excel-export";
  * - Gerenciamento de visibilidade e ordem das colunas
  * - Edição de docentes atribuídos a cada disciplina
  * - Células vazias de horário com cor de "inativo"
+ * - **Colaboração em Tempo Real**: Sincronização de edições e cursores
  */
 export default function PlanilhaPage() {
   const { disciplinas, docentes, updateAtribuicoes, atribuicoes, formularios } =
     useGlobalContext();
   const [columnManagerOpen, setColumnManagerOpen] = useState(false);
+
+  // Hook de colaboração para transmitir mudanças
+  const { broadcastAssignmentChange, isInRoom } = useCollaboration();
 
   // Hook para gerenciar colunas, filtros e ordenação
   const {
@@ -46,22 +52,23 @@ export default function PlanilhaPage() {
   } = usePlanilhaColumns(disciplinas.filter((disciplina) => disciplina.ativo));
 
   /**
-   * Atualiza os docentes de uma disciplina
+   * Atualiza os docentes de uma disciplina e transmite a mudança se estiver em uma sala
    */
   const handleUpdateDocentes = (
     disciplinaId: string,
-    newDocentes: string[]
+    newDocentes: string[],
   ) => {
+    // Verifica se já existe atribuição para determinar se é 'update' ou 'add'
+    const hasAtribuicao = atribuicoes.some(
+      (a) => a.id_disciplina === disciplinaId,
+    );
+
     const updatedAtribuicoes = atribuicoes.map((atrib) =>
       atrib.id_disciplina === disciplinaId
         ? { ...atrib, docentes: newDocentes }
-        : atrib
+        : atrib,
     );
 
-    // Se a disciplina não tem atribuição ainda, cria uma nova
-    const hasAtribuicao = atribuicoes.some(
-      (a) => a.id_disciplina === disciplinaId
-    );
     if (!hasAtribuicao) {
       updatedAtribuicoes.push({
         id_disciplina: disciplinaId,
@@ -70,6 +77,19 @@ export default function PlanilhaPage() {
     }
 
     updateAtribuicoes(updatedAtribuicoes);
+
+    // Colaboração: Transmite a alteração para a sala via WebSocket
+    if (isInRoom) {
+      const assignmentPayload = {
+        id_disciplina: disciplinaId,
+        docentes: newDocentes,
+      };
+
+      broadcastAssignmentChange(
+        assignmentPayload,
+        hasAtribuicao ? "update" : "add",
+      );
+    }
   };
 
   /**
@@ -97,12 +117,12 @@ export default function PlanilhaPage() {
       visibleColumns,
       docentes,
       atribuicoes,
-      filename
+      filename,
     );
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Barra de ferramentas */}
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
@@ -148,20 +168,22 @@ export default function PlanilhaPage() {
         </Typography>
       </Box>
 
-      {/* Tabela principal */}
+      {/* Tabela principal com Wrapper Colaborativo */}
       <Box sx={{ flex: 1, overflow: "hidden" }}>
-        <PlanilhaTable
-          disciplinas={processedDisciplinas}
-          columns={visibleColumns}
-          docentes={docentes}
-          sortState={sortState}
-          filterState={filterState}
-          onSort={handleSort}
-          onFilter={handleFilter}
-          onUpdateDocentes={handleUpdateDocentes}
-          formularios={formularios}
-          atribuicoes={atribuicoes}
-        />
+        <CollaborativeGridWrapper>
+          <PlanilhaTable
+            disciplinas={processedDisciplinas}
+            columns={visibleColumns}
+            docentes={docentes}
+            sortState={sortState}
+            filterState={filterState}
+            onSort={handleSort}
+            onFilter={handleFilter}
+            onUpdateDocentes={handleUpdateDocentes}
+            formularios={formularios}
+            atribuicoes={atribuicoes}
+          />
+        </CollaborativeGridWrapper>
       </Box>
 
       {/* Diálogo de gerenciamento de colunas */}
