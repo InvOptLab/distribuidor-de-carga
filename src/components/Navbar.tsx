@@ -51,7 +51,7 @@ const navItems: IPages[] = [
     name: "Atribuições",
     options: [
       { name: "Tabela", link: "/atribuicoes" },
-      { name: "Atribuição em Blocos", link: "/atribuicaoBlocos" },
+      { name: "Blocos", link: "/atribuicaoBlocos" },
       { name: "Planilha", link: "/planilha" },
     ],
   },
@@ -322,7 +322,7 @@ function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
 export default function Navbar() {
   const pathname = usePathname();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
+    null,
   );
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
