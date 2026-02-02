@@ -31,6 +31,7 @@ interface DocenteWorkload {
   cargaTotal: number;
   cargaArredondada: number;
   disciplinas: { id: string; nome: string; carga: number }[];
+  saldo: number;
 }
 
 interface WorkloadGroup {
@@ -48,7 +49,7 @@ export default function WorkloadHistogramChart({
 
   // Função para calcular a carga de trabalho de cada docente
   const calculateDocenteWorkloads = (
-    solution: HistoricoSolucao
+    solution: HistoricoSolucao,
   ): DocenteWorkload[] => {
     const { atribuicoes } = solution.solucao;
     const { disciplinas, docentes } = solution.contexto;
@@ -68,6 +69,7 @@ export default function WorkloadHistogramChart({
           cargaTotal: 0,
           cargaArredondada: 0,
           disciplinas: [],
+          saldo: docente.saldo || 0,
         });
       });
 
@@ -118,7 +120,7 @@ export default function WorkloadHistogramChart({
     });
 
     return Array.from(groups.values()).sort(
-      (a, b) => a.cargaArredondada - b.cargaArredondada
+      (a, b) => a.cargaArredondada - b.cargaArredondada,
     );
   };
 
@@ -169,7 +171,7 @@ export default function WorkloadHistogramChart({
       color: "#1976d2",
       valueFormatter: (
         value: number | null,
-        { dataIndex }: { dataIndex: number }
+        { dataIndex }: { dataIndex: number },
       ) => {
         if (value === null) return "";
         const data = chartData[dataIndex];
@@ -182,7 +184,7 @@ export default function WorkloadHistogramChart({
       color: "#dc004e",
       valueFormatter: (
         value: number | null,
-        { dataIndex }: { dataIndex: number }
+        { dataIndex }: { dataIndex: number },
       ) => {
         if (value === null) return "";
         const data = chartData[dataIndex];
@@ -196,7 +198,7 @@ export default function WorkloadHistogramChart({
     groups: WorkloadGroup[],
     expanded: string | false,
     setExpanded: (panel: string | false) => void,
-    solutionLabel: string
+    solutionLabel: string,
   ) => (
     <Box sx={{ mt: 2 }}>
       <Typography variant="h6" gutterBottom>
@@ -208,7 +210,7 @@ export default function WorkloadHistogramChart({
           expanded={expanded === `${solutionLabel}-${group.cargaArredondada}`}
           onChange={(_, isExpanded) =>
             setExpanded(
-              isExpanded ? `${solutionLabel}-${group.cargaArredondada}` : false
+              isExpanded ? `${solutionLabel}-${group.cargaArredondada}` : false,
             )
           }
           sx={{ mb: 1 }}
@@ -249,12 +251,24 @@ export default function WorkloadHistogramChart({
                         <Box
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
+                          <Chip
+                            label={`Saldo: ${docente.saldo.toFixed(2)}`}
+                            size="small"
+                            variant="outlined"
+                            color={
+                              docente.saldo > 2
+                                ? "success"
+                                : docente.saldo < -1
+                                  ? "error"
+                                  : "info"
+                            }
+                          />
                           <Typography variant="subtitle2">
                             {docente.nome}
                           </Typography>
                           <Chip
                             label={`Carga Real: ${docente.cargaTotal.toFixed(
-                              4
+                              4,
                             )}`}
                             size="small"
                             variant="outlined"
@@ -457,7 +471,7 @@ export default function WorkloadHistogramChart({
               groupsA,
               expandedA,
               setExpandedA,
-              "Solução A"
+              "Solução A",
             )}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -465,7 +479,7 @@ export default function WorkloadHistogramChart({
               groupsB,
               expandedB,
               setExpandedB,
-              "Solução B"
+              "Solução B",
             )}
           </Grid>
         </Grid>
@@ -478,14 +492,14 @@ export default function WorkloadHistogramChart({
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
             <Chip
               label={`Diferença Média: ${(avgWorkloadB - avgWorkloadA).toFixed(
-                2
+                2,
               )}`}
               color={
                 Math.abs(avgWorkloadB - avgWorkloadA) < 0.01
                   ? "default"
                   : avgWorkloadB < avgWorkloadA
-                  ? "success"
-                  : "error"
+                    ? "success"
+                    : "error"
               }
               size="small"
             />
