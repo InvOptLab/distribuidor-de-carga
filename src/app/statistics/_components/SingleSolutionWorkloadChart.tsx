@@ -110,7 +110,7 @@ export default function SingleSolutionWorkloadChart({
     });
 
     return Array.from(groups.values()).sort(
-      (a, b) => a.cargaArredondada - b.cargaArredondada
+      (a, b) => a.cargaArredondada - b.cargaArredondada,
     );
   };
 
@@ -139,13 +139,13 @@ export default function SingleSolutionWorkloadChart({
   const maxWorkload = Math.max(...workloads.map((w) => w.cargaTotal));
   const minWorkload = Math.min(
     ...workloads.filter((w) => w.cargaTotal > 0).map((w) => w.cargaTotal),
-    0
+    0,
   );
 
   const variance =
     workloads.reduce(
       (sum, w) => sum + Math.pow(w.cargaTotal - avgWorkload, 2),
-      0
+      0,
     ) / totalDocentes;
   const stdDeviation = Math.sqrt(variance);
 
@@ -358,7 +358,7 @@ export default function SingleSolutionWorkloadChart({
             expanded={expanded === group.cargaArredondada.toString()}
             onChange={(_, isExpanded) =>
               setExpanded(
-                isExpanded ? group.cargaArredondada.toString() : false
+                isExpanded ? group.cargaArredondada.toString() : false,
               )
             }
             sx={{ mb: 1 }}
@@ -394,11 +394,34 @@ export default function SingleSolutionWorkloadChart({
               </Box>
             </AccordionSummary>
             <AccordionDetails>
-              <List dense>
+              <List
+                dense
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "space-between",
+                  alignContent: "center",
+                }}
+              >
                 {group.docentes.map((docente, index) => (
-                  <Box key={docente.nome}>
+                  <Box
+                    key={docente.nome}
+                    // display="flex"
+                    // alignItems="flex-start"
+                    // flexDirection="row"
+                    // flexWrap="wrap"
+                    // justifyContent="flex-start"
+                  >
                     <ListItem
-                      sx={{ flexDirection: "column", alignItems: "flex-start" }}
+                      sx={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "flex-start",
+                      }}
                     >
                       <Box
                         sx={{
@@ -417,8 +440,8 @@ export default function SingleSolutionWorkloadChart({
                             docente.saldo > 2
                               ? "success"
                               : docente.saldo < -1
-                              ? "error"
-                              : "info"
+                                ? "error"
+                                : "info"
                           }
                         />
                         <Typography variant="subtitle2" fontWeight="bold">
