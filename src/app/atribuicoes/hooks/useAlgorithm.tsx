@@ -39,7 +39,7 @@ import { useCollaboration } from "@/context/Collaboration";
 export function reconstruirAtribuicoes(
   solutionVariables: Record<string, HighsColumn>,
   activeDocentes: { nome: string }[],
-  activeTurmas: { id: string }[]
+  activeTurmas: { id: string }[],
 ): Atribuicao[] {
   const atribuicoesFinais: Atribuicao[] = [];
 
@@ -157,10 +157,10 @@ export function useAlgorithm() {
    */
   const [iteracoes, setIteracoes] = useState(0);
   const [tempoPorIteracao, setTempoPorIteracao] = useState(
-    () => new Map<number, number>()
+    () => new Map<number, number>(),
   );
   const [avaliacaoPorIteracao, setAvaliacaoPorIteracao] = useState(
-    () => new Map<number, number>()
+    () => new Map<number, number>(),
   );
 
   const disciplinasAlocadasRef = useRef(disciplinasAlocadas);
@@ -219,7 +219,7 @@ export function useAlgorithm() {
         });
       }
     },
-    []
+    [],
   );
 
   /**
@@ -244,7 +244,7 @@ export function useAlgorithm() {
           .map((entry) => entry.instance);
 
         const objectives = Array.from(objectiveComponents.values()).filter(
-          (entry) => entry.isActive
+          (entry) => entry.isActive,
         );
 
         // Filter only active items
@@ -253,18 +253,18 @@ export function useAlgorithm() {
         const activeFormularios = getActiveFormularios(
           formularios,
           disciplinas,
-          docentes
+          docentes,
         );
 
         // Filter atribuicoes to only include active items
         const activeAtribuicoes = atribuicoes
           .filter((attr) =>
-            activeDisciplinas.some((d) => d.id === attr.id_disciplina)
+            activeDisciplinas.some((d) => d.id === attr.id_disciplina),
           )
           .map((attr) => ({
             ...attr,
             docentes: attr.docentes.filter((docente) =>
-              activeDocentes.some((d) => d.nome === docente)
+              activeDocentes.some((d) => d.nome === docente),
             ),
           }));
 
@@ -285,7 +285,7 @@ export function useAlgorithm() {
           aspiration,
           maxPriority + 1,
           "max",
-          objectives
+          objectives,
         );
 
         await new Promise((resolve) => setTimeout(resolve, 0));
@@ -293,7 +293,7 @@ export function useAlgorithm() {
         await buscaTabu.execute(
           () => interrompeRef.current,
           setDisciplinasAlocadas,
-          { campos: camposMonitorados, onUpdate: handleStatisticsUpdate }
+          { campos: camposMonitorados, onUpdate: handleStatisticsUpdate },
         );
 
         const solucao: Solucao = {
@@ -303,28 +303,30 @@ export function useAlgorithm() {
           algorithm: buscaTabu,
         };
         setSolucaoAtual(solucao);
+
+        console.log(buscaTabu.statistics);
       } else {
         const activeDocentes = docentes.filter((d) => d.ativo);
         const activeTurmas = disciplinas.filter((d) => d.ativo);
         const activeFormularios = getActiveFormularios(
           formularios,
           disciplinas,
-          docentes
+          docentes,
         );
 
         const activeAtribuicoes = atribuicoes
           .filter((attr) =>
-            activeTurmas.some((d) => d.id === attr.id_disciplina)
+            activeTurmas.some((d) => d.id === attr.id_disciplina),
           )
           .map((attr) => ({
             ...attr,
             docentes: attr.docentes.filter((docente) =>
-              activeDocentes.some((d) => d.nome === docente)
+              activeDocentes.some((d) => d.nome === docente),
             ),
           }));
 
         const objectives = Array.from(objectiveComponents.values()).filter(
-          (entry) => entry.isActive
+          (entry) => entry.isActive,
         );
 
         // Conjuntos
@@ -356,7 +358,7 @@ export function useAlgorithm() {
             const trava = travas.find(
               (trava) =>
                 trava.nome_docente === docente.nome &&
-                trava.id_disciplina === turma.id
+                trava.id_disciplina === turma.id,
             );
 
             if (trava) {
@@ -368,7 +370,7 @@ export function useAlgorithm() {
 
         // Crie um Set para busca O(1)
         const travasSet = new Set(
-          travas.map((trava) => `${trava.nome_docente}|${trava.id_disciplina}`)
+          travas.map((trava) => `${trava.nome_docente}|${trava.id_disciplina}`),
         );
 
         for (let i = 0; i < activeDocentes.length; i++) {
@@ -386,7 +388,7 @@ export function useAlgorithm() {
             const atribuicao = activeAtribuicoes.find(
               (atribuicao) =>
                 atribuicao.docentes.includes(docente.nome) &&
-                atribuicao.id_disciplina === turma.id
+                atribuicao.id_disciplina === turma.id,
             );
 
             if (atribuicao) {
@@ -419,11 +421,11 @@ export function useAlgorithm() {
           for (const turma of activeTurmas) {
             const prioridadeDocenteTurma = formularios.find(
               (f) =>
-                f.id_disciplina === turma.id && f.nome_docente === docente.nome
+                f.id_disciplina === turma.id && f.nome_docente === docente.nome,
             );
 
             prioridadesDocente.push(
-              prioridadeDocenteTurma ? prioridadeDocenteTurma.prioridade : 0 //maxPriority + 1
+              prioridadeDocenteTurma ? prioridadeDocenteTurma.prioridade : 0, //maxPriority + 1
             );
           }
           p.push(prioridadesDocente);
@@ -453,7 +455,7 @@ export function useAlgorithm() {
             m: m,
             p: p,
             s: s,
-          }
+          },
         );
 
         const solution = await solver.execute();
@@ -503,7 +505,7 @@ export function useAlgorithm() {
         setHistoricoSolucoes,
         historicoSolucoes,
         TipoInsercao.Algoritmo,
-        contextoExecucao
+        contextoExecucao,
       );
 
       updateSolutionId(setSolucaoAtual, idSolucao);
@@ -529,7 +531,7 @@ export function useAlgorithm() {
             formularios: formularios,
             travas: travas,
           }),
-          "FULL_DATA"
+          "FULL_DATA",
         );
       }
 

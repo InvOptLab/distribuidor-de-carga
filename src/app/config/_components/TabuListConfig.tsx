@@ -28,21 +28,21 @@ export default function TabuListConfig() {
     useAlgorithmContext();
 
   // Estados locais para controlar os valores
-  const [tabuSize, setTabuSize] = useState(parametros.tabuTenure?.size || 100);
+  const [tabuSize, setTabuSize] = useState(parametros.tabuTenure?.size);
   const [addTenure, setAddTenure] = useState(
-    parametros.tabuTenure?.tenures?.add || 5
+    parametros.tabuTenure?.tenures?.add,
   );
   const [dropTenure, setDropTenure] = useState(
-    parametros.tabuTenure?.tenures?.drop || 3
+    parametros.tabuTenure?.tenures?.drop,
   );
   const [isActive, setIsActive] = useState(true);
 
   // Sincronizar estados locais com o contexto quando o componente monta
   useEffect(() => {
     if (parametros.tabuTenure) {
-      setTabuSize(parametros.tabuTenure.size || 100);
-      setAddTenure(parametros.tabuTenure.tenures?.add || 5);
-      setDropTenure(parametros.tabuTenure.tenures?.drop || 3);
+      setTabuSize(parametros.tabuTenure.size);
+      setAddTenure(parametros.tabuTenure.tenures?.add);
+      setDropTenure(parametros.tabuTenure.tenures?.drop);
     }
   }, [parametros.tabuTenure]);
 
@@ -56,12 +56,13 @@ export default function TabuListConfig() {
 
   const handleTabuSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseInt(event.target.value) || 0;
+
     setTabuSize(value);
     updateParametros(tabuListType, value, addTenure, dropTenure);
   };
 
   const handleAddTenureChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const value = Number.parseInt(event.target.value) || 0;
     setAddTenure(value);
@@ -69,7 +70,7 @@ export default function TabuListConfig() {
   };
 
   const handleDropTenureChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const value = Number.parseInt(event.target.value) || 0;
     setDropTenure(value);
@@ -87,7 +88,7 @@ export default function TabuListConfig() {
     type: TabuType,
     size: number,
     addTen: number,
-    dropTen: number
+    dropTen: number,
   ) => {
     setParametros((prev) => ({
       ...prev,
