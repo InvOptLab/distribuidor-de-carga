@@ -13,6 +13,7 @@ import { Remove } from "@/algoritmo/communs/NeighborhoodGeneration/Remove";
 import { Swap } from "@/algoritmo/communs/NeighborhoodGeneration/Swap";
 import { MinimizarDiferencaCargaDidatica } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaCargaDidatica";
 import { MinimizarDiferencaSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaSaldos";
+import { MinimizarUtilizacaoSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarUtilizacaoSaldos";
 import { PrioridadesDefault } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesDefault";
 import { PrioridadesPesosTabelados } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesPesosTabelados";
 import { PrioridadesPonderadasPorSaldo } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesPonderadasPorSaldo";
@@ -145,7 +146,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           true,
           0,
           true,
-          null
+          null,
         ),
       ],
       [
@@ -156,10 +157,10 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           true,
           0,
           true,
-          null
+          null,
         ),
       ],
-    ])
+    ]),
   );
   const [softConstraints, setSoftConstraints] = useState(
     new Map<string, Constraint<any>>([
@@ -171,7 +172,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           false,
           1000000,
           true,
-          null
+          null,
         ),
       ],
       [
@@ -182,7 +183,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           false,
           100000,
           true,
-          null
+          null,
         ),
       ],
       // [
@@ -203,7 +204,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           false,
           10000,
           true,
-          { minLimit: 1 }
+          { minLimit: 1 },
         ),
       ],
       [
@@ -214,14 +215,14 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           false,
           10000,
           true,
-          { maxLimit: 2 }
+          { maxLimit: 2 },
         ),
       ],
-    ])
+    ]),
   );
 
   const [allConstraints, setAllConstraints] = useState(
-    new Map([...softConstraints, ...hardConstraints])
+    new Map([...softConstraints, ...hardConstraints]),
   );
 
   const [parametros, setParametros] = useState<{
@@ -252,7 +253,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
       ["Add", { instance: new Add("Adiciona", "Adição"), isActive: true }],
       ["Remove", { instance: new Remove("Remove", "Remover"), isActive: true }],
       ["Swap", { instance: new Swap("Troca", "Trocar"), isActive: true }],
-    ])
+    ]),
   );
 
   /**
@@ -267,7 +268,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           instance: new IteracoesMaximas(
             "Limite de Iterações",
             "Função que interromperá o algoritmo caso uma determinada quantidade de iterações seja atingida.",
-            300
+            300,
           ),
           isActive: true,
         },
@@ -278,7 +279,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           instance: new IteracoesSemModificacao(
             "Iterações sem Modificação",
             "Função que interromperá o algoritmo caso uma determinada quantidade de iterações sem modificação da melhor solução seja atingida.",
-            50
+            50,
           ),
           isActive: false,
         },
@@ -289,12 +290,12 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           instance: new IteracoesSemMelhoraAvaliacao(
             "Iterações sem Melhora na Avaliação",
             "Função que interrompe a execução do algoritmo caso a avaliação das soluções não apresnetem melhora em uma determinada quantidade de iterações.",
-            10
+            10,
           ),
           isActive: false,
         },
       ],
-    ])
+    ]),
   );
 
   /**
@@ -307,7 +308,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         {
           instance: new Objective(
             "Aspiração por Objetivo",
-            "O tabu será quebrado caso a solução observada apresente um valor objetivo maior que a melhor solução global encontrada."
+            "O tabu será quebrado caso a solução observada apresente um valor objetivo maior que a melhor solução global encontrada.",
           ),
           isActive: false,
         },
@@ -318,16 +319,16 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           instance: new SameObjective(
             "Aceitação de Mesmas Avaliações",
             'Esse critério tem como objetivo aceitar soluções com o valor objetivo (avaliação) maior ou igual ao melhor global após uma determinada quantidade de iterações sem modificação do melhor vizinho. O objetivo é tormar soluções "parecidas" (com mesma avaliação porémcom diferentes atribuições) melhores globais, incentivando a busca por melhores vizinhanças.',
-            10
+            10,
           ),
           isActive: false,
         },
       ],
-    ])
+    ]),
   );
 
   const [tabuListType, setTabuListType] = useState<"Solução" | "Movimento">(
-    "Solução"
+    "Solução",
   );
 
   const [objectiveComponents, setObjectiveComponents] = useState(
@@ -338,10 +339,10 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Maximizar as prioridades",
           false,
           "max",
-          "Maximizar as prioridades das atribuições realizadas",
+          "Maximiza a satisfação global dos docentes, priorizando as atribuições onde há maior preferência declarada nos formulários de intenção.",
           1000,
           undefined,
-          null
+          null,
         ),
       ],
       [
@@ -350,11 +351,11 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Prioridade com pesos tabelados",
           false,
           "max",
-          "Maximizar as prioridades das atribuições com as prioridades assumindo valores pré-definidos, com o conceito aplicado na F1, onde o primeiro colocado recebe mais pontos que o segundo, e assim por diante, ponderando ainda mais as prioridades.",
+          "Semelhante à maximização padrão, mas utiliza uma escala de pesos não-linear (ex: exponencial) para valorizar desproporcionalmente o atendimento às primeiras opções (Top-N) do docente.",
           1,
           undefined,
           undefined,
-          null
+          null,
         ),
       ],
       [
@@ -363,9 +364,9 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Minimizar diferenca entre os saldos",
           false,
           "min",
-          "Minimizar a diferença entre os saldos dos docentes.",
+          "Busca reduzir a variabilidade dos saldos históricos entre os docentes, penalizando cenários onde alguns acumulam muito crédito enquanto outros acumulam muito débito.",
           1,
-          null
+          null,
         ),
       ],
       [
@@ -374,10 +375,10 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Maximizar as Prioridades Utilizando os Saldos",
           true,
           "max",
-          "Componente de Função Objetivo que implementa a lógica de 'Refinamento do Modelo: Ponderação pelo Saldo Efetivo'.",
+          "Pondera a preferência do docente pelo seu saldo atual. Docentes com maior necessidade de carga (saldo devedor) têm suas prioridades amplificadas na disputa por turmas.",
           1000,
           undefined,
-          { alpha: 0.1 /*limiteInferiorSaldo: 0, limiteSuperiorSaldo: 0*/ }
+          { alpha: 0.1 },
         ),
       ],
       [
@@ -386,12 +387,23 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           "Minimizar da Diferença de Carga Didática",
           false,
           "min",
-          "Componente de Função Objetivo para Minimização da Diferença de Carga Didática.",
+          "Foca na equidade do semestre atual, minimizando os desvios absolutos da carga atribuída a cada docente em relação à média geral de créditos distribuídos.",
           1,
-          null
+          null,
         ),
       ],
-    ])
+      [
+        "Minimizar Utilização de Saldos",
+        new MinimizarUtilizacaoSaldos(
+          "Minimizar Utilização de Saldos",
+          true,
+          "min",
+          "Otimiza a atribuição evitando atribuir turmas a docentes com saldo positivo elevado, preservando o equilíbrio do banco de horas a longo prazo (Minimiza Multiplicador * Saldo * Carga).",
+          1,
+          null,
+        ),
+      ],
+    ]),
   );
 
   /**
