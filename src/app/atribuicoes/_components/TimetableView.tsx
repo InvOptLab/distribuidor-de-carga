@@ -57,6 +57,7 @@ export default function TimetableView() {
     applySolution,
     interruptExecution,
     estatisticasMonitoradas,
+    executionStage,
   } = useAlgorithm();
 
   const { formularios, docentes, disciplinas, atribuicoes } =
@@ -225,6 +226,7 @@ export default function TimetableView() {
         onApply={applySolution}
         onStop={interruptExecution}
         processing={processing}
+        stage={executionStage}
         progress={{
           current: disciplinasAlocadas,
           total: filteredDisciplinas.filter((disciplina) => disciplina.ativo)
@@ -261,7 +263,7 @@ export default function TimetableView() {
               disciplinas={disciplinas}
               formularios={formularios}
               atribuicoes={atribuicoes.filter((atribuicao) =>
-                atribuicao.docentes.includes(hoveredDocente.nome)
+                atribuicao.docentes.includes(hoveredDocente.nome),
               )}
               onMouseEnter={clearTimers}
               onMouseLeave={handleMouseLeave}

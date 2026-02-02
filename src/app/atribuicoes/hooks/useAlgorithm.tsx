@@ -24,6 +24,7 @@ import {
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { MILP } from "@/algoritmo/metodos/MILP/MILP";
 import { useCollaboration } from "@/context/Collaboration";
+import { AlgorithmStage } from "@/components/AlgorithmDialog";
 
 /**
  * Converte a saída do solver HiGHS (baseada em índices e objeto 'Primal')
@@ -175,6 +176,9 @@ export function useAlgorithm() {
   camposMonitorados.set("tempoPorIteracao", 1);
   camposMonitorados.set("avaliacaoPorIteracao", 1);
 
+  // State para controlar o estágio
+  const [executionStage, setExecutionStage] = useState<AlgorithmStage>("idle");
+
   useEffect(() => {
     interrompeRef.current = interrompe;
     disciplinasAlocadasRef.current = disciplinasAlocadas;
@@ -228,6 +232,10 @@ export function useAlgorithm() {
   const executeProcess = async () => {
     handleClickOpenDialog();
     setProcessing(true);
+    setExecutionStage("preprocessing");
+
+    // Pequeno delay para garantir que o React renderize o Dialog com "Preprocessing"
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     try {
       if (selectedAlgorithm === "tabu-search") {
@@ -476,6 +484,7 @@ export function useAlgorithm() {
       setProcessing(false);
       setInterrompe(false);
       setDisciplinasAlocadas(0);
+      setExecutionStage("idle");
     }
   };
 
@@ -564,5 +573,6 @@ export function useAlgorithm() {
       tempoPorIteracao: tempoPorIteracao,
       avaliacaoPorIteracao: avaliacaoPorIteracao,
     },
+    executionStage,
   };
 }

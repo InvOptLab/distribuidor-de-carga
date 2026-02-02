@@ -17,6 +17,8 @@ import {
   Tabs,
   Tab,
   Grid,
+  CircularProgress,
+  Fade,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
@@ -34,6 +36,9 @@ export interface IProgressBar {
   current: number;
 }
 
+// Adicione o tipo para os estágios
+export type AlgorithmStage = "idle" | "preprocessing" | "solving";
+
 interface AlgoritmoDialogProps {
   open: boolean;
   onClose: () => void;
@@ -42,13 +47,14 @@ interface AlgoritmoDialogProps {
   processing: boolean;
   progress: IProgressBar;
   estatisticasMonitoradas: Partial<Estatisticas>;
+  stage?: AlgorithmStage;
 }
 
 /**
  * Componente de barra de progresso com label
  */
 function LinearProgressWithLabel(
-  props: LinearProgressProps & { value: number; progress: IProgressBar }
+  props: LinearProgressProps & { value: number; progress: IProgressBar },
 ) {
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -125,6 +131,7 @@ export default function AlgoritmoDialog({
   processing,
   progress,
   estatisticasMonitoradas,
+  stage = "solving",
 }: AlgoritmoDialogProps) {
   const [tabValue, setTabValue] = React.useState(0);
 
@@ -196,6 +203,22 @@ export default function AlgoritmoDialog({
     };
   }, [estatisticasMonitoradas]);
 
+  // Helper para textos dinâmicos
+  const getStatusMessage = () => {
+    if (stage === "preprocessing")
+      return "Processando variáveis e construindo o modelo matemático...";
+    if (processing) return "O otimizador está buscando a melhor solução...";
+    return "Processo concluído!";
+  };
+
+  const getSubMessage = () => {
+    if (stage === "preprocessing")
+      return "Isso pode levar alguns segundos dependendo da quantidade de docentes e restrições.";
+    if (processing)
+      return "Aguarde enquanto o algoritmo explora o espaço de soluções.";
+    return "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela.";
+  };
+
   return (
     <Dialog
       open={open}
@@ -206,7 +229,9 @@ export default function AlgoritmoDialog({
       fullWidth
     >
       <DialogTitle id="alert-dialog-title">
-        {"Execução do algoritmo"}
+        {stage === "preprocessing"
+          ? "Preparando Otimização"
+          : "Execução do Algoritmo"}
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -222,115 +247,145 @@ export default function AlgoritmoDialog({
       </IconButton>
       <DialogContent>
         <DialogContentText id="alert-dialog-description" sx={{ mb: 2 }}>
-          O processo está sendo executado e logo será possível aplicar a solução
-          encontrada.
+          {getStatusMessage()}
         </DialogContentText>
-        <Box sx={{ width: "100%", mb: 3 }}>
-          <LinearProgressWithLabel
-            value={progressPercentage()}
-            progress={progress}
-          />
-        </Box>
 
-        {/* Cards de métricas */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <MetricCard
-              title="Iterações"
-              value={metrics.iteracoes}
-              icon={<LoopIcon />}
-              color="primary"
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <MetricCard
-              title="Tempo Médio"
-              value={metrics.tempoMedio}
-              icon={<TimerIcon />}
-              color="info"
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <MetricCard
-              title="Melhor Avaliação"
-              value={metrics.melhorAvaliacao}
-              icon={<TrendingUpIcon />}
-              color="success"
-            />
-          </Grid>
-        </Grid>
-
-        {/* Tabs para diferentes visualizações */}
-        {chartData.length > 0 && (
-          <Box sx={{ width: "100%" }}>
-            <Tabs
-              value={tabValue}
-              onChange={(_, newValue) => setTabValue(newValue)}
-              sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
-            >
-              <Tab label="Avaliação por Iteração" />
-              <Tab label="Tempo por Iteração" />
-            </Tabs>
-
-            {/* Gráfico de Avaliação */}
-            {tabValue === 0 && (
-              <Box sx={{ width: "100%", height: 300 }}>
-                {/* <ChartContainer> */}
-                <LineChart
-                  xAxis={[
-                    {
-                      data: chartData.map((item) => item.iteracao),
-                      label: "Iteração",
-                    },
-                  ]}
-                  series={[
-                    {
-                      data: Array.from(chartData.map((item) => item.avaliacao)),
-                      label: "Avaliação",
-                      color: "#4caf50",
-                    },
-                  ]}
-                  grid={{ vertical: true, horizontal: true }}
-                  height={300}
-                  margin={{ left: 75, right: 75 }}
-                />
-                {/* </ChartContainer> */}
-              </Box>
-            )}
-
-            {/* Gráfico de Tempo */}
-            {tabValue === 1 && (
-              <Box sx={{ width: "100%", height: 300 }}>
-                {/* <ChartContainer> */}
-                <LineChart
-                  xAxis={[
-                    {
-                      data: chartData.map((item) => item.iteracao),
-                      label: "Iteração",
-                    },
-                  ]}
-                  series={[
-                    {
-                      data: Array.from(chartData.map((item) => item.tempo)),
-                      label: "Tempo",
-                      color: "#1C77C3",
-                    },
-                  ]}
-                  grid={{ vertical: true, horizontal: true }}
-                  height={300}
-                  margin={{ left: 75, right: 75 }}
-                />
-                {/* </ChartContainer> */}
-              </Box>
-            )}
+        <Typography variant="caption" color="text.secondary" paragraph>
+          {getSubMessage()}
+        </Typography>
+        {/* Exibição condicional baseada no estágio */}
+        {stage === "preprocessing" ? (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              py: 8,
+              gap: 2,
+            }}
+          >
+            <CircularProgress />
+            <Typography variant="body2" color="text.secondary">
+              Gerando matrizes e restrições...
+            </Typography>
           </Box>
-        )}
+        ) : (
+          <Fade in={true}>
+            <Box>
+              <Box sx={{ width: "100%", mb: 3 }}>
+                <LinearProgressWithLabel
+                  value={progressPercentage()}
+                  progress={progress}
+                />
+              </Box>
 
-        {!processing && (
-          <DialogContentText id="alert-dialog-description">
-            O processo foi concluído! Agora você pode aplicar a solução ou
-            fechar esta tela clicando no X localizado acima.
-          </DialogContentText>
+              {/* Cards de métricas */}
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid size={{ xs: 12, sm: 4 }}>
+                  <MetricCard
+                    title="Iterações"
+                    value={metrics.iteracoes}
+                    icon={<LoopIcon />}
+                    color="primary"
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>
+                  <MetricCard
+                    title="Tempo Médio"
+                    value={metrics.tempoMedio}
+                    icon={<TimerIcon />}
+                    color="info"
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>
+                  <MetricCard
+                    title="Melhor Avaliação"
+                    value={metrics.melhorAvaliacao}
+                    icon={<TrendingUpIcon />}
+                    color="success"
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Tabs para diferentes visualizações */}
+              {chartData.length > 0 && (
+                <Box sx={{ width: "100%" }}>
+                  <Tabs
+                    value={tabValue}
+                    onChange={(_, newValue) => setTabValue(newValue)}
+                    sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
+                  >
+                    <Tab label="Avaliação por Iteração" />
+                    <Tab label="Tempo por Iteração" />
+                  </Tabs>
+
+                  {/* Gráfico de Avaliação */}
+                  {tabValue === 0 && (
+                    <Box sx={{ width: "100%", height: 300 }}>
+                      {/* <ChartContainer> */}
+                      <LineChart
+                        xAxis={[
+                          {
+                            data: chartData.map((item) => item.iteracao),
+                            label: "Iteração",
+                          },
+                        ]}
+                        series={[
+                          {
+                            data: Array.from(
+                              chartData.map((item) => item.avaliacao),
+                            ),
+                            label: "Avaliação",
+                            color: "#4caf50",
+                          },
+                        ]}
+                        grid={{ vertical: true, horizontal: true }}
+                        height={300}
+                        margin={{ left: 75, right: 75 }}
+                      />
+                      {/* </ChartContainer> */}
+                    </Box>
+                  )}
+
+                  {/* Gráfico de Tempo */}
+                  {tabValue === 1 && (
+                    <Box sx={{ width: "100%", height: 300 }}>
+                      {/* <ChartContainer> */}
+                      <LineChart
+                        xAxis={[
+                          {
+                            data: chartData.map((item) => item.iteracao),
+                            label: "Iteração",
+                          },
+                        ]}
+                        series={[
+                          {
+                            data: Array.from(
+                              chartData.map((item) => item.tempo),
+                            ),
+                            label: "Tempo",
+                            color: "#1C77C3",
+                          },
+                        ]}
+                        grid={{ vertical: true, horizontal: true }}
+                        height={300}
+                        margin={{ left: 75, right: 75 }}
+                      />
+                      {/* </ChartContainer> */}
+                    </Box>
+                  )}
+                </Box>
+              )}
+
+              {!processing && (
+                <DialogContentText id="alert-dialog-description">
+                  O processo foi concluído! Agora você pode aplicar a solução ou
+                  fechar esta tela clicando no X localizado acima.
+                </DialogContentText>
+              )}
+            </Box>
+          </Fade>
         )}
       </DialogContent>
       <DialogActions>
