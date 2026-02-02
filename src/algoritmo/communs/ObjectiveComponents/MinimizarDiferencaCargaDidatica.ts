@@ -1,5 +1,10 @@
 import ObjectiveComponent from "../../abstractions/ObjectiveComponent";
-import { Atribuicao, Docente, Formulario } from "../interfaces/interfaces";
+import {
+  Atribuicao,
+  Disciplina,
+  Docente,
+  Formulario,
+} from "../interfaces/interfaces";
 import { modelSCP } from "@/algoritmo/metodos/MILP/MILP";
 import {
   OptimizationModel,
@@ -7,6 +12,7 @@ import {
   Variable,
 } from "@/algoritmo/metodos/MILP/optimization_model";
 import { LpSum } from "@/algoritmo/metodos/MILP/utils";
+import { calcularCargaDidatica } from "../utils";
 
 /**
  * Define a estrutura dos parâmetros para esta classe.
@@ -37,7 +43,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
     type: "min" | "max", // Geralmente 'min' (ou 'max' com penalidade negativa)
     description: string | undefined,
     multiplier: number | undefined, // Representa o K6
-    parametros: undefined // Sem parâmetros extras por enquanto
+    parametros: undefined, // Sem parâmetros extras por enquanto
   ) {
     super(name, isActive, type, description, multiplier);
     this.params = parametros; // Inicializa vazio se não houver params extras
@@ -48,33 +54,34 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
    * Calcula o desvio absoluto total em relação à média ideal.
    */
   calculate(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     atribuicoes: Atribuicao[],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     formularios: Formulario[],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    docentes: Docente[]
+    docentes: Docente[],
+    turmas: Disciplina[],
   ): number {
-    // Precisamos calcular a carga total das atribuições atuais para achar a média
-    // Como 'atribuicoes' não tem a carga direta (c_j), e 'turmas' não é passado
-    // diretamente para este método na assinatura padrão, precisamos inferir ou
-    // assumir que o contexto externo passaria as turmas.
-    // PORÉM, seguindo a assinatura estrita da classe base, vamos fazer uma aproximação
-    // ou avisar se faltar dados.
-    //
-    // NOTA: Para um cálculo preciso em heurísticas, idealmente a classe ObjectiveComponent
-    // deveria receber o contexto completo (incluindo Turmas para acessar 'carga').
-    // Vou implementar assumindo que podemos acessar as cargas de alguma forma ou
-    // que este componente é primariamente para MILP.
-    //
-    // Se for estritamente necessário para Tabu Search, você precisará injetar
-    // as turmas no construtor ou alterar a assinatura do método calculate na base.
+    // 1. Evitar divisão por zero caso não haja docentes
+    if (docentes.length === 0) return 0;
 
-    console.warn(
-      `Aviso: O cálculo exato de ${this.name} em heurísticas requer acesso às cargas das disciplinas, o que não está disponível na assinatura padrão de 'calculate'. Retornando 0.`
+    // 2. Calcular a Carga Média Ideal (mu)
+    // Soma a carga de todas as disciplinas disponíveis (ou filtradas, dependendo do contexto)
+    const totalCarga = turmas.reduce(
+      (acc, turma) => acc + (turma.carga || 0),
+      0,
     );
+    const L_avg = totalCarga / docentes.length;
 
-    return 0;
+    let desvioTotal = 0;
+
+    // 3. Somar os desvios absolutos de cada docente
+    for (const docente of docentes) {
+      // Calcula a carga atual atribuída ao docente nesta solução
+      const cargaDocente = calcularCargaDidatica(docente, atribuicoes, turmas);
+
+      // Soma o módulo da diferença: |CargaAtual - Média|
+      desvioTotal += Math.abs(cargaDocente - L_avg);
+    }
+
+    return desvioTotal;
   }
 
   /**
@@ -131,7 +138,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
           { variable: d_abs, coefficient: -1 },
         ]),
         "==",
-        0
+        0,
       );
 
       // 3. Adicionar termos à função objetivo
@@ -173,7 +180,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
         `balanco_media_carga_${i}`,
         LpSum(terms),
         "==",
-        mu // Lado direito é a constante $\mu$
+        mu, // Lado direito é a constante $\mu$
       );
     }
 
