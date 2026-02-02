@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-
+import { forwardRef } from "react";
 import {
   Paper,
   Stack,
@@ -12,31 +12,32 @@ import {
   Grid,
 } from "@mui/material";
 import {
-  Schedule as ScheduleIcon,
   Person as PersonIcon,
   School as SchoolIcon,
   AccessTime as AccessTimeIcon,
+  CheckCircle as CheckCircleIcon,
 } from "@mui/icons-material";
 import {
   Disciplina,
   Docente,
   Formulario,
 } from "@/algoritmo/communs/interfaces/interfaces";
-import { forwardRef } from "react";
+import { useGlobalContext } from "@/context/Global";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 
 interface HoveredCourseProps {
   disciplina: Disciplina;
-  formularios?: Formulario[]; // Lista de formulários para mostrar docentes interessados
-  docentes?: Docente[]; // Adicionada lista de docentes para acessar o saldo
+  formularios?: Formulario[];
+  docentes?: Docente[];
   children?: React.ReactNode;
-  // setHoveredCourese: Dispatch<SetStateAction<Disciplina | null>>;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
 /**
  * Componente desenvolvido para exibir detalhes de uma disciplina ao passar o mouse sobre ela.
- * Exibe informações como código, nome, horários, carga horária e docentes interessados.
+ * Exibe informações como código, nome, horários, carga horária, docentes atribuídos e interessados.
  */
 const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
   (
@@ -48,11 +49,20 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
       onMouseEnter,
       onMouseLeave,
     },
-    ref // <-- ref vindo do forwardRef
+    ref,
   ) => {
+    // Acessa o contexto global para buscar as atribuições atualizadas
+    const { atribuicoes } = useGlobalContext();
+
+    // Busca a atribuição específica desta disciplina
+    const atribuicao = atribuicoes.find(
+      (a) => a.id_disciplina === disciplina.id,
+    );
+    const listaDocentesAtribuidos = atribuicao ? atribuicao.docentes : [];
+
     // Filtra formulários relacionados a esta disciplina
     const formulariosRelacionados = formularios.filter(
-      (f) => f.id_disciplina === disciplina.id
+      (f) => f.id_disciplina === disciplina.id,
     );
 
     const getSaldoColor = (saldo?: number): string => {
@@ -62,13 +72,10 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
       return "inherit"; // Preto (cor padrão)
     };
 
-    // Função para determinar a cor da prioridade
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const getPrioridadeColor = (prioridade: number): string => {
       if (prioridade >= 4) return "#4caf50"; // Verde para alta prioridade
       if (prioridade === 3) return "#ff9800"; // Laranja para média prioridade
-      return "#f44336";
-      // return "#364cf4ff"; // "#f44336" Vermelho para baixa prioridade
+      return "#f44336"; // Vermelho para baixa
     };
 
     const getDocenteByName = (nome: string): Docente | undefined => {
@@ -79,13 +86,8 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
       <Paper
         elevation={12}
         sx={{
-          // position: "fixed",
-          // zIndex: 99,
-          // bottom: "6vh",
-          // right: "2vw",
-          maxWidth: 700, // Aumentada a largura máxima de 380 para 700
+          maxWidth: 700,
           borderRadius: 3,
-          // overflow: "hidden",
           border: "1px solid",
           borderColor: "divider",
         }}
@@ -140,9 +142,8 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
           spacing={2}
           sx={{
             p: 2.5,
-            maxHeight: "55vh", // Define uma altura máxima
-            overflowY: "auto", // Adiciona o scroll vertical
-            // Estilização opcional da barra de scroll
+            maxHeight: "55vh",
+            overflowY: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",
             },
@@ -155,15 +156,116 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
             },
           }}
         >
+          {/* SEÇÃO 1: Docentes Atribuídos (NOVO) */}
+          {listaDocentesAtribuidos.length > 0 && (
+            <Box>
+              <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+                <CheckCircleIcon fontSize="small" color="success" />
+                <Typography
+                  variant="caption"
+                  color="success.main"
+                  sx={{ fontWeight: 700, textTransform: "uppercase" }}
+                >
+                  Docente Atribuído
+                </Typography>
+              </Stack>
+              <Grid container spacing={1}>
+                {listaDocentesAtribuidos.map((nomeDocente, index) => {
+                  const docente = getDocenteByName(nomeDocente);
+                  // Tenta achar o formulário para saber a prioridade, se houver
+                  const formulario = formulariosRelacionados.find(
+                    (f) => f.nome_docente === nomeDocente,
+                  );
+                  const saldoColor = getSaldoColor(docente?.saldo);
+
+                  return (
+                    <Grid size={{ xs: 12 }} key={`assigned-${index}`}>
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          borderRadius: 1,
+                          bgcolor: "rgba(76, 175, 80, 0.08)", // Fundo verde bem claro
+                          border: "1px solid",
+                          borderColor: "success.main",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Stack direction="row" spacing={2} alignItems="center">
+                          {/* Saldo */}
+                          <Box sx={{ textAlign: "center", minWidth: 40 }}>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{ display: "block", lineHeight: 1 }}
+                            >
+                              Saldo
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 700, color: saldoColor }}
+                            >
+                              {docente?.saldo !== undefined
+                                ? docente.saldo.toFixed(1)
+                                : "-"}
+                            </Typography>
+                          </Box>
+
+                          {/* Nome e Prioridade */}
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600, color: "success.dark" }}
+                            >
+                              {nomeDocente}
+                            </Typography>
+                            {formulario ? (
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: getPrioridadeColor(
+                                    formulario.prioridade,
+                                  ),
+                                  fontWeight: 600,
+                                }}
+                              >
+                                Prioridade: {formulario.prioridade}
+                              </Typography>
+                            ) : (
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{ fontStyle: "italic" }}
+                              >
+                                Sem formulário
+                              </Typography>
+                            )}
+                          </Box>
+                        </Stack>
+                        <CheckCircleIcon color="success" fontSize="small" />
+                      </Box>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+              <Divider sx={{ mt: 2 }} />
+            </Box>
+          )}
+
           {/* Curso */}
           <Box>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}
-            >
-              Curso
-            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+              <AutoStoriesIcon fontSize="small" color="action" />
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}
+              >
+                Curso
+              </Typography>
+            </Stack>
+
             <Typography
               variant="body2"
               dangerouslySetInnerHTML={{
@@ -202,7 +304,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
           {/* Horários */}
           <Box>
             <Stack direction="row" spacing={1} alignItems="center" mb={1}>
-              <ScheduleIcon fontSize="small" color="action" />
+              <CalendarMonthIcon fontSize="small" color="action" />
               <Typography
                 variant="caption"
                 color="text.secondary"
@@ -238,7 +340,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
             )}
           </Box>
 
-          {/* Docentes com Formulários */}
+          {/* Docentes com Formulários (Interessados) */}
           {formulariosRelacionados.length > 0 && (
             <>
               <Divider />
@@ -250,7 +352,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                     color="text.secondary"
                     sx={{ fontWeight: 600, textTransform: "uppercase" }}
                   >
-                    Docentes Interessados
+                    Docentes Interessados ({formulariosRelacionados.length})
                   </Typography>
                 </Stack>
                 <Grid
@@ -261,6 +363,9 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                   {formulariosRelacionados.map((formulario, index) => {
                     const docente = getDocenteByName(formulario.nome_docente);
                     const saldoColor = getSaldoColor(docente?.saldo);
+                    const isAssigned = listaDocentesAtribuidos.includes(
+                      formulario.nome_docente,
+                    );
 
                     return (
                       <Grid
@@ -271,14 +376,26 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                         <Box
                           sx={{
                             borderLeft: "3px solid",
-                            borderColor: getPrioridadeColor(
-                              formulario.prioridade
-                            ),
+                            borderColor: isAssigned
+                              ? "success.main"
+                              : getPrioridadeColor(formulario.prioridade),
+
+                            // Se estiver atribuído, destaca o fundo e adiciona borda extra
+                            backgroundColor: isAssigned
+                              ? "rgba(76, 175, 80, 0.12)"
+                              : "action.hover",
+                            border: isAssigned ? "1px solid" : undefined,
+                            borderLeftWidth: isAssigned ? "3px" : undefined, // Mantém a borderLeft colorida
+
+                            borderLeftColor: getPrioridadeColor(
+                              formulario.prioridade,
+                            ), // Garante que a borda esquerda continue sendo a prioridade
                             pl: 1.5,
                             py: 0.75,
-                            backgroundColor: "action.hover",
+                            pr: 1,
                             borderRadius: 1,
                             height: "100%",
+                            position: "relative", // Para posicionar ícone se quiser
                           }}
                         >
                           <Stack
@@ -299,17 +416,35 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                                 : "N/A"}
                             </Typography>
                             <Box flex={1}>
-                              <Typography
-                                variant="body2"
-                                sx={{ fontWeight: 500 }}
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 0.5,
+                                }}
                               >
-                                {formulario.nome_docente}
-                              </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontWeight: isAssigned ? 700 : 500,
+                                    color: isAssigned
+                                      ? "success.dark"
+                                      : "text.primary",
+                                  }}
+                                >
+                                  {formulario.nome_docente}
+                                </Typography>
+                                {isAssigned && (
+                                  <CheckCircleIcon
+                                    sx={{ fontSize: 14, color: "success.main" }}
+                                  />
+                                )}
+                              </Box>
                               <Typography
                                 variant="caption"
                                 sx={{
                                   color: getPrioridadeColor(
-                                    formulario.prioridade
+                                    formulario.prioridade,
                                   ),
                                   fontWeight: 600,
                                 }}
@@ -332,7 +467,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
         </Stack>
       </Paper>
     );
-  }
+  },
 );
 
 HoveredCourse.displayName = "HoveredCourse"; // Necessário para o React DevTools
