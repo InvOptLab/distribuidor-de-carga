@@ -42,7 +42,7 @@ export interface Objective {
  */
 function filterLinearlyIndependentRows(
   denseA: number[][],
-  b: number[]
+  b: number[],
 ): { A: number[][]; b: number[] } {
   if (denseA.length === 0) {
     return { A: [], b: [] };
@@ -71,7 +71,7 @@ function filterLinearlyIndependentRows(
       independentRows.push(vector);
       independentB.push(b[i]);
       const normalizedProjection = projection.map(
-        (val) => val / norm(projection)
+        (val) => val / norm(projection),
       );
       basisVectors.push(normalizedProjection);
     }
@@ -128,7 +128,7 @@ export class OptimizationModel {
       type?: "Continuous" | "Integer" | "Binary";
       lb?: number;
       ub?: number;
-    }
+    },
   ): Variable {
     if (this.variablesByName.has(name)) {
       throw new Error(`Uma variável com o nome '${name}' já existe.`);
@@ -144,8 +144,8 @@ export class OptimizationModel {
       // --- Lógica de Limites ---
       // Se for Binária, força lb=0 e ub=1.
       // Caso contrário, usa os padrões (lb=0, ub=Infinity) ou o que foi fornecido.
-      lowerBound: varType === "Binary" ? 0 : options?.lb ?? 0,
-      upperBound: varType === "Binary" ? 1 : options?.ub ?? Infinity,
+      lowerBound: varType === "Binary" ? 0 : (options?.lb ?? 0),
+      upperBound: varType === "Binary" ? 1 : (options?.ub ?? Infinity),
     };
 
     this.variables.push(newVar);
@@ -159,7 +159,7 @@ export class OptimizationModel {
    */
   public setObjective(
     sense: "minimize" | "maximize",
-    expression: Expression
+    expression: Expression,
   ): void {
     this.objectiveSense = sense;
     this.objectiveExpression = expression;
@@ -171,7 +171,7 @@ export class OptimizationModel {
     name: string,
     expression: Expression,
     sense: "<=" | ">=" | "==",
-    rhs: number
+    rhs: number,
   ): void {
     if (this.constraints.some((c) => c.name === name)) {
       throw new Error(`Uma restrição com o nome '${name}' já existe.`);
@@ -182,12 +182,90 @@ export class OptimizationModel {
         this.variables[term.variable.id] !== term.variable
       ) {
         throw new Error(
-          `Variável '${term.variable.name}' na restrição '${name}' não pertence a este modelo.`
+          `Variável '${term.variable.name}' na restrição '${name}' não pertence a este modelo.`,
         );
       }
     });
     const newConstraint: Constraint = { name, expression, sense, rhs };
     this.constraints.push(newConstraint);
+  }
+
+  /**
+   * Helper para consolidar termos com a mesma variável, somando seus coeficientes.
+   * Isso evita repetições como "4.2x + 1.1x" -> "5.3x" no arquivo LP.
+   */
+  private consolidateExpression(expression: Expression): Expression {
+    const coeffs = new Map<number, number>();
+    const vars = new Map<number, Variable>();
+
+    for (const term of expression) {
+      const id = term.variable.id;
+      const currentVal = coeffs.get(id) || 0;
+      coeffs.set(id, currentVal + term.coefficient);
+
+      // Armazena a referência da variável se for a primeira vez que a vemos
+      if (!vars.has(id)) {
+        vars.set(id, term.variable);
+      }
+    }
+
+    const consolidated: Expression = [];
+    coeffs.forEach((val, id) => {
+      // Filtra termos com coeficientes irrelevantes (zero ou erro de ponto flutuante)
+      // Ajuste o epsilon (1e-9) conforme a precisão necessária do seu modelo
+      if (Math.abs(val) > 1e-9) {
+        consolidated.push({
+          variable: vars.get(id)!,
+          coefficient: val,
+        });
+      }
+    });
+
+    return consolidated;
+  }
+
+  /**
+   * Formata uma expressão linear para o formato LP.
+   * Ex: 10x1 + 6x2
+   * @param expression A expressão a ser formatada.
+   * @returns Uma string formatada.
+   */
+  private formatExpression(expression: Expression): string {
+    // Consolidar termos repetidos antes de formatar
+    const consolidatedExpression = this.consolidateExpression(expression);
+
+    if (consolidatedExpression.length === 0) {
+      return "0";
+    }
+
+    return consolidatedExpression
+      .map((term, index) => {
+        const coeff = term.coefficient;
+
+        const varName = term.variable.name;
+        const absCoeff = Math.abs(coeff);
+        let sign: string;
+        let coeffStr: string;
+
+        // Define o sinal
+        if (index === 0) {
+          sign = coeff < 0 ? "-" : "";
+        } else {
+          sign = coeff < 0 ? " - " : " + ";
+        }
+
+        // Define o coeficiente
+        if (Math.abs(absCoeff - 1.0) < 1e-9) {
+          // Trata 1 ou -1
+          coeffStr = ""; // Não mostra '1' (ex: 'x1' em vez de '1 x1')
+        } else {
+          coeffStr = `${absCoeff} `; // Adiciona espaço (ex: '10 x1')
+        }
+
+        return `${sign}${coeffStr}${varName}`;
+      })
+      .filter(Boolean) // Remove termos nulos
+      .join("");
   }
 
   /**
@@ -233,13 +311,13 @@ export class OptimizationModel {
       } else if (sense === ">=") {
         addRow(
           terms.map((t) => ({ ...t, coefficient: -t.coefficient })),
-          -rhs
+          -rhs,
         );
       } else if (sense === "==") {
         addRow(terms, rhs);
         addRow(
           terms.map((t) => ({ ...t, coefficient: -t.coefficient })),
-          -rhs
+          -rhs,
         );
       }
     }
@@ -305,7 +383,7 @@ export class OptimizationModel {
     const presolve = new Presolve(
       this.variables,
       this.constraints,
-      this.getObjective() // Passa o objetivo construído
+      this.getObjective(), // Passa o objetivo construído
     );
     const presolveResult = presolve.run();
 
@@ -322,7 +400,7 @@ export class OptimizationModel {
   public displayModelStats(A: SparseMatrixCSC): void {
     if (!this.objectiveExpression || !this.objectiveSense) {
       console.warn(
-        "Aviso: Exibindo estatísticas de um modelo sem função objetivo."
+        "Aviso: Exibindo estatísticas de um modelo sem função objetivo.",
       );
     }
     if (this.variables.length === 0) {
@@ -351,7 +429,7 @@ export class OptimizationModel {
         integerVarIndices.length > 0
           ? "Programação Linear Inteira Mista (PLIM)"
           : "Programação Linear (PL)"
-      }`
+      }`,
     );
     console.log(`Variáveis de Decisão : ${numVars}`);
     console.log(`  - Contínuas        : ${numVars - integerVarIndices.length}`);
@@ -362,46 +440,46 @@ export class OptimizationModel {
     console.log("----------------------------------------");
   }
 
-  /**
-   * Formata uma expressão linear para o formato LP.
-   * Ex: 10x1 + 6x2
-   * @param expression A expressão a ser formatada.
-   * @returns Uma string formatada.
-   */
-  private formatExpression(expression: Expression): string {
-    if (expression.length === 0) {
-      return "0";
-    }
+  // /**
+  //  * Formata uma expressão linear para o formato LP.
+  //  * Ex: 10x1 + 6x2
+  //  * @param expression A expressão a ser formatada.
+  //  * @returns Uma string formatada.
+  //  */
+  // private formatExpression(expression: Expression): string {
+  //   if (expression.length === 0) {
+  //     return "0";
+  //   }
 
-    return expression
-      .map((term, index) => {
-        const coeff = term.coefficient;
-        // if (Math.abs(coeff) < 1e-12) return null; // Ignora termos zero
+  //   return expression
+  //     .map((term, index) => {
+  //       const coeff = term.coefficient;
+  //       // if (Math.abs(coeff) < 1e-12) return null; // Ignora termos zero
 
-        const varName = term.variable.name;
-        const absCoeff = Math.abs(coeff);
-        let sign: string;
-        let coeffStr: string;
+  //       const varName = term.variable.name;
+  //       const absCoeff = Math.abs(coeff);
+  //       let sign: string;
+  //       let coeffStr: string;
 
-        // Define o sinal
-        if (index === 0) {
-          sign = coeff < 0 ? "-" : "";
-        } else {
-          sign = coeff < 0 ? " - " : " + ";
-        }
+  //       // Define o sinal
+  //       if (index === 0) {
+  //         sign = coeff < 0 ? "-" : "";
+  //       } else {
+  //         sign = coeff < 0 ? " - " : " + ";
+  //       }
 
-        // Define o coeficiente
-        if (absCoeff === 1) {
-          coeffStr = ""; // Não mostra '1' (ex: 'x1' em vez de '1 x1')
-        } else {
-          coeffStr = `${absCoeff} `; // Adiciona espaço (ex: '10 x1')
-        }
+  //       // Define o coeficiente
+  //       if (absCoeff === 1) {
+  //         coeffStr = ""; // Não mostra '1' (ex: 'x1' em vez de '1 x1')
+  //       } else {
+  //         coeffStr = `${absCoeff} `; // Adiciona espaço (ex: '10 x1')
+  //       }
 
-        return `${sign}${coeffStr}${varName}`;
-      })
-      .filter(Boolean) // Remove termos nulos
-      .join("");
-  }
+  //       return `${sign}${coeffStr}${varName}`;
+  //     })
+  //     .filter(Boolean) // Remove termos nulos
+  //     .join("");
+  // }
 
   /**
    * Gera uma representação em string do modelo no formato CPLEX LP.
@@ -413,7 +491,7 @@ export class OptimizationModel {
 
     if (!objective) {
       throw new Error(
-        "Não é possível gerar o LP: Função objetivo não definida."
+        "Não é possível gerar o LP: Função objetivo não definida.",
       );
     }
 
@@ -422,7 +500,7 @@ export class OptimizationModel {
     const offsetStr =
       this.objectiveOffset !== 0 ? ` + ${this.objectiveOffset}` : "";
     lines.push(
-      ` obj: ${this.formatExpression(objective.expression)}${offsetStr}`
+      ` obj: ${this.formatExpression(objective.expression)}${offsetStr}`,
     );
 
     // Restrições (Constraints)
@@ -435,7 +513,7 @@ export class OptimizationModel {
       lines.push(
         ` ${constraint.name}: ${exprStr} ${
           constraint.sense === "==" ? "=" : constraint.sense
-        } ${constraint.rhs}`
+        } ${constraint.rhs}`,
       );
     }
 
@@ -474,7 +552,7 @@ export class OptimizationModel {
       for (const v of continuous) {
         // A linha só é útil se a variável não foi listada em 'Bounds'
         const listedInBounds = boundsLines.some((line) =>
-          line.includes(` ${v.name} `)
+          line.includes(` ${v.name} `),
         );
         if (!listedInBounds) {
           lines.push(` \\ ${v.name}`);
