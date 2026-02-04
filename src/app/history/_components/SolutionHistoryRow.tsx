@@ -75,7 +75,7 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
         solucao.contexto.disciplinas,
         solucao.solucao.atribuicoes,
         solucao.contexto.travas,
-        historicoSolucoes.get(id)
+        historicoSolucoes.get(id),
       );
 
       addAlerta(`A solução ${solucao.datetime} foi baixada!`, "success");
@@ -88,7 +88,7 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
       solucao.contexto.travas,
       solucao.datetime,
       solucao.solucao.atribuicoes,
-    ]
+    ],
   );
 
   /**
@@ -214,14 +214,14 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
                 solucao={solucao}
                 setHoveredCourese={setHoveredCourese}
               />
-              <Box maxWidth="100%">
+              {/* <Box maxWidth="100%">
                 {isMILP(solucao.algorithm) && (
                   <MathModelDisplay
                     title="Problema de Atribuição de Docentes (FAP / TAP)"
                     latexString={fapModel}
                   />
                 )}
-              </Box>
+              </Box>*/}
             </Box>
           </Collapse>
         </TableCell>
