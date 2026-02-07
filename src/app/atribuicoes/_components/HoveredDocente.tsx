@@ -274,9 +274,11 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                             ),
                             pl: 1.5,
                             py: 0.75,
+                            // MELHORIA AQUI: Usa tokens do sistema e opacidade
                             backgroundColor: disciplina.ativo
                               ? "action.hover"
-                              : "rgba(40, 40, 40, 0.60)",
+                              : "action.disabledBackground",
+                            opacity: disciplina.ativo ? 1 : 0.75, // Deixa visualmente "apagado"
                             borderRadius: 1,
                             height: "100%",
                           }}
@@ -298,10 +300,13 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                               </Typography>
                               <Typography
                                 variant="caption"
+                                // MELHORIA AQUI: Ajusta cor do texto para manter contraste correto
                                 color={
-                                  disciplina.ativo ? "text.secondary" : "#fff"
+                                  disciplina.ativo
+                                    ? "success.main" // Sugestão: Verde se ativa
+                                    : "text.disabled" // Cinza desabilitado se inativa
                                 }
-                                sx={{ lineHeight: 1.2 }}
+                                sx={{ lineHeight: 1.2, fontWeight: 600 }}
                                 p={1}
                               >
                                 {disciplina.ativo ? "Ativa" : "Inativa"}
