@@ -298,6 +298,8 @@ export function useAlgorithm() {
 
         await new Promise((resolve) => setTimeout(resolve, 0));
 
+        setExecutionStage("solving");
+
         await buscaTabu.execute(
           () => interrompeRef.current,
           setDisciplinasAlocadas,
