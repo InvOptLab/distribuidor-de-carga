@@ -19,7 +19,7 @@ export class ChoqueDeHorarios extends Constraint<any> {
     isHard: boolean,
     penalty: number,
     isActive: boolean,
-    parametros: any
+    parametros: any,
   ) {
     super(name, description, isHard, penalty, isActive);
 
@@ -29,7 +29,7 @@ export class ChoqueDeHorarios extends Constraint<any> {
   soft(
     atribuicoes: Atribuicao[],
     docentes: Docente[],
-    disciplinas: Disciplina[]
+    disciplinas: Disciplina[],
   ): number {
     let avaliacao: number = 0;
 
@@ -43,12 +43,12 @@ export class ChoqueDeHorarios extends Constraint<any> {
       // Comparar as atribuições para ver se a `Disciplia.conflitos` não incluem umas as outras
       for (let i = 0; i < atribuicoesDocente.length; i++) {
         const disciplinaPivo: Disciplina = disciplinas.find(
-          (disciplina) => disciplina.id === atribuicoesDocente[i]
+          (disciplina) => disciplina.id === atribuicoesDocente[i],
         );
 
         for (let j = i + 1; j < atribuicoesDocente.length; j++) {
           const disciplinaAtual: Disciplina = disciplinas.find(
-            (disciplina) => disciplina.id === atribuicoesDocente[j]
+            (disciplina) => disciplina.id === atribuicoesDocente[j],
           );
 
           if (disciplinaPivo.conflitos.has(disciplinaAtual.id)) {
@@ -65,12 +65,12 @@ export class ChoqueDeHorarios extends Constraint<any> {
   hard(
     atribuicoes: Atribuicao[],
     docentes: Docente[],
-    turmas: Disciplina[]
+    turmas: Disciplina[],
   ): boolean {
     if (atribuicoes !== undefined) {
       for (const docente of docentes) {
         const docenteAtribuicoes = atribuicoes.filter((atribuicao) =>
-          atribuicao.docentes.includes(docente.nome)
+          atribuicao.docentes.includes(docente.nome),
         );
 
         for (const turma of turmas) {
@@ -99,7 +99,7 @@ export class ChoqueDeHorarios extends Constraint<any> {
   occurrences(
     atribuicoes: Atribuicao[],
     docentes: Docente[],
-    disciplinas: Disciplina[]
+    disciplinas: Disciplina[],
   ): { label: string; qtd: number }[] {
     const data: { label: string; qtd: number }[] = [];
 
@@ -123,12 +123,12 @@ export class ChoqueDeHorarios extends Constraint<any> {
         // Comparar as atribuições para ver se a `Disciplia.conflitos` não incluem umas as outras
         for (let i = 0; i < atribuicoesDocente.length; i++) {
           const disciplinaPivo: Disciplina = disciplinas.find(
-            (disciplina) => disciplina.id === atribuicoesDocente[i]
+            (disciplina) => disciplina.id === atribuicoesDocente[i],
           );
 
           for (let j = i + 1; j < atribuicoesDocente.length; j++) {
             const disciplinaAtual: Disciplina = disciplinas.find(
-              (disciplina) => disciplina.id === atribuicoesDocente[j]
+              (disciplina) => disciplina.id === atribuicoesDocente[j],
             );
 
             if (disciplinaPivo.conflitos.has(disciplinaAtual.id)) {
@@ -146,18 +146,30 @@ export class ChoqueDeHorarios extends Constraint<any> {
   milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
     modelData.D.forEach((i) =>
       modelData.F.forEach(([j, k]) => {
-        const lhs = LpSum([
-          { variable: modelData.x[i][j], coefficient: 1 },
-          { variable: modelData.x[i][k], coefficient: 1 },
-        ]);
-        model.addConstraint(`conflito_horario_${i}_${j}_${k}`, lhs, "<=", 1);
-      })
+        // Adicionada essa condição no modelo caso exista um conflito pré-estabelecido pela comissão (e com atribuições travadas)
+        // O caso seria infactível caso dependesse apenas do modelo, entretanto, como é uma ação "pensada" (inserção do usuário)
+        // essa modificação teve de ser aplicada.
+        if (
+          !(
+            modelData.a[i][j] === 1 &&
+            modelData.m[i][j] === 1 &&
+            modelData.a[i][k] === 1 &&
+            modelData.m[i][k] === 1
+          )
+        ) {
+          const lhs = LpSum([
+            { variable: modelData.x[i][j], coefficient: 1 },
+            { variable: modelData.x[i][k], coefficient: 1 },
+          ]);
+          model.addConstraint(`conflito_horario_${i}_${j}_${k}`, lhs, "<=", 1);
+        }
+      }),
     );
   }
 
   milpSoftFormulation(
     model: OptimizationModel,
-    modelData: modelSCP
+    modelData: modelSCP,
   ): { objectiveTerms: Term[] } {
     /**
      * Restrição
@@ -171,7 +183,7 @@ export class ChoqueDeHorarios extends Constraint<any> {
           { variable: v_ijk, coefficient: -1 },
         ]);
         model.addConstraint(`conflito_horario_${i}_${j}_${k}`, lhs, "<=", 1);
-      })
+      }),
     );
 
     /**
@@ -185,7 +197,7 @@ export class ChoqueDeHorarios extends Constraint<any> {
           variable: modelData.v[i][j][k],
           coefficient: this.penalty,
         });
-      })
+      }),
     );
 
     return { objectiveTerms };
