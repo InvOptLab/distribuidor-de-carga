@@ -20,8 +20,6 @@ import {
   Article,
   CheckCircle,
   Code,
-  // Speed,
-  // Psychology,
   School,
 } from "@mui/icons-material";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -46,7 +44,6 @@ export default function Home() {
       avatarUrl:
         "https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=uqZV3EkAAAAJ&citpid=2",
     },
-
     {
       name: "Elias Salomão Helou Neto",
       email: "elias@icmc.usp.br",
@@ -64,6 +61,24 @@ export default function Home() {
         "https://scholar.google.com/citations?hl=pt-BR&user=GjgcpdAAAAAJ",
       avatarUrl:
         "https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=GjgcpdAAAAAJ&citpid=2",
+    },
+    {
+      name: "Marcos Mansano Furlan",
+      email: "mafurlan@icmc.usp.br",
+      lattes: "http://lattes.cnpq.br/6488098979363222",
+      institution: "USP",
+      institute: "ICMC",
+      department: "SME",
+      role: "Coorientador",
+      researchArea:
+        "Problemas de Dimensionamento de Lotes, Pesquisa Operacional, Heurísticas e Algoritmos Evolutivos",
+      // Adicione os links opcionais se disponíveis:
+      linkedin: "https://www.linkedin.com/in/marcos-furlan-18151734/",
+      orcid: "0000-0002-8952-063X",
+      googleScholar:
+        "https://scholar.google.com/citations?user=da3F3P8AAAAJ&hl=en",
+      avatarUrl:
+        "https://scholar.googleusercontent.com/citations?view_op=medium_photo&user=da3F3P8AAAAJ&citpid=1",
     },
   ];
 
@@ -84,6 +99,7 @@ export default function Home() {
     "Material UI",
     "Recharts",
     "Busca Tabu (Metaheurística)",
+    "MILP (HiGHS)",
   ];
 
   return (
@@ -120,11 +136,6 @@ export default function Home() {
               color="primary"
             />
             <Chip icon={<InsightsIcon />} label="Otimização" color="success" />
-            {/* <Chip
-              icon={<Psychology />}
-              label="Pesquisa Operacional"
-              color="secondary"
-            /> */}
           </Box>
         </Box>
 
@@ -265,45 +276,6 @@ export default function Home() {
             </Paper>
           </CardContent>
         </Card>
-
-        {/* Como Usar */}
-        {/* <Card elevation={2}>
-          <CardContent>
-            <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <Speed color="primary" />
-              <Typography variant="h5" fontWeight="bold">
-                Como Usar
-              </Typography>
-            </Box>
-            <Divider sx={{ mb: 2 }} />
-            <List>
-              <ListItem>
-                <ListItemText
-                  primary="1. Cadastre os docentes e suas preferências"
-                  secondary="Informe os dados dos docentes e as disciplinas de interesse"
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemText
-                  primary="2. Configure as disciplinas e horários"
-                  secondary="Defina as turmas, horários e requisitos de cada disciplina"
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemText
-                  primary="3. Execute o algoritmo de otimização"
-                  secondary="A Busca Tabu encontrará uma solução de alta qualidade"
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemText
-                  primary="4. Visualize e exporte os resultados"
-                  secondary="Analise a atribuição gerada e exporte para Excel"
-                />
-              </ListItem>
-            </List>
-          </CardContent>
-        </Card> */}
 
         {/* Autores */}
         <Box>
