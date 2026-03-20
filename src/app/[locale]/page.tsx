@@ -135,10 +135,14 @@ export default function Home() {
           <Box display="flex" gap={2} justifyContent="center" sx={{ mt: 3 }}>
             <Chip
               icon={<School />}
-              label="Projeto de Mestrado"
+              label={t("badges.masterProject")}
               color="primary"
             />
-            <Chip icon={<InsightsIcon />} label="Otimização" color="success" />
+            <Chip
+              icon={<InsightsIcon />}
+              label={t("badges.optimization")}
+              color="success"
+            />
           </Box>
         </Box>
 
