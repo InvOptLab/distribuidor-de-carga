@@ -29,7 +29,7 @@ import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutli
 import LinearScaleIcon from "@mui/icons-material/LinearScale";
 import ChartContainer from "./ChartContainer";
 import { HistoricoSolucao } from "@/context/Global/utils";
-import { AVAILABLE_ALGORITHMS } from "@/app/types/algorithm-types";
+import { AVAILABLE_ALGORITHMS } from "@/app/[locale]/types/algorithm-types";
 import { isHeuristicAlgorithm, isTabuSearch } from "@/algoritmo/communs/utils";
 import { Solution } from "@/algoritmo/metodos/TabuSearch/TabuList/Solution";
 import { Moviment } from "@/algoritmo/metodos/TabuSearch/TabuList/Moviment";
@@ -41,7 +41,7 @@ export default function SolutionHistoryDetails({
 }) {
   const algorithmType = solucao.algorithm?.name || "tabu-search";
   const algorithmConfig = AVAILABLE_ALGORITHMS.find(
-    (alg) => alg.id === algorithmType
+    (alg) => alg.id === algorithmType,
   );
   const algorithmName = algorithmConfig?.name || "Algoritmo Desconhecido";
   const algoritmo = solucao.algorithm;
@@ -79,7 +79,7 @@ export default function SolutionHistoryDetails({
         qtd: number;
       }[]
     >,
-    type: "restricoes" | "carga"
+    type: "restricoes" | "carga",
   ) => {
     const data = new Map<
       string,
@@ -162,7 +162,7 @@ export default function SolutionHistoryDetails({
                   <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                     <Tooltip
                       title={`${Math.floor(
-                        solucao.solucao.estatisticas.tempoExecucao / 60000
+                        solucao.solucao.estatisticas.tempoExecucao / 60000,
                       )} min ${(
                         (solucao.solucao.estatisticas.tempoExecucao % 60000) /
                         1000
@@ -231,8 +231,8 @@ export default function SolutionHistoryDetails({
                         {algoritmo.tabuList instanceof Solution
                           ? algoritmo.tabuList.tabuSize
                           : algoritmo.tabuList instanceof Moviment
-                          ? `${algoritmo.tabuList.tenures.add} - ${algoritmo.tabuList.tenures.drop}`
-                          : "N/A"}
+                            ? `${algoritmo.tabuList.tenures.add} - ${algoritmo.tabuList.tenures.drop}`
+                            : "N/A"}
                       </Typography>
                     </Box>
                   </Card>
@@ -353,7 +353,7 @@ export default function SolutionHistoryDetails({
                           </Typography>
                         </Card>
                       </Grid>
-                    )
+                    ),
                   )}
                 </Grid>
               </AccordionDetails>
@@ -503,7 +503,7 @@ export default function SolutionHistoryDetails({
                         )}
                       </Card>
                     </Grid>
-                  )
+                  ),
                 )}
               </Grid>
             </AccordionDetails>
@@ -532,7 +532,7 @@ export default function SolutionHistoryDetails({
                         data: Array.from(
                           solucao.solucao.estatisticas.docentesPrioridade
                             .keys()
-                            .map((item) => item.toString())
+                            .map((item) => item.toString()),
                         ),
                         label: "Prioridade",
                       },
@@ -543,7 +543,7 @@ export default function SolutionHistoryDetails({
                         {
                           label: "Prioridade",
                           data: Array.from(
-                            solucao.solucao.estatisticas.docentesPrioridade.values()
+                            solucao.solucao.estatisticas.docentesPrioridade.values(),
                           ),
                         },
                       ],
@@ -557,7 +557,7 @@ export default function SolutionHistoryDetails({
                           scaleType: "band",
                           label: "Prioridades",
                           data: Array.from(
-                            solucao.solucao.estatisticas.docentesPrioridade.keys()
+                            solucao.solucao.estatisticas.docentesPrioridade.keys(),
                           ),
                         },
                       ]}
@@ -565,7 +565,7 @@ export default function SolutionHistoryDetails({
                         {
                           label: "Prioridade",
                           data: Array.from(
-                            solucao.solucao.estatisticas.docentesPrioridade.values()
+                            solucao.solucao.estatisticas.docentesPrioridade.values(),
                           ),
                         },
                       ]}
@@ -608,7 +608,7 @@ export default function SolutionHistoryDetails({
                     xAxis={[
                       {
                         data: Array.from(
-                          solucao.solucao.estatisticas.avaliacaoPorIteracao.keys()
+                          solucao.solucao.estatisticas.avaliacaoPorIteracao.keys(),
                         ),
                         label: "Iteração",
                       },
@@ -616,7 +616,7 @@ export default function SolutionHistoryDetails({
                     series={[
                       {
                         data: Array.from(
-                          solucao.solucao.estatisticas.avaliacaoPorIteracao.values()
+                          solucao.solucao.estatisticas.avaliacaoPorIteracao.values(),
                         ),
                         label: "Avaliação",
                         color: "#1C77C3",
@@ -660,7 +660,7 @@ export default function SolutionHistoryDetails({
                     xAxis={[
                       {
                         data: Array.from(
-                          solucao.solucao.estatisticas.tempoPorIteracao.keys()
+                          solucao.solucao.estatisticas.tempoPorIteracao.keys(),
                         ),
                         label: "Iteração",
                       },
@@ -673,7 +673,7 @@ export default function SolutionHistoryDetails({
                     series={[
                       {
                         data: Array.from(
-                          solucao.solucao.estatisticas.tempoPorIteracao.values()
+                          solucao.solucao.estatisticas.tempoPorIteracao.values(),
                         ),
                         label: "Tempo (ms)",
                         color: "#F39237",
@@ -716,7 +716,7 @@ export default function SolutionHistoryDetails({
                   <ConstraintsBarCharts
                     ocorrencias={selectOcorrenciasToDisplay(
                       solucao.solucao.estatisticas.qtdOcorrenciasRestricoes,
-                      "restricoes"
+                      "restricoes",
                     )}
                   />
                   {/* </ChartContainer> */}

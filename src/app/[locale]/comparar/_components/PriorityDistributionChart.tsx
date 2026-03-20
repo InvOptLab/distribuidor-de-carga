@@ -11,7 +11,7 @@ import {
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useGlobalContext } from "@/context/Global";
 import { HistoricoSolucao } from "@/context/Global/utils";
-import ChartContainer from "@/app/statistics/_components/ChartContainer";
+import ChartContainer from "@/app/[locale]/statistics/_components/ChartContainer";
 import { BarChartExportData } from "@/lib/chart-exporter";
 
 interface PriorityDistributionChartProps {
@@ -36,14 +36,14 @@ export default function PriorityDistributionChart({
         const formulario = formularios.find(
           (f) =>
             f.id_disciplina === atribuicao.id_disciplina &&
-            f.nome_docente === docenteNome
+            f.nome_docente === docenteNome,
         );
 
         if (formulario) {
           const prioridade = formulario.prioridade;
           priorityCount.set(
             prioridade,
-            (priorityCount.get(prioridade) || 0) + 1
+            (priorityCount.get(prioridade) || 0) + 1,
           );
         }
       });
@@ -78,11 +78,11 @@ export default function PriorityDistributionChart({
   // Calcular totais
   const totalA = Array.from(distributionA.values()).reduce(
     (sum, count) => sum + count,
-    0
+    0,
   );
   const totalB = Array.from(distributionB.values()).reduce(
     (sum, count) => sum + count,
-    0
+    0,
   );
 
   // CORRIGIDO: Calcular médias ponderadas (menores valores = melhores prioridades)
@@ -109,7 +109,7 @@ export default function PriorityDistributionChart({
       color: "#1976d2",
       valueFormatter: (
         value: number | null,
-        { dataIndex }: { dataIndex: number }
+        { dataIndex }: { dataIndex: number },
       ) => {
         if (value === null) return "";
         const data = chartData[dataIndex];
@@ -122,7 +122,7 @@ export default function PriorityDistributionChart({
       color: "#dc004e",
       valueFormatter: (
         value: number | null,
-        { dataIndex }: { dataIndex: number }
+        { dataIndex }: { dataIndex: number },
       ) => {
         if (value === null) return "";
         const data = chartData[dataIndex];
@@ -290,8 +290,8 @@ export default function PriorityDistributionChart({
                 totalB - totalA === 0
                   ? "default"
                   : totalB > totalA
-                  ? "success"
-                  : "error"
+                    ? "success"
+                    : "error"
               }
               size="small"
             />
@@ -303,8 +303,8 @@ export default function PriorityDistributionChart({
                 Math.abs(avgB - avgA) < 0.1
                   ? "default"
                   : avgA > avgB
-                  ? "success"
-                  : "error"
+                    ? "success"
+                    : "error"
               }
               size="small"
             />

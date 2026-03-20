@@ -1,7 +1,7 @@
 import {
   TreeDisciplina,
   TreeDocente,
-} from "@/app/history/_components/SolutionHistoryStatistics";
+} from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 import { Divider, Grid, Paper, Typography } from "@mui/material";
 import DocenteTreeView from "./DocentesTreeView";
 import DisciplinasTreeView from "./DisciplinasTreeView";
@@ -59,14 +59,14 @@ export default function NewDataTreeView({
 
   const selecionaEntidade = (
     tipo: "docente" | "disciplina" | null,
-    id: string
+    id: string,
   ) => {
     return tipo === "docente" ? docentes.get(id) : disciplinas.get(id);
   };
 
   const textoView = (
     tipo: "docente" | "disciplina" | null,
-    view: "formularios" | "atribuicoes"
+    view: "formularios" | "atribuicoes",
   ) => {
     if (view === "formularios") {
       if (tipo === "docente") {
@@ -116,7 +116,7 @@ export default function NewDataTreeView({
             id={lastClickedItem?.id}
             entidade={selecionaEntidade(
               lastClickedItem?.tipo,
-              lastClickedItem?.id
+              lastClickedItem?.id,
             )}
             solucao={solucao}
             disciplinas={disciplinas}
@@ -136,7 +136,7 @@ export default function NewDataTreeView({
             id={lastClickedItem?.id}
             entidade={selecionaEntidade(
               lastClickedItem?.tipo,
-              lastClickedItem?.id
+              lastClickedItem?.id,
             )}
             solucao={solucao}
             disciplinas={disciplinas}

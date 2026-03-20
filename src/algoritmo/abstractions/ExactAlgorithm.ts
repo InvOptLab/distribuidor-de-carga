@@ -8,7 +8,7 @@ import {
 import Constraint from "./Constraint";
 import ObjectiveComponent from "./ObjectiveComponent";
 import { Statistics } from "../classes/Statistics";
-import { reconstruirAtribuicoes } from "@/app/atribuicoes/hooks/useAlgorithm";
+import { reconstruirAtribuicoes } from "@/app/[locale]/atribuicoes/hooks/useAlgorithm";
 
 export abstract class ExactAlgorithm extends Algorithm<HighsSolverResult> {
   public model: OptimizationModel;
@@ -23,7 +23,7 @@ export abstract class ExactAlgorithm extends Algorithm<HighsSolverResult> {
     objectiveType: "min" | "max",
     objectiveComponentes: ObjectiveComponent<any>[],
     maiorPrioridade: number | undefined,
-    enableStatistics: boolean
+    enableStatistics: boolean,
   ) {
     super(
       name,
@@ -33,7 +33,7 @@ export abstract class ExactAlgorithm extends Algorithm<HighsSolverResult> {
       objectiveType,
       objectiveComponentes,
       maiorPrioridade,
-      enableStatistics
+      enableStatistics,
     );
 
     this.model = new OptimizationModel(this.name);
@@ -62,7 +62,7 @@ export abstract class ExactAlgorithm extends Algorithm<HighsSolverResult> {
     this.solution.atribuicoes = reconstruirAtribuicoes(
       solverResult.Columns,
       this.context.docentes,
-      this.context.turmas
+      this.context.turmas,
     );
 
     /**
@@ -75,7 +75,7 @@ export abstract class ExactAlgorithm extends Algorithm<HighsSolverResult> {
       this.statistics.generateFinalStatistics(
         this.solution.atribuicoes,
         this.context,
-        this.constraints
+        this.constraints,
       );
     }
 

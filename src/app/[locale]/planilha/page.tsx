@@ -12,7 +12,7 @@ import { usePlanilhaColumns } from "@/hooks/use-planilha-columns";
 import { PlanilhaTable } from "@/components/Planilha/PlanilhaTable";
 import { ColumnManager } from "@/components/Planilha/ColumnManager";
 import { exportToExcel } from "./excel-export";
-import { CollaborativeGridWrapper } from "@/app/atribuicoes/_components/CollaborativeGridWrapper";
+import { CollaborativeGridWrapper } from "@/app/[locale]/atribuicoes/_components/CollaborativeGridWrapper";
 import { useCollaboration } from "@/context/Collaboration";
 
 /**

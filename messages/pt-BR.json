@@ -1,0 +1,58 @@
+{
+  "Pages": {
+    "Home": {
+      "title": "Distribuidor de Carga Docente",
+      "subtitle": "Um sistema web interativo para auxiliar na atribuição de docentes.",
+      "badges": {
+        "masterProject": "Projeto de Mestrado",
+        "optimization": "Otimização"
+      },
+      "about": {
+        "title": "Sobre o Projeto",
+        "p1": "Este projeto faz parte de uma pesquisa de mestrado desenvolvida no Instituto de Ciências Matemáticas e de Computação (ICMC) da Universidade de São Paulo (USP). O objetivo é desenvolver uma ferramenta computacional que auxilie no processo de atribuição de docentes a turmas, considerando preferências, restrições de horários e balanceamento de carga didática.",
+        "p2": "A ferramenta utiliza a metaheurística Busca Tabu ou MILP para encontrar soluções de alta qualidade para este problema de otimização combinatória, que é conhecido por sua complexidade computacional."
+      },
+      "features": {
+        "title": "Funcionalidades Principais",
+        "items": {
+          "f1": "Atribuição automática de docentes a turmas usando Busca Tabu",
+          "f2": "Consideração de preferências e prioridades dos docentes",
+          "f3": "Configuração do processo de otimização",
+          "f4": "Gerenciamento de conflitos de horários",
+          "f5": "Visualização em formato de planilha Excel-like",
+          "f6": "Exportação de resultados para Excel",
+          "f7": "Análise de saldo de carga didática dos docentes"
+        }
+      },
+      "technologies": {
+        "title": "Tecnologias"
+      },
+      "repository": {
+        "title": "Repositório",
+        "description": "O código-fonte do projeto está disponível no GitHub:"
+      },
+      "publications": {
+        "title": "Publicações",
+        "accessLink": "Acessar artigo completo",
+        "citationLabel": "Citação:",
+        "sbpo2025": {
+          "articleTitle": "Uma Ferramenta Baseada em Busca Tabu para Alocação de Docentes",
+          "articleEvent": "LVII Simpósio Brasileiro de Pesquisa Operacional (SBPO 2025)"
+        }
+      },
+      "authors": {
+        "title": "Autores",
+        "roles": {
+          "masterStudent": "Aluno de Mestrado",
+          "advisor": "Orientador",
+          "coadvisor": "Coorientador"
+        },
+        "researchAreas": {
+          "combinatorialOptimization": "Otimização Combinatória",
+          "inverseProblems": "Problemas Inversos, Otimização Convexa e Matemática Aplicada",
+          "lotSizing": "Problemas de Dimensionamento de Lotes, Pesquisa Operacional, Heurísticas e Algoritmos Evolutivos"
+        }
+      }
+    }
+  }
+}

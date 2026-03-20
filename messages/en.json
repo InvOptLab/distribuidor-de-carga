@@ -1,0 +1,58 @@
+{
+  "Pages": {
+    "Home": {
+      "title": "Teaching Workload Distributor",
+      "subtitle": "A Tabu Search-based tool for optimized faculty allocation",
+      "badges": {
+        "masterProject": "Master's Project",
+        "optimization": "Optimization"
+      },
+      "about": {
+        "title": "About the Project",
+        "p1": "This project is part of a Master's research developed at the Institute of Mathematics and Computer Sciences (ICMC) of the University of São Paulo (USP). The goal is to develop a computational tool to assist in the process of assigning teachers to classes, considering preferences, scheduling constraints, and teaching workload balance.",
+        "p2": "The tool uses the Tabu Search metaheuristic to find high-quality solutions to this combinatorial optimization problem, which is known for its computational complexity."
+      },
+      "features": {
+        "title": "Key Features",
+        "items": {
+          "f1": "Automatic assignment of teachers to classes using Tabu Search",
+          "f2": "Consideration of teachers' preferences and priorities",
+          "f3": "Optimization process configuration",
+          "f4": "Schedule conflict management",
+          "f5": "Excel-like spreadsheet visualization",
+          "f6": "Export results to Excel",
+          "f7": "Analysis of teachers' teaching workload balance"
+        }
+      },
+      "technologies": {
+        "title": "Technologies"
+      },
+      "repository": {
+        "title": "Repository",
+        "description": "The project's source code is available on GitHub:"
+      },
+      "publications": {
+        "title": "Publications",
+        "accessLink": "Access full article",
+        "citationLabel": "Citation:",
+        "sbpo2025": {
+          "articleTitle": "A Tabu Search-Based Tool for Faculty Allocation",
+          "articleEvent": "LVII Brazilian Symposium on Operations Research (SBPO 2025)"
+        }
+      },
+      "authors": {
+        "title": "Authors",
+        "roles": {
+          "masterStudent": "Master's Student",
+          "advisor": "Advisor",
+          "coadvisor": "Co-advisor"
+        },
+        "researchAreas": {
+          "combinatorialOptimization": "Combinatorial Optimization",
+          "inverseProblems": "Inverse Problems, Convex Optimization, and Applied Math",
+          "lotSizing": "Lot Sizing Problems, Operations Research, Heuristics and Evolutionary Algorithms"
+        }
+      }
+    }
+  }
+}

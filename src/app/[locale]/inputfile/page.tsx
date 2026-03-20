@@ -40,7 +40,7 @@ import {
   processFormularios,
   processSolucao,
   processTravas,
-} from "../inputfile/UpdateState";
+} from "./UpdateState";
 import { useGlobalContext } from "@/context/Global";
 import { useAlertsContext } from "@/context/Alerts";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
@@ -118,32 +118,32 @@ export default function InputFileUpload() {
         jsonData,
         ["docentes", "saldos"],
         processDocentes,
-        () => null
+        () => null,
       );
       const disciplinas: Disciplina[] = processAndUpdateState(
         jsonData,
         "disciplinas",
         processDisciplinas,
-        () => null
+        () => null,
       );
       const atribuicoes: Atribuicao[] = processAndUpdateState(
         jsonData,
         "atribuicao",
         processAtribuicoes,
-        () => null
+        () => null,
       );
       const formularios: Formulario[] = processAndUpdateState(
         jsonData,
         "formularios",
         processFormularios,
-        () => null
+        () => null,
       );
 
       const travas: Celula[] = processAndUpdateState(
         jsonData,
         "travas",
         processTravas,
-        () => null
+        () => null,
       );
 
       // Criar todas as disciplinas no state de atribuições
@@ -151,7 +151,7 @@ export default function InputFileUpload() {
         for (const disciplina of disciplinas) {
           if (
             !atribuicoes.find(
-              (atribuicao) => atribuicao.id_disciplina == disciplina.id
+              (atribuicao) => atribuicao.id_disciplina == disciplina.id,
             )
           ) {
             atribuicoes.push({ id_disciplina: disciplina.id, docentes: [] });
@@ -176,12 +176,12 @@ export default function InputFileUpload() {
       // Preenche a lista(Map) de formularios por docente
       for (const docente of docentes) {
         const docenteFormularios = formularios.filter(
-          (formulario) => formulario.nome_docente === docente.nome
+          (formulario) => formulario.nome_docente === docente.nome,
         );
         for (const docenteFormulario of docenteFormularios) {
           docente.formularios.set(
             docenteFormulario.id_disciplina,
-            docenteFormulario.prioridade
+            docenteFormulario.prioridade,
           );
         }
       }
@@ -196,14 +196,14 @@ export default function InputFileUpload() {
 
       // Análise de atribuições
       const atribuicoesComDocentes = atribuicoes.filter(
-        (a) => a.docentes && a.docentes.length > 0
+        (a) => a.docentes && a.docentes.length > 0,
       ).length;
       const atribuicoesSemDocentes =
         atribuicoes.length - atribuicoesComDocentes;
 
       // Análise de formulários
       const docentesComFormulario = new Set(
-        formularios.map((f) => f.nome_docente)
+        formularios.map((f) => f.nome_docente),
       ).size;
 
       // Análise de qualidade
@@ -211,7 +211,7 @@ export default function InputFileUpload() {
       const docentesSemFormulario = docentesNomes.size - docentesComFormulario;
 
       const disciplinasComInteressados = new Set(
-        formularios.map((f) => f.id_disciplina)
+        formularios.map((f) => f.id_disciplina),
       ).size;
       const disciplinasSemInteressados =
         disciplinas.length - disciplinasComInteressados;
@@ -286,7 +286,7 @@ export default function InputFileUpload() {
 
       return { analysis, tempData: tempDataResult };
     },
-    []
+    [],
   );
 
   // Função para carregar dados de teste
@@ -310,7 +310,7 @@ export default function InputFileUpload() {
       console.error("Erro ao carregar dados de teste:", error);
       addAlerta(
         "Erro ao carregar dados de teste. Verifique se o arquivo existe.",
-        "error"
+        "error",
       );
     } finally {
       setLoadingTestData(false);
@@ -346,7 +346,7 @@ export default function InputFileUpload() {
         }
       }
     },
-    [processAndAnalyzeFile, addAlerta]
+    [processAndAnalyzeFile, addAlerta],
   );
 
   const [safeCOntinue, setSafeContinue] = useState(false);
@@ -359,7 +359,7 @@ export default function InputFileUpload() {
       currentDocentes,
       currentDisciplinas,
       currentAtribuicoes,
-      currentTravas
+      currentTravas,
     );
     setSafeContinue(true);
     addAlerta("Backup criado com sucesso!", "success");
@@ -417,7 +417,7 @@ export default function InputFileUpload() {
         historicoSolucoes,
         setHistoricoSolucoes,
         setSolucaoAtual,
-        tempData.formularios
+        tempData.formularios,
       );
     }
 
@@ -488,7 +488,7 @@ export default function InputFileUpload() {
         `${fileName} carregado${
           fileName === "dados de teste" ? "s" : ""
         } com sucesso.`,
-        "success"
+        "success",
       );
     } catch (error) {
       addAlerta("Erro ao processar os dados.\n" + error, "error");
@@ -511,7 +511,7 @@ export default function InputFileUpload() {
       const files = e.dataTransfer.files;
       handleFileSelect(files);
     },
-    [handleFileSelect]
+    [handleFileSelect],
   );
 
   const hasCurrentData =
@@ -637,7 +637,7 @@ export default function InputFileUpload() {
                 docentes: currentDocentes.length,
                 disciplinas: currentDisciplinas.length,
                 atribuicoes: currentAtribuicoes.filter(
-                  (a) => a.docentes.length > 0
+                  (a) => a.docentes.length > 0,
                 ).length,
               }}
               onCreateBackup={createBackup}

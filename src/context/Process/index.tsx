@@ -1,3 +1,4 @@
+"use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useGlobalContext } from "../Global";
 import {
@@ -52,10 +53,10 @@ export function ProcessWrapper({ children }: { children: React.ReactNode }) {
   const { disciplinas: globalDisciplinas, docentes: globalDocentes } =
     useGlobalContext();
   const [disciplinas, setDisciplinas] = useState<Map<string, Disciplina>>(
-    new Map<string, Disciplina>()
+    new Map<string, Disciplina>(),
   );
   const [docentes, setDocentes] = useState<Map<string, Docente>>(
-    new Map<string, Docente>()
+    new Map<string, Docente>(),
   );
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export function ProcessWrapper({ children }: { children: React.ReactNode }) {
         }
 
         const disciplinaPivo: Disciplina = newDiciplinas.get(
-          globalDisciplinas[i].id
+          globalDisciplinas[i].id,
         );
 
         // Itera sob as demais disciplinas
@@ -105,7 +106,7 @@ export function ProcessWrapper({ children }: { children: React.ReactNode }) {
           }
 
           const disciplinaAtual: Disciplina = newDiciplinas.get(
-            globalDisciplinas[j].id
+            globalDisciplinas[j].id,
           );
 
           // Iteração para os horários e verificação de conflitos

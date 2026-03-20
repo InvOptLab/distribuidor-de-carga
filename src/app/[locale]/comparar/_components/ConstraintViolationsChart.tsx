@@ -15,7 +15,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { useState } from "react";
 import WorkloadHistogramChart from "./WorkloadHistogramChart";
-import ChartContainer from "@/app/statistics/_components/ChartContainer";
+import ChartContainer from "@/app/[locale]/statistics/_components/ChartContainer";
 import { BarChartExportData } from "@/lib/chart-exporter";
 
 interface ConstraintViolationsChartProps {
@@ -96,7 +96,7 @@ export default function ConstraintViolationsChart({
 
   // Preparar dados para gráfico de pizza
   const preparePieChartData = (
-    data: { name: string; violations: { label: string; qtd: number }[] }[]
+    data: { name: string; violations: { label: string; qtd: number }[] }[],
   ) => {
     return data.map((constraint, index) => ({
       id: index,
@@ -122,7 +122,7 @@ export default function ConstraintViolationsChart({
       color: "#1976d2",
       valueFormatter: (
         value: number | null,
-        { dataIndex }: { dataIndex: number }
+        { dataIndex }: { dataIndex: number },
       ) => {
         if (value === null) return "";
         const data = barChartData[dataIndex];
@@ -135,7 +135,7 @@ export default function ConstraintViolationsChart({
       color: "#dc004e",
       valueFormatter: (
         value: number | null,
-        { dataIndex }: { dataIndex: number }
+        { dataIndex }: { dataIndex: number },
       ) => {
         if (value === null) return "";
         const data = barChartData[dataIndex];
@@ -410,8 +410,8 @@ export default function ConstraintViolationsChart({
                 totalViolationsB - totalViolationsA === 0
                   ? "default"
                   : totalViolationsB < totalViolationsA
-                  ? "success"
-                  : "error"
+                    ? "success"
+                    : "error"
               }
               size="small"
             />

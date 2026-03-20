@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // 1. Defina os tipos dos dados que o contexto irá armazenar
@@ -23,7 +25,7 @@ export const HistorySolutionProvider: React.FC<MyProviderProps> = ({
   children,
 }) => {
   const [idSolutionRowOpen, setopenIdSolutionRowOpen] = useState(
-    new Map<string, boolean>()
+    new Map<string, boolean>(),
   );
 
   return (

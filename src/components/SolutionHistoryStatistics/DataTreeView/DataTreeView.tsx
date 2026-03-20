@@ -8,7 +8,7 @@ import { Disciplina, HistoricoSolucao } from "@/context/Global/utils";
 import {
   TreeDisciplina,
   TreeDocente,
-} from "@/app/history/_components/SolutionHistoryStatistics";
+} from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 
 // Props do DataTreeView
 interface DataTreeViewProps {

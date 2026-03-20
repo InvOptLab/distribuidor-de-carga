@@ -24,8 +24,11 @@ import {
 } from "@mui/icons-material";
 import InsightsIcon from "@mui/icons-material/Insights";
 import AnimatedLogo from "@/components/AnimatedLogo";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
+  const t = useTranslations("Pages.Home");
+
   const autores: IAuthProfileProps[] = [
     {
       name: "José Eduardo Saroba Bieco",
@@ -34,8 +37,8 @@ export default function Home() {
       institution: "USP",
       institute: "ICMC",
       // department: "SME",
-      role: "Aluno de Mestrado",
-      researchArea: "Otimização Combinatória",
+      role: t("authors.roles.masterStudent"),
+      researchArea: t("authors.researchAreas.combinatorialOptimization"),
       // Adicione os links opcionais se disponíveis:
       linkedin: "https://www.linkedin.com/in/josebieco",
       orcid: "0009-0009-3773-9005",
@@ -51,9 +54,8 @@ export default function Home() {
       institution: "USP",
       institute: "ICMC",
       department: "SME",
-      role: "Orientador",
-      researchArea:
-        "Problemas Inversos, Otimização Convexa e Matemática Aplicada",
+      role: t("authors.roles.advisor"),
+      researchArea: t("authors.researchAreas.inverseProblems"),
       // Adicione os links opcionais se disponíveis:
       linkedin: "https://www.linkedin.com/in/elias-salomao-helou-neto",
       orcid: "0000-0001-5157-3851",
@@ -69,9 +71,8 @@ export default function Home() {
       institution: "USP",
       institute: "ICMC",
       department: "SME",
-      role: "Coorientador",
-      researchArea:
-        "Problemas de Dimensionamento de Lotes, Pesquisa Operacional, Heurísticas e Algoritmos Evolutivos",
+      role: t("authors.roles.coadvisor"),
+      researchArea: t("authors.researchAreas.lotSizing"),
       // Adicione os links opcionais se disponíveis:
       linkedin: "https://www.linkedin.com/in/marcos-furlan-18151734/",
       orcid: "0000-0002-8952-063X",
@@ -82,15 +83,15 @@ export default function Home() {
     },
   ];
 
-  const funcionalidades = [
-    "Atribuição automática de docentes a turmas usando Busca Tabu",
-    "Consideração de preferências e prioridades dos docentes",
-    "Configuração do processo de otimização",
-    "Gerenciamento de conflitos de horários",
-    "Visualização em formato de planilha Excel-like",
-    "Exportação de resultados para Excel",
-    "Análise de saldo de carga didática dos docentes",
-  ];
+  // const funcionalidades = [
+  //   "Atribuição automática de docentes a turmas usando Busca Tabu",
+  //   "Consideração de preferências e prioridades dos docentes",
+  //   "Configuração do processo de otimização",
+  //   "Gerenciamento de conflitos de horários",
+  //   "Visualização em formato de planilha Excel-like",
+  //   "Exportação de resultados para Excel",
+  //   "Análise de saldo de carga didática dos docentes",
+  // ];
 
   const tecnologias = [
     "Next.js 16",
@@ -101,6 +102,9 @@ export default function Home() {
     "Busca Tabu (Metaheurística)",
     "MILP (HiGHS)",
   ];
+
+  // Array de chaves para as funcionalidades
+  const featureKeys = ["f1", "f2", "f3", "f4", "f5", "f6", "f7"] as const;
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -123,11 +127,10 @@ export default function Home() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            Distribuidor de Carga Docente
+            {t("title")}
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
-            Uma ferramenta baseada em Busca Tabu para alocação otimizada de
-            docentes
+            {t("subtitle")}
           </Typography>
           <Box display="flex" gap={2} justifyContent="center" sx={{ mt: 3 }}>
             <Chip
@@ -143,22 +146,13 @@ export default function Home() {
         <Card elevation={2}>
           <CardContent>
             <Typography variant="h5" fontWeight="bold" gutterBottom>
-              Sobre o Projeto
+              {t("about.title")}
             </Typography>
             <Divider sx={{ mb: 2 }} />
-            <Typography variant="body1" paragraph>
-              Este projeto faz parte de uma pesquisa de mestrado desenvolvida no
-              Instituto de Ciências Matemáticas e de Computação (ICMC) da
-              Universidade de São Paulo (USP). O objetivo é desenvolver uma
-              ferramenta computacional que auxilie no processo de atribuição de
-              docentes a turmas, considerando preferências, restrições de
-              horários e balanceamento de carga didática.
+            <Typography variant="body1" component="p">
+              {t("about.p1")}
             </Typography>
-            <Typography variant="body1">
-              A ferramenta utiliza a metaheurística Busca Tabu para encontrar
-              soluções de alta qualidade para este problema de otimização
-              combinatória, que é conhecido por sua complexidade computacional.
-            </Typography>
+            <Typography variant="body1">{t("about.p2")}</Typography>
           </CardContent>
         </Card>
 
@@ -166,17 +160,17 @@ export default function Home() {
         <Card elevation={2}>
           <CardContent>
             <Typography variant="h5" fontWeight="bold" gutterBottom>
-              Funcionalidades Principais
+              {t("features.title")}
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              {funcionalidades.map((func, index) => (
+              {featureKeys.map((func, index) => (
                 <Grid size={{ xs: 12, md: 6 }} key={index}>
                   <Box display="flex" alignItems="flex-start">
                     <ListItemIcon sx={{ minWidth: 40 }}>
                       <CheckCircle color="success" />
                     </ListItemIcon>
-                    <ListItemText primary={func} />
+                    <ListItemText primary={t(`features.items.${func}`)} />
                   </Box>
                 </Grid>
               ))}
@@ -192,7 +186,7 @@ export default function Home() {
                 <Box display="flex" alignItems="center" gap={1} mb={2}>
                   <Code color="primary" />
                   <Typography variant="h5" fontWeight="bold">
-                    Tecnologias
+                    {t("technologies.title")}
                   </Typography>
                 </Box>
                 <Divider sx={{ mb: 2 }} />
@@ -211,12 +205,12 @@ export default function Home() {
                 <Box display="flex" alignItems="center" gap={1} mb={2}>
                   <GitHub color="primary" />
                   <Typography variant="h5" fontWeight="bold">
-                    Repositório
+                    {t("repository.title")}
                   </Typography>
                 </Box>
                 <Divider sx={{ mb: 2 }} />
-                <Typography variant="body1" paragraph>
-                  O código-fonte do projeto está disponível no GitHub:
+                <Typography variant="body1" component="p">
+                  {t("repository.description")}
                 </Typography>
                 <Link
                   href="https://github.com/InvOptLab/distribuidor-de-carga"
@@ -243,17 +237,17 @@ export default function Home() {
             <Box display="flex" alignItems="center" gap={1} mb={2}>
               <Article color="primary" />
               <Typography variant="h5" fontWeight="bold">
-                Publicações
+                {t("publications.title")}
               </Typography>
             </Box>
             <Divider sx={{ mb: 3 }} />
 
             <Paper elevation={1} sx={{ p: 3, bgcolor: "grey.50" }}>
               <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Uma Ferramenta Baseada em Busca Tabu para Alocação de Docentes
+                {t("publications.sbpo2025.articleTitle")}
               </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                LVII Simpósio Brasileiro de Pesquisa Operacional (SBPO 2025)
+              <Typography variant="body2" color="text.secondary" component="p">
+                {t("publications.sbpo2025.articleEvent")}
               </Typography>
               <Link
                 href="https://proceedings.science/sbpo-2025/trabalhos/uma-ferramenta-baseada-em-busca-tabu-para-alocacao-de-docentes?lang=pt-br&check_logged_in=1"
@@ -261,15 +255,16 @@ export default function Home() {
                 rel="noopener noreferrer"
                 sx={{ display: "block", mb: 2, fontWeight: "bold" }}
               >
-                Acessar artigo completo
+                {t("publications.accessLink")}
               </Link>
               <Divider sx={{ my: 2 }} />
               <Typography variant="body2" sx={{ fontStyle: "italic" }}>
-                <strong>Citação:</strong> BIECO, José Eduardo Saroba; NETO,
-                Elias Salomão Helou. Uma Ferramenta Baseada em Busca Tabu para
-                Alocação de Docentes. In: BOOK OF ABSTRACTS OF THE LVII
-                BRAZILIAN SYMPOSIUM ON OPERATIONS RESEARCH, 2025, Gramado. Anais
-                eletrônicos..., Galoá, 2025. Disponível em:{" "}
+                <strong>{t("publications.citationLabel")}</strong> BIECO, José
+                Eduardo Saroba; NETO, Elias Salomão Helou. Uma Ferramenta
+                Baseada em Busca Tabu para Alocação de Docentes. In: BOOK OF
+                ABSTRACTS OF THE LVII BRAZILIAN SYMPOSIUM ON OPERATIONS
+                RESEARCH, 2025, Gramado. Anais eletrônicos..., Galoá, 2025.
+                Disponível em:{" "}
                 &lt;https://proceedings.science/sbpo-2025/trabalhos/uma-ferramenta-baseada-em-busca-tabu-para-alocacao-de-docentes?lang=pt-br&gt;
                 Acesso em: 26 Out. 2025.
               </Typography>
@@ -286,7 +281,7 @@ export default function Home() {
             fontWeight="bold"
             gutterBottom
           >
-            Autores
+            {t("authors.title")}
           </Typography>
           <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
             {autores.map((autor) => (

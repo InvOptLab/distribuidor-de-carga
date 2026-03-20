@@ -35,7 +35,7 @@ import {
 } from "@mui/icons-material";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
-import { getPriorityColor } from "@/app/atribuicoes";
+import { getPriorityColor } from "@/app/[locale]/atribuicoes";
 import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 import ConstraintParameters from "@/components/Constraints/ConstraintParameters";
 
@@ -46,16 +46,16 @@ export default function ObjectiveConfig() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState<string | null>(
-    null
+    null,
   );
   const [multiplierTable, setMultiplierTable] = useState(
-    new Map<number, number>()
+    new Map<number, number>(),
   );
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   // Função mais robusta que verifica de múltiplas formas
   const componentHasMultiplierTable = (
-    component: ObjectiveComponent<any>
+    component: ObjectiveComponent<any>,
   ): boolean => {
     // Método 1: Verificar se a propriedade existe diretamente
     if ("tabelaMultiplicadores" in component) return true;
@@ -85,19 +85,19 @@ export default function ObjectiveConfig() {
   };
 
   const activeCount = Array.from(objectiveComponents.values()).filter(
-    (c) => c.isActive
+    (c) => c.isActive,
   ).length;
 
   const handleComponentToggle = (
     componentName: string,
-    currentState: boolean
+    currentState: boolean,
   ) => {
     // Verificar se é a última componente ativa
     if (currentState && activeCount === 1) {
       addAlerta(
         "Pelo menos uma componente da função objetivo deve permanecer ativa",
         "warning",
-        4
+        4,
       );
       return;
     }
@@ -166,7 +166,7 @@ export default function ObjectiveConfig() {
       addAlerta(
         `Configuração padrão aplicada para ${componentName}. Será usado o cálculo exponencial 2^(${maiorPrioridade} - p)`,
         "success",
-        5
+        5,
       );
     }
   };
@@ -247,7 +247,7 @@ export default function ObjectiveConfig() {
   const handleObjectiveParamChange = (
     componentName: string,
     paramKey: string,
-    newValue: any
+    newValue: any,
   ) => {
     const newComponents = new Map(objectiveComponents);
     const component = newComponents.get(componentName);
@@ -259,7 +259,7 @@ export default function ObjectiveConfig() {
       setObjectiveComponents(newComponents);
     } else {
       console.error(
-        `Parâmetro "${paramKey}" não encontrado no componente "${componentName}"`
+        `Parâmetro "${paramKey}" não encontrado no componente "${componentName}"`,
       );
     }
   };
@@ -375,7 +375,7 @@ export default function ObjectiveConfig() {
                                 component.description ||
                                   "Sem descrição disponível",
                                 "info",
-                                8
+                                8,
                               )
                             }
                           >
@@ -567,7 +567,7 @@ export default function ObjectiveConfig() {
                             sx={{
                               backgroundColor: getPriorityColor(
                                 priority,
-                                maiorPrioridade
+                                maiorPrioridade,
                               ),
                             }}
                             size="small"
@@ -597,7 +597,7 @@ export default function ObjectiveConfig() {
                         </TableCell>
                       </TableRow>
                     );
-                  }
+                  },
                 )}
               </TableBody>
             </Table>

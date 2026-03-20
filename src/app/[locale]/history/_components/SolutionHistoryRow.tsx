@@ -17,7 +17,7 @@ import { useAlertsContext } from "@/context/Alerts";
 import SolutionHistoryStatistics, {
   TreeDisciplina,
 } from "./SolutionHistoryStatistics";
-import { exportJson, getFormattedDate } from "@/app/atribuicoes";
+import { exportJson, getFormattedDate } from "@/app/[locale]/atribuicoes";
 import { useHistoryComponentContext } from "../context/history.context";
 import { isMILP } from "@/algoritmo/communs/utils";
 import { MathModelDisplay } from "@/components/MathModelDisplay";

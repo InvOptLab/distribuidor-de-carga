@@ -1,3 +1,4 @@
+"use client";
 import Constraint from "@/algoritmo/abstractions/Constraint";
 import { NeighborhoodFunction } from "@/algoritmo/abstractions/NeighborhoodFunction";
 import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
@@ -23,7 +24,7 @@ import { IteracoesSemModificacao } from "@/algoritmo/communs/StopCriteria/Iterac
 import { Objective } from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/Objective";
 import SameObjective from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/SameObjective";
 import { AspirationCriteria } from "@/algoritmo/metodos/TabuSearch/Classes/Abstract/AspirationCriteria";
-import { AlgorithmType } from "@/app/types/algorithm-types";
+import { AlgorithmType } from "@/app/[locale]/types/algorithm-types";
 import { createContext, useContext, useState } from "react";
 
 type NeighborhoodEntry = {
