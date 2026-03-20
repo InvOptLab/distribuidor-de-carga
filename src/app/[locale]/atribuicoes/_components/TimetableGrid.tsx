@@ -32,7 +32,8 @@ const stickyHeaderCellSx = {
   backgroundColor: "background.paper", // Evita transparência no scroll
   zIndex: 3, // Header da coluna sticky
   borderRight: "1px solid rgba(224, 224, 224, 1)",
-  borderBottom: "1px solid rgba(224, 224, 224, 1)",
+  borderBottom: "1px solid",
+  borderColor: "divider",
 };
 
 const stickyBodyCellSx = {
@@ -72,7 +73,7 @@ export default function TimetableGrid({
         id_disciplina: string;
         prioridade: number;
       }[];
-    } | null
+    } | null,
   ) => {
     if (atribuicao) {
       handleOnMouseEnterDocente(atribuicao.nome);
@@ -128,7 +129,8 @@ export default function TimetableGrid({
                       backgroundColor: "white",
                       margin: 0,
                       padding: 0, // O HeaderCell controla seu padding
-                      borderBottom: "1px solid rgba(224, 224, 224, 1)",
+                      borderBottom: "1px solid",
+                      borderColor: "divider",
                       borderRight: "1px solid rgba(224, 224, 224, 1)",
                       verticalAlign: "top",
                     }}
@@ -141,7 +143,7 @@ export default function TimetableGrid({
                       setParentHoveredCourse={setHoveredCourse}
                     />
                   </TableCell>
-                )
+                ),
             )}
           </TableRow>
         </TableHead>
@@ -193,7 +195,7 @@ export default function TimetableGrid({
                   filteredDisciplinas.find(
                     (disciplina) =>
                       disciplina.id == prioridade.id_disciplina &&
-                      disciplina.ativo
+                      disciplina.ativo,
                   ) && (
                     <TableCell
                       key={
@@ -212,7 +214,8 @@ export default function TimetableGrid({
                           tipo_trava: TipoTrava.Cell,
                         }),
                         padding: "2px",
-                        borderBottom: "1px solid rgba(224, 224, 224, 1)",
+                        borderBottom: "1px solid",
+                        borderColor: "divider",
                         borderRight: "1px solid rgba(224, 224, 224, 1)",
                         transition: "background-color 0.2s ease",
                         // Highlight sutil para linha/coluna hover
@@ -241,13 +244,13 @@ export default function TimetableGrid({
                             isInRoom: isInRoom,
                             isOwner: isOwner,
                             config: config,
-                          }
+                          },
                         )
                       }
                       onMouseEnter={() =>
                         handleOnMouseEnter(
                           atribuicao.nome,
-                          prioridade.id_disciplina
+                          prioridade.id_disciplina,
                         )
                       }
                       onMouseLeave={() => {
@@ -257,7 +260,7 @@ export default function TimetableGrid({
                     >
                       {prioridade.prioridade}
                     </TableCell>
-                  )
+                  ),
               )}
             </TableRow>
           ))}

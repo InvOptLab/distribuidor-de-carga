@@ -71,7 +71,7 @@ export default function TimetableDataGrid({
           const formulario = formularios.find(
             (f) =>
               f.nome_docente === docente.nome &&
-              f.id_disciplina === disciplina.id
+              f.id_disciplina === disciplina.id,
           );
           row[disciplina.id] = formulario?.prioridade || null;
         });
@@ -229,13 +229,13 @@ export default function TimetableDataGrid({
           const isAtribuido = atribuicoes.some(
             (atrib) =>
               atrib.id_disciplina === disciplina.id &&
-              atrib.docentes.includes(nomeDocente)
+              atrib.docentes.includes(nomeDocente),
           );
 
           const isTravado = travas.some(
             (trava) =>
               trava.id_disciplina === disciplina.id &&
-              trava.nome_docente === nomeDocente
+              trava.nome_docente === nomeDocente,
           );
 
           const isHovered =
@@ -274,13 +274,13 @@ export default function TimetableDataGrid({
 
                 ...(isHovered
                   ? {
-                      // ESTADO HOVER (LINHA/COLUNA)
-                      border: "4px solid rgba(25, 118, 210, 1)", // Borda grossa azul (como no seu original)
+                      border: "4px solid",
+                      borderColor: "primary.main",
                       zIndex: 15,
                     }
                   : {
-                      // ESTADO PADRÃO
-                      border: "1px solid rgba(224, 224, 224, 0.5)", // Borda fina cinza
+                      border: "1px solid",
+                      borderColor: "divider",
                       zIndex: 1,
                     }),
 
@@ -319,7 +319,7 @@ export default function TimetableDataGrid({
             </Box>
           );
         },
-      })
+      }),
     );
 
     return [docenteColumn, ...disciplinaColumns];
@@ -361,21 +361,20 @@ export default function TimetableDataGrid({
         disableColumnMenu
         hideFooter
         disableAutosize
-        // disableColumnFilter
-        // disableColumnSorting
         sx={{
           border: "none",
           "& .MuiDataGrid-cell": {
             padding: 0,
-            // border: "1px solid rgba(224, 224, 224, 0.5)",
           },
           "& .MuiDataGrid-columnHeader": {
             padding: 0,
-            border: "1px solid rgba(224, 224, 224, 1)",
+            border: "1px solid",
+            borderColor: "divider",
             backgroundColor: "background.paper",
           },
           "& .MuiDataGrid-columnHeaders": {
-            borderBottom: "2px solid rgba(224, 224, 224, 1)",
+            borderBottom: "2px solid",
+            borderColor: "divider",
           },
           "& .MuiDataGrid-row": {
             "&:hover": {
@@ -388,19 +387,6 @@ export default function TimetableDataGrid({
           "& .MuiDataGrid-columnHeader:focus": {
             outline: "none",
           },
-          // // NOVOS ESTILOS PARA "PINAR" A COLUNA 'docente'
-          // "& .MuiDataGrid-columnHeader[data-field='docente']": {
-          //   position: "sticky",
-          //   left: 0,
-          //   zIndex: 10, // Garante que o header fixo fique acima das células
-          //   backgroundColor: "background.paper",
-          // },
-          // "& .MuiDataGrid-cell[data-field='docente']": {
-          //   position: "sticky",
-          //   left: 0,
-          //   zIndex: 5, // Fica acima das células normais, mas abaixo do header
-          //   backgroundColor: "background.paper",
-          // },
         }}
       />
     </Box>

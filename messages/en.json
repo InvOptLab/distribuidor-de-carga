@@ -54,5 +54,32 @@
         }
       }
     }
+  },
+  "Accessibility": {
+    "goToContent": "Go to Content",
+    "goToMenu": "Go to Menu",
+    "decreaseFontSize": "Decrease font size",
+    "increaseFontSize": "Increase font size",
+    "highContrast": "high Contrast",
+    "contrast": "Contrast"
+  },
+  "NavBar": {
+    "home": "Home",
+    "data": "Data",
+    "register": "Register",
+    "loadData": "Load data",
+    "selection": "Selection",
+    "settings": "Settings",
+    "assignments": "Assignments",
+    "table": "Table",
+    "blocks": "Blocks",
+    "spreadsheet": "Spreadsheet",
+    "solutions": "Solutions",
+    "history": "History",
+    "statistics": "Statistics",
+    "compareSolutions": "Sompare Solutions",
+    "calendar": "Calendar",
+    "rooms": "Rooms",
+    "navigationMenu": "Navigation Menu"
   }
 }

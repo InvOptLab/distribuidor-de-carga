@@ -1,3 +1,4 @@
+"use client";
 import React, { EffectCallback, JSX, useEffect } from "react";
 
 type ExpectedReadyState =
@@ -18,13 +19,13 @@ const isReadyStateMatch = (expected?: ExpectedReadyState): boolean => {
 type useReadyStateEffect = (
   effect: EffectCallback,
   deps?: any[],
-  onState?: ExpectedReadyState
+  onState?: ExpectedReadyState,
 ) => void;
 
 const useReadyStateEffect: useReadyStateEffect = (
   effect,
   deps = [],
-  onState = "complete"
+  onState = "complete",
 ): void => {
   useEffect(() => {
     const destructors: Array<() => void> = [
@@ -70,7 +71,7 @@ export function VLibras({ forceOnload }: Props): JSX.Element {
       document.head.appendChild(script);
     },
     [forceOnload],
-    "complete"
+    "complete",
   );
 
   return (

@@ -54,5 +54,32 @@
         }
       }
     }
+  },
+  "Accessibility": {
+    "goToContent": "Ir para o conteúdo",
+    "goToMenu": "Ir para o menu",
+    "decreaseFontSize": "Diminuir fonte",
+    "increaseFontSize": "Aumentar fonte",
+    "highContrast": "Alto Contraste",
+    "contrast": "Contraste"
+  },
+  "NavBar": {
+    "home": "Home",
+    "data": "Dados",
+    "register": "Cadastrar",
+    "loadData": "Carregar dados",
+    "selection": "Seleção",
+    "settings": "Configurações",
+    "assignments": "Atribuições",
+    "table": "Tabela",
+    "blocks": "Blocos",
+    "spreadsheet": "Planilha",
+    "solutions": "Soluções",
+    "history": "Histórico",
+    "statistics": "Estatísticas",
+    "compareSolutions": "Comparar Soluções",
+    "calendar": "Calendário",
+    "rooms": "Salas",
+    "navigationMenu": "Menu de navegação"
   }
 }

@@ -10,7 +10,7 @@ import type {
   Formulario,
   Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { HistoricoSolucao } from "./utils";
 
 //import _ from "lodash"; // Comparação entre objetos de forma otimizada
@@ -78,6 +78,63 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
     idHistorico: undefined,
   });
 
+  // Flag para saber se já recuperamos os dados do localStorage (evita problemas de hidratação do SSR)
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    const loadData = (key: string) => {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : null;
+    };
+
+    if (loadData("global_docentes")) setDocentes(loadData("global_docentes"));
+    if (loadData("global_disciplinas"))
+      setDisciplinas(loadData("global_disciplinas"));
+    if (loadData("global_atribuicoes"))
+      setAtribuicoes(loadData("global_atribuicoes"));
+    if (loadData("global_formularios"))
+      setFormularios(loadData("global_formularios"));
+    if (loadData("global_travas")) setTravas(loadData("global_travas"));
+    if (loadData("global_solucaoAtual"))
+      setSolucaoAtual(loadData("global_solucaoAtual"));
+
+    // O objeto Map precisa ser reconstruído pois o JSON não o suporta nativamente
+    const savedHistorico = localStorage.getItem("global_historicoSolucoes");
+    if (savedHistorico) {
+      setHistoricoSolucoes(new Map(JSON.parse(savedHistorico)));
+    }
+
+    setIsHydrated(true); // Libera o salvamento automático a partir de agora
+  }, []);
+
+  // Salvar os dados nas alterações
+  useEffect(() => {
+    // Só começa a salvar depois que carregou, para não sobrescrever os dados com arrays vazios
+    if (!isHydrated) return;
+
+    localStorage.setItem("global_docentes", JSON.stringify(docentes));
+    localStorage.setItem("global_disciplinas", JSON.stringify(disciplinas));
+    localStorage.setItem("global_atribuicoes", JSON.stringify(atribuicoes));
+    localStorage.setItem("global_formularios", JSON.stringify(formularios));
+    localStorage.setItem("global_travas", JSON.stringify(travas));
+    localStorage.setItem("global_solucaoAtual", JSON.stringify(solucaoAtual));
+
+    // Converte o Map para Array para poder salvar como JSON
+    localStorage.setItem(
+      "global_historicoSolucoes",
+      JSON.stringify(Array.from(historicoSolucoes.entries())),
+    );
+  }, [
+    isHydrated,
+    docentes,
+    disciplinas,
+    atribuicoes,
+    formularios,
+    travas,
+    historicoSolucoes,
+    solucaoAtual,
+  ]);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -97,7 +154,7 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
         solucaoAtual,
       }}
     >
-      {children}
+      {isHydrated ? children : null}
     </GlobalContext.Provider>
   );
 }
@@ -128,7 +185,7 @@ export function useGlobalContext() {
         // Encontra a atribuição correspondente no array copiado
         const index = newAtribuicoes.findIndex(
           (atribuicao) =>
-            atribuicao.id_disciplina === newAtribuicao.id_disciplina
+            atribuicao.id_disciplina === newAtribuicao.id_disciplina,
         );
 
         if (index !== -1) {
@@ -137,7 +194,7 @@ export function useGlobalContext() {
             ...newAtribuicoes[index],
             docentes: [
               ...newAtribuicoes[index].docentes.filter(
-                (docente) => !newAtribuicao.docentes.includes(docente)
+                (docente) => !newAtribuicao.docentes.includes(docente),
               ),
               ...newAtribuicao.docentes,
             ],
@@ -156,12 +213,12 @@ export function useGlobalContext() {
    */
   function updateAtribuicoesDocente(
     nome_docente: string,
-    id_disciplina: string
+    id_disciplina: string,
   ) {
     const newAtribuicoes = [...context.atribuicoes];
 
     const index = newAtribuicoes.findIndex(
-      (atribuicao) => atribuicao.id_disciplina === id_disciplina
+      (atribuicao) => atribuicao.id_disciplina === id_disciplina,
     );
 
     if (index !== -1) {
@@ -170,7 +227,7 @@ export function useGlobalContext() {
         ...newAtribuicoes[index],
         docentes: [
           ...newAtribuicoes[index].docentes.filter(
-            (docente) => docente !== nome_docente
+            (docente) => docente !== nome_docente,
           ),
         ],
       };

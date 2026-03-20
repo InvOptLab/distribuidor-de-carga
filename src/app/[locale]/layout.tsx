@@ -1,11 +1,8 @@
-//import AccessibilityBar from "@/components/AccessibilityBar";
-//import { AccessibilityProvider } from "@/context/Accessibility";
 import Navbar from "@/components/Navbar";
-// import { VLibras } from "@/components/VLibras";
+import { VLibras } from "@/components/VLibras";
 import { AlertsWrapper } from "@/context/Alerts";
 import { AlgorithmWrapper } from "@/context/Algorithm";
 import { GlobalWrapper } from "@/context/Global";
-import { ProcessWrapper } from "@/context/Process";
 import { AvatarChatProvider } from "@/context/AvatarChat/AvatarChatContext";
 import { AvatarChatWidget } from "@/components/AvatarChat/AvatarChatWidget";
 
@@ -16,6 +13,8 @@ import { CollaborationProvider } from "@/context/Collaboration";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import { HistorySolutionProvider } from "./history/context/history.context";
 import { getMessages } from "next-intl/server";
+import { AccessibilityProvider } from "@/context/Accessibility";
+import AccessibilityBar from "@/components/AccessibilityBar";
 
 export default async function RootLayout({
   children,
@@ -47,32 +46,29 @@ export default async function RootLayout({
     <html lang={locale}>
       <body style={{ margin: 0 }}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          {/* <AccessibilityProvider>
-          <AccessibilityBar /> */}
-          {/* <ColorModeContext.Provider value={colorMode}> */}
-          {/* <ThemeProvider theme={null}> */}
-          <CssBaseline />
-          <AvatarChatProvider>
-            <CollaborationProvider>
-              <Navbar />
-              <GlobalWrapper>
-                <ProcessWrapper>
+          <AccessibilityProvider>
+            <AccessibilityBar />
+            <CssBaseline />
+            <AvatarChatProvider>
+              <CollaborationProvider>
+                <Navbar />
+                <GlobalWrapper>
                   <AlgorithmWrapper>
                     <AlertsWrapper>
                       <HistorySolutionProvider>
-                        <div style={{ padding: "15px" }}>{children}</div>
+                        <div id="main-content" style={{ padding: "15px" }}>
+                          {children}
+                        </div>
                         <AvatarChatWidget />
                       </HistorySolutionProvider>
                     </AlertsWrapper>
                   </AlgorithmWrapper>
-                </ProcessWrapper>
-              </GlobalWrapper>
-            </CollaborationProvider>
-          </AvatarChatProvider>
-          {/* </ThemeProvider> */}
-          {/* </ColorModeContext.Provider> */}
-          {/* <VLibras forceOnload /> */}
-          {/* </AccessibilityProvider> */}
+                </GlobalWrapper>
+              </CollaborationProvider>
+            </AvatarChatProvider>
+
+            <VLibras forceOnload />
+          </AccessibilityProvider>
         </NextIntlClientProvider>
       </body>
     </html>
