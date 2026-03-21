@@ -53,6 +53,280 @@
           "lotSizing": "Lot Sizing Problems, Operations Research, Heuristics and Evolutionary Algorithms"
         }
       }
+    },
+    "Accessibility": {
+      "title": "Accessibility",
+      "subtitle": "Learn about the accessibility features available in this tool and how to use them",
+      "badges": {
+        "levelAA": "Level AA Compliance"
+      },
+      "intro": {
+        "title": "Our Commitment to Accessibility",
+        "p1": "We are committed to ensuring that this tool is accessible to all users, regardless of their abilities or limitations. We follow the Web Content Accessibility Guidelines (WCAG) 2.1 to ensure an inclusive experience.",
+        "p2": "This page describes the accessibility features available and how to use them to improve your experience with the application."
+      },
+      "features": {
+        "title": "Accessibility Features",
+        "description": "Explore the accessibility resources implemented in this tool to improve your browsing experience.",
+        "items": {
+          "skipLinks": {
+            "title": "Skip Links",
+            "description": "Quick links at the top of the page that allow you to skip directly to the main content or navigation menu.",
+            "howToUse": "Use the links 'Go to Content (1)' and 'Go to Menu (2)' in the accessibility bar at the top of the page."
+          },
+          "fontSize": {
+            "title": "Font Size Adjustment",
+            "description": "Increase or decrease the font size throughout the application to improve readability according to your needs.",
+            "howToUse": "Click the 'A-' and 'A+' buttons in the accessibility bar to decrease or increase the font size.",
+            "demo": "Test enlarging"
+          },
+          "highContrast": {
+            "title": "High Contrast Mode",
+            "description": "Activates a high contrast color scheme (black, white, and yellow) to help people with low vision.",
+            "howToUse": "Click the 'Contrast' button in the accessibility bar to toggle high contrast mode.",
+            "demo": "Test contrast"
+          },
+          "keyboardNav": {
+            "title": "Keyboard Navigation",
+            "description": "All features of the application can be accessed using only the keyboard, without the need for a mouse.",
+            "howToUse": "Use Tab to navigate between elements, Enter to activate, and Escape to close dialogs."
+          },
+          "screenReader": {
+            "title": "Screen Reader Support",
+            "description": "All elements have accessible labels (ARIA) that are read by screen readers like NVDA, JAWS, and VoiceOver.",
+            "howToUse": "Use your preferred screen reader to navigate the application."
+          },
+          "vlibras": {
+            "title": "VLibras - Sign Language",
+            "description": "Integration with VLibras, a tool that translates digital content into Brazilian Sign Language (Libras).",
+            "howToUse": "Click the VLibras icon (blue hand) in the bottom right corner to activate the sign language interpreter."
+          },
+          "i18n": {
+            "title": "Internationalization",
+            "description": "The application is available in Portuguese and English to serve a broader audience.",
+            "howToUse": "Use the 'PT' and 'EN' buttons in the accessibility bar to change the language."
+          },
+          "focusIndicator": {
+            "title": "Focus Indicators",
+            "description": "Visible visual indicators that show which element is currently focused for keyboard users.",
+            "howToUse": "Navigate using the keyboard and observe the colored borders around focused elements."
+          }
+        }
+      },
+      "shortcuts": {
+        "title": "Keyboard Shortcuts",
+        "description": "Use these keyboard shortcuts to navigate more efficiently through the application.",
+        "tableLabel": "List of keyboard shortcuts",
+        "columns": {
+          "shortcut": "Shortcut",
+          "action": "Action"
+        },
+        "items": {
+          "tab": {
+            "key": "Tab",
+            "action": "Move to the next interactive element"
+          },
+          "shiftTab": {
+            "key": "Shift + Tab",
+            "action": "Move to the previous interactive element"
+          },
+          "enter": {
+            "key": "Enter",
+            "action": "Activate the focused element (button, link)"
+          },
+          "escape": {
+            "key": "Escape",
+            "action": "Close dialogs and menus"
+          },
+          "num1": {
+            "key": "1",
+            "action": "Go directly to the main content (via skip link)"
+          },
+          "num2": {
+            "key": "2",
+            "action": "Go directly to the navigation menu (via skip link)"
+          }
+        }
+      },
+      "wcag": {
+        "title": "WCAG 2.1 Compliance",
+        "description": "Below are the WCAG 2.1 criteria we meet in this tool, organized by the four main principles.",
+        "columns": {
+          "id": "ID",
+          "criterion": "Criterion",
+          "level": "Level",
+          "description": "Description",
+          "implementation": "Implementation"
+        },
+        "principles": {
+          "perceivable": {
+            "title": "Perceivable",
+            "description": "Information and user interface components must be presentable to users in ways they can perceive.",
+            "criteriaCount": "5 criteria",
+            "tableLabel": "WCAG criteria for perceivable principle"
+          },
+          "operable": {
+            "title": "Operable",
+            "description": "User interface components and navigation must be operable.",
+            "criteriaCount": "4 criteria",
+            "tableLabel": "WCAG criteria for operable principle"
+          },
+          "understandable": {
+            "title": "Understandable",
+            "description": "Information and the operation of user interface must be understandable.",
+            "criteriaCount": "3 criteria",
+            "tableLabel": "WCAG criteria for understandable principle"
+          },
+          "robust": {
+            "title": "Robust",
+            "description": "Content must be robust enough that it can be interpreted by a wide variety of assistive technologies.",
+            "criteriaCount": "2 criteria",
+            "tableLabel": "WCAG criteria for robust principle"
+          }
+        },
+        "criteria": {
+          "nonTextContent": {
+            "id": "1.1.1",
+            "name": "Non-text Content",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Provide text alternatives for non-text content",
+            "implementation": "Icons with aria-labels and alt text for images"
+          },
+          "infoRelationships": {
+            "id": "1.3.1",
+            "name": "Info and Relationships",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Programmatically determine information structure",
+            "implementation": "Semantic HTML and proper ARIA roles"
+          },
+          "meaningfulSequence": {
+            "id": "1.3.2",
+            "name": "Meaningful Sequence",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Present content in a meaningful sequence",
+            "implementation": "Logical reading order in DOM"
+          },
+          "useOfColor": {
+            "id": "1.4.1",
+            "name": "Use of Color",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Color is not the only way to convey information",
+            "implementation": "Icons and text complement colors"
+          },
+          "contrastMinimum": {
+            "id": "1.4.3",
+            "name": "Contrast (Minimum)",
+            "level": "AA",
+            "principle": "perceivable",
+            "description": "Text has minimum contrast ratio of 4.5:1",
+            "implementation": "High contrast mode and careful color selection"
+          },
+          "resizeText": {
+            "id": "1.4.4",
+            "name": "Resize Text",
+            "level": "AA",
+            "principle": "perceivable",
+            "description": "Text can be resized up to 200%",
+            "implementation": "A+/A- font size controls"
+          },
+          "keyboard": {
+            "id": "2.1.1",
+            "name": "Keyboard",
+            "level": "A",
+            "principle": "operable",
+            "description": "All functionality is available via keyboard",
+            "implementation": "Full keyboard navigation support"
+          },
+          "focusOrder": {
+            "id": "2.4.3",
+            "name": "Focus Order",
+            "level": "A",
+            "principle": "operable",
+            "description": "Components receive focus in a logical order",
+            "implementation": "Natural tab order follows visual layout"
+          },
+          "linkPurpose": {
+            "id": "2.4.4",
+            "name": "Link Purpose (In Context)",
+            "level": "A",
+            "principle": "operable",
+            "description": "Purpose of each link can be determined",
+            "implementation": "Descriptive link text and aria-labels"
+          },
+          "focusVisible": {
+            "id": "2.4.7",
+            "name": "Focus Visible",
+            "level": "AA",
+            "principle": "operable",
+            "description": "Keyboard focus indicator is visible",
+            "implementation": "Custom focus styles with visible outlines"
+          },
+          "languageOfPage": {
+            "id": "3.1.1",
+            "name": "Language of Page",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Default language can be programmatically determined",
+            "implementation": "lang attribute on HTML element"
+          },
+          "consistentNav": {
+            "id": "3.2.3",
+            "name": "Consistent Navigation",
+            "level": "AA",
+            "principle": "understandable",
+            "description": "Navigation is consistent across pages",
+            "implementation": "Fixed navbar and accessibility bar"
+          },
+          "errorIdentification": {
+            "id": "3.3.1",
+            "name": "Error Identification",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Input errors are identified and described",
+            "implementation": "Form validation with clear error messages"
+          },
+          "labelsInstructions": {
+            "id": "3.3.2",
+            "name": "Labels or Instructions",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Labels or instructions are provided for input",
+            "implementation": "Form labels and helper text"
+          }
+        }
+      },
+      "resources": {
+        "title": "Additional Resources",
+        "learnMore": "Learn more",
+        "openNewTab": "opens in new tab",
+        "items": {
+          "wcagGuide": {
+            "title": "WCAG 2.1 Guidelines",
+            "description": "Official W3C documentation on web accessibility guidelines.",
+            "link": "https://www.w3.org/WAI/WCAG21/quickref/"
+          },
+          "vlibrasInfo": {
+            "title": "VLibras Suite",
+            "description": "Free tools for accessibility in Brazilian Sign Language (Libras).",
+            "link": "https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/vlibras"
+          },
+          "accessibilityStatement": {
+            "title": "Accessibility Statement",
+            "description": "Learn more about our practices and commitment to accessibility.",
+            "link": "https://github.com/InvOptLab/distribuidor-de-carga"
+          }
+        }
+      },
+      "feedback": {
+        "title": "We Want to Hear from You!",
+        "description": "If you encounter any accessibility barriers or have suggestions for improvement, please let us know.",
+        "linkText": "Report issues on GitHub",
+        "linkLabel": "Report accessibility issues on GitHub, opens in new tab"
+      }
     }
   },
   "Accessibility": {
@@ -61,7 +335,9 @@
     "decreaseFontSize": "Decrease font size",
     "increaseFontSize": "Increase font size",
     "highContrast": "high Contrast",
-    "contrast": "Contrast"
+    "contrast": "Contrast",
+    "accessibilityPage": "Accessibility",
+    "accessibilityPageTooltip": "Learn more about accessibility features."
   },
   "NavBar": {
     "home": "Home",

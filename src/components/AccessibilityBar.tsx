@@ -1,16 +1,11 @@
 "use client";
 
 import React from "react";
-import {
-  Box,
-  Container,
-  Button,
-  Divider,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
+import { Box, Container, Button, Divider, Tooltip } from "@mui/material";
+import { Accessibility } from "@mui/icons-material";
 import { useAccessibility } from "@/context/Accessibility";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 const AccessibilityBar: React.FC = () => {
@@ -140,6 +135,46 @@ const AccessibilityBar: React.FC = () => {
               </Button>
             </Tooltip>
           </Box>
+
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{ borderColor: "rgba(255,255,255,0.3)", my: 0.5 }}
+          />
+
+          <Tooltip title={t("accessibilityPageTooltip")}>
+            <Button
+              component={Link}
+              href={`/${pathname?.split("/")[1] || "pt-BR"}/acessibilidade`}
+              sx={{
+                color: pathname?.includes("/acessibilidade")
+                  ? "#FFF333"
+                  : "#FFF",
+                minWidth: "auto",
+                p: 0.5,
+                fontSize: "0.875rem",
+                textTransform: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
+                fontWeight: pathname?.includes("/acessibilidade")
+                  ? "bold"
+                  : "normal",
+                "&:hover": { color: "#FFF333" },
+                "&:focus-visible": {
+                  outline: "2px solid #FFF333",
+                  outlineOffset: "2px",
+                },
+              }}
+              aria-label={t("accessibilityPageTooltip")}
+              aria-current={
+                pathname?.includes("/acessibilidade") ? "page" : undefined
+              }
+            >
+              <Accessibility sx={{ fontSize: "1rem" }} aria-hidden="true" />
+              {t("accessibilityPage")}
+            </Button>
+          </Tooltip>
 
           <Divider
             orientation="vertical"

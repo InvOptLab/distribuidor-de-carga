@@ -53,6 +53,280 @@
           "lotSizing": "Problemas de Dimensionamento de Lotes, Pesquisa Operacional, Heurísticas e Algoritmos Evolutivos"
         }
       }
+    },
+    "Accessibility": {
+      "title": "Acessibilidade",
+      "subtitle": "Aprenda sobre os recursos de acessibilidade disponíveis nesta ferramenta e como usá-los",
+      "badges": {
+        "levelAA": "Conformidade Nível AA"
+      },
+      "intro": {
+        "title": "Nosso Compromisso com a Acessibilidade",
+        "p1": "Estamos comprometidos em garantir que esta ferramenta seja acessível a todos os usuários, independentemente de suas habilidades ou limitações. Seguimos as Diretrizes de Acessibilidade para Conteúdo Web (WCAG) 2.1 para garantir uma experiência inclusiva.",
+        "p2": "Esta página descreve os recursos de acessibilidade disponíveis e como usá-los para melhorar sua experiência com o aplicativo."
+      },
+      "features": {
+        "title": "Recursos de Acessibilidade",
+        "description": "Explore os recursos de acessibilidade implementados nesta ferramenta para melhorar sua experiência de navegação.",
+        "items": {
+          "skipLinks": {
+            "title": "Links de Atalho",
+            "description": "Links rápidos no topo da página que permitem pular diretamente para o conteúdo principal ou menu de navegação.",
+            "howToUse": "Use os links 'Ir para o Conteúdo (1)' e 'Ir para o Menu (2)' na barra de acessibilidade no topo da página."
+          },
+          "fontSize": {
+            "title": "Ajuste de Tamanho da Fonte",
+            "description": "Aumente ou diminua o tamanho da fonte em todo o aplicativo para melhorar a legibilidade de acordo com suas necessidades.",
+            "howToUse": "Clique nos botões 'A-' e 'A+' na barra de acessibilidade para diminuir ou aumentar o tamanho da fonte.",
+            "demo": "Testar ampliação"
+          },
+          "highContrast": {
+            "title": "Modo de Alto Contraste",
+            "description": "Ativa um esquema de cores de alto contraste (preto, branco e amarelo) para ajudar pessoas com baixa visão.",
+            "howToUse": "Clique no botão 'Contraste' na barra de acessibilidade para alternar o modo de alto contraste.",
+            "demo": "Testar contraste"
+          },
+          "keyboardNav": {
+            "title": "Navegação por Teclado",
+            "description": "Todos os recursos do aplicativo podem ser acessados usando apenas o teclado, sem a necessidade de um mouse.",
+            "howToUse": "Use Tab para navegar entre os elementos, Enter para ativar e Esc para fechar caixas de diálogo."
+          },
+          "screenReader": {
+            "title": "Suporte a Leitor de Tela",
+            "description": "Todos os elementos possuem rótulos acessíveis (ARIA) que são lidos por leitores de tela como NVDA, JAWS e VoiceOver.",
+            "howToUse": "Use seu leitor de tela preferido para navegar no aplicativo."
+          },
+          "vlibras": {
+            "title": "VLibras - Língua de Sinais",
+            "description": "Integração com o VLibras, uma ferramenta que traduz conteúdos digitais para a Língua Brasileira de Sinais (Libras).",
+            "howToUse": "Clique no ícone do VLibras (mão azul) no canto inferior direito para ativar o intérprete de língua de sinais."
+          },
+          "i18n": {
+            "title": "Internacionalização",
+            "description": "O aplicativo está disponível em português e inglês para atender a um público mais amplo.",
+            "howToUse": "Use os botões 'PT' e 'EN' na barra de acessibilidade para alterar o idioma."
+          },
+          "focusIndicator": {
+            "title": "Indicadores de Foco",
+            "description": "Indicadores visuais visíveis que mostram qual elemento está focado no momento para usuários de teclado.",
+            "howToUse": "Navegue usando o teclado e observe as bordas coloridas ao redor dos elementos focados."
+          }
+        }
+      },
+      "shortcuts": {
+        "title": "Atalhos de Teclado",
+        "description": "Use estes atalhos de teclado para navegar com mais eficiência pelo aplicativo.",
+        "tableLabel": "Lista de atalhos de teclado",
+        "columns": {
+          "shortcut": "Atalho",
+          "action": "Ação"
+        },
+        "items": {
+          "tab": {
+            "key": "Tab",
+            "action": "Mover para o próximo elemento interativo"
+          },
+          "shiftTab": {
+            "key": "Shift + Tab",
+            "action": "Mover para o elemento interativo anterior"
+          },
+          "enter": {
+            "key": "Enter",
+            "action": "Ativar o elemento focado (botão, link)"
+          },
+          "escape": {
+            "key": "Esc",
+            "action": "Fechar caixas de diálogo e menus"
+          },
+          "num1": {
+            "key": "1",
+            "action": "Ir diretamente para o conteúdo principal (via link de atalho)"
+          },
+          "num2": {
+            "key": "2",
+            "action": "Ir diretamente para o menu de navegação (via link de atalho)"
+          }
+        }
+      },
+      "wcag": {
+        "title": "Conformidade WCAG 2.1",
+        "description": "Abaixo estão os critérios WCAG 2.1 que atendemos nesta ferramenta, organizados pelos quatro princípios principais.",
+        "columns": {
+          "id": "ID",
+          "criterion": "Critério",
+          "level": "Nível",
+          "description": "Descrição",
+          "implementation": "Implementação"
+        },
+        "principles": {
+          "perceivable": {
+            "title": "Perceptível",
+            "description": "As informações e os componentes da interface do usuário devem ser apresentados aos usuários de modo que eles possam percebê-los.",
+            "criteriaCount": "6 critérios",
+            "tableLabel": "Critérios WCAG para o princípio perceptível"
+          },
+          "operable": {
+            "title": "Operável",
+            "description": "Os componentes da interface do usuário e a navegação devem ser operáveis.",
+            "criteriaCount": "4 critérios",
+            "tableLabel": "Critérios WCAG para o princípio operável"
+          },
+          "understandable": {
+            "title": "Compreensível",
+            "description": "As informações e a operação da interface do usuário devem ser compreensíveis.",
+            "criteriaCount": "4 critérios",
+            "tableLabel": "Critérios WCAG para o princípio compreensível"
+          },
+          "robust": {
+            "title": "Robusto",
+            "description": "O conteúdo deve ser robusto o suficiente para poder ser interpretado por uma ampla variedade de tecnologias assistivas.",
+            "criteriaCount": "2 critérios",
+            "tableLabel": "Critérios WCAG para o princípio robusto"
+          }
+        },
+        "criteria": {
+          "nonTextContent": {
+            "id": "1.1.1",
+            "name": "Conteúdo Não Textual",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Fornecer alternativas de texto para conteúdo não textual",
+            "implementation": "Ícones com aria-labels e texto alternativo (alt) para imagens"
+          },
+          "infoRelationships": {
+            "id": "1.3.1",
+            "name": "Informações e Relações",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Determinar programaticamente a estrutura da informação",
+            "implementation": "HTML semântico e funções ARIA (roles) adequadas"
+          },
+          "meaningfulSequence": {
+            "id": "1.3.2",
+            "name": "Sequência Significativa",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Apresentar conteúdo em uma sequência significativa",
+            "implementation": "Ordem de leitura lógica no DOM"
+          },
+          "useOfColor": {
+            "id": "1.4.1",
+            "name": "Uso de Cor",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "A cor não é a única maneira de transmitir informações",
+            "implementation": "Ícones e texto complementam as cores"
+          },
+          "contrastMinimum": {
+            "id": "1.4.3",
+            "name": "Contraste (Mínimo)",
+            "level": "AA",
+            "principle": "perceivable",
+            "description": "O texto tem uma taxa de contraste mínima de 4.5:1",
+            "implementation": "Modo de alto contraste e seleção cuidadosa de cores"
+          },
+          "resizeText": {
+            "id": "1.4.4",
+            "name": "Redimensionar Texto",
+            "level": "AA",
+            "principle": "perceivable",
+            "description": "O texto pode ser redimensionado em até 200%",
+            "implementation": "Controles de tamanho de fonte A+/A-"
+          },
+          "keyboard": {
+            "id": "2.1.1",
+            "name": "Teclado",
+            "level": "A",
+            "principle": "operable",
+            "description": "Toda a funcionalidade está disponível via teclado",
+            "implementation": "Suporte completo à navegação por teclado"
+          },
+          "focusOrder": {
+            "id": "2.4.3",
+            "name": "Ordem do Foco",
+            "level": "A",
+            "principle": "operable",
+            "description": "Os componentes recebem foco em uma ordem lógica",
+            "implementation": "A ordem de tabulação natural segue o layout visual"
+          },
+          "linkPurpose": {
+            "id": "2.4.4",
+            "name": "Propósito do Link (Em Contexto)",
+            "level": "A",
+            "principle": "operable",
+            "description": "O propósito de cada link pode ser determinado",
+            "implementation": "Texto de link descritivo e aria-labels"
+          },
+          "focusVisible": {
+            "id": "2.4.7",
+            "name": "Foco Visível",
+            "level": "AA",
+            "principle": "operable",
+            "description": "O indicador de foco do teclado é visível",
+            "implementation": "Estilos de foco personalizados com contornos visíveis"
+          },
+          "languageOfPage": {
+            "id": "3.1.1",
+            "name": "Idioma da Página",
+            "level": "A",
+            "principle": "understandable",
+            "description": "O idioma padrão pode ser determinado programaticamente",
+            "implementation": "Atributo lang no elemento HTML"
+          },
+          "consistentNav": {
+            "id": "3.2.3",
+            "name": "Navegação Consistente",
+            "level": "AA",
+            "principle": "understandable",
+            "description": "A navegação é consistente em todas as páginas",
+            "implementation": "Barra de navegação fixa e barra de acessibilidade"
+          },
+          "errorIdentification": {
+            "id": "3.3.1",
+            "name": "Identificação de Erro",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Os erros de entrada são identificados e descritos",
+            "implementation": "Validação de formulário com mensagens de erro claras"
+          },
+          "labelsInstructions": {
+            "id": "3.3.2",
+            "name": "Rótulos ou Instruções",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Rótulos ou instruções são fornecidos para entrada de dados",
+            "implementation": "Rótulos de formulário e texto de ajuda"
+          }
+        }
+      },
+      "resources": {
+        "title": "Recursos Adicionais",
+        "learnMore": "Saiba mais",
+        "openNewTab": "abre em uma nova aba",
+        "items": {
+          "wcagGuide": {
+            "title": "Diretrizes WCAG 2.1",
+            "description": "Documentação oficial da W3C sobre as diretrizes de acessibilidade na web.",
+            "link": "https://www.w3.org/WAI/WCAG21/quickref/"
+          },
+          "vlibrasInfo": {
+            "title": "Site VLibras",
+            "description": "Ferramentas gratuitas para acessibilidade na Língua Brasileira de Sinais (Libras).",
+            "link": "https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/vlibras"
+          },
+          "accessibilityStatement": {
+            "title": "Declaração de Acessibilidade",
+            "description": "Saiba mais sobre nossas práticas e compromisso com a acessibilidade.",
+            "link": "https://github.com/InvOptLab/distribuidor-de-carga"
+          }
+        }
+      },
+      "feedback": {
+        "title": "Queremos Ouvir Você!",
+        "description": "Se você encontrar alguma barreira de acessibilidade ou tiver sugestões de melhoria, por favor, nos avise.",
+        "linkText": "Relatar problemas no GitHub",
+        "linkLabel": "Relatar problemas de acessibilidade no GitHub, abre em uma nova aba"
+      }
     }
   },
   "Accessibility": {
@@ -61,7 +335,9 @@
     "decreaseFontSize": "Diminuir fonte",
     "increaseFontSize": "Aumentar fonte",
     "highContrast": "Alto Contraste",
-    "contrast": "Contraste"
+    "contrast": "Contraste",
+    "accessibilityPage": "Acessibilidade",
+    "accessibilityPageTooltip": "Saiba mais sobre recursos de acessibilidade"
   },
   "NavBar": {
     "home": "Home",
