@@ -327,6 +327,81 @@
         "linkText": "Relatar problemas no GitHub",
         "linkLabel": "Relatar problemas de acessibilidade no GitHub, abre em uma nova aba"
       }
+    },
+    "Rooms": {
+      "time": {
+        "justNow": "Agora mesmo",
+        "minsAgo": "{count} min atrás",
+        "hoursAgo": "{count}h atrás",
+        "daysAgo": "{count}d atrás"
+      },
+      "errors": {
+        "fillAllFields": "Preencha todos os campos",
+        "createRoom": "Erro ao criar sala",
+        "enterName": "Informe seu nome",
+        "joinRoom": "Erro ao entrar na sala"
+      },
+      "header": {
+        "title": "Salas de Colaboração",
+        "subtitle": "Trabalhe em equipe em tempo real",
+        "refreshTooltip": "Atualizar lista de salas",
+        "createTooltip": "Criar uma nova sala de colaboração",
+        "createButton": "Criar Sala"
+      },
+      "search": {
+        "placeholder": "Buscar salas por nome ou criador...",
+        "activeRooms": "{count, plural, =0 {Nenhuma sala ativa} =1 {1 sala ativa} other {# salas ativas}}"
+      },
+      "list": {
+        "loading": "Carregando salas...",
+        "noRoomsFound": "Nenhuma sala encontrada",
+        "noActiveRooms": "Nenhuma sala ativa no momento",
+        "tryAnotherTerm": "Tente buscar por outro termo",
+        "beTheFirst": "Seja o primeiro a criar uma sala de colaboração!",
+        "createFirstButton": "Criar Primeira Sala"
+      },
+      "card": {
+        "creatorTooltip": "Criador da sala (Líder)",
+        "activeTooltip": "Sala ativa - usuários podem entrar",
+        "liveBadge": "Ao Vivo",
+        "creationDateTooltip": "Data de criação da sala",
+        "guestsCanEditTooltip": "Convidados podem editar a grade",
+        "guestsCanEditBadge": "Edição liberada",
+        "guestsCanFilterTooltip": "Convidados podem editar os filtros",
+        "guestsCanFilterBadge": "Filtros liberada",
+        "joinTooltip": "Entrar nesta sala como convidado",
+        "joinButton": "Entrar na Sala"
+      },
+      "createDialog": {
+        "title": "Criar Nova Sala",
+        "subtitle": "Você será o líder desta sala",
+        "roomNameTooltip": "Nome único que identifica sua sala",
+        "roomNameLabel": "Nome da Sala",
+        "roomNamePlaceholder": "Ex: Reunião de Planejamento",
+        "userNameTooltip": "Como você será identificado na sala",
+        "userNameLabel": "Seu Nome (Líder)",
+        "userNamePlaceholder": "Ex: João Silva",
+        "initialConfig": "Configurações Iniciais",
+        "guestsCanEditLabel": "Convidados podem editar",
+        "guestsCanEditDesc": "Permite que convidados façam alterações na grade. Você pode alterar isso depois.",
+        "guestsCanFilterLabel": "Convidados podem filtrar",
+        "guestsCanFilterDesc": "Permite que convidados façam alterações nos filtros grade. Você pode alterar isso depois.",
+        "cancelButton": "Cancelar",
+        "submitButton": "Criar Sala"
+      },
+      "joinDialog": {
+        "title": "Entrar em \"{roomName}\"",
+        "subtitle": "Você entrará como convidado",
+        "roomLeader": "Líder da Sala: {ownerName}",
+        "leaderControl": "O líder controla as permissões de edição da grade.",
+        "allowsEdit": " Esta sala permite que convidados editem.",
+        "readonly": " Esta sala está em modo somente leitura para convidados.",
+        "userNameTooltip": "Como você será identificado na sala",
+        "userNameLabel": "Seu Nome",
+        "userNamePlaceholder": "Ex: Maria Santos",
+        "cancelButton": "Cancelar",
+        "submitButton": "Entrar"
+      }
     }
   },
   "Accessibility": {

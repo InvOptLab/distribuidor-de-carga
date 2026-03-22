@@ -40,6 +40,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { supabase } from "@/lib/supabaseClient";
 import { useCollaboration, type RoomConfig } from "@/context/Collaboration";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 // Função para gerar cor consistente baseada no nome
 const stringToColor = (string: string) => {
@@ -55,22 +56,8 @@ const stringToColor = (string: string) => {
   return color;
 };
 
-// Função para formatar tempo relativo
-const formatRelativeTime = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMins < 1) return "Agora mesmo";
-  if (diffMins < 60) return `${diffMins} min atrás`;
-  if (diffHours < 24) return `${diffHours}h atrás`;
-  return `${diffDays}d atrás`;
-};
-
 export default function LobbyPage() {
+  const t = useTranslations("Pages.Rooms");
   const { createRoom, joinRoom, isInRoom } = useCollaboration();
   const router = useRouter();
 
@@ -90,6 +77,21 @@ export default function LobbyPage() {
     guestsCanEdit: false,
     guestsCanFilter: false,
   });
+
+  // Função movida para dentro para aceder às traduções do 't'
+  const formatRelativeTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return t("time.justNow");
+    if (diffMins < 60) return t("time.minsAgo", { count: diffMins });
+    if (diffHours < 24) return t("time.hoursAgo", { count: diffHours });
+    return t("time.daysAgo", { count: diffDays });
+  };
 
   // Se já estiver em sala, redireciona para a grade
   useEffect(() => {
@@ -113,7 +115,7 @@ export default function LobbyPage() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "rooms" },
-        fetchRooms
+        fetchRooms,
       )
       .subscribe();
     return () => {
@@ -123,7 +125,7 @@ export default function LobbyPage() {
 
   const handleCreate = async () => {
     if (!inputRoomName.trim() || !inputUserName.trim()) {
-      setCreateError("Preencha todos os campos");
+      setCreateError(t("errors.fillAllFields"));
       return;
     }
     try {
@@ -131,20 +133,20 @@ export default function LobbyPage() {
       await createRoom(
         inputRoomName.trim(),
         inputUserName.trim(),
-        initialConfig
+        initialConfig,
       );
       setCreateOpen(false);
       setInputRoomName("");
       setInputUserName("");
       setInitialConfig({ guestsCanEdit: false, guestsCanFilter: false });
     } catch (e: any) {
-      setCreateError(e.message || "Erro ao criar sala");
+      setCreateError(e.message || t("errors.createRoom"));
     }
   };
 
   const handleJoin = async () => {
     if (!selectedRoom || !inputUserName.trim()) {
-      setJoinError("Informe seu nome");
+      setJoinError(t("errors.enterName"));
       return;
     }
     try {
@@ -153,7 +155,7 @@ export default function LobbyPage() {
       setJoinOpen(false);
       setInputUserName("");
     } catch (e: any) {
-      setJoinError(e.message || "Erro ao entrar na sala");
+      setJoinError(e.message || t("errors.joinRoom"));
     }
   };
 
@@ -166,7 +168,7 @@ export default function LobbyPage() {
   const filteredRooms = rooms.filter(
     (room) =>
       room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      room.owner_name.toLowerCase().includes(searchQuery.toLowerCase())
+      room.owner_name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -202,15 +204,15 @@ export default function LobbyPage() {
               <GroupsIcon sx={{ fontSize: 40 }} />
               <Box>
                 <Typography variant="h4" fontWeight="bold">
-                  Salas de Colaboração
+                  {t("header.title")}
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Trabalhe em equipe em tempo real
+                  {t("header.subtitle")}
                 </Typography>
               </Box>
             </Box>
             <Box sx={{ display: "flex", gap: 1 }}>
-              <Tooltip title="Atualizar lista de salas">
+              <Tooltip title={t("header.refreshTooltip")}>
                 <IconButton
                   onClick={fetchRooms}
                   sx={{
@@ -222,7 +224,7 @@ export default function LobbyPage() {
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Criar uma nova sala de colaboração">
+              <Tooltip title={t("header.createTooltip")}>
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
@@ -241,7 +243,7 @@ export default function LobbyPage() {
                     "&:hover": { bgcolor: "rgba(255,255,255,0.9)" },
                   }}
                 >
-                  Criar Sala
+                  {t("header.createButton")}
                 </Button>
               </Tooltip>
             </Box>
@@ -262,7 +264,7 @@ export default function LobbyPage() {
         >
           <TextField
             fullWidth
-            placeholder="Buscar salas por nome ou criador..."
+            placeholder={t("search.placeholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             variant="outlined"
@@ -284,9 +286,7 @@ export default function LobbyPage() {
           />
           <Chip
             icon={<MeetingRoomIcon />}
-            label={`${rooms.length} sala${rooms.length !== 1 ? "s" : ""} ativa${
-              rooms.length !== 1 ? "s" : ""
-            }`}
+            label={t("search.activeRooms", { count: rooms.length })}
             color="primary"
             variant="outlined"
           />
@@ -295,7 +295,7 @@ export default function LobbyPage() {
         {/* Rooms Grid */}
         {isLoading ? (
           <Box sx={{ textAlign: "center", py: 8 }}>
-            <Typography color="text.secondary">Carregando salas...</Typography>
+            <Typography color="text.secondary">{t("list.loading")}</Typography>
           </Box>
         ) : filteredRooms.length === 0 ? (
           <Paper
@@ -311,14 +311,10 @@ export default function LobbyPage() {
               sx={{ fontSize: 64, color: "text.disabled", mb: 2 }}
             />
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              {searchQuery
-                ? "Nenhuma sala encontrada"
-                : "Nenhuma sala ativa no momento"}
+              {searchQuery ? t("list.noRoomsFound") : t("list.noActiveRooms")}
             </Typography>
             <Typography variant="body2" color="text.disabled" sx={{ mb: 3 }}>
-              {searchQuery
-                ? "Tente buscar por outro termo"
-                : "Seja o primeiro a criar uma sala de colaboração!"}
+              {searchQuery ? t("list.tryAnotherTerm") : t("list.beTheFirst")}
             </Typography>
             {!searchQuery && (
               <Button
@@ -326,7 +322,7 @@ export default function LobbyPage() {
                 startIcon={<AddIcon />}
                 onClick={() => setCreateOpen(true)}
               >
-                Criar Primeira Sala
+                {t("list.createFirstButton")}
               </Button>
             )}
           </Paper>
@@ -395,7 +391,7 @@ export default function LobbyPage() {
                                 gap: 0.5,
                               }}
                             >
-                              <Tooltip title="Criador da sala (Líder)">
+                              <Tooltip title={t("card.creatorTooltip")}>
                                 <CrownIcon
                                   sx={{ fontSize: 14, color: "warning.main" }}
                                 />
@@ -409,7 +405,7 @@ export default function LobbyPage() {
                             </Box>
                           </Box>
                         </Box>
-                        <Tooltip title="Sala ativa - usuários podem entrar">
+                        <Tooltip title={t("card.activeTooltip")}>
                           <Badge
                             variant="dot"
                             color="success"
@@ -426,7 +422,7 @@ export default function LobbyPage() {
                           >
                             <Chip
                               size="small"
-                              label="Ao Vivo"
+                              label={t("card.liveBadge")}
                               color="success"
                               variant="outlined"
                               sx={{ fontSize: "0.7rem" }}
@@ -444,7 +440,7 @@ export default function LobbyPage() {
                           alignItems: "center",
                         }}
                       >
-                        <Tooltip title="Data de criação da sala">
+                        <Tooltip title={t("card.creationDateTooltip")}>
                           <Box
                             sx={{
                               display: "flex",
@@ -461,10 +457,10 @@ export default function LobbyPage() {
                           </Box>
                         </Tooltip>
                         {room.config?.guestsCanEdit && (
-                          <Tooltip title="Convidados podem editar a grade">
+                          <Tooltip title={t("card.guestsCanEditTooltip")}>
                             <Chip
                               size="small"
-                              label="Edição liberada"
+                              label={t("card.guestsCanEditBadge")}
                               color="info"
                               variant="outlined"
                               sx={{ fontSize: "0.65rem", height: 20 }}
@@ -472,10 +468,10 @@ export default function LobbyPage() {
                           </Tooltip>
                         )}
                         {room.config?.guestsCanFilter && (
-                          <Tooltip title="Convidados podem editar os filtros">
+                          <Tooltip title={t("card.guestsCanFilterTooltip")}>
                             <Chip
                               size="small"
-                              label="Filtros liberada"
+                              label={t("card.guestsCanFilterBadge")}
                               color="info"
                               variant="outlined"
                               sx={{ fontSize: "0.65rem", height: 20 }}
@@ -485,7 +481,7 @@ export default function LobbyPage() {
                       </Box>
                     </CardContent>
                     <CardActions sx={{ px: 2, pb: 2 }}>
-                      <Tooltip title="Entrar nesta sala como convidado">
+                      <Tooltip title={t("card.joinTooltip")}>
                         <Button
                           fullWidth
                           variant="contained"
@@ -497,7 +493,7 @@ export default function LobbyPage() {
                             fontWeight: "bold",
                           }}
                         >
-                          Entrar na Sala
+                          {t("card.joinButton")}
                         </Button>
                       </Tooltip>
                     </CardActions>
@@ -509,7 +505,7 @@ export default function LobbyPage() {
         )}
       </Box>
 
-      {/* DIALOG CRIAR - Adicionada seção de configurações */}
+      {/* DIALOG CRIAR */}
       <Dialog
         open={isCreateOpen}
         onClose={() => setCreateOpen(false)}
@@ -524,10 +520,10 @@ export default function LobbyPage() {
             </Avatar>
             <Box>
               <Typography variant="h6" fontWeight="bold">
-                Criar Nova Sala
+                {t("createDialog.title")}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Você será o líder desta sala
+                {t("createDialog.subtitle")}
               </Typography>
             </Box>
           </Box>
@@ -535,13 +531,13 @@ export default function LobbyPage() {
         <DialogContent>
           <Box sx={{ pt: 1, display: "flex", flexDirection: "column", gap: 2 }}>
             <Tooltip
-              title="Nome único que identifica sua sala"
+              title={t("createDialog.roomNameTooltip")}
               placement="top-start"
             >
               <TextField
                 autoFocus
-                label="Nome da Sala"
-                placeholder="Ex: Reunião de Planejamento"
+                label={t("createDialog.roomNameLabel")}
+                placeholder={t("createDialog.roomNamePlaceholder")}
                 fullWidth
                 value={inputRoomName}
                 onChange={(e) => setInputRoomName(e.target.value)}
@@ -555,12 +551,12 @@ export default function LobbyPage() {
               />
             </Tooltip>
             <Tooltip
-              title="Como você será identificado na sala"
+              title={t("createDialog.userNameTooltip")}
               placement="top-start"
             >
               <TextField
-                label="Seu Nome (Líder)"
-                placeholder="Ex: João Silva"
+                label={t("createDialog.userNameLabel")}
+                placeholder={t("createDialog.userNamePlaceholder")}
                 fullWidth
                 value={inputUserName}
                 onChange={(e) => setInputUserName(e.target.value)}
@@ -577,7 +573,7 @@ export default function LobbyPage() {
             <Divider sx={{ my: 1 }}>
               <Chip
                 icon={<SettingsIcon sx={{ fontSize: 16 }} />}
-                label="Configurações Iniciais"
+                label={t("createDialog.initialConfig")}
                 size="small"
                 variant="outlined"
               />
@@ -607,11 +603,10 @@ export default function LobbyPage() {
                 label={
                   <Box>
                     <Typography variant="body2" fontWeight="medium">
-                      Convidados podem editar
+                      {t("createDialog.guestsCanEditLabel")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Permite que convidados façam alterações na grade. Você
-                      pode alterar isso depois.
+                      {t("createDialog.guestsCanEditDesc")}
                     </Typography>
                   </Box>
                 }
@@ -643,11 +638,10 @@ export default function LobbyPage() {
                 label={
                   <Box>
                     <Typography variant="body2" fontWeight="medium">
-                      Convidados podem filtrar
+                      {t("createDialog.guestsCanFilterLabel")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Permite que convidados façam alterações nos filtros grade.
-                      Você pode alterar isso depois.
+                      {t("createDialog.guestsCanFilterDesc")}
                     </Typography>
                   </Box>
                 }
@@ -664,7 +658,7 @@ export default function LobbyPage() {
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={() => setCreateOpen(false)} sx={{ borderRadius: 2 }}>
-            Cancelar
+            {t("createDialog.cancelButton")}
           </Button>
           <Button
             onClick={handleCreate}
@@ -672,7 +666,7 @@ export default function LobbyPage() {
             startIcon={<AddIcon />}
             sx={{ borderRadius: 2, fontWeight: "bold" }}
           >
-            Criar Sala
+            {t("createDialog.submitButton")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -692,10 +686,10 @@ export default function LobbyPage() {
             </Avatar>
             <Box>
               <Typography variant="h6" fontWeight="bold">
-                Entrar em "{selectedRoom?.name}"
+                {t("joinDialog.title", { roomName: selectedRoom?.name })}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Você entrará como convidado
+                {t("joinDialog.subtitle")}
               </Typography>
             </Box>
           </Box>
@@ -721,24 +715,26 @@ export default function LobbyPage() {
                   fontWeight="bold"
                   color="warning.dark"
                 >
-                  Líder da Sala: {selectedRoom?.owner_name}
+                  {t("joinDialog.roomLeader", {
+                    ownerName: selectedRoom?.owner_name,
+                  })}
                 </Typography>
               </Box>
               <Typography variant="caption" color="text.secondary">
-                O líder controla as permissões de edição da grade.
+                {t("joinDialog.leaderControl")}
                 {selectedRoom?.config?.guestsCanEdit
-                  ? " Esta sala permite que convidados editem."
-                  : " Esta sala está em modo somente leitura para convidados."}
+                  ? t("joinDialog.allowsEdit")
+                  : t("joinDialog.readonly")}
               </Typography>
             </Box>
             <Tooltip
-              title="Como você será identificado na sala"
+              title={t("joinDialog.userNameTooltip")}
               placement="top-start"
             >
               <TextField
                 autoFocus
-                label="Seu Nome"
-                placeholder="Ex: Maria Santos"
+                label={t("joinDialog.userNameLabel")}
+                placeholder={t("joinDialog.userNamePlaceholder")}
                 fullWidth
                 value={inputUserName}
                 onChange={(e) => setInputUserName(e.target.value)}
@@ -760,7 +756,7 @@ export default function LobbyPage() {
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={() => setJoinOpen(false)} sx={{ borderRadius: 2 }}>
-            Cancelar
+            {t("joinDialog.cancelButton")}
           </Button>
           <Button
             onClick={handleJoin}
@@ -769,7 +765,7 @@ export default function LobbyPage() {
             startIcon={<LoginIcon />}
             sx={{ borderRadius: 2, fontWeight: "bold" }}
           >
-            Entrar
+            {t("joinDialog.submitButton")}
           </Button>
         </DialogActions>
       </Dialog>

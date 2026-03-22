@@ -327,6 +327,81 @@
         "linkText": "Report issues on GitHub",
         "linkLabel": "Report accessibility issues on GitHub, opens in new tab"
       }
+    },
+    "Rooms": {
+      "time": {
+        "justNow": "Just now",
+        "minsAgo": "{count} min ago",
+        "hoursAgo": "{count}h ago",
+        "daysAgo": "{count}d ago"
+      },
+      "errors": {
+        "fillAllFields": "Fill in all fields",
+        "createRoom": "Error creating room",
+        "enterName": "Enter your name",
+        "joinRoom": "Error joining room"
+      },
+      "header": {
+        "title": "Collaboration Rooms",
+        "subtitle": "Work together in real-time",
+        "refreshTooltip": "Refresh room list",
+        "createTooltip": "Create a new collaboration room",
+        "createButton": "Create Room"
+      },
+      "search": {
+        "placeholder": "Search rooms by name or creator...",
+        "activeRooms": "{count, plural, =0 {No active rooms} =1 {1 active room} other {# active rooms}}"
+      },
+      "list": {
+        "loading": "Loading rooms...",
+        "noRoomsFound": "No rooms found",
+        "noActiveRooms": "No active rooms at the moment",
+        "tryAnotherTerm": "Try searching for another term",
+        "beTheFirst": "Be the first to create a collaboration room!",
+        "createFirstButton": "Create First Room"
+      },
+      "card": {
+        "creatorTooltip": "Room creator (Leader)",
+        "activeTooltip": "Active room - users can join",
+        "liveBadge": "Live",
+        "creationDateTooltip": "Room creation date",
+        "guestsCanEditTooltip": "Guests can edit the grid",
+        "guestsCanEditBadge": "Editing enabled",
+        "guestsCanFilterTooltip": "Guests can edit filters",
+        "guestsCanFilterBadge": "Filters enabled",
+        "joinTooltip": "Join this room as a guest",
+        "joinButton": "Join Room"
+      },
+      "createDialog": {
+        "title": "Create New Room",
+        "subtitle": "You will be the leader of this room",
+        "roomNameTooltip": "Unique name that identifies your room",
+        "roomNameLabel": "Room Name",
+        "roomNamePlaceholder": "Ex: Planning Meeting",
+        "userNameTooltip": "How you will be identified in the room",
+        "userNameLabel": "Your Name (Leader)",
+        "userNamePlaceholder": "Ex: John Doe",
+        "initialConfig": "Initial Settings",
+        "guestsCanEditLabel": "Guests can edit",
+        "guestsCanEditDesc": "Allows guests to make changes to the grid. You can change this later.",
+        "guestsCanFilterLabel": "Guests can filter",
+        "guestsCanFilterDesc": "Allows guests to make changes to the grid filters. You can change this later.",
+        "cancelButton": "Cancel",
+        "submitButton": "Create Room"
+      },
+      "joinDialog": {
+        "title": "Join \"{roomName}\"",
+        "subtitle": "You will join as a guest",
+        "roomLeader": "Room Leader: {ownerName}",
+        "leaderControl": "The leader controls the grid editing permissions.",
+        "allowsEdit": " This room allows guests to edit.",
+        "readonly": " This room is in read-only mode for guests.",
+        "userNameTooltip": "How you will be identified in the room",
+        "userNameLabel": "Your Name",
+        "userNamePlaceholder": "Ex: Jane Doe",
+        "cancelButton": "Cancel",
+        "submitButton": "Join"
+      }
     }
   },
   "Accessibility": {
