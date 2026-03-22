@@ -115,11 +115,11 @@ export default function CustomSelector({
     switch (fieldKey) {
       case "nivel":
         return Array.from(
-          new Set(disciplinas.map((d) => d.nivel).filter(Boolean))
+          new Set(disciplinas.map((d) => d.nivel).filter(Boolean)),
         );
       case "grupo":
         return Array.from(
-          new Set(disciplinas.map((d) => d.grupo).filter(Boolean))
+          new Set(disciplinas.map((d) => d.grupo).filter(Boolean)),
         );
       default:
         return [];
@@ -219,7 +219,7 @@ export default function CustomSelector({
 
     // Filtros avançados
     const matchesAdvanced = advancedFilters.every((rule) =>
-      matchesRule(item, rule)
+      matchesRule(item, rule),
     );
 
     return matchesSearch && matchesAdvanced;
@@ -559,7 +559,7 @@ function AdvancedFilterForm({
 
   const handleChipToggle = (chip: string) => {
     setSelectedChips((prev) =>
-      prev.includes(chip) ? prev.filter((c) => c !== chip) : [...prev, chip]
+      prev.includes(chip) ? prev.filter((c) => c !== chip) : [...prev, chip],
     );
   };
 
@@ -675,7 +675,7 @@ function AdvancedFilterForm({
                           type="time"
                           value={timeStart}
                           onChange={(e) => setTimeStart(e.target.value)}
-                          InputLabelProps={{ shrink: true }}
+                          slotProps={{ inputLabel: { shrink: true } }}
                         />
                       </Grid>
                       <Grid size={{ xs: 6 }}>
@@ -686,7 +686,7 @@ function AdvancedFilterForm({
                           type="time"
                           value={timeEnd}
                           onChange={(e) => setTimeEnd(e.target.value)}
-                          InputLabelProps={{ shrink: true }}
+                          slotProps={{ inputLabel: { shrink: true } }}
                         />
                       </Grid>
                     </Grid>
