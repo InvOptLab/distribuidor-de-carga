@@ -53,10 +53,10 @@ export default function TimetableFilters({
   const [openDisciplinaDialog, setOpenDisciplinaDialog] = useState(false);
 
   const uniqueGroups = Array.from(
-    new Set(disciplinas.filter((d) => d.ativo && d.grupo).map((d) => d.grupo))
+    new Set(disciplinas.filter((d) => d.ativo && d.grupo).map((d) => d.grupo)),
   ).filter(Boolean);
   const uniqueLevels = Array.from(
-    new Set(disciplinas.filter((d) => d.ativo).map((d) => d.nivel))
+    new Set(disciplinas.filter((d) => d.ativo).map((d) => d.nivel)),
   ).filter(Boolean);
   const diasSemana = ["Seg.", "Ter.", "Qua.", "Qui.", "Sex.", "Sáb."];
 
@@ -115,7 +115,7 @@ export default function TimetableFilters({
 
   const renderFilterRule = (
     rule: FilterRule,
-    onRemove: (id: string) => void
+    onRemove: (id: string) => void,
   ) => {
     let displayValue = "";
     if (rule.type === "chips" && Array.isArray(rule.value)) {
@@ -200,10 +200,10 @@ export default function TimetableFilters({
               />
             )}
             {docenteFilters.rules.map((rule) =>
-              renderFilterRule(rule, removeDocenteRule)
+              renderFilterRule(rule, removeDocenteRule),
             )}
             {disciplinaFilters.rules.map((rule) =>
-              renderFilterRule(rule, removeDisciplinaRule)
+              renderFilterRule(rule, removeDisciplinaRule),
             )}
           </Box>
         </Box>
@@ -247,7 +247,7 @@ export default function TimetableFilters({
 
             <Box display="flex" flexWrap="wrap" gap={1}>
               {docenteFilters.rules.map((rule) =>
-                renderFilterRule(rule, removeDocenteRule)
+                renderFilterRule(rule, removeDocenteRule),
               )}
             </Box>
           </Grid>
@@ -290,7 +290,7 @@ export default function TimetableFilters({
 
             <Box display="flex" flexWrap="wrap" gap={1}>
               {disciplinaFilters.rules.map((rule) =>
-                renderFilterRule(rule, removeDisciplinaRule)
+                renderFilterRule(rule, removeDisciplinaRule),
               )}
             </Box>
           </Grid>
@@ -447,7 +447,7 @@ function FilterDialog({
 
   const handleChipToggle = (chip: string) => {
     setSelectedChips((prev) =>
-      prev.includes(chip) ? prev.filter((c) => c !== chip) : [...prev, chip]
+      prev.includes(chip) ? prev.filter((c) => c !== chip) : [...prev, chip],
     );
   };
 
@@ -606,7 +606,7 @@ function FilterDialog({
                       type="time"
                       value={timeStart}
                       onChange={(e) => setTimeStart(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
+                      slotProps={{ inputLabel: { shrink: true } }}
                       fullWidth
                     />
                     <TextField
@@ -614,7 +614,7 @@ function FilterDialog({
                       type="time"
                       value={timeEnd}
                       onChange={(e) => setTimeEnd(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
+                      slotProps={{ inputLabel: { shrink: true } }}
                       fullWidth
                     />
                   </Box>
