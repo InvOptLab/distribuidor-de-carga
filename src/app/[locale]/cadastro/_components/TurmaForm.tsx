@@ -645,7 +645,7 @@ export default function TurmaForm({
               size="small"
               value={novoInicio}
               onChange={(e) => setNovoInicio(e.target.value)}
-              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
             />
           </Tooltip>
 
@@ -656,7 +656,7 @@ export default function TurmaForm({
               size="small"
               value={novoFim}
               onChange={(e) => setNovoFim(e.target.value)}
-              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
             />
           </Tooltip>
 
