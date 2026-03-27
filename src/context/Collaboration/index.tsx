@@ -13,6 +13,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { usePathname, useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
+import { useTranslations } from "next-intl";
 
 // Tipos
 export type RoomConfig = {
@@ -61,7 +62,7 @@ type CollaborationContextType = {
   createRoom: (
     roomName: string,
     userName: string,
-    initialConfig?: RoomConfig
+    initialConfig?: RoomConfig,
   ) => Promise<void>;
   joinRoom: (roomName: string, userName: string) => Promise<void>;
   leaveRoom: () => Promise<void>;
@@ -70,16 +71,16 @@ type CollaborationContextType = {
   broadcastDataUpdate: (data: any, type?: "FULL_DATA" | "PARTIAL_DATA") => void;
   broadcastAssignmentChange: (
     assignment: any,
-    action: "add" | "remove" | "update"
+    action: "add" | "remove" | "update",
   ) => void;
   broadcastSelectionChange: (index: number) => void;
   requestDataFromOwner: () => void;
   onDataUpdate: (callback: (payload: DataUpdatePayload) => void) => () => void;
   onAssignmentChange: (
-    callback: (payload: AssignmentUpdatePayload) => void
+    callback: (payload: AssignmentUpdatePayload) => void,
   ) => () => void;
   onSelectionChange: (
-    callback: (payload: SelectionUpdatePayload) => void
+    callback: (payload: SelectionUpdatePayload) => void,
   ) => () => void;
   onDataRequest: (callback: () => void) => () => void;
 };
@@ -140,6 +141,8 @@ export const CollaborationProvider = ({
   const router = useRouter();
   const pathname = usePathname();
 
+  const t = useTranslations("Collaboration");
+
   // Estados Locais
   const [roomId, setRoomId] = useState<string | null>(null);
   const [roomName, setRoomName] = useState<string | null>(null);
@@ -158,7 +161,7 @@ export const CollaborationProvider = ({
   const [usersInRoom, setUsersInRoom] = useState(0);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const myColor = useRef(
-    "#" + Math.floor(Math.random() * 16777215).toString(16)
+    "#" + Math.floor(Math.random() * 16777215).toString(16),
   );
 
   const dataUpdateCallbacksRef = useRef<
@@ -178,7 +181,7 @@ export const CollaborationProvider = ({
   const createRoom = async (
     rName: string,
     uName: string,
-    initialConfig?: RoomConfig
+    initialConfig?: RoomConfig,
   ) => {
     const roomConfig = initialConfig || {
       guestsCanEdit: false,
@@ -217,13 +220,13 @@ export const CollaborationProvider = ({
       .eq("name", rName)
       .single();
 
-    if (roomError || !room) throw new Error("Sala não encontrada.");
+    if (roomError || !room) throw new Error(t("roomNotFound"));
 
     const { error: partError } = await supabase
       .from("participants")
       .insert({ room_id: room.id, user_id: userId, name: uName });
 
-    if (partError) throw new Error("Nome de usuário já existe nesta sala.");
+    if (partError) throw new Error(t("nameAlreadyExistis"));
 
     setRoomId(room.id);
     setRoomName(room.name);
@@ -259,17 +262,17 @@ export const CollaborationProvider = ({
       })
       .on("broadcast", { event: "DATA_UPDATE" }, ({ payload }) => {
         dataUpdateCallbacksRef.current.forEach((cb) =>
-          cb(payload as DataUpdatePayload)
+          cb(payload as DataUpdatePayload),
         );
       })
       .on("broadcast", { event: "ASSIGNMENT_CHANGE" }, ({ payload }) => {
         assignmentChangeCallbacksRef.current.forEach((cb) =>
-          cb(payload as AssignmentUpdatePayload)
+          cb(payload as AssignmentUpdatePayload),
         );
       })
       .on("broadcast", { event: "SELECTION_CHANGE" }, ({ payload }) => {
         selectionChangeCallbacksRef.current.forEach((cb) =>
-          cb(payload as SelectionUpdatePayload)
+          cb(payload as SelectionUpdatePayload),
         );
       })
       .on("broadcast", { event: "REQUEST_DATA" }, ({ payload }) => {
@@ -287,7 +290,7 @@ export const CollaborationProvider = ({
         },
         (payload) => {
           setConfig(payload.new.config);
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -298,9 +301,9 @@ export const CollaborationProvider = ({
           filter: `id=eq.${rId}`,
         },
         () => {
-          alert("O dono encerrou a sala.");
+          alert(t("ownerEndedRoom"));
           leaveRoomLogic(false);
-        }
+        },
       )
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
@@ -408,7 +411,7 @@ export const CollaborationProvider = ({
         payload,
       });
     },
-    []
+    [],
   );
 
   const broadcastAssignmentChange = useCallback(
@@ -428,7 +431,7 @@ export const CollaborationProvider = ({
         payload,
       });
     },
-    []
+    [],
   );
 
   const broadcastSelectionChange = useCallback((index: number) => {
@@ -457,7 +460,7 @@ export const CollaborationProvider = ({
         dataUpdateCallbacksRef.current.delete(callback);
       };
     },
-    []
+    [],
   );
 
   const onAssignmentChange = useCallback(
@@ -467,7 +470,7 @@ export const CollaborationProvider = ({
         assignmentChangeCallbacksRef.current.delete(callback);
       };
     },
-    []
+    [],
   );
 
   const onSelectionChange = useCallback(
@@ -477,7 +480,7 @@ export const CollaborationProvider = ({
         selectionChangeCallbacksRef.current.delete(callback);
       };
     },
-    []
+    [],
   );
 
   const onDataRequest = useCallback((callback: () => void) => {
