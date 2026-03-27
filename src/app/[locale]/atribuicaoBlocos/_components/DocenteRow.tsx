@@ -56,7 +56,7 @@ export default function DocenteRow({
 
   const saldoTexto = saldo > 0 ? `+${saldo.toFixed(2)}` : saldo.toFixed(2);
 
-  // Lógica de Conflito (inalterada)
+  // Lógica de Conflito
   const idsComConflito = useMemo(() => {
     const conflitos = new Set<string>();
     turmas.forEach((t) => {
@@ -139,8 +139,8 @@ export default function DocenteRow({
                     isOverload
                       ? "error"
                       : progress >= 100
-                      ? "success"
-                      : "primary"
+                        ? "success"
+                        : "primary"
                   }
                   sx={{ height: 6, borderRadius: 3 }}
                 />

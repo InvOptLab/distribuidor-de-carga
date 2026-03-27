@@ -24,41 +24,6 @@ export interface ConstraintInterface {
   constraint: new (...args: any[]) => Constraint<any>;
 }
 
-// const initialConstraints: ConstraintInterface[] = [
-//   {
-//     name: "Disciplina sem docente",
-//     tipo: "Hard",
-//     penalidade: "10",
-//     descricao: "",
-//     constraint: DisciplinaSemDocente,
-//   },
-//   {
-//     name: "Choque de horários",
-//     tipo: "Soft",
-//     penalidade: "100",
-//     descricao:
-//       "Essa restrição verifica se os docentes foram atribuídos a disciplinas que ocorrem ao mesmo tempo ou apresentam conflitos de início e fim de aula.",
-//     constraint: ChoqueDeHorarios,
-//   },
-//   {
-//     name: "Atribuição sem formulário",
-//     tipo: "Hard",
-//     penalidade: "0",
-//     descricao:
-//       "Essa restrição verifica se o docente preencheu o formulário para as disciplinas que foi atribuído",
-//     constraint: AtribuicaoSemFormulario,
-//   },
-//   // {
-//   //   name:,
-//   //   tipo:,
-//   //   penalidade:,
-//   //   descricao:,
-//   //   constraint:
-//   // }
-//   //{ name: "Disciplina com sobreposição", tipo: "Soft", penalidade: "5" },
-//   // Adicione outras restrições conforme necessário
-// ];
-
 export default function Restricoes() {
   const {
     hardConstraints,
@@ -89,20 +54,20 @@ export default function Restricoes() {
   const handleConstraintChange = (
     name: string,
     newTipo: "Hard" | "Soft",
-    newPenalidade: string
+    newPenalidade: string,
   ) => {
     setConstraints((prevConstraints) =>
       prevConstraints.map((constraint) =>
         constraint.name === name
           ? { ...constraint, tipo: newTipo, penalidade: newPenalidade }
-          : constraint
-      )
+          : constraint,
+      ),
     );
   };
 
   const removeConstraint = (name: string) => {
     setConstraints((prevConstraints) =>
-      prevConstraints.filter((constraint) => constraint.name !== name)
+      prevConstraints.filter((constraint) => constraint.name !== name),
     );
 
     const constraintToRemove = constraints.find((c) => c.name === name);
@@ -115,8 +80,8 @@ export default function Restricoes() {
             constraintToRemove.name,
             constraintToRemove.descricao,
             constraintToRemove.tipo === "Hard",
-            Number(constraintToRemove.penalidade)
-          )
+            Number(constraintToRemove.penalidade),
+          ),
         );
         return newAvailable;
       });
@@ -159,7 +124,7 @@ export default function Restricoes() {
         constraint.name,
         constraint.descricao,
         constraint.tipo === "Hard",
-        constraint.penalidade
+        constraint.penalidade,
       );
 
       if (constraint.tipo === "Hard") {
