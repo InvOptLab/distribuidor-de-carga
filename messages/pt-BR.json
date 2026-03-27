@@ -432,5 +432,10 @@
     "calendar": "Calendário",
     "rooms": "Salas",
     "navigationMenu": "Menu de navegação"
+  },
+  "Collaboration": {
+    "roomNotFound": "Sala não encontrada.",
+    "nameAlreadyExistis": "Nome de usuário já existe nesta sala.",
+    "ownerEndedRoom": "O dono encerrou a sala."
   }
 }
