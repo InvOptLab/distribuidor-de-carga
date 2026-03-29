@@ -16,6 +16,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AvatarIcon } from "./AvatarIcon";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { useAvatarChat } from "@/context/AvatarChat/AvatarChatContext";
+import { useTranslations } from "next-intl";
 
 const typingAnimation = keyframes`
   0%, 60%, 100% { transform: translateY(0); }
@@ -58,6 +59,7 @@ const formatMessage = (text: string): React.ReactNode => {
 };
 
 const formatTime = (date: Date) => {
+  // TODO: Implementar as modificações necessárias para exibir baseado na localidade do usuário
   return date.toLocaleTimeString("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",
@@ -76,6 +78,8 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
   const [userInput, setUserInput] = useState("");
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const t = useTranslations("Assistant");
 
   useEffect(() => {
     if (chatHistoryRef.current) {
@@ -143,7 +147,7 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
             mb: 1,
           }}
         >
-          <Tooltip title="Limpar conversa" arrow>
+          <Tooltip title={t("Actions.clearConversation")} arrow>
             <IconButton
               size="small"
               onClick={clearChat}
@@ -292,7 +296,7 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
                 }
               }}
               disabled={isTyping || isAvatarSpeaking}
-              placeholder="Digite sua pergunta..."
+              placeholder={t("Actions.askQuestion")}
               rows={1}
               sx={{
                 flex: 1,
@@ -323,7 +327,7 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
                 },
               }}
             />
-            <Tooltip title="Enviar mensagem (Enter)" arrow>
+            <Tooltip title={t("Actions.sendMessage")} arrow>
               <span>
                 <IconButton
                   type="submit"
@@ -365,7 +369,7 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
               textAlign: "center",
             }}
           >
-            Pressione Shift + Enter para nova linha
+            {t("Actions.newLine")}
           </Typography>
         </Box>
       </Box>
