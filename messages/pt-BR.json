@@ -402,6 +402,14 @@
         "cancelButton": "Cancelar",
         "submitButton": "Entrar"
       }
+    },
+    "Spreadsheet": {
+      "classesSpreadsheet": "Planilha de Turmas",
+      "exportExcel": "Exportar Excel",
+      "clearFilters": "Limpar Filtros",
+      "manageColumns": "Gerenciar Colunas",
+      "displayingCount": "Exibindo {visible} de {total} {total, plural, =1 {turma} other {turmas}}",
+      "filtered": " (filtrado)"
     }
   },
   "Accessibility": {

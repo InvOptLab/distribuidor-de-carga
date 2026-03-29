@@ -14,6 +14,7 @@ import { ColumnManager } from "@/components/Planilha/ColumnManager";
 import { exportToExcel } from "./excel-export";
 import { CollaborativeGridWrapper } from "@/app/[locale]/atribuicoes/_components/CollaborativeGridWrapper";
 import { useCollaboration } from "@/context/Collaboration";
+import { useTranslations } from "next-intl";
 
 /**
  * Página principal da Planilha
@@ -34,6 +35,8 @@ export default function PlanilhaPage() {
   const { disciplinas, docentes, updateAtribuicoes, atribuicoes, formularios } =
     useGlobalContext();
   const [columnManagerOpen, setColumnManagerOpen] = useState(false);
+
+  const t = useTranslations("Pages.Spreadsheet");
 
   // Hook de colaboração para transmitir mudanças
   const { broadcastAssignmentChange, isInRoom } = useCollaboration();
@@ -127,7 +130,7 @@ export default function PlanilhaPage() {
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>
-            Planilha de Disciplinas
+            {t("classesSpreadsheet")}
           </Typography>
 
           <Box sx={{ display: "flex", gap: 2 }}>
@@ -138,14 +141,14 @@ export default function PlanilhaPage() {
               onClick={handleExportToExcel}
               color="success"
             >
-              Exportar Excel
+              {t("exportExcel")}
             </Button>
             <Button
               variant="outlined"
               startIcon={<RefreshIcon />}
               onClick={handleReset}
             >
-              Limpar Filtros
+              {t("clearFilters")}
             </Button>
 
             <Button
@@ -153,7 +156,7 @@ export default function PlanilhaPage() {
               startIcon={<ViewColumnIcon />}
               onClick={() => setColumnManagerOpen(true)}
             >
-              Gerenciar Colunas
+              {t("manageColumns")}
             </Button>
           </Box>
         </Toolbar>
@@ -162,9 +165,11 @@ export default function PlanilhaPage() {
       {/* Informações */}
       <Box sx={{ padding: 2, backgroundColor: "background.default" }}>
         <Typography variant="body2" color="text.secondary">
-          Exibindo {processedDisciplinas.length} de {disciplinas.length}{" "}
-          disciplinas
-          {Object.keys(filterState).length > 0 && " (filtrado)"}
+          {t("displayingCount", {
+            visible: processedDisciplinas.length,
+            total: disciplinas.length,
+          })}
+          {Object.keys(filterState).length > 0 && t("filtrado")}
         </Typography>
       </Box>
 

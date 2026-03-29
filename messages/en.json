@@ -402,6 +402,14 @@
         "cancelButton": "Cancel",
         "submitButton": "Join"
       }
+    },
+    "Spreadsheet": {
+      "classesSpreadsheet": "Classes Spreadsheet",
+      "exportExcel": "Export Excel",
+      "clearFilters": "Clear Filters",
+      "manageColumns": "Manage Columns",
+      "displayingCount": "Showing {visible} of {total} {total, plural, =1 {class} other {classes}}",
+      "filtered": " (filtered)"
     }
   },
   "Accessibility": {
