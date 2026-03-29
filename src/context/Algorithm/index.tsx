@@ -168,10 +168,10 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   const [softConstraints, setSoftConstraints] = useState(
     new Map<string, Constraint<any>>([
       [
-        t("Constraints.classeWithoutTeacher"),
+        t("Constraints.classWithoutTeacher"),
         new DisciplinaSemDocente(
-          t("Constraints.classeWithoutTeacher"),
-          t("Constraints.classeWithoutTeacherDescription"),
+          t("Constraints.classWithoutTeacher"),
+          t("Constraints.classWithoutTeacherDescription"),
           false,
           1000000,
           true,
