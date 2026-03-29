@@ -571,9 +571,32 @@
     "stop": "Parar",
     "apply": "Aplicar"
   },
+  "Spreadsheet": {
+    "DocenteSelectionDialog": {
+      "selectedCount": "Docentes selecionados: {count}",
+      "noOtherProfessors": "Nenhum outro docente disponível",
+      "otherProfessorsCount": "Demais Docentes: {count}",
+      "noProfessorsWithForms": "Nenhum docente com formulário",
+      "professorsWithFormsCount": "Docentes com Formulário: {count}",
+      "selectProfessorsTitle": "Selecionar Docentes - {codigo} (Turma {turma})",
+      "balance": "Saldo: {saldo}",
+      "priority": "Prioridade: {prioridade}"
+    },
+    "DocenteCell": {
+      "addTeacher": "Adicionar docente",
+      "noTeachers": "Nenhum docente"
+    },
+    "ColumnManager": {
+      "manageColumns": "Gerenciar Colunas",
+      "visibleColumns": "Colunas Visíveis",
+      "hiddenColumns": "Colunas Ocultas"
+    }
+  },
   "Utils": {
     "loading": "Carregando...",
     "error": "Ocorreu um erro. Por favor, tente novamente.",
-    "unknownError": "Ocorreu um erro desconhecido. Por favor, tente novamente."
+    "unknownError": "Ocorreu um erro desconhecido. Por favor, tente novamente.",
+    "save": "Salvar",
+    "cancel": "Cancelar"
   }
 }

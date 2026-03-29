@@ -571,9 +571,32 @@
     "stop": "Stop",
     "apply": "Apply"
   },
+  "Spreadsheet": {
+    "DocenteSelectionDialog": {
+      "selectedCount": "Selected professors: {count}",
+      "noOtherProfessors": "No other professors available",
+      "otherProfessorsCount": "Other Professors: {count}",
+      "noProfessorsWithForms": "No professors with forms",
+      "professorsWithFormsCount": "Professors with Forms: {count}",
+      "selectProfessorsTitle": "Select Professors - {codigo} (Class {turma})",
+      "balance": "Balance: {saldo}",
+      "priority": "Priority: {prioridade}"
+    },
+    "DocenteCell": {
+      "addTeacher": "Add teacher",
+      "noTeachers": "No teachers"
+    },
+    "ColumnManager": {
+      "manageColumns": "Manage Columns",
+      "visibleColumns": "Visible Columns",
+      "hiddenColumns": "Hidden Columns"
+    }
+  },
   "Utils": {
     "loading": "Loading...",
     "error": "An error occurred. Please try again.",
-    "unknownError": "An unknown error occurred. Please try again."
+    "unknownError": "An unknown error occurred. Please try again.",
+    "save": "Salvar",
+    "cancel": "Cancelar"
   }
 }
