@@ -540,6 +540,37 @@
     "unsupportedParameter": "Tipo de parâmetro não suportado: {valueType}",
     "constraintParameter": "Parâmetro da Restrição"
   },
+  "AlgorithmDialog": {
+    "StatusMessages": {
+      "preprocessing": "Processando variáveis e construindo o modelo matemático...",
+      "solving": "O otimizador está buscando a melhor solução...",
+      "completed": "Processo concluído!"
+    },
+    "SubMessages": {
+      "preprocessing": "Isso pode levar alguns segundos dependendo da quantidade de docentes e restrições.",
+      "solving": "Aguarde enquanto o algoritmo explora o espaço de soluções.",
+      "completed": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela."
+    },
+    "Stage": {
+      "preprocessing": "Preparando Otimização",
+      "preprocessingDescription": "Gerando matrizes e restrições...",
+      "solving": "Execução do Algoritmo"
+    },
+    "Metrics": {
+      "iterations": "Iterações",
+      "averageTime": "Tempo Médio",
+      "bestRating": "Melhor Avaliação",
+      "evaluation": "Avaliação",
+      "time": "Tempo"
+    },
+    "Chart": {
+      "evaluationPerIteration": "Avaliação por Iteração",
+      "timePerIteration": "Tempo por Iteração"
+    },
+    "description": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela clicando no X localizado acima.",
+    "stop": "Parar",
+    "apply": "Aplicar"
+  },
   "Utils": {
     "loading": "Carregando...",
     "error": "Ocorreu um erro. Por favor, tente novamente.",

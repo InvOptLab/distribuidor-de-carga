@@ -540,6 +540,37 @@
     "unsupportedParameter": "Unsupported parameter type: {valueType}",
     "constraintParameter": "Constraint Parameter"
   },
+  "AlgorithmDialog": {
+    "StatusMessages": {
+      "preprocessing": "Processing variables and building the mathematical model...",
+      "solving": "The optimizer is searching for the best solution...",
+      "completed": "Process completed!"
+    },
+    "SubMessages": {
+      "preprocessing": "This may take a few seconds depending on the number of professors and constraints.",
+      "solving": "Please wait while the algorithm explores the search space.",
+      "completed": "The process is complete! You can now apply the solution or close this screen."
+    },
+    "Stage": {
+      "preprocessing": "Preparing Optimization",
+      "preprocessingDescription": "Generating matrices and constraints...",
+      "solving": "Algorithm Execution"
+    },
+    "Metrics": {
+      "iterations": "Iterations",
+      "averageTime": "Average Time",
+      "bestRating": "Best Evaluation",
+      "evaluation": "Evaluation",
+      "time": "Time"
+    },
+    "Chart": {
+      "evaluationPerIteration": "Evaluation per Iteration",
+      "timePerIteration": "Time per Iteration"
+    },
+    "description": "The process is complete! You can now apply the solution or close this screen by clicking the X located above.",
+    "stop": "Stop",
+    "apply": "Apply"
+  },
   "Utils": {
     "loading": "Loading...",
     "error": "An error occurred. Please try again.",
