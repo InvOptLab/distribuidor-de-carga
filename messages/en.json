@@ -495,5 +495,14 @@
       "minimizeBalanceUtilization": "Minimize Balance Utilization",
       "minimizeBalanceUtilizationDescription": "Optimizes the assignment by avoiding assigning classes to professors with high positive balances, preserving the long-term hour bank balance (Minimizes Multiplier * Balance * Load)."
     }
+  },
+  "Assistant": {
+    "welcome": "Hello! I am the Load Distributor virtual assistant. How can I help you today?",
+    "connectionError": "Sorry, I had a connection problem. Could you repeat that?"
+  },
+  "Utils": {
+    "loading": "Loading...",
+    "error": "An error occurred. Please try again.",
+    "unknownError": "An unknown error occurred. Please try again."
   }
 }

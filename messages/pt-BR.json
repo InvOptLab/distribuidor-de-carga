@@ -495,5 +495,14 @@
       "minimizeBalanceUtilization": "Minimizar Utilização de Saldos",
       "minimizeBalanceUtilizationDescription": "Otimiza a atribuição evitando atribuir turmas a docentes com saldo positivo elevado, preservando o equilíbrio do banco de horas a longo prazo (Minimiza Multiplicador * Saldo * Carga)."
     }
+  },
+  "Assistant": {
+    "welcome": "Olá! Eu sou o assistente virtual do Distribuidor de Carga. Como posso te ajudar hoje?",
+    "connectionError": "Desculpe, tive um problema de conexão. Pode repetir?"
+  },
+  "Utils": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro. Por favor, tente novamente.",
+    "unknownError": "Ocorreu um erro desconhecido. Por favor, tente novamente."
   }
 }
