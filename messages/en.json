@@ -437,5 +437,63 @@
     "roomNotFound": "Room not found.",
     "nameAlreadyExistis": "Username already exists in this room.",
     "ownerEndedRoom": "The owner closed the room."
+  },
+  "AlgorithmContext": {
+    "Constraints": {
+      "assignmentWithoutForms": "Assignment without forms",
+      "assignmentWithoutFormsDescription": "This constraint checks if the professor filled out the form for the subjects they were assigned.",
+      "validateLocks": "Validate Locks",
+      "validateLocksDescription": "Constraint that prevents changes to locked cells.",
+      "classeWithoutTeacher": "Class without teacher",
+      "classWithoutTeacherDescription": "Constraint that prevents classes from remaining without an assigned professor.",
+      "scheduleConflict": "Schedule conflict",
+      "scheduleConflictDescription": "This constraint checks if professors were assigned to subjects that occur at the same time or have overlapping start and end times.",
+      "minimumTeachingLoad": "Minimum Teaching Load",
+      "minimumTeachingLoadDescription": "Penalizes the solution evaluation for each professor who has not reached the minimum assigned teaching load.",
+      "maximumTeachingLoad": "Maximum Teaching Load",
+      "maximumTeachingLoadDescription": "Penalizes the solution evaluation for each professor who has exceeded the assigned teaching load limit."
+    },
+    "Movements": {
+      "add": "Add",
+      "addDescription": "Adding a professor to a class.",
+      "remove": "Remove",
+      "removeDescription": "Removing a professor from a class",
+      "swap": "Swap",
+      "swapDescription": "Swaps assignments between two classes."
+    },
+    "StopCriteria": {
+      "iterationLimit": "Iteration Limit",
+      "iterationLimitDescription": "Function that will stop the algorithm if a certain number of iterations is reached.",
+      "iterationsWithoutModification": "Iterations without Modification",
+      "iterationsWithoutModificationDescription": "Function that will stop the algorithm if a certain number of iterations without modification of the best solution is reached.",
+      "iterationsWithoutImprovementInEvaluation": "Iterations without Improvement in Evaluation",
+      "iterationsWithoutImprovementInEvaluationDescription": "Function that stops the algorithm's execution if the solution evaluations do not show improvement over a certain number of iterations."
+    },
+    "AspirationCriteria": {
+      "objective": "Objective",
+      "objectiveName": "Aspiration by Objective",
+      "objectiveDescription": "The tabu will be broken if the observed solution presents an objective value higher than the best global solution found.",
+      "sameEvaluation": "Acceptance Criterion for Equal Evaluations",
+      "sameEvaluationName": "Acceptance of Equal Evaluations",
+      "sameEvaluationDescription": "This criterion aims to accept solutions with an objective value (evaluation) greater than or equal to the global best after a certain number of iterations without modification of the best neighbor. The goal is to make symmetrical solutions (with the same evaluation but different assignments) the global best, encouraging the search for better neighborhoods."
+    },
+    "TabuType": {
+      "solution": "Solution",
+      "movement": "Movement"
+    },
+    "ObjectiveComponent": {
+      "maximizepriorities": "Maximize priorities",
+      "maximizeprioritiesDescription": "Maximizes the overall satisfaction of professors, prioritizing assignments where there is a higher declared preference in the intention forms.",
+      "weightedpriorities": "Priorities with Weighted Scales",
+      "weightedprioritiesDescription": "Similar to standard maximization, but uses a non-linear weight scale (e.g., exponential) to disproportionately value meeting the professor's top options (Top-N).",
+      "minimizeDifferenceBetweenBalances": "Minimize Difference Between Balances",
+      "minimizeDifferenceBetweenBalancesDescription": "Seeks to reduce the variability of historical balances among professors, penalizing scenarios where some accumulate significant credit while others accumulate significant debt.",
+      "maximizePrioritiesUsingBalances": "Maximize Priorities Using Balances",
+      "maximizePrioritiesUsingBalancesDescription": "Weights the professor's preference by their current balance. Professors with a greater need for workload (debt balance) have their priorities amplified in the competition for classes.",
+      "minimizeDifferenceInTeachingLoad": "Minimize Teaching Load Difference",
+      "minimizeDifferenceInTeachingLoadDescription": "Focuses on equity for the current semester, minimizing absolute deviations of the load assigned to each professor relative to the overall average of distributed credits.",
+      "minimizeBalanceUtilization": "Minimize Balance Utilization",
+      "minimizeBalanceUtilizationDescription": "Optimizes the assignment by avoiding assigning classes to professors with high positive balances, preserving the long-term hour bank balance (Minimizes Multiplier * Balance * Load)."
+    }
   }
 }

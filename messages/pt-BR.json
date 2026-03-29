@@ -437,5 +437,63 @@
     "roomNotFound": "Sala não encontrada.",
     "nameAlreadyExistis": "Nome de usuário já existe nesta sala.",
     "ownerEndedRoom": "O dono encerrou a sala."
+  },
+  "AlgorithmContext": {
+    "Constraints": {
+      "assignmentWithoutForms": "Atribuição sem formulário",
+      "assignmentWithoutFormsDescription": "Essa restrição verifica se o docente preencheu o formulário para as disciplinas que foi atribuído.",
+      "validateLocks": "Validar Travas",
+      "validateLocksDescription": "Restrição que impede a alteração em células travadas.",
+      "classeWithoutTeacher": "Turma sem docente",
+      "classWithoutTeacherDescription": "Restrição que impede que turmas fiquem sem um docente atribuído.",
+      "scheduleConflict": "Conflito de horário",
+      "scheduleConflictDescription": "Essa restrição verifica se os docentes foram atribuídos a disciplinas que ocorrem ao mesmo tempo ou apresentam conflitos de início e fim de aula.",
+      "minimumTeachingLoad": "Carga Didática Mínima",
+      "minimumTeachingLoadDescription": "Penaliza a avaliação da solução para cada docente que não tenha atingido o mínimo de carga didática atribuída.",
+      "maximumTeachingLoad": "Carga Didática Máxima",
+      "maximumTeachingLoadDescription": "Penaliza a avaliação da solução para cada docente que tenha ultrapassado o limite de carga didática atribuída."
+    },
+    "Movements": {
+      "add": "Adicionar",
+      "addDescription": "Adição de um docente a uma turma.",
+      "remove": "Remover",
+      "removeDescription": "Remover um docente de uma turma",
+      "swap": "Trocar",
+      "swapDescription": "Troca as atribuições entre duas turmas."
+    },
+    "StopCriteria": {
+      "iterationLimit": "Limite de Iterações",
+      "iterationLimitDescription": "Função que interromperá o algoritmo caso uma determinada quantidade de iterações seja atingida.",
+      "iterationsWithoutModification": "Iterações sem Modificação",
+      "iterationsWithoutModificationDescription": "Função que interromperá o algoritmo caso uma determinada quantidade de iterações sem modificação da melhor solução seja atingida.",
+      "iterationsWithoutImprovementInEvaluation": "Iterações sem Melhora na Avaliação",
+      "iterationsWithoutImprovementInEvaluationDescription": "Função que interrompe a execução do algoritmo caso a avaliação das soluções não apresnetem melhora em uma determinada quantidade de iterações."
+    },
+    "AspirationCriteria": {
+      "objective": "Objetivo",
+      "objectiveName": "Aspiração por Objetivo",
+      "objectiveDescription": "O tabu será quebrado caso a solução observada apresente um valor objetivo maior que a melhor solução global encontrada.",
+      "sameEvaluation": "Critério de Aceitação de Mesmas Avaliações",
+      "sameEvaluationName": "Aceitação de Mesmas Avaliações",
+      "sameEvaluationDescription": "Esse critério tem como objetivo aceitar soluções com o valor objetivo (avaliação) maior ou igual ao melhor global após uma determinada quantidade de iterações sem modificação do melhor vizinho. O objetivo é tormar soluções simétricas (com mesma avaliação porémcom diferentes atribuições) melhores globais, incentivando a busca por melhores vizinhanças."
+    },
+    "TabuType": {
+      "solution": "Solução",
+      "movement": "Movimento"
+    },
+    "ObjectiveComponent": {
+      "maximizepriorities": "Maximizar as prioridades",
+      "maximizeprioritiesDescription": "Maximiza a satisfação global dos docentes, priorizando as atribuições onde há maior preferência declarada nos formulários de intenção.",
+      "weightedpriorities": "Prioridades com Pesos Tabelados",
+      "weightedprioritiesDescription": "Semelhante à maximização padrão, mas utiliza uma escala de pesos não-linear (ex: exponencial) para valorizar desproporcionalmente o atendimento às primeiras opções (Top-N) do docente.",
+      "minimizeDifferenceBetweenBalances": "Minimizar Diferenca entre os Saldos",
+      "minimizeDifferenceBetweenBalancesDescription": "Busca reduzir a variabilidade dos saldos históricos entre os docentes, penalizando cenários onde alguns acumulam muito crédito enquanto outros acumulam muito débito.",
+      "maximizePrioritiesUsingBalances": "Maximizar as Prioridades Utilizando os Saldos",
+      "maximizePrioritiesUsingBalancesDescription": "Pondera a preferência do docente pelo seu saldo atual. Docentes com maior necessidade de carga (saldo devedor) têm suas prioridades amplificadas na disputa por turmas.",
+      "minimizeDifferenceInTeachingLoad": "Minimizar da Diferença de Carga Didática",
+      "minimizeDifferenceInTeachingLoadDescription": "Foca na equidade do semestre atual, minimizando os desvios absolutos da carga atribuída a cada docente em relação à média geral de créditos distribuídos.",
+      "minimizeBalanceUtilization": "Minimizar Utilização de Saldos",
+      "minimizeBalanceUtilizationDescription": "Otimiza a atribuição evitando atribuir turmas a docentes com saldo positivo elevado, preservando o equilíbrio do banco de horas a longo prazo (Minimiza Multiplicador * Saldo * Carga)."
+    }
   }
 }

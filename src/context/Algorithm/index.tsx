@@ -25,6 +25,7 @@ import { Objective } from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/Obj
 import SameObjective from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/SameObjective";
 import { AspirationCriteria } from "@/algoritmo/metodos/TabuSearch/Classes/Abstract/AspirationCriteria";
 import { AlgorithmType } from "@/app/[locale]/types/algorithm-types";
+import { useTranslations } from "next-intl";
 import { createContext, useContext, useState } from "react";
 
 type NeighborhoodEntry = {
@@ -127,7 +128,7 @@ const AlgorithmContext = createContext<AlgorithmInterface>({
   aspirationFunctions: new Map<string, AspirationCriteriaEntry>(),
   setAspirationFunctions: () => Map<string, AspirationCriteriaEntry>,
   tabuListType: "Solução",
-  setTabuListType: () => "Ssolução",
+  setTabuListType: () => "Solução",
   objectiveComponents: new Map<string, ObjectiveComponent<any>>(),
   setObjectiveComponents: () => Map<string, ObjectiveComponent<any>>,
   maiorPrioridade: 0,
@@ -137,13 +138,14 @@ const AlgorithmContext = createContext<AlgorithmInterface>({
 });
 
 export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("AlgorithmContext");
   const [hardConstraints, setHardConstraints] = useState(
     new Map<string, Constraint<any>>([
       [
-        "Atribuição sem formulário",
+        t("Constraints.assignmentWithoutForms"),
         new AtribuicaoSemFormulario(
-          "Atribuição sem formulário",
-          "Essa restrição verifica se o docente preencheu o formulário para as disciplinas que foi atribuído.",
+          t("Constraints.assignmentWithoutForms"),
+          t("Constraints.assignmentWithoutFormsDescription"),
           true,
           0,
           true,
@@ -151,10 +153,10 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         ),
       ],
       [
-        "Validar Travas",
+        t("Constraints.validateLocks"),
         new ValidaTravas(
-          "Validar Travas",
-          "Restrição que impede a alteração em células travadas.",
+          t("Constraints.validateLocks"),
+          t("Constraints.validateLocksDescription"),
           true,
           0,
           true,
@@ -166,10 +168,10 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   const [softConstraints, setSoftConstraints] = useState(
     new Map<string, Constraint<any>>([
       [
-        "Disciplina sem docente",
+        t("Constraints.classeWithoutTeacher"),
         new DisciplinaSemDocente(
-          "Disciplina sem docente",
-          "",
+          t("Constraints.classeWithoutTeacher"),
+          t("Constraints.classeWithoutTeacherDescription"),
           false,
           1000000,
           true,
@@ -177,31 +179,21 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         ),
       ],
       [
-        "Choque de horários",
+        t("Constraints.scheduleConflict"),
         new ChoqueDeHorarios(
-          "Choque de horários",
-          "Essa restrição verifica se os docentes foram atribuídos a disciplinas que ocorrem ao mesmo tempo ou apresentam conflitos de início e fim de aula.",
+          t("Constraints.scheduleConflict"),
+          t("Constraints.scheduleConflictDescription"),
           false,
           100000,
           true,
           null,
         ),
       ],
-      // [
-      //   "Carga de Trabalho",
-      //   new CargaDeTrabalho(
-      //     "Carga de Trabalho",
-      //     "Essa restrição tem como objetivo incentivar a atribuição de turmas a docentes com saldos negativos, atribuíndo uma maior penalização para eles, como também, desincentivar a atribuição de muitas turmas para docentes com saldos positivos.",
-      //     false,
-      //     10000
-      //   ),
-      // ],
-      // Adicione outras restrições conforme necessário
       [
-        "Carga Didática Mínima",
+        t("Constraints.minimumTeachingLoad"),
         new CargaDeTrabalhoMinimaDocente(
-          "Carga Didática Mínima",
-          "Penaliza a avaliação da solução para cada docente que não tenha atingido o mínimo de carga didática atribuída (1.0).",
+          t("Constraints.minimumTeachingLoad"),
+          t("Constraints.minimumTeachingLoadDescription"),
           false,
           10000,
           true,
@@ -209,10 +201,10 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         ),
       ],
       [
-        "Carga Didática Máxima",
+        t("Constraints.maximumTeachingLoad"),
         new CargaDeTrabalhoMaximaDocente(
-          "Carga Didática Máxima",
-          "Penaliza a avaliação da solução para cada docente que tenha ultrapassado o limite de carga didática atribuída (2.0).",
+          t("Constraints.maximumTeachingLoad"),
+          t("Constraints.maximumTeachingLoadDescription"),
           false,
           10000,
           true,
@@ -251,46 +243,72 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
    */
   const [neighborhoodFunctions, setNeighborhoodFunctions] = useState(
     new Map<string, NeighborhoodEntry>([
-      ["Add", { instance: new Add("Adiciona", "Adição"), isActive: true }],
-      ["Remove", { instance: new Remove("Remove", "Remover"), isActive: true }],
-      ["Swap", { instance: new Swap("Troca", "Trocar"), isActive: true }],
+      [
+        "Add",
+        {
+          instance: new Add(t("Movements.add"), t("Movements.addDescription")),
+          isActive: true,
+        },
+      ],
+      [
+        "Remove",
+        {
+          instance: new Remove(
+            t("Movements.remove"),
+            t("Movements.removeDescription"),
+          ),
+          isActive: true,
+        },
+      ],
+      [
+        "Swap",
+        {
+          instance: new Swap(
+            t("Movements.swap"),
+            t("Movements.swapDescription"),
+          ),
+          isActive: true,
+        },
+      ],
     ]),
   );
 
   /**
-   * Estado responsável pelas funções de `stop`, que encerrarão a execução do
-   * algoritmo.
+   * Estado responsável pelas funções de `stop`, que encerrarão a execução do algoritmo.
    */
   const [stopFunctions, setStopFunctions] = useState(
     new Map<string, StopCriteriaEntry>([
       [
-        "Limite de Iterações",
+        t("StopCriteria.iterationLimit"),
         {
           instance: new IteracoesMaximas(
-            "Limite de Iterações",
-            "Função que interromperá o algoritmo caso uma determinada quantidade de iterações seja atingida.",
+            t("StopCriteria.iterationLimit"),
+            t("StopCriteria.iterationLimitDescription"),
             300,
           ),
           isActive: true,
         },
       ],
       [
-        "Iterações sem Modificação",
+        t("StopCriteria.iterationsWithoutModification"),
+
         {
           instance: new IteracoesSemModificacao(
-            "Iterações sem Modificação",
-            "Função que interromperá o algoritmo caso uma determinada quantidade de iterações sem modificação da melhor solução seja atingida.",
+            t("StopCriteria.iterationsWithoutModification"),
+            t("StopCriteria.iterationsWithoutModificationDescription"),
             50,
           ),
           isActive: false,
         },
       ],
       [
-        "Iterações sem Melhora na Avaliação",
+        t("StopCriteria.iterationsWithoutImprovementInEvaluation"),
         {
           instance: new IteracoesSemMelhoraAvaliacao(
-            "Iterações sem Melhora na Avaliação",
-            "Função que interrompe a execução do algoritmo caso a avaliação das soluções não apresnetem melhora em uma determinada quantidade de iterações.",
+            t("StopCriteria.iterationsWithoutImprovementInEvaluation"),
+            t(
+              "StopCriteria.iterationsWithoutImprovementInEvaluationDescription",
+            ),
             10,
           ),
           isActive: false,
@@ -305,21 +323,21 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   const [aspirationFunctions, setAspirationFunctions] = useState(
     new Map<string, AspirationCriteriaEntry>([
       [
-        "Objetivo",
+        t("AspirationCriteria.objective"),
         {
           instance: new Objective(
-            "Aspiração por Objetivo",
-            "O tabu será quebrado caso a solução observada apresente um valor objetivo maior que a melhor solução global encontrada.",
+            t("AspirationCriteria.objectiveName"),
+            t("AspirationCriteria.objectiveDescription"),
           ),
           isActive: false,
         },
       ],
       [
-        "Critério de Aceitação de Mesmas Avaliações",
+        t("AspirationCriteria.sameEvaluation"),
         {
           instance: new SameObjective(
-            "Aceitação de Mesmas Avaliações",
-            'Esse critério tem como objetivo aceitar soluções com o valor objetivo (avaliação) maior ou igual ao melhor global após uma determinada quantidade de iterações sem modificação do melhor vizinho. O objetivo é tormar soluções "parecidas" (com mesma avaliação porémcom diferentes atribuições) melhores globais, incentivando a busca por melhores vizinhanças.',
+            t("AspirationCriteria.sameEvaluationName"),
+            t("AspirationCriteria.sameEvaluationDescription"),
             10,
           ),
           isActive: false,
@@ -328,31 +346,33 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
     ]),
   );
 
-  const [tabuListType, setTabuListType] = useState<"Solução" | "Movimento">(
-    "Solução",
+  // TODO: Os textos devem ser modificados para um ENEM de forma a podermos utilizar as traduções de forma correta e não através de ajustes.
+  // FIX: Removi a tipagem pois os tipos estavam fixados em texto < "Solução" | "Movimento">
+  const [tabuListType, setTabuListType] = useState(
+    t("TabuType.solution") as "Solução" | "Movimento",
   );
 
   const [objectiveComponents, setObjectiveComponents] = useState(
     new Map<string, ObjectiveComponent<any>>([
       [
-        "Maximizar as prioridades",
+        t("ObjectiveComponent.maximizepriorities"),
         new PrioridadesDefault(
-          "Maximizar as prioridades",
+          t("ObjectiveComponent.maximizepriorities"),
           false,
           "max",
-          "Maximiza a satisfação global dos docentes, priorizando as atribuições onde há maior preferência declarada nos formulários de intenção.",
+          t("ObjectiveComponent.maximizeprioritiesDescription"),
           1000,
           undefined,
           null,
         ),
       ],
       [
-        "Prioridades com Pesos Tabelados",
+        t("ObjectiveComponent.weightedpriorities"),
         new PrioridadesPesosTabelados(
-          "Prioridade com pesos tabelados",
+          t("ObjectiveComponent.weightedpriorities"),
           false,
           "max",
-          "Semelhante à maximização padrão, mas utiliza uma escala de pesos não-linear (ex: exponencial) para valorizar desproporcionalmente o atendimento às primeiras opções (Top-N) do docente.",
+          t("ObjectiveComponent.weightedprioritiesDescription"),
           1,
           undefined,
           undefined,
@@ -360,46 +380,46 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         ),
       ],
       [
-        "Minimizar Diferenca entre os Saldos",
+        t("ObjectiveComponent.minimizeDifferenceBetweenBalances"),
         new MinimizarDiferencaSaldos(
-          "Minimizar diferenca entre os saldos",
+          t("ObjectiveComponent.minimizeDifferenceBetweenBalances"),
           false,
           "min",
-          "Busca reduzir a variabilidade dos saldos históricos entre os docentes, penalizando cenários onde alguns acumulam muito crédito enquanto outros acumulam muito débito.",
+          t("ObjectiveComponent.minimizeDifferenceBetweenBalancesDescription"),
           1,
           null,
         ),
       ],
       [
-        "Maximizar as Prioridades Utilizando os Saldos",
+        t("ObjectiveComponent.maximizePrioritiesUsingBalances"),
         new PrioridadesPonderadasPorSaldo(
-          "Maximizar as Prioridades Utilizando os Saldos",
+          t("ObjectiveComponent.maximizePrioritiesUsingBalances"),
           true,
           "max",
-          "Pondera a preferência do docente pelo seu saldo atual. Docentes com maior necessidade de carga (saldo devedor) têm suas prioridades amplificadas na disputa por turmas.",
+          t("ObjectiveComponent.maximizePrioritiesUsingBalancesDescription"),
           1000,
           undefined,
           { alpha: 0.1 },
         ),
       ],
       [
-        "Minimizar da Diferença de Carga Didática",
+        t("ObjectiveComponent.minimizeDifferenceInTeachingLoad"),
         new MinimizarDiferencaCargaDidatica(
-          "Minimizar da Diferença de Carga Didática",
+          t("ObjectiveComponent.minimizeDifferenceInTeachingLoad"),
           false,
           "min",
-          "Foca na equidade do semestre atual, minimizando os desvios absolutos da carga atribuída a cada docente em relação à média geral de créditos distribuídos.",
+          t("ObjectiveComponent.minimizeDifferenceInTeachingLoadDescription"),
           1,
           null,
         ),
       ],
       [
-        "Minimizar Utilização de Saldos",
+        t("ObjectiveComponent.minimizeBalanceUtilization"),
         new MinimizarUtilizacaoSaldos(
-          "Minimizar Utilização de Saldos",
+          t("ObjectiveComponent.minimizeBalanceUtilization"),
           true,
           "min",
-          "Otimiza a atribuição evitando atribuir turmas a docentes com saldo positivo elevado, preservando o equilíbrio do banco de horas a longo prazo (Minimiza Multiplicador * Saldo * Carga).",
+          t("ObjectiveComponent.minimizeBalanceUtilizationDescription"),
           1,
           null,
         ),
