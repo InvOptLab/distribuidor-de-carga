@@ -21,6 +21,7 @@ import {
   ConstraintParams,
   IParameter,
 } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 
 interface ConstraintParametersProps {
   params: ConstraintParams;
@@ -31,6 +32,7 @@ export default function ConstraintParameters({
   params,
   onParamChange,
 }: ConstraintParametersProps) {
+  const t = useTranslations("Constraint");
   const [expanded, setExpanded] = useState(true);
 
   const handleChange = () => {
@@ -39,9 +41,6 @@ export default function ConstraintParameters({
 
   const renderParameterField = (paramKey: string, param: IParameter<any>) => {
     const valueType = typeof param.value;
-
-    // console.log(`Renderizando parâmetro "${paramKey}":`, param);
-    // console.log(`Tipo do valor: ${valueType}`);
 
     // Boolean - Switch
     if (valueType === "boolean") {
@@ -52,7 +51,6 @@ export default function ConstraintParameters({
               <Switch
                 checked={param.value}
                 onChange={(e) => {
-                  // console.log(`Switch alterado para: ${e.target.checked}`);
                   onParamChange(paramKey, e.target.checked);
                 }}
                 color="primary"
@@ -88,14 +86,11 @@ export default function ConstraintParameters({
             value={param.value}
             onChange={(e) => {
               const newValue = Number(e.target.value);
-              // console.log(`Campo numérico alterado para: ${newValue}`);
               onParamChange(paramKey, newValue);
             }}
             size="small"
             helperText={param.description}
-            InputProps={{
-              inputProps: { step: "any" },
-            }}
+            slotProps={{ htmlInput: { step: "any" } }}
           />
         </Grid>
       );
@@ -111,7 +106,6 @@ export default function ConstraintParameters({
             label={param.name}
             value={param.value}
             onChange={(e) => {
-              // console.log(`Campo de texto alterado para: ${e.target.value}`);
               onParamChange(paramKey, e.target.value);
             }}
             size="small"
@@ -142,7 +136,7 @@ export default function ConstraintParameters({
               }
             }}
             size="small"
-            helperText={param.description || "Formato JSON"}
+            helperText={param.description || t("jsonFormat")}
             placeholder='{"key": "value"}'
           />
         </Grid>
@@ -153,7 +147,7 @@ export default function ConstraintParameters({
     return (
       <Grid size={12} key={paramKey}>
         <Typography variant="body2" color="error">
-          Tipo de parâmetro não suportado: {valueType}
+          {t("unsupportedParameter", { valueType: valueType })}
         </Typography>
       </Grid>
     );
@@ -186,10 +180,10 @@ export default function ConstraintParameters({
           sx={{ display: "flex", alignItems: "center", gap: 1, width: "100%" }}
         >
           <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-            ⚙️ Parâmetros da Restrição
+            ⚙️ {t("constraintParameter")}
           </Typography>
           <Chip
-            label={`${paramCount} parâmetro${paramCount !== 1 ? "s" : ""}`}
+            label={`${paramCount} ${t("param")}${paramCount !== 1 ? "s" : ""}`}
             size="small"
             color="primary"
           />
@@ -198,7 +192,7 @@ export default function ConstraintParameters({
       <AccordionDetails sx={{ pt: 2 }}>
         <Grid container spacing={2}>
           {Object.entries(params).map(([key, param]) =>
-            renderParameterField(key, param)
+            renderParameterField(key, param),
           )}
         </Grid>
       </AccordionDetails>

@@ -444,7 +444,7 @@
       "assignmentWithoutFormsDescription": "Essa restrição verifica se o docente preencheu o formulário para as disciplinas que foi atribuído.",
       "validateLocks": "Validar Travas",
       "validateLocksDescription": "Restrição que impede a alteração em células travadas.",
-      "classeWithoutTeacher": "Turma sem docente",
+      "classWithoutTeacher": "Turma sem docente",
       "classWithoutTeacherDescription": "Restrição que impede que turmas fiquem sem um docente atribuído.",
       "scheduleConflict": "Conflito de horário",
       "scheduleConflictDescription": "Essa restrição verifica se os docentes foram atribuídos a disciplinas que ocorrem ao mesmo tempo ou apresentam conflitos de início e fim de aula.",
@@ -497,8 +497,48 @@
     }
   },
   "Assistant": {
+    "virtualAssistant": "Assistente Virtual",
     "welcome": "Olá! Eu sou o assistente virtual do Distribuidor de Carga. Como posso te ajudar hoje?",
-    "connectionError": "Desculpe, tive um problema de conexão. Pode repetir?"
+    "connectionError": "Desculpe, tive um problema de conexão. Pode repetir?",
+    "understandError": "Desculpe, eu não consegui entender. Você pode tentar reformular a pergunta?",
+    "Actions": {
+      "dragToMove": "Arraste para mover.",
+      "toggleMute": "Ativar som.",
+      "mute": "Silenciar",
+      "closeChat": "Fechar Chat.",
+      "closeAssistant": "Fechar Assistente.",
+      "openAssistant": "Arraste ou clique para abrir.",
+      "openChat": "Abrir Chat.",
+      "clearConversation": "Limpar conversa.",
+      "askQuestion": "Digite sua pergunta...",
+      "sendMessage": "Enviar mensagem (Enter)",
+      "newLine": "Pressione Shift + Enter para nova linha.",
+      "maximizeChat": "Maximizar Chat",
+      "minimizeChat": "Minimizar Chat",
+      "increaseChat": "Aumentar Chat"
+    }
+  },
+  "Constraint": {
+    "upperHard": "RÍGIDA",
+    "upperSoft": "FLEXÍVEL",
+    "param": "parâmetro",
+    "showDescription": "Ver descrição.",
+    "deleteConstraint": "Remover restrição.",
+    "constraintType": "Tipo de Restrição",
+    "hardDescription": "Deve ser sempre satisfeita.",
+    "softDescription": "Preferível mas não obrigatória.",
+    "notSupported": "Esta restrição não implementa nenhum tipo.",
+    "onlySoftAvailable": "Apenas modo flexível disponível.",
+    "onlyHardAvailable": "Apenas modo rígido disponível.",
+    "bothAvailable": "Ambos os modos disponíveis.",
+    "penaltyHelperText": "Peso da penalização quando violada.",
+    "enterPenalty": "Digite a penalidade",
+    "invalidPenalty": "Digite apenas números.",
+    "info": "Informações",
+    "delete": "Excluir",
+    "jsonFormat": "Formato JSON",
+    "unsupportedParameter": "Tipo de parâmetro não suportado: {valueType}",
+    "constraintParameter": "Parâmetro da Restrição"
   },
   "Utils": {
     "loading": "Carregando...",

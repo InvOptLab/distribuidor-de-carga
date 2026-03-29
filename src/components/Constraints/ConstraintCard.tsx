@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useTranslations } from "next-intl";
 
 interface ConstraintCardProps {
   name: string;
@@ -27,7 +28,7 @@ interface ConstraintCardProps {
   showInformations: (
     message: string,
     type: "success" | "info" | "warning" | "error",
-    closeTime?: number
+    closeTime?: number,
   ) => void;
   constraint: any;
 }
@@ -46,13 +47,15 @@ export default function ConstraintCard({
   const [penalidade, setPenalidade] = useState(penalidadeInicial);
   const [erro, setErro] = useState(false);
 
+  const t = useTranslations("Constraint");
+
   const handleTipoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTipo(event.target.value as "Hard" | "Soft");
     onChange(name, event.target.value as "Hard" | "Soft", penalidade); // Atualiza o valor no componente pai
   };
 
   const handlePenalidadeChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const valor = event.target.value;
     if (/^\d*$/.test(valor)) {
@@ -85,14 +88,13 @@ export default function ConstraintCard({
 
         <FormControl component="fieldset" sx={{ mt: 2, width: "100%" }}>
           <FormLabel component="legend" sx={{ mb: 1, color: "text.secondary" }}>
-            Tipo de Restrição
+            {t("constraintType")}
           </FormLabel>
           <RadioGroup
             name={`${name}-constraint-type`}
             value={tipo}
             onChange={handleTipoChange}
             row
-            //sx={{ justifyContent: "center" }} // Alinha os radios ao centro
           >
             <FormControlLabel
               value="Hard"
@@ -116,9 +118,9 @@ export default function ConstraintCard({
           onChange={handlePenalidadeChange}
           fullWidth
           size="small"
-          placeholder="Digite a penalidade"
+          placeholder={t("enterPenalty")}
           error={erro}
-          helperText={erro ? "Digite apenas números." : ""}
+          helperText={erro ? t("invalidPenalty") : ""}
           sx={{ mt: 2 }}
           //disabled={tipo === "Hard"}
         />
@@ -133,7 +135,7 @@ export default function ConstraintCard({
           sx={{ mt: 2, margin: 0 }}
         >
           <Tooltip
-            title="Informações"
+            title={t("info")}
             slotProps={{
               popper: {
                 modifiers: [
@@ -160,7 +162,7 @@ export default function ConstraintCard({
             </span>
           </Tooltip>
           <Tooltip
-            title="Excluir"
+            title={t("delete")}
             slotProps={{
               popper: {
                 modifiers: [
