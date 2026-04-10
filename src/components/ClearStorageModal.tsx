@@ -29,7 +29,7 @@ import {
 } from "@mui/icons-material";
 import { forwardRef } from "react";
 import { visuallyHidden } from "@mui/utils";
-import { del, get } from "idb-keyval";
+import { clear, del, get, getMany } from "idb-keyval";
 import { jsonReviver } from "@/context/Global/utils";
 
 // Transition component for the dialog
@@ -74,59 +74,34 @@ export default function ClearStorageModal() {
   // Check if any of the keys inside the storage have actual data
   const validateStorageData = useCallback(async (): Promise<SavedDataInfo> => {
     try {
-      const savedData = await get(STORAGE_KEY);
-
-      if (!savedData || typeof savedData !== "string") {
-        return { hasData: false, itemCount: 0 };
-      }
-
-      // Usamos o jsonReviver para remontar os Maps e Sets corretamente
-      const parsedData = JSON.parse(savedData, jsonReviver);
-      if (typeof parsedData !== "object" || parsedData === null) {
-        return { hasData: false, itemCount: 0 };
-      }
-
+      // Busca todas as tabelas de uma vez
+      const values = await getMany(STORAGE_KEYS_TO_VALIDATE);
       let validItemCount = 0;
 
-      // Verifica cada chave configurada
-      for (const key of STORAGE_KEYS_TO_VALIDATE) {
-        const value = parsedData[key];
+      values.forEach((savedData, index) => {
+        if (!savedData) return;
 
-        if (value !== undefined && value !== null) {
-          // Arrays normais
-          if (Array.isArray(value) && value.length > 0) {
-            validItemCount++;
-          }
-          // NOVO: Verifica Maps e Sets (ex: historicoSolucoes e formularios)
-          else if (value instanceof Map || value instanceof Set) {
-            if (value.size > 0) validItemCount++;
-          }
-          // Objetos simples (ex: solucaoAtual)
-          else if (typeof value === "object" && Object.keys(value).length > 0) {
-            if (
-              Object.keys(value).includes("atribuicoes") &&
-              value.atribuicoes.length === 0
-            ) {
-              continue;
-            }
-            validItemCount++;
-          }
-          // Strings, Numbers e Booleans
-          else if (typeof value === "string" && value.trim().length > 0) {
-            validItemCount++;
-          } else if (typeof value === "number" || typeof value === "boolean") {
-            validItemCount++;
-          }
+        const parsedData = JSON.parse(savedData as string, jsonReviver);
+
+        // Conta a quantidade baseada no tipo de estrutura
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          validItemCount++;
+        } else if (parsedData instanceof Map || parsedData instanceof Set) {
+          if (parsedData.size > 0) validItemCount++;
+        } else if (
+          typeof parsedData === "object" &&
+          Object.keys(parsedData).length > 0
+        ) {
+          validItemCount++;
         }
-      }
+      });
 
       return {
         hasData: validItemCount > 0,
         itemCount: validItemCount,
-        lastModified: parsedData.lastModified || parsedData.updatedAt,
       };
     } catch (e) {
-      console.error("Erro ao ler IndexedDB no modal de limpeza:", e);
+      console.error("Erro ao ler IndexedDB no modal:", e);
       return { hasData: false, itemCount: 0 };
     }
   }, []);
@@ -148,7 +123,7 @@ export default function ClearStorageModal() {
     setIsClearing(true);
 
     setTimeout(async () => {
-      await del(STORAGE_KEY); // Deleta do banco de dados do navegador
+      await clear(); // Limpa todas as "tabelas" do IndexedDB de uma só vez
       setOpen(false);
       window.location.reload();
     }, 600);
