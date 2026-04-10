@@ -10,6 +10,7 @@ export interface ChatResponse {
 
 export async function askAssistantAction(
   message: string,
+  locale: string = "pt-BR",
 ): Promise<ChatResponse> {
   try {
     if (!message.trim()) {
@@ -18,7 +19,7 @@ export async function askAssistantAction(
 
     const ragService = createRAGService();
 
-    const answer = await ragService.askQuestion(message);
+    const answer = await ragService.askQuestion(message, locale);
 
     return { success: true, answer };
   } catch (error) {

@@ -16,7 +16,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AvatarIcon } from "./AvatarIcon";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { useAvatarChat } from "@/context/AvatarChat/AvatarChatContext";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const typingAnimation = keyframes`
   0%, 60%, 100% { transform: translateY(0); }
@@ -74,6 +74,8 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
   const { messages, sendMessage, isTyping, isSearching, clearChat, isMuted } =
     useAvatarChat();
 
+  const locale = useLocale();
+
   const { isAvatarSpeaking, speak, stop } = useTextToSpeech();
   const [userInput, setUserInput] = useState("");
   const chatHistoryRef = useRef<HTMLDivElement>(null);
@@ -107,7 +109,7 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
     const botResponse = await sendMessage(textToSend);
 
     if (botResponse && !isMuted) {
-      speak(botResponse);
+      speak(botResponse, locale);
     }
   };
 

@@ -7,7 +7,10 @@ export class RAGService {
     private llmProvider: ILLMProvider,
   ) {}
 
-  async askQuestion(question: string): Promise<string> {
+  async askQuestion(
+    question: string,
+    locale: string = "pt-BR",
+  ): Promise<string> {
     await this.vectorStore.initialize();
 
     const relevantDocs = await this.vectorStore.search(question);
@@ -15,6 +18,7 @@ export class RAGService {
     const answer = await this.llmProvider.generateResponse(
       question,
       relevantDocs,
+      locale,
     );
 
     return answer;

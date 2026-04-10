@@ -9,7 +9,7 @@ import {
   useMemo,
 } from "react";
 import { askAssistantAction } from "@/actions/chat-action";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 // Definição dos tipos
 export type MessageSender = "user" | "bot";
@@ -47,6 +47,8 @@ const AvatarChatContext = createContext<AvatarChatContextType | undefined>(
 export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
   const t = useTranslations("Assistant");
   const tUtils = useTranslations("Utils");
+
+  const locale = useLocale();
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -101,7 +103,7 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
     setIsTyping(true);
 
     try {
-      const response = await askAssistantAction(text);
+      const response = await askAssistantAction(text, locale);
 
       if (!response.success || !response.answer) {
         throw new Error(response.error || tUtils("unknownError"));
