@@ -17,6 +17,7 @@ import {
   alpha,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useTranslations } from "next-intl";
 
 // Tipos
 interface ISimplePage {
@@ -35,41 +36,6 @@ const isGroupedPage = (page: IPages): page is IGroupedPage => {
   return "options" in page;
 };
 
-const navItems: IPages[] = [
-  { name: "Home", link: "/" },
-  {
-    name: "Dados",
-    options: [
-      { name: "Cadastrar", link: "/cadastro" },
-      { name: "Carregar dados", link: "/inputfile" },
-      { name: "Seleção", link: "/select" },
-    ],
-  },
-  // { name: "Seleção", link: "/select" },
-  { name: "Configurações", link: "/config" },
-  {
-    name: "Atribuições",
-    options: [
-      { name: "Tabela", link: "/atribuicoes" },
-      { name: "Blocos", link: "/atribuicaoBlocos" },
-      { name: "Planilha", link: "/planilha" },
-    ],
-  },
-  {
-    name: "Soluções",
-    options: [
-      { name: "Histórico", link: "/history" },
-      { name: "Estatísticas", link: "/statistics" },
-      { name: "Comparar Soluções", link: "/comparar" },
-    ],
-  },
-  // { name: "Histórico", link: "/history" },
-  // { name: "Estatísticas", link: "/statistics" },
-  // { name: "Comparar Soluções", link: "/comparar" },
-  { name: "Calendário", link: "/horarios" },
-  { name: "Salas", link: "/salas" },
-];
-
 // Submenu Desktop
 interface DesktopSubmenuProps {
   item: IGroupedPage;
@@ -77,6 +43,7 @@ interface DesktopSubmenuProps {
 }
 
 function DesktopSubmenu({ item, pathname }: DesktopSubmenuProps) {
+  const t = useTranslations("NavBar");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -139,7 +106,7 @@ function DesktopSubmenu({ item, pathname }: DesktopSubmenuProps) {
           whileTap={{ scale: 0.95 }}
           style={{ display: "inline-block" }}
         >
-          {item.name}
+          {t(item.name)}
         </motion.span>
       </Button>
 
@@ -164,7 +131,7 @@ function DesktopSubmenu({ item, pathname }: DesktopSubmenuProps) {
           const isOptionActive = pathname === option.link;
           return (
             <MenuItem
-              key={option.name}
+              key={t(option.name)}
               onClick={handleClose}
               disableGutters
               sx={{ p: 0 }}
@@ -200,7 +167,7 @@ function DesktopSubmenu({ item, pathname }: DesktopSubmenuProps) {
                   whileHover={{ x: 4 }}
                   style={{ display: "inline-block" }}
                 >
-                  {option.name}
+                  {t(option.name)}
                 </motion.span>
               </Button>
             </MenuItem>
@@ -219,6 +186,7 @@ interface MobileSubmenuProps {
 }
 
 function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
+  const t = useTranslations("NavBar");
   const [expanded, setExpanded] = React.useState(false);
   const isActive = item.options.some((option) => pathname === option.link);
 
@@ -254,7 +222,7 @@ function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
             },
           }}
         >
-          {item.name}
+          {t(item.name)}
         </Button>
       </MenuItem>
 
@@ -269,7 +237,7 @@ function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
             const isOptionActive = pathname === option.link;
             return (
               <MenuItem
-                key={option.name}
+                key={t(option.name)}
                 onClick={onClose}
                 disableGutters
                 sx={{
@@ -306,7 +274,7 @@ function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
                     whileHover={{ x: 4 }}
                     style={{ display: "inline-block" }}
                   >
-                    • {option.name}
+                    • {t(option.name)}
                   </motion.span>
                 </Button>
               </MenuItem>
@@ -320,6 +288,39 @@ function MobileSubmenu({ item, pathname, onClose }: MobileSubmenuProps) {
 
 // Navbar Principal
 export default function Navbar() {
+  const t = useTranslations("NavBar");
+
+  const navItems: IPages[] = [
+    { name: "home", link: "/" },
+    {
+      name: "data",
+      options: [
+        { name: "register", link: "/cadastro" },
+        { name: "loadData", link: "/inputfile" },
+        { name: "selection", link: "/select" },
+      ],
+    },
+    { name: "settings", link: "/config" },
+    {
+      name: "assignments",
+      options: [
+        { name: "table", link: "/atribuicoes" },
+        { name: "blocks", link: "/atribuicaoBlocos" },
+        { name: "spreadsheet", link: "/planilha" },
+      ],
+    },
+    {
+      name: "solutions",
+      options: [
+        { name: "history", link: "/history" },
+        { name: "statistics", link: "/statistics" },
+        { name: "compareSolutions", link: "/comparar" },
+      ],
+    },
+    { name: "calendar", link: "/horarios" },
+    { name: "rooms", link: "/salas" },
+  ];
+
   const pathname = usePathname();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null,
@@ -335,6 +336,7 @@ export default function Navbar() {
 
   return (
     <AppBar
+      id="main-nav"
       component="nav"
       position="sticky"
       sx={{
@@ -350,7 +352,7 @@ export default function Navbar() {
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
-              aria-label="menu de navegação"
+              aria-label={t("navigationMenu")}
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
@@ -386,7 +388,7 @@ export default function Navbar() {
                 if (isGroupedPage(item)) {
                   return (
                     <MobileSubmenu
-                      key={item.name}
+                      key={t(item.name)}
                       item={item}
                       pathname={pathname}
                       onClose={handleCloseNavMenu}
@@ -396,7 +398,7 @@ export default function Navbar() {
                 const isItemActive = pathname === item.link;
                 return (
                   <MenuItem
-                    key={item.name}
+                    key={t(item.name)}
                     onClick={handleCloseNavMenu}
                     disableGutters
                     sx={{ p: 0 }}
@@ -447,7 +449,7 @@ export default function Navbar() {
                         whileHover={{ y: -2 }}
                         style={{ display: "inline-block" }}
                       >
-                        {item.name}
+                        {t(item.name)}
                       </motion.span>
                     </Button>
                   </MenuItem>
@@ -469,7 +471,7 @@ export default function Navbar() {
               if (isGroupedPage(item)) {
                 return (
                   <DesktopSubmenu
-                    key={item.name}
+                    key={t(item.name)}
                     item={item}
                     pathname={pathname}
                   />
@@ -478,7 +480,7 @@ export default function Navbar() {
               const isItemActive = pathname === item.link;
               return (
                 <Button
-                  key={item.name}
+                  key={t(item.name)}
                   component={Link}
                   href={item.link}
                   variant="text"
@@ -528,7 +530,7 @@ export default function Navbar() {
                     whileTap={{ scale: 0.95 }}
                     style={{ display: "inline-block" }}
                   >
-                    {item.name}
+                    {t(item.name)}
                   </motion.span>
                 </Button>
               );

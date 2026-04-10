@@ -30,6 +30,7 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 import { Estatisticas } from "@/algoritmo/communs/interfaces/interfaces";
 import { LineChart } from "@mui/x-charts";
+import { useTranslations } from "next-intl";
 
 export interface IProgressBar {
   total: number;
@@ -133,6 +134,8 @@ export default function AlgoritmoDialog({
   estatisticasMonitoradas,
   stage = "solving",
 }: AlgoritmoDialogProps) {
+  const t = useTranslations("AlgorithmDialog");
+
   const [tabValue, setTabValue] = React.useState(0);
 
   // Calcula a porcentagem de progresso
@@ -205,18 +208,15 @@ export default function AlgoritmoDialog({
 
   // Helper para textos dinâmicos
   const getStatusMessage = () => {
-    if (stage === "preprocessing")
-      return "Processando variáveis e construindo o modelo matemático...";
-    if (processing) return "O otimizador está buscando a melhor solução...";
-    return "Processo concluído!";
+    if (stage === "preprocessing") return t("StatusMessages.preprocessing");
+    if (processing) return t("StatusMessages.solving");
+    return t("StatusMessages.completed");
   };
 
   const getSubMessage = () => {
-    if (stage === "preprocessing")
-      return "Isso pode levar alguns segundos dependendo da quantidade de docentes e restrições.";
-    if (processing)
-      return "Aguarde enquanto o algoritmo explora o espaço de soluções.";
-    return "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela.";
+    if (stage === "preprocessing") return t("SubMessages.preprocessing");
+    if (processing) return t("SubMessages.solving");
+    return t("SubMessages.completed");
   };
 
   return (
@@ -230,8 +230,8 @@ export default function AlgoritmoDialog({
     >
       <DialogTitle id="alert-dialog-title">
         {stage === "preprocessing"
-          ? "Preparando Otimização"
-          : "Execução do Algoritmo"}
+          ? t("Stage.preprocessing")
+          : t("Stage.solving")}
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -250,7 +250,7 @@ export default function AlgoritmoDialog({
           {getStatusMessage()}
         </DialogContentText>
 
-        <Typography variant="caption" color="text.secondary" paragraph>
+        <Typography variant="caption" color="text.secondary" component="p">
           {getSubMessage()}
         </Typography>
         {/* Exibição condicional baseada no estágio */}
@@ -267,7 +267,7 @@ export default function AlgoritmoDialog({
           >
             <CircularProgress />
             <Typography variant="body2" color="text.secondary">
-              Gerando matrizes e restrições...
+              {t("Stage.preprocessingDescription")}
             </Typography>
           </Box>
         ) : (
@@ -284,7 +284,7 @@ export default function AlgoritmoDialog({
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid size={{ xs: 12, sm: 4 }}>
                   <MetricCard
-                    title="Iterações"
+                    title={t("Metrics.iterations")}
                     value={metrics.iteracoes}
                     icon={<LoopIcon />}
                     color="primary"
@@ -292,7 +292,7 @@ export default function AlgoritmoDialog({
                 </Grid>
                 <Grid size={{ xs: 12, sm: 4 }}>
                   <MetricCard
-                    title="Tempo Médio"
+                    title={t("Metrics.averageTime")}
                     value={metrics.tempoMedio}
                     icon={<TimerIcon />}
                     color="info"
@@ -300,7 +300,7 @@ export default function AlgoritmoDialog({
                 </Grid>
                 <Grid size={{ xs: 12, sm: 4 }}>
                   <MetricCard
-                    title="Melhor Avaliação"
+                    title={t("Metrics.bestRating")}
                     value={metrics.melhorAvaliacao}
                     icon={<TrendingUpIcon />}
                     color="success"
@@ -316,8 +316,8 @@ export default function AlgoritmoDialog({
                     onChange={(_, newValue) => setTabValue(newValue)}
                     sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
                   >
-                    <Tab label="Avaliação por Iteração" />
-                    <Tab label="Tempo por Iteração" />
+                    <Tab label={t("Chart.evaluationPerIteration")} />
+                    <Tab label={t("Chart.timePerIteration")} />
                   </Tabs>
 
                   {/* Gráfico de Avaliação */}
@@ -328,7 +328,7 @@ export default function AlgoritmoDialog({
                         xAxis={[
                           {
                             data: chartData.map((item) => item.iteracao),
-                            label: "Iteração",
+                            label: t("Metrics.iterations"),
                           },
                         ]}
                         series={[
@@ -336,7 +336,7 @@ export default function AlgoritmoDialog({
                             data: Array.from(
                               chartData.map((item) => item.avaliacao),
                             ),
-                            label: "Avaliação",
+                            label: t("Metrics.evaluation"),
                             color: "#4caf50",
                           },
                         ]}
@@ -356,7 +356,7 @@ export default function AlgoritmoDialog({
                         xAxis={[
                           {
                             data: chartData.map((item) => item.iteracao),
-                            label: "Iteração",
+                            label: t("Metrics.iterations"),
                           },
                         ]}
                         series={[
@@ -364,7 +364,7 @@ export default function AlgoritmoDialog({
                             data: Array.from(
                               chartData.map((item) => item.tempo),
                             ),
-                            label: "Tempo",
+                            label: t("Metrics.time"),
                             color: "#1C77C3",
                           },
                         ]}
@@ -380,8 +380,7 @@ export default function AlgoritmoDialog({
 
               {!processing && (
                 <DialogContentText id="alert-dialog-description">
-                  O processo foi concluído! Agora você pode aplicar a solução ou
-                  fechar esta tela clicando no X localizado acima.
+                  {t("description")}
                 </DialogContentText>
               )}
             </Box>
@@ -395,14 +394,14 @@ export default function AlgoritmoDialog({
           disabled={!processing}
           color="error"
         >
-          Parar
+          {t("stop")}
         </Button>
         <Button
           variant={processing ? "outlined" : "contained"}
           loading={processing}
           onClick={onApply}
         >
-          Aplicar
+          {t("apply")}
         </Button>
       </DialogActions>
     </Dialog>

@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useState, useMemo } from "react";
 import {
   createTheme,
@@ -37,6 +38,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     if (isHighContrast) {
+      // Paleta Extrema de Alto Contraste (Preto, Branco e Amarelo)
       baseTheme.palette = {
         mode: "dark",
         background: {
@@ -45,41 +47,90 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         },
         text: {
           primary: "#FFFFFF",
-          secondary: "#FFFFFF",
+          secondary: "#FFFF00", // Amarelo ajuda a diferenciar textos secundários
         },
         primary: {
-          main: "#FFFFFF",
+          main: "#FFFF00", // Botões e destaques principais em Amarelo
+          contrastText: "#000000",
+        },
+        secondary: {
+          main: "#00FFFF", // Ciano para ações secundárias
+          contrastText: "#000000",
         },
         divider: "#FFFFFF",
+        action: {
+          active: "#FFFF00",
+          hover: "rgba(255, 255, 255, 0.2)",
+          selected: "rgba(255, 255, 255, 0.3)",
+        },
       };
+
+      // Sobrescrita de Componentes Nativos do MUI
       baseTheme.components = {
+        MuiCssBaseline: {
+          styleOverrides: {
+            body: {
+              backgroundColor: "#000000 !important",
+              color: "#FFFFFF !important",
+            },
+          },
+        },
+        MuiPaper: {
+          styleOverrides: {
+            root: {
+              backgroundColor: "#000000 !important",
+              backgroundImage: "none", // Remove o brilho padrão do Dark Mode do MUI
+              border: "1px solid #FFFFFF", // Garante limite visual nos "quadros"
+              boxShadow: "none !important", // Remove sombras
+            },
+          },
+        },
+        MuiCard: {
+          styleOverrides: {
+            root: {
+              border: "2px solid #FFFFFF",
+              backgroundColor: "#000000 !important",
+              boxShadow: "none !important",
+            },
+          },
+        },
+        MuiButton: {
+          styleOverrides: {
+            root: {
+              border: "2px solid #FFFFFF",
+              borderRadius: "4px",
+              fontWeight: "bold",
+              textTransform: "none",
+            },
+            contained: {
+              backgroundColor: "#FFFF00",
+              color: "#000000",
+              borderColor: "#FFFF00",
+              "&:hover": {
+                backgroundColor: "#FFFFFF",
+                color: "#000000",
+                borderColor: "#FFFFFF",
+              },
+            },
+            outlined: {
+              color: "#FFFF00",
+              borderColor: "#FFFF00",
+              "&:hover": {
+                backgroundColor: "#FFFF00",
+                color: "#000000",
+              },
+            },
+          },
+        },
         MuiLink: {
           styleOverrides: {
             root: {
-              color: "#FFF333",
-              textDecoration: "underline",
+              color: "#FFFF00 !important",
+              textDecoration: "underline !important",
+              textDecorationThickness: "2px !important",
               "&:hover": {
-                color: "#FFF333",
-                textDecoration: "underline",
+                color: "#FFFFFF !important",
               },
-              "&:active": {
-                color: "#FFF333",
-                textDecoration: "underline",
-              },
-            },
-          },
-        },
-        MuiIcon: {
-          styleOverrides: {
-            root: {
-              color: "#FFFFFF",
-            },
-          },
-        },
-        MuiSvgIcon: {
-          styleOverrides: {
-            root: {
-              color: "#FFFFFF",
             },
           },
         },
@@ -87,28 +138,28 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
           styleOverrides: {
             notchedOutline: {
               borderColor: "#FFFFFF",
+              borderWidth: "2px",
+            },
+            root: {
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#FFFF00 !important",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#FFFF00 !important",
+              },
             },
           },
         },
-        MuiInputLabel: {
+        MuiTableCell: {
           styleOverrides: {
             root: {
+              borderBottom: "1px solid #FFFFFF",
               color: "#FFFFFF",
             },
-          },
-        },
-        MuiButton: {
-          styleOverrides: {
-            root: {
-              borderColor: "#FFFFFF",
-              color: "#FFFFFF",
-            },
-          },
-        },
-        MuiDivider: {
-          styleOverrides: {
-            root: {
-              backgroundColor: "#FFFFFF",
+            head: {
+              fontWeight: "bold",
+              color: "#FFFF00",
+              borderBottom: "2px solid #FFFFFF",
             },
           },
         },
@@ -130,20 +181,26 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     >
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {/* Global styles adicionais */}
         {isHighContrast && (
           <GlobalStyles
             styles={{
+              'div[class*="MuiBox-root"], section, article, main': {
+                backgroundColor: "#000000 !important",
+                color: "#FFFFFF !important",
+              },
+              // Força bordas a aparecerem em elementos não tratados pelo Theme
               "*": {
                 borderColor: "#FFFFFF !important",
+                boxShadow: "none !important", // Sombras atrapalham contraste
               },
-              a: {
-                color: "#FFF333 !important",
+              "a, a *": {
+                color: "#FFFF00 !important",
                 textDecoration: "underline !important",
               },
               svg: {
-                fill: "#FFFFFF !important",
-                color: "#FFFFFF !important",
+                // Herda a cor do texto onde o SVG está embutido (ex: branco ou amarelo)
+                fill: "currentColor !important",
+                color: "inherit !important",
               },
             }}
           />
@@ -158,7 +215,7 @@ export const useAccessibility = () => {
   const context = useContext(AccessibilityContext);
   if (!context)
     throw new Error(
-      "useAccessibility must be used within AccessibilityProvider"
+      "useAccessibility must be used within AccessibilityProvider",
     );
   return context;
 };

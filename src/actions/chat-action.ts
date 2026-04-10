@@ -9,20 +9,18 @@ export interface ChatResponse {
 }
 
 export async function askAssistantAction(
-  message: string
+  message: string,
+  locale: string = "pt-BR",
 ): Promise<ChatResponse> {
   try {
     if (!message.trim()) {
       return { success: false, error: "A mensagem não pode estar vazia." };
     }
 
-    // 1. Instancia o serviço (Singleton Pattern já está na Factory)
     const ragService = createRAGService();
 
-    // 2. Executa a lógica de negócio
-    const answer = await ragService.askQuestion(message);
+    const answer = await ragService.askQuestion(message, locale);
 
-    // 3. Retorna os dados puros (Next.js serializa automaticamente)
     return { success: true, answer };
   } catch (error) {
     console.error("Erro na Server Action:", error);

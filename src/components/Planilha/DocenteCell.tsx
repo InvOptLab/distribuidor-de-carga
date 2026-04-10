@@ -9,6 +9,7 @@ import {
   Docente,
   Formulario,
 } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 
 interface DocenteCellProps {
   /**
@@ -49,6 +50,8 @@ export function DocenteCell({
   onChange,
 }: DocenteCellProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const t = useTranslations("Spreadsheet.DocenteCell");
 
   /**
    * Abre o dialog de seleção
@@ -110,7 +113,7 @@ export function DocenteCell({
               color="text.secondary"
               sx={{ fontSize: "0.875rem" }}
             >
-              Nenhum docente
+              {t("noTeachers")}
             </Typography>
           ) : (
             docentesAtribuidos.map((docente, index) => (
@@ -132,7 +135,7 @@ export function DocenteCell({
         </Box>
 
         {/* Botão para adicionar docentes */}
-        <Tooltip title="Adicionar docente" arrow>
+        <Tooltip title={t("addTeacher")} arrow>
           <IconButton
             onClick={handleOpenDialog}
             size="small"

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Avatar, Box, keyframes } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 interface AvatarIconProps {
   isSpeaking: boolean;
@@ -24,6 +25,7 @@ export const AvatarIcon = ({
   isSearching,
   size = 100,
 }: AvatarIconProps) => {
+  const t = useTranslations("Assistant");
   const [isHovering, setIsHovering] = useState(false);
 
   // Usando placeholder para simular os avatares
@@ -36,10 +38,10 @@ export const AvatarIcon = ({
   const src = isSearching
     ? searchingSrc
     : isSpeaking
-    ? talkingSrc
-    : isHovering
-    ? idleSrcSmiling
-    : idleSrc;
+      ? talkingSrc
+      : isHovering
+        ? idleSrcSmiling
+        : idleSrc;
 
   return (
     <Box
@@ -69,7 +71,7 @@ export const AvatarIcon = ({
         key={isSearching ? "searching" : isSpeaking ? "speaking" : "idle"}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
-        alt="Assistente Virtual"
+        alt={t("virtualAssistant")}
         sx={{
           width: size,
           height: size,
@@ -78,8 +80,8 @@ export const AvatarIcon = ({
           borderColor: isSearching
             ? "warning.main"
             : isSpeaking
-            ? "primary.main"
-            : "grey.300",
+              ? "primary.main"
+              : "grey.300",
           transition: "all 0.3s ease",
           animation: isSearching
             ? `${searchingAnimation} 1s ease-in-out infinite`

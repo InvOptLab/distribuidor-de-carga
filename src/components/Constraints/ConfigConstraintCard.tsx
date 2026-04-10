@@ -23,6 +23,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import type Constraint from "@/algoritmo/abstractions/Constraint";
 import ConstraintParameters from "./ConstraintParameters";
+import { useTranslations } from "next-intl";
 
 interface ConstraintCardProps {
   constraint: Constraint<any>;
@@ -31,7 +32,7 @@ interface ConstraintCardProps {
   showInformations: (
     message: string,
     type: "info" | "success" | "error" | "warning",
-    closeTime?: number
+    closeTime?: number,
   ) => void;
 }
 
@@ -41,11 +42,13 @@ export default function ConfigConstraintCard({
   onDelete,
   showInformations,
 }: ConstraintCardProps) {
+  const t = useTranslations("Constraint");
+
   const [tipo, setTipo] = useState<"Hard" | "Soft">(
-    constraint.isHard ? "Hard" : "Soft"
+    constraint.isHard ? "Hard" : "Soft",
   );
   const [penalidade, setPenalidade] = useState<string>(
-    String(constraint.penalty || 0)
+    String(constraint.penalty || 0),
   );
 
   // Verificar se a constraint suporta hard e soft através do prototype
@@ -79,7 +82,7 @@ export default function ConfigConstraintCard({
   };
 
   const handlePenalidadeChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const newPenalidade = event.target.value;
     setPenalidade(newPenalidade);
@@ -171,7 +174,7 @@ export default function ConfigConstraintCard({
                   {constraint.name}
                 </Typography>
                 <Chip
-                  label={tipo === "Hard" ? "RÍGIDA" : "FLEXÍVEL"}
+                  label={tipo === "Hard" ? t("upperHard") : t("upperSoft")}
                   color={tipo === "Hard" ? "error" : "warning"}
                   size="small"
                   sx={{
@@ -182,7 +185,7 @@ export default function ConfigConstraintCard({
                 />
                 {hasParams && (
                   <Chip
-                    label={`${Object.keys(constraint.params).length} parâmetro${
+                    label={`${Object.keys(constraint.params).length} ${t("param")}${
                       Object.keys(constraint.params).length !== 1 ? "s" : ""
                     }`}
                     color="primary"
@@ -199,7 +202,7 @@ export default function ConfigConstraintCard({
 
               <Stack direction="row" spacing={1}>
                 {constraint.description && (
-                  <Tooltip title="Ver descrição" arrow>
+                  <Tooltip title={t("showDescription")} arrow>
                     <IconButton
                       size="small"
                       onClick={handleShowInfo}
@@ -209,7 +212,7 @@ export default function ConfigConstraintCard({
                     </IconButton>
                   </Tooltip>
                 )}
-                <Tooltip title="Remover restrição" arrow>
+                <Tooltip title={t("deleteConstraint")} arrow>
                   <IconButton size="small" onClick={handleDelete} color="error">
                     <DeleteIcon />
                   </IconButton>
@@ -225,23 +228,23 @@ export default function ConfigConstraintCard({
           {/* Configurações básicas */}
           <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth size="small" disabled={selectDisabled}>
-              <InputLabel>Tipo de Restrição</InputLabel>
+              <InputLabel>{t("constraintType")}</InputLabel>
               <Select
                 value={tipo}
-                label="Tipo de Restrição"
+                label={t("constraintType")}
                 onChange={handleTipoChange}
               >
                 {supportsHard && (
                   <MenuItem value="Hard">
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Chip
-                        label="RÍGIDA"
+                        label={t("upperHard")}
                         color="error"
                         size="small"
                         sx={{ height: 20, fontSize: "0.7rem" }}
                       />
                       <Typography variant="body2">
-                        Deve ser sempre satisfeita
+                        {t("hardDescription")}
                       </Typography>
                     </Stack>
                   </MenuItem>
@@ -250,13 +253,13 @@ export default function ConfigConstraintCard({
                   <MenuItem value="Soft">
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Chip
-                        label="FLEXÍVEL"
+                        label={t("upperSoft")}
                         color="warning"
                         size="small"
                         sx={{ height: 20, fontSize: "0.7rem" }}
                       />
                       <Typography variant="body2">
-                        Preferível mas não obrigatória
+                        {t("softDescription")}
                       </Typography>
                     </Stack>
                   </MenuItem>
@@ -264,7 +267,7 @@ export default function ConfigConstraintCard({
               </Select>
               {!supportsHard && !supportsSoft && (
                 <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                  Esta restrição não implementa nenhum tipo
+                  {t("notSupported")}
                 </Typography>
               )}
               {!supportsHard && supportsSoft && (
@@ -273,7 +276,7 @@ export default function ConfigConstraintCard({
                   color="info.main"
                   sx={{ mt: 0.5 }}
                 >
-                  Apenas modo flexível disponível
+                  {t("onlySoftAvailable")}
                 </Typography>
               )}
               {supportsHard && !supportsSoft && (
@@ -282,7 +285,7 @@ export default function ConfigConstraintCard({
                   color="info.main"
                   sx={{ mt: 0.5 }}
                 >
-                  Apenas modo rígido disponível
+                  {t("onlyHardAvailable")}
                 </Typography>
               )}
               {supportsHard && supportsSoft && (
@@ -291,7 +294,7 @@ export default function ConfigConstraintCard({
                   color="success.main"
                   sx={{ mt: 0.5 }}
                 >
-                  Ambos os modos disponíveis
+                  {t("bothAvailable")}
                 </Typography>
               )}
             </FormControl>
@@ -305,10 +308,8 @@ export default function ConfigConstraintCard({
               value={penalidade}
               onChange={handlePenalidadeChange}
               size="small"
-              InputProps={{
-                inputProps: { min: 0, step: 1 },
-              }}
-              helperText="Peso da penalização quando violada"
+              slotProps={{ htmlInput: { min: 0, step: 1 } }}
+              helperText={t("penaltyHelperText")}
             />
           </Grid>
 

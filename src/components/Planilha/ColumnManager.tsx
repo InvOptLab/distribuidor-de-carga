@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { DragIndicator as DragIcon } from "@mui/icons-material";
 import { ColumnConfig } from "@/types/column-config";
+import { useTranslations } from "next-intl";
 
 interface ColumnManagerProps {
   /**
@@ -58,6 +59,8 @@ export function ColumnManager({
   onReorderColumns,
 }: ColumnManagerProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const t = useTranslations("Spreadsheet.ColumnManager");
+  const tUtils = useTranslations("Utils");
 
   const visibleColumns = columns
     .filter((c) => c.visible)
@@ -83,7 +86,7 @@ export function ColumnManager({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Gerenciar Colunas</DialogTitle>
+      <DialogTitle>{t("manageColumns")}</DialogTitle>
       <DialogContent>
         {/* Colunas visíveis */}
         <Box sx={{ marginBottom: 3 }}>
@@ -91,7 +94,7 @@ export function ColumnManager({
             variant="subtitle2"
             sx={{ marginBottom: 1, fontWeight: 600 }}
           >
-            Colunas Visíveis
+            {t("visibleColumns")}
           </Typography>
           <List dense>
             {visibleColumns.map((column, index) => (
@@ -142,7 +145,7 @@ export function ColumnManager({
               variant="subtitle2"
               sx={{ marginBottom: 1, fontWeight: 600 }}
             >
-              Colunas Ocultas
+              {t("hiddenColumns")}
             </Typography>
             <List dense>
               {hiddenColumns.map((column) => (
@@ -172,7 +175,7 @@ export function ColumnManager({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} variant="outlined">
-          Fechar
+          {tUtils("close")}
         </Button>
       </DialogActions>
     </Dialog>

@@ -22,6 +22,7 @@ import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import { ChatContent } from "./ChatContent";
 import Draggable from "react-draggable";
 import { useAvatarChat } from "@/context/AvatarChat/AvatarChatContext";
+import { useTranslations } from "next-intl";
 
 const SIZE_CONFIG = {
   small: { width: 320, height: 380, avatarSize: 80 },
@@ -30,6 +31,7 @@ const SIZE_CONFIG = {
 };
 
 export const AvatarChatWidget = () => {
+  const t = useTranslations("Assistant");
   const {
     isChatOpen,
     openChat,
@@ -59,15 +61,15 @@ export const AvatarChatWidget = () => {
     chatSize === "small"
       ? OpenInFullIcon
       : chatSize === "medium"
-      ? AspectRatioIcon
-      : MinimizeIcon;
+        ? AspectRatioIcon
+        : MinimizeIcon;
 
   const sizeTooltip =
     chatSize === "small"
-      ? "Aumentar chat"
+      ? t("Actions.increaseChat")
       : chatSize === "medium"
-      ? "Maximizar chat"
-      : "Diminuir chat";
+        ? t("Actions.maximizeChat")
+        : t("Actions.minimizeChat");
 
   return (
     <Draggable
@@ -115,11 +117,15 @@ export const AvatarChatWidget = () => {
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Tooltip title="Arraste para mover" arrow>
+                <Tooltip
+                  title={t("Actions.dragToMove")}
+                  aria-description={t("Actions.dragToMove")}
+                  arrow
+                >
                   <DragIndicatorIcon fontSize="small" sx={{ opacity: 0.7 }} />
                 </Tooltip>
                 <Typography variant="subtitle1" fontWeight={600}>
-                  Assistente Virtual
+                  {t("virtualAssistant")}
                 </Typography>
               </Box>
 
@@ -138,7 +144,10 @@ export const AvatarChatWidget = () => {
                   </IconButton>
                 </Tooltip>
 
-                <Tooltip title={isMuted ? "Ativar som" : "Silenciar"} arrow>
+                <Tooltip
+                  title={isMuted ? t("Actions.toggleMute") : t("Actions.mute")}
+                  arrow
+                >
                   <IconButton
                     onClick={toggleMute}
                     size="small"
@@ -162,7 +171,7 @@ export const AvatarChatWidget = () => {
                   sx={{ mx: 0.5, borderColor: "rgba(255,255,255,0.3)" }}
                 />
 
-                <Tooltip title="Fechar chat" arrow>
+                <Tooltip title={t("Actions.closeChat")} arrow>
                   <IconButton
                     onClick={closeChat}
                     size="small"
@@ -198,14 +207,16 @@ export const AvatarChatWidget = () => {
 
         <Tooltip
           title={
-            isChatOpen ? "Fechar Assistente" : "Arraste ou clique para abrir"
+            isChatOpen
+              ? t("Actions.closeAssistant")
+              : t("Actions.openAssistant")
           }
           arrow
           placement="right"
         >
           <Fab
             color="primary"
-            aria-label="Abrir chat"
+            aria-label={t("Actions.openChat")}
             onClick={handleFabClick}
             sx={{
               cursor: isDragging ? "grabbing" : "grab",

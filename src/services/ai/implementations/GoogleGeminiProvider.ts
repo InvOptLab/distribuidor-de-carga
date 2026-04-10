@@ -20,14 +20,19 @@ export class GoogleGeminiProvider implements ILLMProvider {
     });
   }
 
-  async generateResponse(query: string, context: Document[]): Promise<string> {
+  async generateResponse(
+    query: string,
+    context: Document[],
+    locale: string = "pt-BR",
+  ): Promise<string> {
     // Transforma o array de documentos em uma string única
     const contextText = context.map((doc) => doc.pageContent).join("\n---\n");
 
     const prompt = ChatPromptTemplate.fromTemplate(`
       Você é um assistente especialista na plataforma Distribuidor de Carga.
       Responda a pergunta do usuário baseando-se APENAS no contexto abaixo.
-      Se a resposta não estiver no contexto, diga educadamente que não possui essa informação.
+      Se a resposta não estiver no contexto, diga educadamente que não possui essa informação. 
+      MUITO IMPORTANTE: A sua resposta DEVE ser escrita no idioma correspondente a este código (locale): {locale}.
 
       Contexto:
       {context}
@@ -41,6 +46,7 @@ export class GoogleGeminiProvider implements ILLMProvider {
     const response = await chain.invoke({
       context: contextText,
       question: query,
+      locale: locale,
     });
 
     return response;
