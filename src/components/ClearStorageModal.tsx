@@ -29,6 +29,8 @@ import {
 } from "@mui/icons-material";
 import { forwardRef } from "react";
 import { visuallyHidden } from "@mui/utils";
+import { clear, del, get, getMany } from "idb-keyval";
+import { jsonReviver } from "@/context/Global/utils";
 
 // Transition component for the dialog
 const SlideTransition = forwardRef(function Transition(
@@ -70,77 +72,58 @@ export default function ClearStorageModal() {
   const STORAGE_KEY = "distribuidor_carga_sessao";
 
   // Check if any of the keys inside the storage have actual data
-  const validateStorageData = useCallback((): SavedDataInfo => {
+  const validateStorageData = useCallback(async (): Promise<SavedDataInfo> => {
     try {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (!savedData) {
-        return { hasData: false, itemCount: 0 };
-      }
-
-      const parsedData = JSON.parse(savedData);
-      if (typeof parsedData !== "object" || parsedData === null) {
-        return { hasData: false, itemCount: 0 };
-      }
-
+      // Busca todas as tabelas de uma vez
+      const values = await getMany(STORAGE_KEYS_TO_VALIDATE);
       let validItemCount = 0;
 
-      // Check each key that we care about
-      for (const key of STORAGE_KEYS_TO_VALIDATE) {
-        const value = parsedData[key];
+      values.forEach((savedData, index) => {
+        if (!savedData) return;
 
-        if (value !== undefined && value !== null) {
-          // Check if the value is actually non-empty
-          if (Array.isArray(value) && value.length > 0) {
-            validItemCount++;
-          } else if (
-            typeof value === "object" &&
-            Object.keys(value).length > 0
-          ) {
-            if (
-              Object.keys(value).includes("atribuicoes") &&
-              value.atribuicoes.length === 0
-            ) {
-              continue;
-            } else if (value.value.length === 0) {
-              continue;
-            }
-            validItemCount++;
-          } else if (typeof value === "string" && value.trim().length > 0) {
-            validItemCount++;
-          } else if (typeof value === "number" || typeof value === "boolean") {
-            validItemCount++;
-          }
+        const parsedData = JSON.parse(savedData as string, jsonReviver);
+
+        // Conta a quantidade baseada no tipo de estrutura
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          validItemCount++;
+        } else if (parsedData instanceof Map || parsedData instanceof Set) {
+          if (parsedData.size > 0) validItemCount++;
+        } else if (
+          typeof parsedData === "object" &&
+          Object.keys(parsedData).length > 0
+        ) {
+          validItemCount++;
         }
-      }
+      });
 
       return {
         hasData: validItemCount > 0,
         itemCount: validItemCount,
-        lastModified: parsedData.lastModified || parsedData.updatedAt,
       };
-    } catch {
+    } catch (e) {
+      console.error("Erro ao ler IndexedDB no modal:", e);
       return { hasData: false, itemCount: 0 };
     }
   }, []);
 
+  // Lida com a Promise do validateStorageData
   useEffect(() => {
     setMounted(true);
 
-    const dataInfo = validateStorageData();
-    setSavedDataInfo(dataInfo);
-
-    // Only open the modal if there's actual data
-    if (dataInfo.hasData) {
-      setOpen(true);
-    }
+    validateStorageData().then((dataInfo) => {
+      setSavedDataInfo(dataInfo);
+      if (dataInfo.hasData) {
+        setOpen(true);
+      }
+    });
   }, [validateStorageData]);
 
+  // Limpa usando o idb-keyval
   const handleClear = useCallback(() => {
     setIsClearing(true);
 
-    // Small delay to show the clearing animation
-    setTimeout(() => {
-      localStorage.removeItem(STORAGE_KEY);
+    setTimeout(async () => {
+      await clear(); // Limpa todas as "tabelas" do IndexedDB de uma só vez
       setOpen(false);
       window.location.reload();
     }, 600);

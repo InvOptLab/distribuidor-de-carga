@@ -15,6 +15,8 @@ import { jsonReplacer, jsonReviver, type HistoricoSolucao } from "./utils";
 
 //import _ from "lodash"; // Comparação entre objetos de forma otimizada
 
+import { get, set } from "idb-keyval";
+
 interface GlobalContextInterface {
   docentes: Docente[];
   setDocentes: React.Dispatch<React.SetStateAction<Docente[]>>;
@@ -83,65 +85,90 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
 
   const STORAGE_KEY = "distribuidor_carga_sessao";
 
-  // Efeito para LER os dados ao inicializar
+  // Efeito para LER todos os dados em paralelo ao inicializar
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-
-    if (savedData) {
-      // O jsonReviver já reconstrói todos os Maps e Sets (incluindo o historicoSolucoes e conflitos)
-      const parsedData = JSON.parse(savedData, jsonReviver);
-
-      if (parsedData.docentes) setDocentes(parsedData.docentes);
-      if (parsedData.disciplinas) setDisciplinas(parsedData.disciplinas);
-      if (parsedData.atribuicoes) setAtribuicoes(parsedData.atribuicoes);
-      if (parsedData.formularios) setFormularios(parsedData.formularios);
-      if (parsedData.travas) setTravas(parsedData.travas);
-      if (parsedData.solucaoAtual) setSolucaoAtual(parsedData.solucaoAtual);
-      if (parsedData.historicoSolucoes)
-        setHistoricoSolucoes(parsedData.historicoSolucoes);
-    }
-
-    setIsHydrated(true); // Libera o salvamento automático a partir de agora
+    import("idb-keyval").then(({ getMany }) => {
+      // getMany busca todas as chaves ao mesmo tempo de forma super rápida
+      getMany([
+        "docentes",
+        "disciplinas",
+        "atribuicoes",
+        "travas",
+        "formularios",
+        "solucaoAtual",
+        "historicoSolucoes",
+      ])
+        .then(
+          ([
+            savedDocentes,
+            savedDisciplinas,
+            savedAtribuicoes,
+            savedTravas,
+            savedFormularios,
+            savedSolucaoAtual,
+            savedHistorico,
+          ]) => {
+            if (savedDocentes)
+              setDocentes(JSON.parse(savedDocentes, jsonReviver));
+            if (savedDisciplinas)
+              setDisciplinas(JSON.parse(savedDisciplinas, jsonReviver));
+            if (savedAtribuicoes)
+              setAtribuicoes(JSON.parse(savedAtribuicoes, jsonReviver));
+            if (savedTravas) setTravas(JSON.parse(savedTravas, jsonReviver));
+            if (savedFormularios)
+              setFormularios(JSON.parse(savedFormularios, jsonReviver));
+            if (savedSolucaoAtual)
+              setSolucaoAtual(JSON.parse(savedSolucaoAtual, jsonReviver));
+            if (savedHistorico)
+              setHistoricoSolucoes(JSON.parse(savedHistorico, jsonReviver));
+          },
+        )
+        .catch(console.error)
+        .finally(() => setIsHydrated(true));
+    });
   }, []);
 
-  // Efeito para SALVAR os dados nas alterações
+  // Efeito para SALVAR os dados nas alterações (Com Debounce para Performance)
+  // Salva Configurações Básicas (Rápido)
   useEffect(() => {
-    // Só começa a salvar depois que carregou, para não sobrescrever os dados com arrays vazios
     if (!isHydrated) return;
+    import("idb-keyval").then(({ setMany }) => {
+      setMany([
+        ["docentes", JSON.stringify(docentes, jsonReplacer)],
+        ["disciplinas", JSON.stringify(disciplinas, jsonReplacer)],
+        ["formularios", JSON.stringify(formularios, jsonReplacer)],
+        ["travas", JSON.stringify(travas, jsonReplacer)],
+      ]).catch(console.error);
+    });
+  }, [isHydrated, docentes, disciplinas, formularios, travas]);
 
-    const timeoutId = setTimeout(() => {
-      const estadoParaSalvar = {
-        docentes,
-        disciplinas,
-        atribuicoes,
-        formularios,
-        travas,
-        solucaoAtual,
-        historicoSolucoes,
-      };
-
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(estadoParaSalvar, jsonReplacer),
+  // Salva Atribuições (Médio)
+  useEffect(() => {
+    if (!isHydrated) return;
+    const timer = setTimeout(() => {
+      import("idb-keyval").then(({ set }) =>
+        set("atribuicoes", JSON.stringify(atribuicoes, jsonReplacer)),
       );
-    }, 1000); // Ajustar este tempo conforme achar necessário
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [isHydrated, atribuicoes]);
 
-    // Função de limpeza (Cleanup):
-    // Se algum dos estados mudar ANTES do 1 segundo passar, o React chama essa função,
-    // cancela o salvamento anterior que estava na fila, e recomeça a contagem de 1 segundo.
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [
-    isHydrated,
-    docentes,
-    disciplinas,
-    atribuicoes,
-    formularios,
-    travas,
-    solucaoAtual,
-    historicoSolucoes,
-  ]);
+  // Salva Histórico de Soluções (Pesado - com Debounce maior)
+  useEffect(() => {
+    if (!isHydrated) return;
+    const timer = setTimeout(() => {
+      import("idb-keyval").then(({ setMany }) => {
+        setMany([
+          ["solucaoAtual", JSON.stringify(solucaoAtual, jsonReplacer)],
+          [
+            "historicoSolucoes",
+            JSON.stringify(historicoSolucoes, jsonReplacer),
+          ],
+        ]);
+      });
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [isHydrated, solucaoAtual, historicoSolucoes]);
 
   return (
     <GlobalContext.Provider
