@@ -11,7 +11,7 @@ import type {
   Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { HistoricoSolucao } from "./utils";
+import { jsonReplacer, jsonReviver, type HistoricoSolucao } from "./utils";
 
 //import _ from "lodash"; // Comparação entre objetos de forma otimizada
 
@@ -81,48 +81,48 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
   // Flag para saber se já recuperamos os dados do localStorage (evita problemas de hidratação do SSR)
   const [isHydrated, setIsHydrated] = useState(false);
 
+  const STORAGE_KEY = "distribuidor_carga_sessao";
+
+  // Efeito para LER os dados ao inicializar
   useEffect(() => {
-    const loadData = (key: string) => {
-      const saved = localStorage.getItem(key);
-      return saved ? JSON.parse(saved) : null;
-    };
+    const savedData = localStorage.getItem(STORAGE_KEY);
 
-    if (loadData("global_docentes")) setDocentes(loadData("global_docentes"));
-    if (loadData("global_disciplinas"))
-      setDisciplinas(loadData("global_disciplinas"));
-    if (loadData("global_atribuicoes"))
-      setAtribuicoes(loadData("global_atribuicoes"));
-    if (loadData("global_formularios"))
-      setFormularios(loadData("global_formularios"));
-    if (loadData("global_travas")) setTravas(loadData("global_travas"));
-    if (loadData("global_solucaoAtual"))
-      setSolucaoAtual(loadData("global_solucaoAtual"));
+    if (savedData) {
+      // O jsonReviver já reconstrói todos os Maps e Sets (incluindo o historicoSolucoes e conflitos)
+      const parsedData = JSON.parse(savedData, jsonReviver);
 
-    // O objeto Map precisa ser reconstruído pois o JSON não o suporta nativamente
-    const savedHistorico = localStorage.getItem("global_historicoSolucoes");
-    if (savedHistorico) {
-      setHistoricoSolucoes(new Map(JSON.parse(savedHistorico)));
+      if (parsedData.docentes) setDocentes(parsedData.docentes);
+      if (parsedData.disciplinas) setDisciplinas(parsedData.disciplinas);
+      if (parsedData.atribuicoes) setAtribuicoes(parsedData.atribuicoes);
+      if (parsedData.formularios) setFormularios(parsedData.formularios);
+      if (parsedData.travas) setTravas(parsedData.travas);
+      if (parsedData.solucaoAtual) setSolucaoAtual(parsedData.solucaoAtual);
+      if (parsedData.historicoSolucoes)
+        setHistoricoSolucoes(parsedData.historicoSolucoes);
     }
 
     setIsHydrated(true); // Libera o salvamento automático a partir de agora
   }, []);
 
-  // Salvar os dados nas alterações
+  // Efeito para SALVAR os dados nas alterações
   useEffect(() => {
     // Só começa a salvar depois que carregou, para não sobrescrever os dados com arrays vazios
     if (!isHydrated) return;
 
-    localStorage.setItem("global_docentes", JSON.stringify(docentes));
-    localStorage.setItem("global_disciplinas", JSON.stringify(disciplinas));
-    localStorage.setItem("global_atribuicoes", JSON.stringify(atribuicoes));
-    localStorage.setItem("global_formularios", JSON.stringify(formularios));
-    localStorage.setItem("global_travas", JSON.stringify(travas));
-    localStorage.setItem("global_solucaoAtual", JSON.stringify(solucaoAtual));
+    const estadoParaSalvar = {
+      docentes,
+      disciplinas,
+      atribuicoes,
+      formularios,
+      travas,
+      solucaoAtual,
+      historicoSolucoes, // O jsonReplacer cuida do formato Map!
+    };
 
-    // Converte o Map para Array para poder salvar como JSON
+    // Salva tudo de uma vez de forma atômica
     localStorage.setItem(
-      "global_historicoSolucoes",
-      JSON.stringify(Array.from(historicoSolucoes.entries())),
+      STORAGE_KEY,
+      JSON.stringify(estadoParaSalvar, jsonReplacer),
     );
   }, [
     isHydrated,
@@ -131,8 +131,8 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
     atribuicoes,
     formularios,
     travas,
-    historicoSolucoes,
     solucaoAtual,
+    historicoSolucoes,
   ]);
 
   return (
