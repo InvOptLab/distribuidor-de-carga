@@ -15,6 +15,7 @@ import { HistorySolutionProvider } from "./history/context/history.context";
 import { getMessages } from "next-intl/server";
 import { AccessibilityProvider } from "@/context/Accessibility";
 import AccessibilityBar from "@/components/AccessibilityBar";
+import ClearStorageModal from "@/components/ClearStorageModal";
 
 export default async function RootLayout({
   children,
@@ -57,6 +58,7 @@ export default async function RootLayout({
                     <AlertsWrapper>
                       <HistorySolutionProvider>
                         <div id="main-content" style={{ padding: "15px" }}>
+                          <ClearStorageModal />
                           {children}
                         </div>
                         <AvatarChatWidget />
