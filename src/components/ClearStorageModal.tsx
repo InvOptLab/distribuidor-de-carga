@@ -29,6 +29,8 @@ import {
 } from "@mui/icons-material";
 import { forwardRef } from "react";
 import { visuallyHidden } from "@mui/utils";
+import { del, get } from "idb-keyval";
+import { jsonReviver } from "@/context/Global/utils";
 
 // Transition component for the dialog
 const SlideTransition = forwardRef(function Transition(
@@ -70,42 +72,47 @@ export default function ClearStorageModal() {
   const STORAGE_KEY = "distribuidor_carga_sessao";
 
   // Check if any of the keys inside the storage have actual data
-  const validateStorageData = useCallback((): SavedDataInfo => {
+  const validateStorageData = useCallback(async (): Promise<SavedDataInfo> => {
     try {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (!savedData) {
+      const savedData = await get(STORAGE_KEY);
+
+      if (!savedData || typeof savedData !== "string") {
         return { hasData: false, itemCount: 0 };
       }
 
-      const parsedData = JSON.parse(savedData);
+      // Usamos o jsonReviver para remontar os Maps e Sets corretamente
+      const parsedData = JSON.parse(savedData, jsonReviver);
       if (typeof parsedData !== "object" || parsedData === null) {
         return { hasData: false, itemCount: 0 };
       }
 
       let validItemCount = 0;
 
-      // Check each key that we care about
+      // Verifica cada chave configurada
       for (const key of STORAGE_KEYS_TO_VALIDATE) {
         const value = parsedData[key];
 
         if (value !== undefined && value !== null) {
-          // Check if the value is actually non-empty
+          // Arrays normais
           if (Array.isArray(value) && value.length > 0) {
             validItemCount++;
-          } else if (
-            typeof value === "object" &&
-            Object.keys(value).length > 0
-          ) {
+          }
+          // NOVO: Verifica Maps e Sets (ex: historicoSolucoes e formularios)
+          else if (value instanceof Map || value instanceof Set) {
+            if (value.size > 0) validItemCount++;
+          }
+          // Objetos simples (ex: solucaoAtual)
+          else if (typeof value === "object" && Object.keys(value).length > 0) {
             if (
               Object.keys(value).includes("atribuicoes") &&
               value.atribuicoes.length === 0
             ) {
               continue;
-            } else if (value.value.length === 0) {
-              continue;
             }
             validItemCount++;
-          } else if (typeof value === "string" && value.trim().length > 0) {
+          }
+          // Strings, Numbers e Booleans
+          else if (typeof value === "string" && value.trim().length > 0) {
             validItemCount++;
           } else if (typeof value === "number" || typeof value === "boolean") {
             validItemCount++;
@@ -118,29 +125,30 @@ export default function ClearStorageModal() {
         itemCount: validItemCount,
         lastModified: parsedData.lastModified || parsedData.updatedAt,
       };
-    } catch {
+    } catch (e) {
+      console.error("Erro ao ler IndexedDB no modal de limpeza:", e);
       return { hasData: false, itemCount: 0 };
     }
   }, []);
 
+  // Lida com a Promise do validateStorageData
   useEffect(() => {
     setMounted(true);
 
-    const dataInfo = validateStorageData();
-    setSavedDataInfo(dataInfo);
-
-    // Only open the modal if there's actual data
-    if (dataInfo.hasData) {
-      setOpen(true);
-    }
+    validateStorageData().then((dataInfo) => {
+      setSavedDataInfo(dataInfo);
+      if (dataInfo.hasData) {
+        setOpen(true);
+      }
+    });
   }, [validateStorageData]);
 
+  // Limpa usando o idb-keyval
   const handleClear = useCallback(() => {
     setIsClearing(true);
 
-    // Small delay to show the clearing animation
-    setTimeout(() => {
-      localStorage.removeItem(STORAGE_KEY);
+    setTimeout(async () => {
+      await del(STORAGE_KEY); // Deleta do banco de dados do navegador
       setOpen(false);
       window.location.reload();
     }, 600);

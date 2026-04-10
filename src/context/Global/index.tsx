@@ -15,6 +15,8 @@ import { jsonReplacer, jsonReviver, type HistoricoSolucao } from "./utils";
 
 //import _ from "lodash"; // Comparação entre objetos de forma otimizada
 
+import { get, set } from "idb-keyval";
+
 interface GlobalContextInterface {
   docentes: Docente[];
   setDocentes: React.Dispatch<React.SetStateAction<Docente[]>>;
@@ -83,55 +85,66 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
 
   const STORAGE_KEY = "distribuidor_carga_sessao";
 
-  // Efeito para LER os dados ao inicializar
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
+    // Usamos o 'get' do idb-keyval em vez do localStorage.getItem
+    get(STORAGE_KEY)
+      .then((savedData) => {
+        if (savedData && typeof savedData === "string") {
+          // O jsonReviver reconstrói todos os Maps e Sets perfeitamente
+          const parsedData = JSON.parse(savedData, jsonReviver);
 
-    if (savedData) {
-      // O jsonReviver já reconstrói todos os Maps e Sets (incluindo o historicoSolucoes e conflitos)
-      const parsedData = JSON.parse(savedData, jsonReviver);
-
-      if (parsedData.docentes) setDocentes(parsedData.docentes);
-      if (parsedData.disciplinas) setDisciplinas(parsedData.disciplinas);
-      if (parsedData.atribuicoes) setAtribuicoes(parsedData.atribuicoes);
-      if (parsedData.formularios) setFormularios(parsedData.formularios);
-      if (parsedData.travas) setTravas(parsedData.travas);
-      if (parsedData.solucaoAtual) setSolucaoAtual(parsedData.solucaoAtual);
-      if (parsedData.historicoSolucoes)
-        setHistoricoSolucoes(parsedData.historicoSolucoes);
-    }
-
-    setIsHydrated(true); // Libera o salvamento automático a partir de agora
+          if (parsedData.docentes) setDocentes(parsedData.docentes);
+          if (parsedData.disciplinas) setDisciplinas(parsedData.disciplinas);
+          if (parsedData.atribuicoes) setAtribuicoes(parsedData.atribuicoes);
+          if (parsedData.formularios) setFormularios(parsedData.formularios);
+          if (parsedData.travas) setTravas(parsedData.travas);
+          if (parsedData.solucaoAtual) setSolucaoAtual(parsedData.solucaoAtual);
+          if (parsedData.historicoSolucoes)
+            setHistoricoSolucoes(parsedData.historicoSolucoes);
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "Erro ao carregar dados do banco local (IndexedDB):",
+          error,
+        );
+      })
+      .finally(() => {
+        setIsHydrated(true); // Libera a renderização da aplicação
+      });
   }, []);
 
-  // Efeito para SALVAR os dados nas alterações
+  // Efeito para SALVAR os dados nas alterações (Com Debounce para Performance)
   useEffect(() => {
-    // Só começa a salvar depois que carregou, para não sobrescrever os dados com arrays vazios
     if (!isHydrated) return;
 
-    const timeoutId = setTimeout(() => {
-      const estadoParaSalvar = {
-        docentes,
-        disciplinas,
-        atribuicoes,
-        formularios,
-        travas,
-        solucaoAtual,
-        historicoSolucoes,
-      };
-
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(estadoParaSalvar, jsonReplacer),
-      );
-    }, 1000); // Ajustar este tempo conforme achar necessário
-
-    // Função de limpeza (Cleanup):
-    // Se algum dos estados mudar ANTES do 1 segundo passar, o React chama essa função,
-    // cancela o salvamento anterior que estava na fila, e recomeça a contagem de 1 segundo.
-    return () => {
-      clearTimeout(timeoutId);
+    const estadoParaSalvar = {
+      docentes,
+      disciplinas,
+      atribuicoes,
+      formularios,
+      travas,
+      solucaoAtual,
+      historicoSolucoes,
     };
+
+    // DEBOUNCE: Aguarda 800ms antes de salvar. Se o usuário fizer outra alteração
+    // muito rápido (ex: arrastar o mouse na grade), o timeout anterior é cancelado.
+    const timeoutId = setTimeout(() => {
+      // Usamos o 'set' do idb-keyval.
+      // Continuamos convertendo para string com jsonReplacer para garantir a limpeza do 'algorithm'
+      set(STORAGE_KEY, JSON.stringify(estadoParaSalvar, jsonReplacer)).catch(
+        (error) => {
+          console.error(
+            "Erro ao salvar dados no banco local (IndexedDB):",
+            error,
+          );
+        },
+      );
+    }, 800);
+
+    // Limpa o timer se os dados mudarem antes dos 800ms passarem
+    return () => clearTimeout(timeoutId);
   }, [
     isHydrated,
     docentes,
