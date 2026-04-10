@@ -1,0 +1,623 @@
+{
+  "Pages": {
+    "Home": {
+      "title": "Distribuidor de Carga Docente",
+      "subtitle": "Um sistema web interativo para auxiliar na atribuição de docentes.",
+      "badges": {
+        "masterProject": "Projeto de Mestrado",
+        "optimization": "Otimização"
+      },
+      "about": {
+        "title": "Sobre o Projeto",
+        "p1": "Este projeto faz parte de uma pesquisa de mestrado desenvolvida no Instituto de Ciências Matemáticas e de Computação (ICMC) da Universidade de São Paulo (USP). O objetivo é desenvolver uma ferramenta computacional que auxilie no processo de atribuição de docentes a turmas, considerando preferências, restrições de horários e balanceamento de carga didática.",
+        "p2": "A ferramenta utiliza a metaheurística Busca Tabu ou MILP para encontrar soluções de alta qualidade para este problema de otimização combinatória, que é conhecido por sua complexidade computacional."
+      },
+      "features": {
+        "title": "Funcionalidades Principais",
+        "items": {
+          "f1": "Atribuição automática de docentes a turmas usando Busca Tabu",
+          "f2": "Consideração de preferências e prioridades dos docentes",
+          "f3": "Configuração do processo de otimização",
+          "f4": "Gerenciamento de conflitos de horários",
+          "f5": "Visualização em formato de planilha Excel-like",
+          "f6": "Exportação de resultados para Excel",
+          "f7": "Análise de saldo de carga didática dos docentes"
+        }
+      },
+      "technologies": {
+        "title": "Tecnologias"
+      },
+      "repository": {
+        "title": "Repositório",
+        "description": "O código-fonte do projeto está disponível no GitHub:"
+      },
+      "publications": {
+        "title": "Publicações",
+        "accessLink": "Acessar artigo completo",
+        "citationLabel": "Citação:",
+        "sbpo2025": {
+          "articleTitle": "Uma Ferramenta Baseada em Busca Tabu para Alocação de Docentes",
+          "articleEvent": "LVII Simpósio Brasileiro de Pesquisa Operacional (SBPO 2025)"
+        }
+      },
+      "authors": {
+        "title": "Autores",
+        "roles": {
+          "masterStudent": "Aluno de Mestrado",
+          "advisor": "Orientador",
+          "coadvisor": "Coorientador"
+        },
+        "researchAreas": {
+          "combinatorialOptimization": "Otimização Combinatória",
+          "inverseProblems": "Problemas Inversos, Otimização Convexa e Matemática Aplicada",
+          "lotSizing": "Problemas de Dimensionamento de Lotes, Pesquisa Operacional, Heurísticas e Algoritmos Evolutivos"
+        }
+      }
+    },
+    "Accessibility": {
+      "title": "Acessibilidade",
+      "subtitle": "Aprenda sobre os recursos de acessibilidade disponíveis nesta ferramenta e como usá-los",
+      "badges": {
+        "levelAA": "Conformidade Nível AA"
+      },
+      "intro": {
+        "title": "Nosso Compromisso com a Acessibilidade",
+        "p1": "Estamos comprometidos em garantir que esta ferramenta seja acessível a todos os usuários, independentemente de suas habilidades ou limitações. Seguimos as Diretrizes de Acessibilidade para Conteúdo Web (WCAG) 2.1 para garantir uma experiência inclusiva.",
+        "p2": "Esta página descreve os recursos de acessibilidade disponíveis e como usá-los para melhorar sua experiência com o aplicativo."
+      },
+      "features": {
+        "title": "Recursos de Acessibilidade",
+        "description": "Explore os recursos de acessibilidade implementados nesta ferramenta para melhorar sua experiência de navegação.",
+        "items": {
+          "skipLinks": {
+            "title": "Links de Atalho",
+            "description": "Links rápidos no topo da página que permitem pular diretamente para o conteúdo principal ou menu de navegação.",
+            "howToUse": "Use os links 'Ir para o Conteúdo (1)' e 'Ir para o Menu (2)' na barra de acessibilidade no topo da página."
+          },
+          "fontSize": {
+            "title": "Ajuste de Tamanho da Fonte",
+            "description": "Aumente ou diminua o tamanho da fonte em todo o aplicativo para melhorar a legibilidade de acordo com suas necessidades.",
+            "howToUse": "Clique nos botões 'A-' e 'A+' na barra de acessibilidade para diminuir ou aumentar o tamanho da fonte.",
+            "demo": "Testar ampliação"
+          },
+          "highContrast": {
+            "title": "Modo de Alto Contraste",
+            "description": "Ativa um esquema de cores de alto contraste (preto, branco e amarelo) para ajudar pessoas com baixa visão.",
+            "howToUse": "Clique no botão 'Contraste' na barra de acessibilidade para alternar o modo de alto contraste.",
+            "demo": "Testar contraste"
+          },
+          "keyboardNav": {
+            "title": "Navegação por Teclado",
+            "description": "Todos os recursos do aplicativo podem ser acessados usando apenas o teclado, sem a necessidade de um mouse.",
+            "howToUse": "Use Tab para navegar entre os elementos, Enter para ativar e Esc para fechar caixas de diálogo."
+          },
+          "screenReader": {
+            "title": "Suporte a Leitor de Tela",
+            "description": "Todos os elementos possuem rótulos acessíveis (ARIA) que são lidos por leitores de tela como NVDA, JAWS e VoiceOver.",
+            "howToUse": "Use seu leitor de tela preferido para navegar no aplicativo."
+          },
+          "vlibras": {
+            "title": "VLibras - Língua de Sinais",
+            "description": "Integração com o VLibras, uma ferramenta que traduz conteúdos digitais para a Língua Brasileira de Sinais (Libras).",
+            "howToUse": "Clique no ícone do VLibras (mão azul) no canto inferior direito para ativar o intérprete de língua de sinais."
+          },
+          "i18n": {
+            "title": "Internacionalização",
+            "description": "O aplicativo está disponível em português e inglês para atender a um público mais amplo.",
+            "howToUse": "Use os botões 'PT' e 'EN' na barra de acessibilidade para alterar o idioma."
+          },
+          "focusIndicator": {
+            "title": "Indicadores de Foco",
+            "description": "Indicadores visuais visíveis que mostram qual elemento está focado no momento para usuários de teclado.",
+            "howToUse": "Navegue usando o teclado e observe as bordas coloridas ao redor dos elementos focados."
+          }
+        }
+      },
+      "shortcuts": {
+        "title": "Atalhos de Teclado",
+        "description": "Use estes atalhos de teclado para navegar com mais eficiência pelo aplicativo.",
+        "tableLabel": "Lista de atalhos de teclado",
+        "columns": {
+          "shortcut": "Atalho",
+          "action": "Ação"
+        },
+        "items": {
+          "tab": {
+            "key": "Tab",
+            "action": "Mover para o próximo elemento interativo"
+          },
+          "shiftTab": {
+            "key": "Shift + Tab",
+            "action": "Mover para o elemento interativo anterior"
+          },
+          "enter": {
+            "key": "Enter",
+            "action": "Ativar o elemento focado (botão, link)"
+          },
+          "escape": {
+            "key": "Esc",
+            "action": "Fechar caixas de diálogo e menus"
+          },
+          "num1": {
+            "key": "1",
+            "action": "Ir diretamente para o conteúdo principal (via link de atalho)"
+          },
+          "num2": {
+            "key": "2",
+            "action": "Ir diretamente para o menu de navegação (via link de atalho)"
+          }
+        }
+      },
+      "wcag": {
+        "title": "Conformidade WCAG 2.1",
+        "description": "Abaixo estão os critérios WCAG 2.1 que atendemos nesta ferramenta, organizados pelos quatro princípios principais.",
+        "columns": {
+          "id": "ID",
+          "criterion": "Critério",
+          "level": "Nível",
+          "description": "Descrição",
+          "implementation": "Implementação"
+        },
+        "principles": {
+          "perceivable": {
+            "title": "Perceptível",
+            "description": "As informações e os componentes da interface do usuário devem ser apresentados aos usuários de modo que eles possam percebê-los.",
+            "criteriaCount": "6 critérios",
+            "tableLabel": "Critérios WCAG para o princípio perceptível"
+          },
+          "operable": {
+            "title": "Operável",
+            "description": "Os componentes da interface do usuário e a navegação devem ser operáveis.",
+            "criteriaCount": "4 critérios",
+            "tableLabel": "Critérios WCAG para o princípio operável"
+          },
+          "understandable": {
+            "title": "Compreensível",
+            "description": "As informações e a operação da interface do usuário devem ser compreensíveis.",
+            "criteriaCount": "4 critérios",
+            "tableLabel": "Critérios WCAG para o princípio compreensível"
+          },
+          "robust": {
+            "title": "Robusto",
+            "description": "O conteúdo deve ser robusto o suficiente para poder ser interpretado por uma ampla variedade de tecnologias assistivas.",
+            "criteriaCount": "2 critérios",
+            "tableLabel": "Critérios WCAG para o princípio robusto"
+          }
+        },
+        "criteria": {
+          "nonTextContent": {
+            "id": "1.1.1",
+            "name": "Conteúdo Não Textual",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Fornecer alternativas de texto para conteúdo não textual",
+            "implementation": "Ícones com aria-labels e texto alternativo (alt) para imagens"
+          },
+          "infoRelationships": {
+            "id": "1.3.1",
+            "name": "Informações e Relações",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Determinar programaticamente a estrutura da informação",
+            "implementation": "HTML semântico e funções ARIA (roles) adequadas"
+          },
+          "meaningfulSequence": {
+            "id": "1.3.2",
+            "name": "Sequência Significativa",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Apresentar conteúdo em uma sequência significativa",
+            "implementation": "Ordem de leitura lógica no DOM"
+          },
+          "useOfColor": {
+            "id": "1.4.1",
+            "name": "Uso de Cor",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "A cor não é a única maneira de transmitir informações",
+            "implementation": "Ícones e texto complementam as cores"
+          },
+          "contrastMinimum": {
+            "id": "1.4.3",
+            "name": "Contraste (Mínimo)",
+            "level": "AA",
+            "principle": "perceivable",
+            "description": "O texto tem uma taxa de contraste mínima de 4.5:1",
+            "implementation": "Modo de alto contraste e seleção cuidadosa de cores"
+          },
+          "resizeText": {
+            "id": "1.4.4",
+            "name": "Redimensionar Texto",
+            "level": "AA",
+            "principle": "perceivable",
+            "description": "O texto pode ser redimensionado em até 200%",
+            "implementation": "Controles de tamanho de fonte A+/A-"
+          },
+          "keyboard": {
+            "id": "2.1.1",
+            "name": "Teclado",
+            "level": "A",
+            "principle": "operable",
+            "description": "Toda a funcionalidade está disponível via teclado",
+            "implementation": "Suporte completo à navegação por teclado"
+          },
+          "focusOrder": {
+            "id": "2.4.3",
+            "name": "Ordem do Foco",
+            "level": "A",
+            "principle": "operable",
+            "description": "Os componentes recebem foco em uma ordem lógica",
+            "implementation": "A ordem de tabulação natural segue o layout visual"
+          },
+          "linkPurpose": {
+            "id": "2.4.4",
+            "name": "Propósito do Link (Em Contexto)",
+            "level": "A",
+            "principle": "operable",
+            "description": "O propósito de cada link pode ser determinado",
+            "implementation": "Texto de link descritivo e aria-labels"
+          },
+          "focusVisible": {
+            "id": "2.4.7",
+            "name": "Foco Visível",
+            "level": "AA",
+            "principle": "operable",
+            "description": "O indicador de foco do teclado é visível",
+            "implementation": "Estilos de foco personalizados com contornos visíveis"
+          },
+          "languageOfPage": {
+            "id": "3.1.1",
+            "name": "Idioma da Página",
+            "level": "A",
+            "principle": "understandable",
+            "description": "O idioma padrão pode ser determinado programaticamente",
+            "implementation": "Atributo lang no elemento HTML"
+          },
+          "consistentNav": {
+            "id": "3.2.3",
+            "name": "Navegação Consistente",
+            "level": "AA",
+            "principle": "understandable",
+            "description": "A navegação é consistente em todas as páginas",
+            "implementation": "Barra de navegação fixa e barra de acessibilidade"
+          },
+          "errorIdentification": {
+            "id": "3.3.1",
+            "name": "Identificação de Erro",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Os erros de entrada são identificados e descritos",
+            "implementation": "Validação de formulário com mensagens de erro claras"
+          },
+          "labelsInstructions": {
+            "id": "3.3.2",
+            "name": "Rótulos ou Instruções",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Rótulos ou instruções são fornecidos para entrada de dados",
+            "implementation": "Rótulos de formulário e texto de ajuda"
+          }
+        }
+      },
+      "resources": {
+        "title": "Recursos Adicionais",
+        "learnMore": "Saiba mais",
+        "openNewTab": "abre em uma nova aba",
+        "items": {
+          "wcagGuide": {
+            "title": "Diretrizes WCAG 2.1",
+            "description": "Documentação oficial da W3C sobre as diretrizes de acessibilidade na web.",
+            "link": "https://www.w3.org/WAI/WCAG21/quickref/"
+          },
+          "vlibrasInfo": {
+            "title": "Site VLibras",
+            "description": "Ferramentas gratuitas para acessibilidade na Língua Brasileira de Sinais (Libras).",
+            "link": "https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/vlibras"
+          },
+          "accessibilityStatement": {
+            "title": "Declaração de Acessibilidade",
+            "description": "Saiba mais sobre nossas práticas e compromisso com a acessibilidade.",
+            "link": "https://github.com/InvOptLab/distribuidor-de-carga"
+          }
+        }
+      },
+      "feedback": {
+        "title": "Queremos Ouvir Você!",
+        "description": "Se você encontrar alguma barreira de acessibilidade ou tiver sugestões de melhoria, por favor, nos avise.",
+        "linkText": "Relatar problemas no GitHub",
+        "linkLabel": "Relatar problemas de acessibilidade no GitHub, abre em uma nova aba"
+      }
+    },
+    "Rooms": {
+      "time": {
+        "justNow": "Agora mesmo",
+        "minsAgo": "{count} min atrás",
+        "hoursAgo": "{count}h atrás",
+        "daysAgo": "{count}d atrás"
+      },
+      "errors": {
+        "fillAllFields": "Preencha todos os campos",
+        "createRoom": "Erro ao criar sala",
+        "enterName": "Informe seu nome",
+        "joinRoom": "Erro ao entrar na sala"
+      },
+      "header": {
+        "title": "Salas de Colaboração",
+        "subtitle": "Trabalhe em equipe em tempo real",
+        "refreshTooltip": "Atualizar lista de salas",
+        "createTooltip": "Criar uma nova sala de colaboração",
+        "createButton": "Criar Sala"
+      },
+      "search": {
+        "placeholder": "Buscar salas por nome ou criador...",
+        "activeRooms": "{count, plural, =0 {Nenhuma sala ativa} =1 {1 sala ativa} other {# salas ativas}}"
+      },
+      "list": {
+        "loading": "Carregando salas...",
+        "noRoomsFound": "Nenhuma sala encontrada",
+        "noActiveRooms": "Nenhuma sala ativa no momento",
+        "tryAnotherTerm": "Tente buscar por outro termo",
+        "beTheFirst": "Seja o primeiro a criar uma sala de colaboração!",
+        "createFirstButton": "Criar Primeira Sala"
+      },
+      "card": {
+        "creatorTooltip": "Criador da sala (Líder)",
+        "activeTooltip": "Sala ativa - usuários podem entrar",
+        "liveBadge": "Ao Vivo",
+        "creationDateTooltip": "Data de criação da sala",
+        "guestsCanEditTooltip": "Convidados podem editar a grade",
+        "guestsCanEditBadge": "Edição liberada",
+        "guestsCanFilterTooltip": "Convidados podem editar os filtros",
+        "guestsCanFilterBadge": "Filtros liberada",
+        "joinTooltip": "Entrar nesta sala como convidado",
+        "joinButton": "Entrar na Sala"
+      },
+      "createDialog": {
+        "title": "Criar Nova Sala",
+        "subtitle": "Você será o líder desta sala",
+        "roomNameTooltip": "Nome único que identifica sua sala",
+        "roomNameLabel": "Nome da Sala",
+        "roomNamePlaceholder": "Ex: Reunião de Planejamento",
+        "userNameTooltip": "Como você será identificado na sala",
+        "userNameLabel": "Seu Nome (Líder)",
+        "userNamePlaceholder": "Ex: João Silva",
+        "initialConfig": "Configurações Iniciais",
+        "guestsCanEditLabel": "Convidados podem editar",
+        "guestsCanEditDesc": "Permite que convidados façam alterações na grade. Você pode alterar isso depois.",
+        "guestsCanFilterLabel": "Convidados podem filtrar",
+        "guestsCanFilterDesc": "Permite que convidados façam alterações nos filtros grade. Você pode alterar isso depois.",
+        "cancelButton": "Cancelar",
+        "submitButton": "Criar Sala"
+      },
+      "joinDialog": {
+        "title": "Entrar em \"{roomName}\"",
+        "subtitle": "Você entrará como convidado",
+        "roomLeader": "Líder da Sala: {ownerName}",
+        "leaderControl": "O líder controla as permissões de edição da grade.",
+        "allowsEdit": " Esta sala permite que convidados editem.",
+        "readonly": " Esta sala está em modo somente leitura para convidados.",
+        "userNameTooltip": "Como você será identificado na sala",
+        "userNameLabel": "Seu Nome",
+        "userNamePlaceholder": "Ex: Maria Santos",
+        "cancelButton": "Cancelar",
+        "submitButton": "Entrar"
+      }
+    },
+    "Spreadsheet": {
+      "classesSpreadsheet": "Planilha de Turmas",
+      "exportExcel": "Exportar Excel",
+      "clearFilters": "Limpar Filtros",
+      "manageColumns": "Gerenciar Colunas",
+      "displayingCount": "Exibindo {visible} de {total} {total, plural, =1 {turma} other {turmas}}",
+      "filtered": " (filtrado)"
+    }
+  },
+  "Accessibility": {
+    "goToContent": "Ir para o conteúdo",
+    "goToMenu": "Ir para o menu",
+    "decreaseFontSize": "Diminuir fonte",
+    "increaseFontSize": "Aumentar fonte",
+    "highContrast": "Alto Contraste",
+    "contrast": "Contraste",
+    "accessibilityPage": "Acessibilidade",
+    "accessibilityPageTooltip": "Saiba mais sobre recursos de acessibilidade"
+  },
+  "NavBar": {
+    "home": "Home",
+    "data": "Dados",
+    "register": "Cadastrar",
+    "loadData": "Carregar dados",
+    "selection": "Seleção",
+    "settings": "Configurações",
+    "assignments": "Atribuições",
+    "table": "Tabela",
+    "blocks": "Blocos",
+    "spreadsheet": "Planilha",
+    "solutions": "Soluções",
+    "history": "Histórico",
+    "statistics": "Estatísticas",
+    "compareSolutions": "Comparar Soluções",
+    "calendar": "Calendário",
+    "rooms": "Salas",
+    "navigationMenu": "Menu de navegação"
+  },
+  "Collaboration": {
+    "roomNotFound": "Sala não encontrada.",
+    "nameAlreadyExistis": "Nome de usuário já existe nesta sala.",
+    "ownerEndedRoom": "O dono encerrou a sala."
+  },
+  "AlgorithmContext": {
+    "Constraints": {
+      "assignmentWithoutForms": "Atribuição sem formulário",
+      "assignmentWithoutFormsDescription": "Essa restrição verifica se o docente preencheu o formulário para as disciplinas que foi atribuído.",
+      "validateLocks": "Validar Travas",
+      "validateLocksDescription": "Restrição que impede a alteração em células travadas.",
+      "classWithoutTeacher": "Turma sem docente",
+      "classWithoutTeacherDescription": "Restrição que impede que turmas fiquem sem um docente atribuído.",
+      "scheduleConflict": "Conflito de horário",
+      "scheduleConflictDescription": "Essa restrição verifica se os docentes foram atribuídos a disciplinas que ocorrem ao mesmo tempo ou apresentam conflitos de início e fim de aula.",
+      "minimumTeachingLoad": "Carga Didática Mínima",
+      "minimumTeachingLoadDescription": "Penaliza a avaliação da solução para cada docente que não tenha atingido o mínimo de carga didática atribuída.",
+      "maximumTeachingLoad": "Carga Didática Máxima",
+      "maximumTeachingLoadDescription": "Penaliza a avaliação da solução para cada docente que tenha ultrapassado o limite de carga didática atribuída."
+    },
+    "Movements": {
+      "add": "Adicionar",
+      "addDescription": "Adição de um docente a uma turma.",
+      "remove": "Remover",
+      "removeDescription": "Remover um docente de uma turma",
+      "swap": "Trocar",
+      "swapDescription": "Troca as atribuições entre duas turmas."
+    },
+    "StopCriteria": {
+      "iterationLimit": "Limite de Iterações",
+      "iterationLimitDescription": "Função que interromperá o algoritmo caso uma determinada quantidade de iterações seja atingida.",
+      "iterationsWithoutModification": "Iterações sem Modificação",
+      "iterationsWithoutModificationDescription": "Função que interromperá o algoritmo caso uma determinada quantidade de iterações sem modificação da melhor solução seja atingida.",
+      "iterationsWithoutImprovementInEvaluation": "Iterações sem Melhora na Avaliação",
+      "iterationsWithoutImprovementInEvaluationDescription": "Função que interrompe a execução do algoritmo caso a avaliação das soluções não apresnetem melhora em uma determinada quantidade de iterações."
+    },
+    "AspirationCriteria": {
+      "objective": "Objetivo",
+      "objectiveName": "Aspiração por Objetivo",
+      "objectiveDescription": "O tabu será quebrado caso a solução observada apresente um valor objetivo maior que a melhor solução global encontrada.",
+      "sameEvaluation": "Critério de Aceitação de Mesmas Avaliações",
+      "sameEvaluationName": "Aceitação de Mesmas Avaliações",
+      "sameEvaluationDescription": "Esse critério tem como objetivo aceitar soluções com o valor objetivo (avaliação) maior ou igual ao melhor global após uma determinada quantidade de iterações sem modificação do melhor vizinho. O objetivo é tormar soluções simétricas (com mesma avaliação porémcom diferentes atribuições) melhores globais, incentivando a busca por melhores vizinhanças."
+    },
+    "TabuType": {
+      "solution": "Solução",
+      "movement": "Movimento"
+    },
+    "ObjectiveComponent": {
+      "maximizepriorities": "Maximizar as prioridades",
+      "maximizeprioritiesDescription": "Maximiza a satisfação global dos docentes, priorizando as atribuições onde há maior preferência declarada nos formulários de intenção.",
+      "weightedpriorities": "Prioridades com Pesos Tabelados",
+      "weightedprioritiesDescription": "Semelhante à maximização padrão, mas utiliza uma escala de pesos não-linear (ex: exponencial) para valorizar desproporcionalmente o atendimento às primeiras opções (Top-N) do docente.",
+      "minimizeDifferenceBetweenBalances": "Minimizar Diferenca entre os Saldos",
+      "minimizeDifferenceBetweenBalancesDescription": "Busca reduzir a variabilidade dos saldos históricos entre os docentes, penalizando cenários onde alguns acumulam muito crédito enquanto outros acumulam muito débito.",
+      "maximizePrioritiesUsingBalances": "Maximizar as Prioridades Utilizando os Saldos",
+      "maximizePrioritiesUsingBalancesDescription": "Pondera a preferência do docente pelo seu saldo atual. Docentes com maior necessidade de carga (saldo devedor) têm suas prioridades amplificadas na disputa por turmas.",
+      "minimizeDifferenceInTeachingLoad": "Minimizar da Diferença de Carga Didática",
+      "minimizeDifferenceInTeachingLoadDescription": "Foca na equidade do semestre atual, minimizando os desvios absolutos da carga atribuída a cada docente em relação à média geral de créditos distribuídos.",
+      "minimizeBalanceUtilization": "Minimizar Utilização de Saldos",
+      "minimizeBalanceUtilizationDescription": "Otimiza a atribuição evitando atribuir turmas a docentes com saldo positivo elevado, preservando o equilíbrio do banco de horas a longo prazo (Minimiza Multiplicador * Saldo * Carga)."
+    }
+  },
+  "Assistant": {
+    "virtualAssistant": "Assistente Virtual",
+    "welcome": "Olá! Eu sou o assistente virtual do Distribuidor de Carga. Como posso te ajudar hoje?",
+    "connectionError": "Desculpe, tive um problema de conexão. Pode repetir?",
+    "understandError": "Desculpe, eu não consegui entender. Você pode tentar reformular a pergunta?",
+    "Actions": {
+      "dragToMove": "Arraste para mover.",
+      "toggleMute": "Ativar som.",
+      "mute": "Silenciar",
+      "closeChat": "Fechar Chat.",
+      "closeAssistant": "Fechar Assistente.",
+      "openAssistant": "Arraste ou clique para abrir.",
+      "openChat": "Abrir Chat.",
+      "clearConversation": "Limpar conversa.",
+      "askQuestion": "Digite sua pergunta...",
+      "sendMessage": "Enviar mensagem (Enter)",
+      "newLine": "Pressione Shift + Enter para nova linha.",
+      "maximizeChat": "Maximizar Chat",
+      "minimizeChat": "Minimizar Chat",
+      "increaseChat": "Aumentar Chat"
+    }
+  },
+  "Constraint": {
+    "upperHard": "RÍGIDA",
+    "upperSoft": "FLEXÍVEL",
+    "param": "parâmetro",
+    "showDescription": "Ver descrição.",
+    "deleteConstraint": "Remover restrição.",
+    "constraintType": "Tipo de Restrição",
+    "hardDescription": "Deve ser sempre satisfeita.",
+    "softDescription": "Preferível mas não obrigatória.",
+    "notSupported": "Esta restrição não implementa nenhum tipo.",
+    "onlySoftAvailable": "Apenas modo flexível disponível.",
+    "onlyHardAvailable": "Apenas modo rígido disponível.",
+    "bothAvailable": "Ambos os modos disponíveis.",
+    "penaltyHelperText": "Peso da penalização quando violada.",
+    "enterPenalty": "Digite a penalidade",
+    "invalidPenalty": "Digite apenas números.",
+    "info": "Informações",
+    "delete": "Excluir",
+    "jsonFormat": "Formato JSON",
+    "unsupportedParameter": "Tipo de parâmetro não suportado: {valueType}",
+    "constraintParameter": "Parâmetro da Restrição"
+  },
+  "AlgorithmDialog": {
+    "StatusMessages": {
+      "preprocessing": "Processando variáveis e construindo o modelo matemático...",
+      "solving": "O otimizador está buscando a melhor solução...",
+      "completed": "Processo concluído!"
+    },
+    "SubMessages": {
+      "preprocessing": "Isso pode levar alguns segundos dependendo da quantidade de docentes e restrições.",
+      "solving": "Aguarde enquanto o algoritmo explora o espaço de soluções.",
+      "completed": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela."
+    },
+    "Stage": {
+      "preprocessing": "Preparando Otimização",
+      "preprocessingDescription": "Gerando matrizes e restrições...",
+      "solving": "Execução do Algoritmo"
+    },
+    "Metrics": {
+      "iterations": "Iterações",
+      "averageTime": "Tempo Médio",
+      "bestRating": "Melhor Avaliação",
+      "evaluation": "Avaliação",
+      "time": "Tempo"
+    },
+    "Chart": {
+      "evaluationPerIteration": "Avaliação por Iteração",
+      "timePerIteration": "Tempo por Iteração"
+    },
+    "description": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela clicando no X localizado acima.",
+    "stop": "Parar",
+    "apply": "Aplicar"
+  },
+  "Spreadsheet": {
+    "DocenteSelectionDialog": {
+      "selectedCount": "Docentes selecionados: {count}",
+      "noOtherProfessors": "Nenhum outro docente disponível",
+      "otherProfessorsCount": "Demais Docentes: {count}",
+      "noProfessorsWithForms": "Nenhum docente com formulário",
+      "professorsWithFormsCount": "Docentes com Formulário: {count}",
+      "selectProfessorsTitle": "Selecionar Docentes - {codigo} (Turma {turma})",
+      "balance": "Saldo: {saldo}",
+      "priority": "Prioridade: {prioridade}"
+    },
+    "DocenteCell": {
+      "addTeacher": "Adicionar docente",
+      "noTeachers": "Nenhum docente"
+    },
+    "ColumnManager": {
+      "manageColumns": "Gerenciar Colunas",
+      "visibleColumns": "Colunas Visíveis",
+      "hiddenColumns": "Colunas Ocultas"
+    }
+  },
+  "Utils": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro. Por favor, tente novamente.",
+    "unknownError": "Ocorreu um erro desconhecido. Por favor, tente novamente.",
+    "save": "Salvar",
+    "cancel": "Cancelar"
+  },
+  "Components": {
+    "ClearStorageModal": {
+      "title": "Sessão Anterior Encontrada",
+      "description": "Identificamos que você possui dados de um planejamento anterior salvos no navegador. Você deseja continuar de onde parou ou prefere apagar tudo para começar um novo projeto do zero?",
+      "savedDataInfo": "{count, plural, =1 {1 categoria de dados encontrada} other {# categorias de dados encontradas}}",
+      "continueButton": "Continuar Planejamento",
+      "clearButton": "Começar do Zero",
+      "clearingButton": "Apagando dados...",
+      "closeAriaLabel": "Fechar modal",
+      "continueAriaDescription": "Continua com os dados salvos anteriormente sem fazer alterações",
+      "clearAriaDescription": "Remove todos os dados salvos e recarrega a página para começar um novo planejamento"
+    }
+  }
+}

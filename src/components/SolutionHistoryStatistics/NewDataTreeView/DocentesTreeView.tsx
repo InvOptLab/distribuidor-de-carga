@@ -18,7 +18,7 @@ import {
 } from "@mui/x-tree-view/useTreeItem";
 import { TreeItemProvider } from "@mui/x-tree-view/TreeItemProvider";
 import { TreeItemIcon } from "@mui/x-tree-view/TreeItemIcon";
-import { TreeDocente } from "@/app/history/_components/SolutionHistoryStatistics";
+import { TreeDocente } from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 import { styled, useTheme } from "@mui/material";
 
 declare module "react" {
@@ -29,7 +29,8 @@ declare module "react" {
 }
 
 interface StyledTreeItemProps
-  extends Omit<UseTreeItemParameters, "rootRef">,
+  extends
+    Omit<UseTreeItemParameters, "rootRef">,
     React.HTMLAttributes<HTMLLIElement> {
   bgColor?: string;
   bgColorForDarkMode?: string;
@@ -64,7 +65,7 @@ const CustomTreeItemContent = styled(TreeItemContent)(({ theme }) => ({
 const CustomTreeItemIconContainer = styled(TreeItemIconContainer)(
   ({ theme }) => ({
     marginRight: theme.spacing(1),
-  })
+  }),
 );
 
 const CustomTreeItemGroupTransition = styled(TreeItemGroupTransition)(
@@ -73,12 +74,12 @@ const CustomTreeItemGroupTransition = styled(TreeItemGroupTransition)(
     [`& .content`]: {
       paddingLeft: theme.spacing(2),
     },
-  })
+  }),
 );
 
 const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   props: StyledTreeItemProps,
-  ref: React.Ref<HTMLLIElement>
+  ref: React.Ref<HTMLLIElement>,
 ) {
   const theme = useTheme();
   const {
@@ -208,7 +209,7 @@ export default function DocenteTreeView({
             }
             labelIcon={null}
             labelInfo={`(${disciplina.docentes.length})`}
-          />
+          />,
         );
       }
 
@@ -249,7 +250,7 @@ export default function DocenteTreeView({
           labelInfo={`(${docente.atribuicoes.size})`}
         >
           {childrenToRender}
-        </CustomTreeItem>
+        </CustomTreeItem>,
       );
     }
 

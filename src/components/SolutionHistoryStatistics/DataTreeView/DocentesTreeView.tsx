@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { TreeItem } from "@mui/x-tree-view";
-import { TreeDocente } from "@/app/history/_components/SolutionHistoryStatistics";
+import { TreeDocente } from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 
 interface DocentesTreeViewProps {
   docentesAtribuicoes: Map<string, TreeDocente>; // Map de docentes e suas disciplinas
@@ -26,7 +26,7 @@ const DocentesTreeView: React.FC<DocentesTreeViewProps> = ({
           key={`child_docente_${docente}_${disciplina.id}`}
           itemId={`child_docente_${docente}_${disciplina.id}`}
           label={`${disciplina._cursos} - ${disciplina.nome} (${disciplina.atribuicoes.size})`}
-        />
+        />,
       );
     }
 
@@ -76,7 +76,7 @@ const DocentesTreeView: React.FC<DocentesTreeViewProps> = ({
             {/* Disciplinas como itens filhos */}
             {docenteChild(docente, treeDocente)}
           </TreeItem>
-        )
+        ),
       )}
     </>
   );

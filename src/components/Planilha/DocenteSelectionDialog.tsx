@@ -23,6 +23,7 @@ import {
   Docente,
   Formulario,
 } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 
 interface DocenteSelectionDialogProps {
   /**
@@ -77,6 +78,9 @@ export function DocenteSelectionDialog({
 }: DocenteSelectionDialogProps) {
   const [selectedDocentes, setSelectedDocentes] = useState<string[]>([]);
 
+  const t = useTranslations("Spreadsheet.DocenteSelectionDialog");
+  const tUtils = useTranslations("Utils");
+
   useEffect(() => {
     if (open) {
       setSelectedDocentes(docentesAtribuidos);
@@ -97,7 +101,8 @@ export function DocenteSelectionDialog({
       .forEach((docente) => {
         const formulario = formularios.find(
           (f) =>
-            f.id_disciplina === disciplina.id && f.nome_docente === docente.nome
+            f.id_disciplina === disciplina.id &&
+            f.nome_docente === docente.nome,
         );
 
         if (formulario) {
@@ -120,10 +125,10 @@ export function DocenteSelectionDialog({
    * - Preto: demais casos
    */
   const getSaldoColor = (saldo?: number): string => {
-    if (saldo === undefined) return "text.primary";
-    if (saldo > 2) return "success.main";
-    if (saldo < -1) return "error.main";
-    return "text.primary";
+    if (saldo === undefined) return "main";
+    if (saldo > 2) return "success";
+    if (saldo < -1) return "error";
+    return "main";
   };
 
   /**
@@ -192,7 +197,7 @@ export function DocenteSelectionDialog({
                 </Typography>
                 {docente.prioridade !== undefined && (
                   <Chip
-                    label={`Prioridade: ${docente.prioridade}`}
+                    label={t("priority", { prioridade: docente.prioridade })}
                     size="small"
                     color="primary"
                     variant="outlined"
@@ -202,11 +207,11 @@ export function DocenteSelectionDialog({
                   variant="body2"
                   component="span"
                   sx={{
-                    color: getSaldoColor(docente.saldo),
                     fontWeight: "medium",
                   }}
+                  color={getSaldoColor(docente.saldo)}
                 >
-                  Saldo: {docente.saldo ?? 0}
+                  {t("balance", { saldo: docente.saldo.toFixed(2) ?? 0 })}
                 </Typography>
               </Box>
             }
@@ -219,7 +224,10 @@ export function DocenteSelectionDialog({
   return (
     <Dialog open={open} onClose={handleCancel} maxWidth="md" fullWidth>
       <DialogTitle>
-        Selecionar Docentes - {disciplina.codigo} (Turma {disciplina.turma})
+        {t("selectProfessorsTitle", {
+          codigo: disciplina.codigo,
+          turma: disciplina.turma,
+        })}
       </DialogTitle>
       <DialogContent>
         <Box sx={{ display: "flex", gap: 2, minHeight: "400px" }}>
@@ -229,7 +237,9 @@ export function DocenteSelectionDialog({
               variant="subtitle1"
               sx={{ fontWeight: "bold", mb: 1, color: "primary.main" }}
             >
-              Docentes com Formulário ({docentesComFormulario.length})
+              {t("professorsWithFormsCount", {
+                count: docentesComFormulario.length,
+              })}
             </Typography>
             <Divider sx={{ mb: 1 }} />
             <Box
@@ -245,7 +255,7 @@ export function DocenteSelectionDialog({
               {docentesComFormulario.length === 0 ? (
                 <Box sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="body2" color="text.secondary">
-                    Nenhum docente com formulário
+                    {t("noProfessorsWithForms")}
                   </Typography>
                 </Box>
               ) : (
@@ -262,7 +272,9 @@ export function DocenteSelectionDialog({
               variant="subtitle1"
               sx={{ fontWeight: "bold", mb: 1, color: "text.secondary" }}
             >
-              Demais Docentes ({docentesSemFormulario.length})
+              {t("otherProfessorsCount", {
+                count: docentesSemFormulario.length,
+              })}
             </Typography>
             <Divider sx={{ mb: 1 }} />
             <Box
@@ -278,7 +290,7 @@ export function DocenteSelectionDialog({
               {docentesSemFormulario.length === 0 ? (
                 <Box sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="body2" color="text.secondary">
-                    Nenhum outro docente disponível
+                    {t("noOtherProfessors")}
                   </Typography>
                 </Box>
               ) : (
@@ -295,7 +307,7 @@ export function DocenteSelectionDialog({
           sx={{ mt: 2, p: 2, backgroundColor: "action.hover", borderRadius: 1 }}
         >
           <Typography variant="body2" sx={{ fontWeight: "medium" }}>
-            Docentes selecionados: {selectedDocentes.length}
+            {t("selectedCount", { count: selectedDocentes.length })}
           </Typography>
           {selectedDocentes.length > 0 && (
             <Box sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -308,10 +320,10 @@ export function DocenteSelectionDialog({
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={handleCancel} variant="outlined" color="error">
-          Cancelar
+          {tUtils("cancel")}
         </Button>
         <Button onClick={handleConfirm} variant="contained" color="primary">
-          Salvar
+          {tUtils("save")}
         </Button>
       </DialogActions>
     </Dialog>

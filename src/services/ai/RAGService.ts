@@ -4,20 +4,21 @@ import { IVectorStoreRepository } from "./interfaces/IVectorStoreRepository";
 export class RAGService {
   constructor(
     private vectorStore: IVectorStoreRepository,
-    private llmProvider: ILLMProvider
+    private llmProvider: ILLMProvider,
   ) {}
 
-  async askQuestion(question: string): Promise<string> {
-    // 1. Garantir que a base está carregada
+  async askQuestion(
+    question: string,
+    locale: string = "pt-BR",
+  ): Promise<string> {
     await this.vectorStore.initialize();
 
-    // 2. Buscar contexto relevante
     const relevantDocs = await this.vectorStore.search(question);
 
-    // 3. Gerar resposta usando o LLM
     const answer = await this.llmProvider.generateResponse(
       question,
-      relevantDocs
+      relevantDocs,
+      locale,
     );
 
     return answer;

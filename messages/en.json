@@ -1,0 +1,623 @@
+{
+  "Pages": {
+    "Home": {
+      "title": "Teaching Workload Distributor",
+      "subtitle": "A Tabu Search-based tool for optimized faculty allocation",
+      "badges": {
+        "masterProject": "Master's Project",
+        "optimization": "Optimization"
+      },
+      "about": {
+        "title": "About the Project",
+        "p1": "This project is part of a Master's research developed at the Institute of Mathematics and Computer Sciences (ICMC) of the University of São Paulo (USP). The goal is to develop a computational tool to assist in the process of assigning teachers to classes, considering preferences, scheduling constraints, and teaching workload balance.",
+        "p2": "The tool uses the Tabu Search metaheuristic to find high-quality solutions to this combinatorial optimization problem, which is known for its computational complexity."
+      },
+      "features": {
+        "title": "Key Features",
+        "items": {
+          "f1": "Automatic assignment of teachers to classes using Tabu Search",
+          "f2": "Consideration of teachers' preferences and priorities",
+          "f3": "Optimization process configuration",
+          "f4": "Schedule conflict management",
+          "f5": "Excel-like spreadsheet visualization",
+          "f6": "Export results to Excel",
+          "f7": "Analysis of teachers' teaching workload balance"
+        }
+      },
+      "technologies": {
+        "title": "Technologies"
+      },
+      "repository": {
+        "title": "Repository",
+        "description": "The project's source code is available on GitHub:"
+      },
+      "publications": {
+        "title": "Publications",
+        "accessLink": "Access full article",
+        "citationLabel": "Citation:",
+        "sbpo2025": {
+          "articleTitle": "A Tabu Search-Based Tool for Faculty Allocation",
+          "articleEvent": "LVII Brazilian Symposium on Operations Research (SBPO 2025)"
+        }
+      },
+      "authors": {
+        "title": "Authors",
+        "roles": {
+          "masterStudent": "Master's Student",
+          "advisor": "Advisor",
+          "coadvisor": "Co-advisor"
+        },
+        "researchAreas": {
+          "combinatorialOptimization": "Combinatorial Optimization",
+          "inverseProblems": "Inverse Problems, Convex Optimization, and Applied Math",
+          "lotSizing": "Lot Sizing Problems, Operations Research, Heuristics and Evolutionary Algorithms"
+        }
+      }
+    },
+    "Accessibility": {
+      "title": "Accessibility",
+      "subtitle": "Learn about the accessibility features available in this tool and how to use them",
+      "badges": {
+        "levelAA": "Level AA Compliance"
+      },
+      "intro": {
+        "title": "Our Commitment to Accessibility",
+        "p1": "We are committed to ensuring that this tool is accessible to all users, regardless of their abilities or limitations. We follow the Web Content Accessibility Guidelines (WCAG) 2.1 to ensure an inclusive experience.",
+        "p2": "This page describes the accessibility features available and how to use them to improve your experience with the application."
+      },
+      "features": {
+        "title": "Accessibility Features",
+        "description": "Explore the accessibility resources implemented in this tool to improve your browsing experience.",
+        "items": {
+          "skipLinks": {
+            "title": "Skip Links",
+            "description": "Quick links at the top of the page that allow you to skip directly to the main content or navigation menu.",
+            "howToUse": "Use the links 'Go to Content (1)' and 'Go to Menu (2)' in the accessibility bar at the top of the page."
+          },
+          "fontSize": {
+            "title": "Font Size Adjustment",
+            "description": "Increase or decrease the font size throughout the application to improve readability according to your needs.",
+            "howToUse": "Click the 'A-' and 'A+' buttons in the accessibility bar to decrease or increase the font size.",
+            "demo": "Test enlarging"
+          },
+          "highContrast": {
+            "title": "High Contrast Mode",
+            "description": "Activates a high contrast color scheme (black, white, and yellow) to help people with low vision.",
+            "howToUse": "Click the 'Contrast' button in the accessibility bar to toggle high contrast mode.",
+            "demo": "Test contrast"
+          },
+          "keyboardNav": {
+            "title": "Keyboard Navigation",
+            "description": "All features of the application can be accessed using only the keyboard, without the need for a mouse.",
+            "howToUse": "Use Tab to navigate between elements, Enter to activate, and Escape to close dialogs."
+          },
+          "screenReader": {
+            "title": "Screen Reader Support",
+            "description": "All elements have accessible labels (ARIA) that are read by screen readers like NVDA, JAWS, and VoiceOver.",
+            "howToUse": "Use your preferred screen reader to navigate the application."
+          },
+          "vlibras": {
+            "title": "VLibras - Sign Language",
+            "description": "Integration with VLibras, a tool that translates digital content into Brazilian Sign Language (Libras).",
+            "howToUse": "Click the VLibras icon (blue hand) in the bottom right corner to activate the sign language interpreter."
+          },
+          "i18n": {
+            "title": "Internationalization",
+            "description": "The application is available in Portuguese and English to serve a broader audience.",
+            "howToUse": "Use the 'PT' and 'EN' buttons in the accessibility bar to change the language."
+          },
+          "focusIndicator": {
+            "title": "Focus Indicators",
+            "description": "Visible visual indicators that show which element is currently focused for keyboard users.",
+            "howToUse": "Navigate using the keyboard and observe the colored borders around focused elements."
+          }
+        }
+      },
+      "shortcuts": {
+        "title": "Keyboard Shortcuts",
+        "description": "Use these keyboard shortcuts to navigate more efficiently through the application.",
+        "tableLabel": "List of keyboard shortcuts",
+        "columns": {
+          "shortcut": "Shortcut",
+          "action": "Action"
+        },
+        "items": {
+          "tab": {
+            "key": "Tab",
+            "action": "Move to the next interactive element"
+          },
+          "shiftTab": {
+            "key": "Shift + Tab",
+            "action": "Move to the previous interactive element"
+          },
+          "enter": {
+            "key": "Enter",
+            "action": "Activate the focused element (button, link)"
+          },
+          "escape": {
+            "key": "Escape",
+            "action": "Close dialogs and menus"
+          },
+          "num1": {
+            "key": "1",
+            "action": "Go directly to the main content (via skip link)"
+          },
+          "num2": {
+            "key": "2",
+            "action": "Go directly to the navigation menu (via skip link)"
+          }
+        }
+      },
+      "wcag": {
+        "title": "WCAG 2.1 Compliance",
+        "description": "Below are the WCAG 2.1 criteria we meet in this tool, organized by the four main principles.",
+        "columns": {
+          "id": "ID",
+          "criterion": "Criterion",
+          "level": "Level",
+          "description": "Description",
+          "implementation": "Implementation"
+        },
+        "principles": {
+          "perceivable": {
+            "title": "Perceivable",
+            "description": "Information and user interface components must be presentable to users in ways they can perceive.",
+            "criteriaCount": "5 criteria",
+            "tableLabel": "WCAG criteria for perceivable principle"
+          },
+          "operable": {
+            "title": "Operable",
+            "description": "User interface components and navigation must be operable.",
+            "criteriaCount": "4 criteria",
+            "tableLabel": "WCAG criteria for operable principle"
+          },
+          "understandable": {
+            "title": "Understandable",
+            "description": "Information and the operation of user interface must be understandable.",
+            "criteriaCount": "3 criteria",
+            "tableLabel": "WCAG criteria for understandable principle"
+          },
+          "robust": {
+            "title": "Robust",
+            "description": "Content must be robust enough that it can be interpreted by a wide variety of assistive technologies.",
+            "criteriaCount": "2 criteria",
+            "tableLabel": "WCAG criteria for robust principle"
+          }
+        },
+        "criteria": {
+          "nonTextContent": {
+            "id": "1.1.1",
+            "name": "Non-text Content",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Provide text alternatives for non-text content",
+            "implementation": "Icons with aria-labels and alt text for images"
+          },
+          "infoRelationships": {
+            "id": "1.3.1",
+            "name": "Info and Relationships",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Programmatically determine information structure",
+            "implementation": "Semantic HTML and proper ARIA roles"
+          },
+          "meaningfulSequence": {
+            "id": "1.3.2",
+            "name": "Meaningful Sequence",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Present content in a meaningful sequence",
+            "implementation": "Logical reading order in DOM"
+          },
+          "useOfColor": {
+            "id": "1.4.1",
+            "name": "Use of Color",
+            "level": "A",
+            "principle": "perceivable",
+            "description": "Color is not the only way to convey information",
+            "implementation": "Icons and text complement colors"
+          },
+          "contrastMinimum": {
+            "id": "1.4.3",
+            "name": "Contrast (Minimum)",
+            "level": "AA",
+            "principle": "perceivable",
+            "description": "Text has minimum contrast ratio of 4.5:1",
+            "implementation": "High contrast mode and careful color selection"
+          },
+          "resizeText": {
+            "id": "1.4.4",
+            "name": "Resize Text",
+            "level": "AA",
+            "principle": "perceivable",
+            "description": "Text can be resized up to 200%",
+            "implementation": "A+/A- font size controls"
+          },
+          "keyboard": {
+            "id": "2.1.1",
+            "name": "Keyboard",
+            "level": "A",
+            "principle": "operable",
+            "description": "All functionality is available via keyboard",
+            "implementation": "Full keyboard navigation support"
+          },
+          "focusOrder": {
+            "id": "2.4.3",
+            "name": "Focus Order",
+            "level": "A",
+            "principle": "operable",
+            "description": "Components receive focus in a logical order",
+            "implementation": "Natural tab order follows visual layout"
+          },
+          "linkPurpose": {
+            "id": "2.4.4",
+            "name": "Link Purpose (In Context)",
+            "level": "A",
+            "principle": "operable",
+            "description": "Purpose of each link can be determined",
+            "implementation": "Descriptive link text and aria-labels"
+          },
+          "focusVisible": {
+            "id": "2.4.7",
+            "name": "Focus Visible",
+            "level": "AA",
+            "principle": "operable",
+            "description": "Keyboard focus indicator is visible",
+            "implementation": "Custom focus styles with visible outlines"
+          },
+          "languageOfPage": {
+            "id": "3.1.1",
+            "name": "Language of Page",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Default language can be programmatically determined",
+            "implementation": "lang attribute on HTML element"
+          },
+          "consistentNav": {
+            "id": "3.2.3",
+            "name": "Consistent Navigation",
+            "level": "AA",
+            "principle": "understandable",
+            "description": "Navigation is consistent across pages",
+            "implementation": "Fixed navbar and accessibility bar"
+          },
+          "errorIdentification": {
+            "id": "3.3.1",
+            "name": "Error Identification",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Input errors are identified and described",
+            "implementation": "Form validation with clear error messages"
+          },
+          "labelsInstructions": {
+            "id": "3.3.2",
+            "name": "Labels or Instructions",
+            "level": "A",
+            "principle": "understandable",
+            "description": "Labels or instructions are provided for input",
+            "implementation": "Form labels and helper text"
+          }
+        }
+      },
+      "resources": {
+        "title": "Additional Resources",
+        "learnMore": "Learn more",
+        "openNewTab": "opens in new tab",
+        "items": {
+          "wcagGuide": {
+            "title": "WCAG 2.1 Guidelines",
+            "description": "Official W3C documentation on web accessibility guidelines.",
+            "link": "https://www.w3.org/WAI/WCAG21/quickref/"
+          },
+          "vlibrasInfo": {
+            "title": "VLibras Suite",
+            "description": "Free tools for accessibility in Brazilian Sign Language (Libras).",
+            "link": "https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/vlibras"
+          },
+          "accessibilityStatement": {
+            "title": "Accessibility Statement",
+            "description": "Learn more about our practices and commitment to accessibility.",
+            "link": "https://github.com/InvOptLab/distribuidor-de-carga"
+          }
+        }
+      },
+      "feedback": {
+        "title": "We Want to Hear from You!",
+        "description": "If you encounter any accessibility barriers or have suggestions for improvement, please let us know.",
+        "linkText": "Report issues on GitHub",
+        "linkLabel": "Report accessibility issues on GitHub, opens in new tab"
+      }
+    },
+    "Rooms": {
+      "time": {
+        "justNow": "Just now",
+        "minsAgo": "{count} min ago",
+        "hoursAgo": "{count}h ago",
+        "daysAgo": "{count}d ago"
+      },
+      "errors": {
+        "fillAllFields": "Fill in all fields",
+        "createRoom": "Error creating room",
+        "enterName": "Enter your name",
+        "joinRoom": "Error joining room"
+      },
+      "header": {
+        "title": "Collaboration Rooms",
+        "subtitle": "Work together in real-time",
+        "refreshTooltip": "Refresh room list",
+        "createTooltip": "Create a new collaboration room",
+        "createButton": "Create Room"
+      },
+      "search": {
+        "placeholder": "Search rooms by name or creator...",
+        "activeRooms": "{count, plural, =0 {No active rooms} =1 {1 active room} other {# active rooms}}"
+      },
+      "list": {
+        "loading": "Loading rooms...",
+        "noRoomsFound": "No rooms found",
+        "noActiveRooms": "No active rooms at the moment",
+        "tryAnotherTerm": "Try searching for another term",
+        "beTheFirst": "Be the first to create a collaboration room!",
+        "createFirstButton": "Create First Room"
+      },
+      "card": {
+        "creatorTooltip": "Room creator (Leader)",
+        "activeTooltip": "Active room - users can join",
+        "liveBadge": "Live",
+        "creationDateTooltip": "Room creation date",
+        "guestsCanEditTooltip": "Guests can edit the grid",
+        "guestsCanEditBadge": "Editing enabled",
+        "guestsCanFilterTooltip": "Guests can edit filters",
+        "guestsCanFilterBadge": "Filters enabled",
+        "joinTooltip": "Join this room as a guest",
+        "joinButton": "Join Room"
+      },
+      "createDialog": {
+        "title": "Create New Room",
+        "subtitle": "You will be the leader of this room",
+        "roomNameTooltip": "Unique name that identifies your room",
+        "roomNameLabel": "Room Name",
+        "roomNamePlaceholder": "Ex: Planning Meeting",
+        "userNameTooltip": "How you will be identified in the room",
+        "userNameLabel": "Your Name (Leader)",
+        "userNamePlaceholder": "Ex: John Doe",
+        "initialConfig": "Initial Settings",
+        "guestsCanEditLabel": "Guests can edit",
+        "guestsCanEditDesc": "Allows guests to make changes to the grid. You can change this later.",
+        "guestsCanFilterLabel": "Guests can filter",
+        "guestsCanFilterDesc": "Allows guests to make changes to the grid filters. You can change this later.",
+        "cancelButton": "Cancel",
+        "submitButton": "Create Room"
+      },
+      "joinDialog": {
+        "title": "Join \"{roomName}\"",
+        "subtitle": "You will join as a guest",
+        "roomLeader": "Room Leader: {ownerName}",
+        "leaderControl": "The leader controls the grid editing permissions.",
+        "allowsEdit": " This room allows guests to edit.",
+        "readonly": " This room is in read-only mode for guests.",
+        "userNameTooltip": "How you will be identified in the room",
+        "userNameLabel": "Your Name",
+        "userNamePlaceholder": "Ex: Jane Doe",
+        "cancelButton": "Cancel",
+        "submitButton": "Join"
+      }
+    },
+    "Spreadsheet": {
+      "classesSpreadsheet": "Classes Spreadsheet",
+      "exportExcel": "Export Excel",
+      "clearFilters": "Clear Filters",
+      "manageColumns": "Manage Columns",
+      "displayingCount": "Showing {visible} of {total} {total, plural, =1 {class} other {classes}}",
+      "filtered": " (filtered)"
+    }
+  },
+  "Accessibility": {
+    "goToContent": "Go to Content",
+    "goToMenu": "Go to Menu",
+    "decreaseFontSize": "Decrease font size",
+    "increaseFontSize": "Increase font size",
+    "highContrast": "high Contrast",
+    "contrast": "Contrast",
+    "accessibilityPage": "Accessibility",
+    "accessibilityPageTooltip": "Learn more about accessibility features."
+  },
+  "NavBar": {
+    "home": "Home",
+    "data": "Data",
+    "register": "Register",
+    "loadData": "Load data",
+    "selection": "Selection",
+    "settings": "Settings",
+    "assignments": "Assignments",
+    "table": "Table",
+    "blocks": "Blocks",
+    "spreadsheet": "Spreadsheet",
+    "solutions": "Solutions",
+    "history": "History",
+    "statistics": "Statistics",
+    "compareSolutions": "Sompare Solutions",
+    "calendar": "Calendar",
+    "rooms": "Rooms",
+    "navigationMenu": "Navigation Menu"
+  },
+  "Collaboration": {
+    "roomNotFound": "Room not found.",
+    "nameAlreadyExistis": "Username already exists in this room.",
+    "ownerEndedRoom": "The owner closed the room."
+  },
+  "AlgorithmContext": {
+    "Constraints": {
+      "assignmentWithoutForms": "Assignment without forms",
+      "assignmentWithoutFormsDescription": "This constraint checks if the professor filled out the form for the subjects they were assigned.",
+      "validateLocks": "Validate Locks",
+      "validateLocksDescription": "Constraint that prevents changes to locked cells.",
+      "classWithoutTeacher": "Class without teacher",
+      "classWithoutTeacherDescription": "Constraint that prevents classes from remaining without an assigned professor.",
+      "scheduleConflict": "Schedule conflict",
+      "scheduleConflictDescription": "This constraint checks if professors were assigned to subjects that occur at the same time or have overlapping start and end times.",
+      "minimumTeachingLoad": "Minimum Teaching Load",
+      "minimumTeachingLoadDescription": "Penalizes the solution evaluation for each professor who has not reached the minimum assigned teaching load.",
+      "maximumTeachingLoad": "Maximum Teaching Load",
+      "maximumTeachingLoadDescription": "Penalizes the solution evaluation for each professor who has exceeded the assigned teaching load limit."
+    },
+    "Movements": {
+      "add": "Add",
+      "addDescription": "Adding a professor to a class.",
+      "remove": "Remove",
+      "removeDescription": "Removing a professor from a class",
+      "swap": "Swap",
+      "swapDescription": "Swaps assignments between two classes."
+    },
+    "StopCriteria": {
+      "iterationLimit": "Iteration Limit",
+      "iterationLimitDescription": "Function that will stop the algorithm if a certain number of iterations is reached.",
+      "iterationsWithoutModification": "Iterations without Modification",
+      "iterationsWithoutModificationDescription": "Function that will stop the algorithm if a certain number of iterations without modification of the best solution is reached.",
+      "iterationsWithoutImprovementInEvaluation": "Iterations without Improvement in Evaluation",
+      "iterationsWithoutImprovementInEvaluationDescription": "Function that stops the algorithm's execution if the solution evaluations do not show improvement over a certain number of iterations."
+    },
+    "AspirationCriteria": {
+      "objective": "Objective",
+      "objectiveName": "Aspiration by Objective",
+      "objectiveDescription": "The tabu will be broken if the observed solution presents an objective value higher than the best global solution found.",
+      "sameEvaluation": "Acceptance Criterion for Equal Evaluations",
+      "sameEvaluationName": "Acceptance of Equal Evaluations",
+      "sameEvaluationDescription": "This criterion aims to accept solutions with an objective value (evaluation) greater than or equal to the global best after a certain number of iterations without modification of the best neighbor. The goal is to make symmetrical solutions (with the same evaluation but different assignments) the global best, encouraging the search for better neighborhoods."
+    },
+    "TabuType": {
+      "solution": "Solution",
+      "movement": "Movement"
+    },
+    "ObjectiveComponent": {
+      "maximizepriorities": "Maximize priorities",
+      "maximizeprioritiesDescription": "Maximizes the overall satisfaction of professors, prioritizing assignments where there is a higher declared preference in the intention forms.",
+      "weightedpriorities": "Priorities with Weighted Scales",
+      "weightedprioritiesDescription": "Similar to standard maximization, but uses a non-linear weight scale (e.g., exponential) to disproportionately value meeting the professor's top options (Top-N).",
+      "minimizeDifferenceBetweenBalances": "Minimize Difference Between Balances",
+      "minimizeDifferenceBetweenBalancesDescription": "Seeks to reduce the variability of historical balances among professors, penalizing scenarios where some accumulate significant credit while others accumulate significant debt.",
+      "maximizePrioritiesUsingBalances": "Maximize Priorities Using Balances",
+      "maximizePrioritiesUsingBalancesDescription": "Weights the professor's preference by their current balance. Professors with a greater need for workload (debt balance) have their priorities amplified in the competition for classes.",
+      "minimizeDifferenceInTeachingLoad": "Minimize Teaching Load Difference",
+      "minimizeDifferenceInTeachingLoadDescription": "Focuses on equity for the current semester, minimizing absolute deviations of the load assigned to each professor relative to the overall average of distributed credits.",
+      "minimizeBalanceUtilization": "Minimize Balance Utilization",
+      "minimizeBalanceUtilizationDescription": "Optimizes the assignment by avoiding assigning classes to professors with high positive balances, preserving the long-term hour bank balance (Minimizes Multiplier * Balance * Load)."
+    }
+  },
+  "Assistant": {
+    "welcome": "Hello! I am the Load Distributor virtual assistant. How can I help you today?",
+    "connectionError": "Sorry, I had a connection problem. Could you repeat that?",
+    "virtualAssistant": "Virtual Assistant",
+    "understandError": "Sorry, I didn't understand. Could you try rephrasing the question?",
+    "Actions": {
+      "dragToMove": "Drag to Move",
+      "toggleMute": "Turn sound on.",
+      "mute": "Mute.",
+      "closeChat": "Close Chat.",
+      "closeAssistant": "Close Assistant.",
+      "openAssistant": "Drag or click to open.",
+      "openChat": "Open Chat.",
+      "clearConversation": "Clear Conversation.",
+      "askQuestion": "Type your question...",
+      "sendMessage": "Send message (Enter)",
+      "newLine": "Press Shift + Enter to create a new line.",
+      "maximizeChat": "Maximize Chat",
+      "minimizeChat": "Minimize Chat",
+      "increaseChat": "Increase Chat"
+    }
+  },
+  "Constraint": {
+    "upperHard": "HARD",
+    "upperSoft": "SOFT",
+    "param": "parameter",
+    "showDescription": "Show description.",
+    "deleteConstraint": "Remove constraint.",
+    "constraintType": "Constraint Type",
+    "hardDescription": "Must always be satisfied.",
+    "softDescription": "Preferable but not mandatory.",
+    "notSupported": "This constraint does not implement any type.",
+    "onlySoftAvailable": "Only soft mode available.",
+    "onlyHardAvailable": "Only hard mode available.",
+    "bothAvailable": "Both modes available.",
+    "penaltyHelperText": "Penalty weight when violated.",
+    "enterPenalty": "Enter penalty",
+    "invalidPenalty": "Enter numbers only.",
+    "info": "Information",
+    "delete": "Delete",
+    "jsonFormat": "JSON Format",
+    "unsupportedParameter": "Unsupported parameter type: {valueType}",
+    "constraintParameter": "Constraint Parameter"
+  },
+  "AlgorithmDialog": {
+    "StatusMessages": {
+      "preprocessing": "Processing variables and building the mathematical model...",
+      "solving": "The optimizer is searching for the best solution...",
+      "completed": "Process completed!"
+    },
+    "SubMessages": {
+      "preprocessing": "This may take a few seconds depending on the number of professors and constraints.",
+      "solving": "Please wait while the algorithm explores the search space.",
+      "completed": "The process is complete! You can now apply the solution or close this screen."
+    },
+    "Stage": {
+      "preprocessing": "Preparing Optimization",
+      "preprocessingDescription": "Generating matrices and constraints...",
+      "solving": "Algorithm Execution"
+    },
+    "Metrics": {
+      "iterations": "Iterations",
+      "averageTime": "Average Time",
+      "bestRating": "Best Evaluation",
+      "evaluation": "Evaluation",
+      "time": "Time"
+    },
+    "Chart": {
+      "evaluationPerIteration": "Evaluation per Iteration",
+      "timePerIteration": "Time per Iteration"
+    },
+    "description": "The process is complete! You can now apply the solution or close this screen by clicking the X located above.",
+    "stop": "Stop",
+    "apply": "Apply"
+  },
+  "Spreadsheet": {
+    "DocenteSelectionDialog": {
+      "selectedCount": "Selected professors: {count}",
+      "noOtherProfessors": "No other professors available",
+      "otherProfessorsCount": "Other Professors: {count}",
+      "noProfessorsWithForms": "No professors with forms",
+      "professorsWithFormsCount": "Professors with Forms: {count}",
+      "selectProfessorsTitle": "Select Professors - {codigo} (Class {turma})",
+      "balance": "Balance: {saldo}",
+      "priority": "Priority: {prioridade}"
+    },
+    "DocenteCell": {
+      "addTeacher": "Add teacher",
+      "noTeachers": "No teachers"
+    },
+    "ColumnManager": {
+      "manageColumns": "Manage Columns",
+      "visibleColumns": "Visible Columns",
+      "hiddenColumns": "Hidden Columns"
+    }
+  },
+  "Utils": {
+    "loading": "Loading...",
+    "error": "An error occurred. Please try again.",
+    "unknownError": "An unknown error occurred. Please try again.",
+    "save": "Salvar",
+    "cancel": "Cancelar"
+  },
+  "Components": {
+    "ClearStorageModal": {
+      "title": "Previous Session Found",
+      "description": "We detected that you have data from a previous planning session saved in your browser. Would you like to continue where you left off or clear everything to start a new project from scratch?",
+      "savedDataInfo": "{count, plural, =1 {1 data category found} other {# data categories found}}",
+      "continueButton": "Continue Planning",
+      "clearButton": "Start Fresh",
+      "clearingButton": "Clearing data...",
+      "closeAriaLabel": "Close modal",
+      "continueAriaDescription": "Continues with the previously saved data without making changes",
+      "clearAriaDescription": "Removes all saved data and reloads the page to start a new planning session"
+    }
+  }
+}

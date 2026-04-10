@@ -1,5 +1,5 @@
 import { Solucao } from "@/algoritmo/communs/interfaces/interfaces";
-import { getFormattedDate } from "@/app/atribuicoes";
+import { getFormattedDate } from "@/app/[locale]/atribuicoes";
 import {
   ContextoExecucao,
   HistoricoSolucao,
@@ -16,11 +16,11 @@ import {
 export function addNewSolutionToHistory(
   novaSolucao: Solucao,
   setHistoricoSolucoes: (
-    historicoSolucoes: Map<string, HistoricoSolucao>
+    historicoSolucoes: Map<string, HistoricoSolucao>,
   ) => void,
   historicoSolucoes: Map<string, HistoricoSolucao>,
   tipoInsercao: TipoInsercao,
-  contextoExecucao: ContextoExecucao
+  contextoExecucao: ContextoExecucao,
 ): string {
   // Por conta do React, a inserção de um novo item em um Map deve ser feita da maneira a seguir.
   const newHistoricoSolucoesMap: Map<string, HistoricoSolucao> = new Map<
@@ -49,7 +49,7 @@ export function addNewSolutionToHistory(
  */
 export function updateSolutionId(
   setSolucaoAtual: React.Dispatch<React.SetStateAction<Solucao>>,
-  id: string
+  id: string,
 ) {
   setSolucaoAtual((solucaoAtual) => ({
     ...solucaoAtual, // Copia as propriedades existentes de Solucao

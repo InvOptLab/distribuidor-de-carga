@@ -6,7 +6,7 @@ export const useTextToSpeech = () => {
   const { isMuted } = useAvatarChat();
 
   const speak = useCallback(
-    (text: string) => {
+    (text: string, locale: string = "pt-BR") => {
       // Sempre cancela falas anteriores
       window.speechSynthesis.cancel();
 
@@ -24,7 +24,9 @@ export const useTextToSpeech = () => {
       } else {
         // Se NÃO estiver mudo, toca o áudio normalmente
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "pt-BR";
+
+        // Ajusta o formato do locale se necessário para o SpeechSynthesis (ex: 'en' para 'en-US')
+        utterance.lang = locale.includes("en") ? "en-US" : "pt-BR";
 
         utterance.onstart = () => {
           setIsAvatarSpeaking(true);
@@ -42,7 +44,7 @@ export const useTextToSpeech = () => {
         window.speechSynthesis.speak(utterance);
       }
     },
-    [isMuted]
+    [isMuted],
   );
 
   // Efeito para cancelar a fala se o componente for desmontado

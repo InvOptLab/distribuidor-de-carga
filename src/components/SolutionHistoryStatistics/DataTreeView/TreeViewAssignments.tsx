@@ -1,6 +1,6 @@
-import { setCellColor } from "@/app/atribuicoes";
-import HeaderCell from "@/app/atribuicoes/_components/HeaderCell";
-import { TreeDisciplina } from "@/app/history/_components/SolutionHistoryStatistics";
+import { setCellColor } from "@/app/[locale]/atribuicoes";
+import HeaderCell from "@/app/[locale]/atribuicoes/_components/HeaderCell";
+import { TreeDisciplina } from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 import { Disciplina, HistoricoSolucao } from "@/context/Global/utils";
 import { Box, Grid, Paper, Stack, styled, Typography } from "@mui/material";
 import React from "react";
@@ -38,13 +38,13 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
 
     if (item.tipo === "docente") {
       const docenteAtribuicoes = solucao.solucao.atribuicoes.filter(
-        (atribuicao) => atribuicao.docentes.includes(item.id)
+        (atribuicao) => atribuicao.docentes.includes(item.id),
       );
       const docenteAtribuicoesDisciplinas: Disciplina[] = [];
 
       for (const atribuicao of docenteAtribuicoes) {
         const disciplina = solucao.contexto.disciplinas.find(
-          (disc) => disc.id === atribuicao.id_disciplina
+          (disc) => disc.id === atribuicao.id_disciplina,
         );
         docenteAtribuicoesDisciplinas.push(disciplina);
       }
@@ -54,7 +54,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
           (docente) =>
             // formulario.id_disciplina === disciplina.id &&
             // formulario.nome_docente === item.id
-            docente.formularios.has(disciplina.id) && item.id === docente.nome
+            docente.formularios.has(disciplina.id) && item.id === docente.nome,
         );
         render.push(
           <Grid key={`TreeViewAssignments_child_grid_${disciplina.id}`}>
@@ -71,7 +71,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
                   docente ? docente.formularios.get(disciplina.id) : null,
                   { id_disciplina: disciplina.id, nome_docente: item.id },
                   false,
-                  solucao.contexto.maxPriority
+                  solucao.contexto.maxPriority,
                 ),
                 //padding: "2px",
                 textAlign: "center",
@@ -79,7 +79,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
             >
               {docente ? docente.formularios.get(disciplina.id) : ""}
             </Box>
-          </Grid>
+          </Grid>,
         );
       }
     }
@@ -118,7 +118,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
                   docente ? docente.formularios.get(disciplina.id) : null,
                   { id_disciplina: disciplina.id, nome_docente: item.id },
                   false,
-                  solucao.contexto.maxPriority
+                  solucao.contexto.maxPriority,
                 ),
                 //padding: "2px",
                 textAlign: "center",
@@ -126,7 +126,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
             >
               {docente ? docente.formularios.get(disciplina.id) : ""}
             </Box>
-          </Grid>
+          </Grid>,
         );
       }
     }

@@ -23,6 +23,7 @@ import {
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { fetchProfileImage } from "@/actions/image-actions";
+import { useTranslations } from "next-intl";
 
 export interface IAuthProfileProps {
   name: string;
@@ -57,6 +58,7 @@ export default function AuthProfile({
   googleScholar,
   avatarUrl,
 }: IAuthProfileProps) {
+  const t = useTranslations("Pages.Home");
   // Gera iniciais do nome para o avatar
   const initials = name
     .split(" ")
@@ -67,15 +69,11 @@ export default function AuthProfile({
 
   // Define a cor do chip baseado no papel
   const getRoleColor = (
-    role: string
+    role: string,
   ): "primary" | "secondary" | "success" | "info" => {
-    if (role.toLowerCase().includes("orientador")) return "primary";
-    if (role.toLowerCase().includes("coorientador")) return "secondary";
-    if (
-      role.toLowerCase().includes("aluno") ||
-      role.toLowerCase().includes("mestrando")
-    )
-      return "info";
+    if (role === t("authors.roles.advisor")) return "primary";
+    if (role === t("authors.roles.coadvisor")) return "secondary";
+    if (role === t("authors.roles.masterStudent")) return "success";
     return "success";
   };
 

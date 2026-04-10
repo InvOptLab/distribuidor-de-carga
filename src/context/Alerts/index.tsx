@@ -1,3 +1,4 @@
+"use client";
 import CustomAlert from "@/components/CustomAlert";
 import { Stack } from "@mui/material";
 import { createContext, useContext, useState } from "react";
@@ -22,7 +23,7 @@ const AlertsContext = createContext<AlertasInterface>({
 
 export function AlertsWrapper({ children }: { children: React.ReactNode }) {
   const [alertas, setAlertas] = useState<Map<number, Alerta>>(
-    new Map<number, Alerta>()
+    new Map<number, Alerta>(),
   );
   // {id: 1, message: 'teste 1', type: "info", closeTime: 100}, {id: 2, message: 'teste 2', type: "info", closeTime: 100}
 
@@ -52,7 +53,7 @@ export function AlertsWrapper({ children }: { children: React.ReactNode }) {
           id={key}
           closeTime={alerta.closeTime ? alerta.closeTime : 3}
           handleClose={() => removeAlert(key)} // Remove o alerta quando for fechado
-        />
+        />,
       );
     });
 
@@ -86,7 +87,7 @@ export function useAlertsContext() {
   function addAlerta(
     message: string,
     type: "success" | "info" | "warning" | "error",
-    closeTime?: number
+    closeTime?: number,
   ) {
     context.setAlertas((prevAlertas) => {
       const newAlerts = new Map(prevAlertas);

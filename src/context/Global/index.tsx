@@ -10,8 +10,8 @@ import type {
   Formulario,
   Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
-import { createContext, useContext, useState } from "react";
-import type { HistoricoSolucao } from "./utils";
+import { createContext, useContext, useEffect, useState } from "react";
+import { jsonReplacer, jsonReviver, type HistoricoSolucao } from "./utils";
 
 //import _ from "lodash"; // Comparação entre objetos de forma otimizada
 
@@ -78,6 +78,63 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
     idHistorico: undefined,
   });
 
+  // Flag para saber se já recuperamos os dados do localStorage (evita problemas de hidratação do SSR)
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  const STORAGE_KEY = "distribuidor_carga_sessao";
+
+  // Efeito para LER os dados ao inicializar
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+
+    if (savedData) {
+      // O jsonReviver já reconstrói todos os Maps e Sets (incluindo o historicoSolucoes e conflitos)
+      const parsedData = JSON.parse(savedData, jsonReviver);
+
+      if (parsedData.docentes) setDocentes(parsedData.docentes);
+      if (parsedData.disciplinas) setDisciplinas(parsedData.disciplinas);
+      if (parsedData.atribuicoes) setAtribuicoes(parsedData.atribuicoes);
+      if (parsedData.formularios) setFormularios(parsedData.formularios);
+      if (parsedData.travas) setTravas(parsedData.travas);
+      if (parsedData.solucaoAtual) setSolucaoAtual(parsedData.solucaoAtual);
+      if (parsedData.historicoSolucoes)
+        setHistoricoSolucoes(parsedData.historicoSolucoes);
+    }
+
+    setIsHydrated(true); // Libera o salvamento automático a partir de agora
+  }, []);
+
+  // Efeito para SALVAR os dados nas alterações
+  useEffect(() => {
+    // Só começa a salvar depois que carregou, para não sobrescrever os dados com arrays vazios
+    if (!isHydrated) return;
+
+    const estadoParaSalvar = {
+      docentes,
+      disciplinas,
+      atribuicoes,
+      formularios,
+      travas,
+      solucaoAtual,
+      historicoSolucoes, // O jsonReplacer cuida do formato Map!
+    };
+
+    // Salva tudo de uma vez de forma atômica
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(estadoParaSalvar, jsonReplacer),
+    );
+  }, [
+    isHydrated,
+    docentes,
+    disciplinas,
+    atribuicoes,
+    formularios,
+    travas,
+    solucaoAtual,
+    historicoSolucoes,
+  ]);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -97,7 +154,7 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
         solucaoAtual,
       }}
     >
-      {children}
+      {isHydrated ? children : null}
     </GlobalContext.Provider>
   );
 }
@@ -128,7 +185,7 @@ export function useGlobalContext() {
         // Encontra a atribuição correspondente no array copiado
         const index = newAtribuicoes.findIndex(
           (atribuicao) =>
-            atribuicao.id_disciplina === newAtribuicao.id_disciplina
+            atribuicao.id_disciplina === newAtribuicao.id_disciplina,
         );
 
         if (index !== -1) {
@@ -137,7 +194,7 @@ export function useGlobalContext() {
             ...newAtribuicoes[index],
             docentes: [
               ...newAtribuicoes[index].docentes.filter(
-                (docente) => !newAtribuicao.docentes.includes(docente)
+                (docente) => !newAtribuicao.docentes.includes(docente),
               ),
               ...newAtribuicao.docentes,
             ],
@@ -156,12 +213,12 @@ export function useGlobalContext() {
    */
   function updateAtribuicoesDocente(
     nome_docente: string,
-    id_disciplina: string
+    id_disciplina: string,
   ) {
     const newAtribuicoes = [...context.atribuicoes];
 
     const index = newAtribuicoes.findIndex(
-      (atribuicao) => atribuicao.id_disciplina === id_disciplina
+      (atribuicao) => atribuicao.id_disciplina === id_disciplina,
     );
 
     if (index !== -1) {
@@ -170,7 +227,7 @@ export function useGlobalContext() {
         ...newAtribuicoes[index],
         docentes: [
           ...newAtribuicoes[index].docentes.filter(
-            (docente) => docente !== nome_docente
+            (docente) => docente !== nome_docente,
           ),
         ],
       };

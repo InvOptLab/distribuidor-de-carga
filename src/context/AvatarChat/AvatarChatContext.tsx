@@ -9,6 +9,7 @@ import {
   useMemo,
 } from "react";
 import { askAssistantAction } from "@/actions/chat-action";
+import { useLocale, useTranslations } from "next-intl";
 
 // Definição dos tipos
 export type MessageSender = "user" | "bot";
@@ -40,10 +41,15 @@ interface AvatarChatContextType {
 }
 
 const AvatarChatContext = createContext<AvatarChatContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
+  const t = useTranslations("Assistant");
+  const tUtils = useTranslations("Utils");
+
+  const locale = useLocale();
+
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -53,7 +59,7 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      text: "Olá! Eu sou o assistente virtual do Distribuidor de Carga. Como posso te ajudar hoje?",
+      text: t("welcome"),
       sender: "bot",
       timestamp: new Date(),
     },
@@ -67,7 +73,7 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
     setMessages([
       {
         id: "welcome",
-        text: "Olá! Eu sou o assistente virtual do Distribuidor de Carga. Como posso te ajudar hoje?",
+        text: t("welcome"),
         sender: "bot",
         timestamp: new Date(),
       },
@@ -97,10 +103,10 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
     setIsTyping(true);
 
     try {
-      const response = await askAssistantAction(text);
+      const response = await askAssistantAction(text, locale);
 
       if (!response.success || !response.answer) {
-        throw new Error(response.error || "Erro desconhecido");
+        throw new Error(response.error || tUtils("unknownError"));
       }
 
       // Adiciona resposta do bot
@@ -117,12 +123,12 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
       console.error(error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Desculpe, tive um problema de conexão. Pode repetir?",
+        text: t("connectionError"),
         sender: "bot",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
-      return "Desculpe, tive um problema de conexão."; // Retorno de erro para áudio
+      return t("connectionError"); // Retorno de erro para áudio
     } finally {
       setIsTyping(false);
       setSearching(false);
@@ -146,7 +152,7 @@ export const AvatarChatProvider = ({ children }: { children: ReactNode }) => {
       setChatSize,
       cycleSize,
     }),
-    [isChatOpen, isMuted, messages, isTyping, isSearching, chatSize]
+    [isChatOpen, isMuted, messages, isTyping, isSearching, chatSize],
   );
 
   return (

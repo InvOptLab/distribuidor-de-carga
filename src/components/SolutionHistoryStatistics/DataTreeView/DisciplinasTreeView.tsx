@@ -1,6 +1,6 @@
 import React from "react";
 import { TreeItem } from "@mui/x-tree-view";
-import { TreeDisciplina } from "@/app/history/_components/SolutionHistoryStatistics";
+import { TreeDisciplina } from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 import { Box, Typography } from "@mui/material";
 
 interface DisciplinasTreeViewProps {
@@ -38,7 +38,7 @@ const DisciplinasTreeView: React.FC<DisciplinasTreeViewProps> = ({
 }) => {
   const disciplinaChild = (
     disciplina: string,
-    treeDisciplina: TreeDisciplina
+    treeDisciplina: TreeDisciplina,
   ) => {
     const renderChilds = [];
     for (const atribuicao of treeDisciplina.atribuicoes.keys()) {
@@ -54,7 +54,7 @@ const DisciplinasTreeView: React.FC<DisciplinasTreeViewProps> = ({
             discs={docente.atribuicoes.size}
           />
           // label={`(${(docente.saldo < 0 ? '' : '+') + docente.saldo.toFixed( 1 ).toString().replace( '.', ',' )}) ${docente.nome} (${docente.atribuicoes.size})`}
-        />
+        />,
       );
     }
 

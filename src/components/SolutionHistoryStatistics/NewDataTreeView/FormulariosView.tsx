@@ -1,9 +1,9 @@
-import { setCellColor } from "@/app/atribuicoes";
-import HeaderCell from "@/app/atribuicoes/_components/HeaderCell";
+import { setCellColor } from "@/app/[locale]/atribuicoes";
+import HeaderCell from "@/app/[locale]/atribuicoes/_components/HeaderCell";
 import {
   TreeDisciplina,
   TreeDocente,
-} from "@/app/history/_components/SolutionHistoryStatistics";
+} from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 import { HistoricoSolucao, isDisciplina } from "@/context/Global/utils";
 import { Box, Grid, Stack, styled, Typography } from "@mui/material";
 
@@ -71,7 +71,7 @@ export function FormulariosView({
                     value,
                     { id_disciplina: key, nome_docente: id },
                     false,
-                    solucao.contexto.maxPriority
+                    solucao.contexto.maxPriority,
                   ),
                   //padding: "2px",
                   textAlign: "center",
@@ -80,7 +80,7 @@ export function FormulariosView({
               >
                 {value}
               </Box>
-            </Grid>
+            </Grid>,
           );
         }
       });
@@ -122,7 +122,7 @@ export function FormulariosView({
                     value.prioridade,
                     { id_disciplina: id, nome_docente: key },
                     false,
-                    solucao.contexto.maxPriority
+                    solucao.contexto.maxPriority,
                   ),
                   //padding: "2px",
                   textAlign: "center",
@@ -131,7 +131,7 @@ export function FormulariosView({
               >
                 {value.prioridade}
               </Box>
-            </Grid>
+            </Grid>,
           );
         });
       }

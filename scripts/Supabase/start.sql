@@ -6,7 +6,7 @@ create table documents (
   id bigserial primary key,
   content text, -- O texto do PDF
   metadata jsonb, -- Página, fonte, etc
-  embedding vector(768) -- O vetor do Gemini
+  embedding vector(3072)
 );
 
 -- 1. Derruba a função antiga para garantir limpeza
@@ -14,8 +14,8 @@ DROP FUNCTION IF EXISTS match_documents;
 
 -- 2. Cria a nova função com valores PADRÃO (DEFAULT) para evitar erros de parâmetros faltando
 create or replace function match_documents (
-  query_embedding vector(768),
-  match_threshold float DEFAULT 0, -- <--- AQUI ESTÁ A CORREÇÃO: Valor padrão 0 se não for enviado
+  query_embedding vector(3072),
+  match_threshold float DEFAULT 0,
   match_count int DEFAULT 10,
   filter jsonb DEFAULT '{}'
 )

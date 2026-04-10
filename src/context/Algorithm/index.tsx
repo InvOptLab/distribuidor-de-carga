@@ -1,3 +1,4 @@
+"use client";
 import Constraint from "@/algoritmo/abstractions/Constraint";
 import { NeighborhoodFunction } from "@/algoritmo/abstractions/NeighborhoodFunction";
 import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
@@ -13,6 +14,7 @@ import { Remove } from "@/algoritmo/communs/NeighborhoodGeneration/Remove";
 import { Swap } from "@/algoritmo/communs/NeighborhoodGeneration/Swap";
 import { MinimizarDiferencaCargaDidatica } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaCargaDidatica";
 import { MinimizarDiferencaSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaSaldos";
+import { MinimizarUtilizacaoSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarUtilizacaoSaldos";
 import { PrioridadesDefault } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesDefault";
 import { PrioridadesPesosTabelados } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesPesosTabelados";
 import { PrioridadesPonderadasPorSaldo } from "@/algoritmo/communs/ObjectiveComponents/PrioridadesPonderadasPorSaldo";
@@ -22,7 +24,8 @@ import { IteracoesSemModificacao } from "@/algoritmo/communs/StopCriteria/Iterac
 import { Objective } from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/Objective";
 import SameObjective from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/SameObjective";
 import { AspirationCriteria } from "@/algoritmo/metodos/TabuSearch/Classes/Abstract/AspirationCriteria";
-import { AlgorithmType } from "@/app/types/algorithm-types";
+import { AlgorithmType } from "@/app/[locale]/types/algorithm-types";
+import { useTranslations } from "next-intl";
 import { createContext, useContext, useState } from "react";
 
 type NeighborhoodEntry = {
@@ -125,7 +128,7 @@ const AlgorithmContext = createContext<AlgorithmInterface>({
   aspirationFunctions: new Map<string, AspirationCriteriaEntry>(),
   setAspirationFunctions: () => Map<string, AspirationCriteriaEntry>,
   tabuListType: "Solução",
-  setTabuListType: () => "Ssolução",
+  setTabuListType: () => "Solução",
   objectiveComponents: new Map<string, ObjectiveComponent<any>>(),
   setObjectiveComponents: () => Map<string, ObjectiveComponent<any>>,
   maiorPrioridade: 0,
@@ -135,93 +138,84 @@ const AlgorithmContext = createContext<AlgorithmInterface>({
 });
 
 export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("AlgorithmContext");
   const [hardConstraints, setHardConstraints] = useState(
     new Map<string, Constraint<any>>([
       [
-        "Atribuição sem formulário",
+        t("Constraints.assignmentWithoutForms"),
         new AtribuicaoSemFormulario(
-          "Atribuição sem formulário",
-          "Essa restrição verifica se o docente preencheu o formulário para as disciplinas que foi atribuído.",
+          t("Constraints.assignmentWithoutForms"),
+          t("Constraints.assignmentWithoutFormsDescription"),
           true,
           0,
           true,
-          null
+          null,
         ),
       ],
       [
-        "Validar Travas",
+        t("Constraints.validateLocks"),
         new ValidaTravas(
-          "Validar Travas",
-          "Restrição que impede a alteração em células travadas.",
+          t("Constraints.validateLocks"),
+          t("Constraints.validateLocksDescription"),
           true,
           0,
           true,
-          null
+          null,
         ),
       ],
-    ])
+    ]),
   );
   const [softConstraints, setSoftConstraints] = useState(
     new Map<string, Constraint<any>>([
       [
-        "Disciplina sem docente",
+        t("Constraints.classWithoutTeacher"),
         new DisciplinaSemDocente(
-          "Disciplina sem docente",
-          "",
+          t("Constraints.classWithoutTeacher"),
+          t("Constraints.classWithoutTeacherDescription"),
           false,
           1000000,
           true,
-          null
+          null,
         ),
       ],
       [
-        "Choque de horários",
+        t("Constraints.scheduleConflict"),
         new ChoqueDeHorarios(
-          "Choque de horários",
-          "Essa restrição verifica se os docentes foram atribuídos a disciplinas que ocorrem ao mesmo tempo ou apresentam conflitos de início e fim de aula.",
+          t("Constraints.scheduleConflict"),
+          t("Constraints.scheduleConflictDescription"),
           false,
           100000,
           true,
-          null
+          null,
         ),
       ],
-      // [
-      //   "Carga de Trabalho",
-      //   new CargaDeTrabalho(
-      //     "Carga de Trabalho",
-      //     "Essa restrição tem como objetivo incentivar a atribuição de turmas a docentes com saldos negativos, atribuíndo uma maior penalização para eles, como também, desincentivar a atribuição de muitas turmas para docentes com saldos positivos.",
-      //     false,
-      //     10000
-      //   ),
-      // ],
-      // Adicione outras restrições conforme necessário
       [
-        "Carga de Trabalho Mínima",
+        t("Constraints.minimumTeachingLoad"),
         new CargaDeTrabalhoMinimaDocente(
-          "Carga de Trabalho Mínima",
-          "Penaliza a avaliação da solução para cada docente que não tenha atingido o mínimo de carga de trabalho atribuída (1.0).",
+          t("Constraints.minimumTeachingLoad"),
+          t("Constraints.minimumTeachingLoadDescription"),
           false,
           10000,
           true,
-          { minLimit: 1 }
+          { minLimit: 1 },
         ),
       ],
       [
-        "Carga de Trabalho Máxima",
+        t("Constraints.maximumTeachingLoad"),
         new CargaDeTrabalhoMaximaDocente(
-          "Carga de Trabalho Máxima",
-          "Penaliza a avaliação da solução para cada docente que tenha ultrapassado o limite de carga de trabalho atribuída (2.0).",
+          t("Constraints.maximumTeachingLoad"),
+          t("Constraints.maximumTeachingLoadDescription"),
           false,
           10000,
           true,
-          { maxLimit: 2 }
+          { maxLimit: 2 },
         ),
       ],
-    ])
+    ]),
   );
 
   const [allConstraints, setAllConstraints] = useState(
-    new Map([...softConstraints, ...hardConstraints])
+    new Map([...softConstraints, ...hardConstraints]),
   );
 
   const [parametros, setParametros] = useState<{
@@ -249,52 +243,78 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
    */
   const [neighborhoodFunctions, setNeighborhoodFunctions] = useState(
     new Map<string, NeighborhoodEntry>([
-      ["Add", { instance: new Add("Adiciona", "Adição"), isActive: true }],
-      ["Remove", { instance: new Remove("Remove", "Remover"), isActive: true }],
-      ["Swap", { instance: new Swap("Troca", "Trocar"), isActive: true }],
-    ])
-  );
-
-  /**
-   * Estado responsável pelas funções de `stop`, que encerrarão a execução do
-   * algoritmo.
-   */
-  const [stopFunctions, setStopFunctions] = useState(
-    new Map<string, StopCriteriaEntry>([
       [
-        "Limite de Iterações",
+        "Add",
         {
-          instance: new IteracoesMaximas(
-            "Limite de Iterações",
-            "Função que interromperá o algoritmo caso uma determinada quantidade de iterações seja atingida.",
-            300
+          instance: new Add(t("Movements.add"), t("Movements.addDescription")),
+          isActive: true,
+        },
+      ],
+      [
+        "Remove",
+        {
+          instance: new Remove(
+            t("Movements.remove"),
+            t("Movements.removeDescription"),
           ),
           isActive: true,
         },
       ],
       [
-        "Iterações sem Modificação",
+        "Swap",
+        {
+          instance: new Swap(
+            t("Movements.swap"),
+            t("Movements.swapDescription"),
+          ),
+          isActive: true,
+        },
+      ],
+    ]),
+  );
+
+  /**
+   * Estado responsável pelas funções de `stop`, que encerrarão a execução do algoritmo.
+   */
+  const [stopFunctions, setStopFunctions] = useState(
+    new Map<string, StopCriteriaEntry>([
+      [
+        t("StopCriteria.iterationLimit"),
+        {
+          instance: new IteracoesMaximas(
+            t("StopCriteria.iterationLimit"),
+            t("StopCriteria.iterationLimitDescription"),
+            300,
+          ),
+          isActive: true,
+        },
+      ],
+      [
+        t("StopCriteria.iterationsWithoutModification"),
+
         {
           instance: new IteracoesSemModificacao(
-            "Iterações sem Modificação",
-            "Função que interromperá o algoritmo caso uma determinada quantidade de iterações sem modificação da melhor solução seja atingida.",
-            50
+            t("StopCriteria.iterationsWithoutModification"),
+            t("StopCriteria.iterationsWithoutModificationDescription"),
+            50,
           ),
           isActive: false,
         },
       ],
       [
-        "Iterações sem Melhora na Avaliação",
+        t("StopCriteria.iterationsWithoutImprovementInEvaluation"),
         {
           instance: new IteracoesSemMelhoraAvaliacao(
-            "Iterações sem Melhora na Avaliação",
-            "Função que interrompe a execução do algoritmo caso a avaliação das soluções não apresnetem melhora em uma determinada quantidade de iterações.",
-            10
+            t("StopCriteria.iterationsWithoutImprovementInEvaluation"),
+            t(
+              "StopCriteria.iterationsWithoutImprovementInEvaluationDescription",
+            ),
+            10,
           ),
           isActive: false,
         },
       ],
-    ])
+    ]),
   );
 
   /**
@@ -303,95 +323,108 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   const [aspirationFunctions, setAspirationFunctions] = useState(
     new Map<string, AspirationCriteriaEntry>([
       [
-        "Objetivo",
+        t("AspirationCriteria.objective"),
         {
           instance: new Objective(
-            "Aspiração por Objetivo",
-            "O tabu será quebrado caso a solução observada apresente um valor objetivo maior que a melhor solução global encontrada."
+            t("AspirationCriteria.objectiveName"),
+            t("AspirationCriteria.objectiveDescription"),
           ),
           isActive: false,
         },
       ],
       [
-        "Critério de Aceitação de Mesmas Avaliações",
+        t("AspirationCriteria.sameEvaluation"),
         {
           instance: new SameObjective(
-            "Aceitação de Mesmas Avaliações",
-            'Esse critério tem como objetivo aceitar soluções com o valor objetivo (avaliação) maior ou igual ao melhor global após uma determinada quantidade de iterações sem modificação do melhor vizinho. O objetivo é tormar soluções "parecidas" (com mesma avaliação porémcom diferentes atribuições) melhores globais, incentivando a busca por melhores vizinhanças.',
-            10
+            t("AspirationCriteria.sameEvaluationName"),
+            t("AspirationCriteria.sameEvaluationDescription"),
+            10,
           ),
           isActive: false,
         },
       ],
-    ])
+    ]),
   );
 
-  const [tabuListType, setTabuListType] = useState<"Solução" | "Movimento">(
-    "Solução"
+  // TODO: Os textos devem ser modificados para um ENEM de forma a podermos utilizar as traduções de forma correta e não através de ajustes.
+  // FIX: Removi a tipagem pois os tipos estavam fixados em texto < "Solução" | "Movimento">
+  const [tabuListType, setTabuListType] = useState(
+    t("TabuType.solution") as "Solução" | "Movimento",
   );
 
   const [objectiveComponents, setObjectiveComponents] = useState(
     new Map<string, ObjectiveComponent<any>>([
       [
-        "Maximizar as prioridades",
+        t("ObjectiveComponent.maximizepriorities"),
         new PrioridadesDefault(
-          "Maximizar as prioridades",
+          t("ObjectiveComponent.maximizepriorities"),
           false,
           "max",
-          "Maximizar as prioridades das atribuições realizadas",
+          t("ObjectiveComponent.maximizeprioritiesDescription"),
           1000,
           undefined,
-          null
+          null,
         ),
       ],
       [
-        "Prioridades com Pesos Tabelados",
+        t("ObjectiveComponent.weightedpriorities"),
         new PrioridadesPesosTabelados(
-          "Prioridade com pesos tabelados",
+          t("ObjectiveComponent.weightedpriorities"),
           false,
           "max",
-          "Maximizar as prioridades das atribuições com as prioridades assumindo valores pré-definidos, com o conceito aplicado na F1, onde o primeiro colocado recebe mais pontos que o segundo, e assim por diante, ponderando ainda mais as prioridades.",
+          t("ObjectiveComponent.weightedprioritiesDescription"),
           1,
           undefined,
           undefined,
-          null
+          null,
         ),
       ],
       [
-        "Minimizar Diferenca entre os Saldos",
+        t("ObjectiveComponent.minimizeDifferenceBetweenBalances"),
         new MinimizarDiferencaSaldos(
-          "Minimizar diferenca entre os saldos",
+          t("ObjectiveComponent.minimizeDifferenceBetweenBalances"),
           false,
           "min",
-          "Minimizar a diferença entre os saldos dos docentes.",
+          t("ObjectiveComponent.minimizeDifferenceBetweenBalancesDescription"),
           1,
-          null
+          null,
         ),
       ],
       [
-        "Maximizar as Prioridades Utilizando os Saldos",
+        t("ObjectiveComponent.maximizePrioritiesUsingBalances"),
         new PrioridadesPonderadasPorSaldo(
-          "Maximizar as Prioridades Utilizando os Saldos",
+          t("ObjectiveComponent.maximizePrioritiesUsingBalances"),
           true,
           "max",
-          "Componente de Função Objetivo que implementa a lógica de 'Refinamento do Modelo: Ponderação pelo Saldo Efetivo'.",
+          t("ObjectiveComponent.maximizePrioritiesUsingBalancesDescription"),
           1000,
           undefined,
-          { alpha: 0.1 /*limiteInferiorSaldo: 0, limiteSuperiorSaldo: 0*/ }
+          { alpha: 0.1 },
         ),
       ],
       [
-        "Minimizar da Diferença de Carga Didática",
+        t("ObjectiveComponent.minimizeDifferenceInTeachingLoad"),
         new MinimizarDiferencaCargaDidatica(
-          "Minimizar da Diferença de Carga Didática",
+          t("ObjectiveComponent.minimizeDifferenceInTeachingLoad"),
           false,
           "min",
-          "Componente de Função Objetivo para Minimização da Diferença de Carga Didática.",
+          t("ObjectiveComponent.minimizeDifferenceInTeachingLoadDescription"),
           1,
-          null
+          null,
         ),
       ],
-    ])
+      [
+        t("ObjectiveComponent.minimizeBalanceUtilization"),
+        new MinimizarUtilizacaoSaldos(
+          t("ObjectiveComponent.minimizeBalanceUtilization"),
+          true,
+          "min",
+          t("ObjectiveComponent.minimizeBalanceUtilizationDescription"),
+          1,
+          null,
+        ),
+      ],
+    ]),
   );
 
   /**
