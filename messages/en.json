@@ -606,5 +606,18 @@
     "unknownError": "An unknown error occurred. Please try again.",
     "save": "Salvar",
     "cancel": "Cancelar"
+  },
+  "Components": {
+    "ClearStorageModal": {
+      "title": "Previous Session Found",
+      "description": "We detected that you have data from a previous planning session saved in your browser. Would you like to continue where you left off or clear everything to start a new project from scratch?",
+      "savedDataInfo": "{count, plural, =1 {1 data category found} other {# data categories found}}",
+      "continueButton": "Continue Planning",
+      "clearButton": "Start Fresh",
+      "clearingButton": "Clearing data...",
+      "closeAriaLabel": "Close modal",
+      "continueAriaDescription": "Continues with the previously saved data without making changes",
+      "clearAriaDescription": "Removes all saved data and reloads the page to start a new planning session"
+    }
   }
 }

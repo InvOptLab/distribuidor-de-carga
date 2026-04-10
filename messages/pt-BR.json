@@ -606,5 +606,18 @@
     "unknownError": "Ocorreu um erro desconhecido. Por favor, tente novamente.",
     "save": "Salvar",
     "cancel": "Cancelar"
+  },
+  "Components": {
+    "ClearStorageModal": {
+      "title": "Sessão Anterior Encontrada",
+      "description": "Identificamos que você possui dados de um planejamento anterior salvos no navegador. Você deseja continuar de onde parou ou prefere apagar tudo para começar um novo projeto do zero?",
+      "savedDataInfo": "{count, plural, =1 {1 categoria de dados encontrada} other {# categorias de dados encontradas}}",
+      "continueButton": "Continuar Planejamento",
+      "clearButton": "Começar do Zero",
+      "clearingButton": "Apagando dados...",
+      "closeAriaLabel": "Fechar modal",
+      "continueAriaDescription": "Continua com os dados salvos anteriormente sem fazer alterações",
+      "clearAriaDescription": "Remove todos os dados salvos e recarrega a página para começar um novo planejamento"
+    }
   }
 }
