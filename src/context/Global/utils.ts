@@ -169,7 +169,7 @@ function parseHorario(horario: string): Horario[] {
  */
 export function ajustaDisciplinas(
   version: string,
-  disciplinas: DisciplinaETL[]
+  disciplinas: DisciplinaETL[],
 ): Disciplina[] {
   const newDisciplinas: Disciplina[] = [];
 
@@ -213,7 +213,7 @@ export function ajustaDisciplinas(
  */
 export function horariosSobrepoem(
   horario1: Horario,
-  horario2: Horario
+  horario2: Horario,
 ): boolean {
   return (
     horario1.dia === horario2.dia && // Mesmo dia
@@ -278,10 +278,10 @@ export function processData(
   docentes: Docente[],
   formularios: Formulario[],
   travas: Celula[],
-  atribuicoes: Atribuicao[]
+  atribuicoes: Atribuicao[],
 ) {
   const processedDisciplinas: Disciplina[] = structuredClone(
-    getActives(disciplinas)
+    getActives(disciplinas),
   );
   const processedDocentes: Docente[] = getActives(docentes);
 
@@ -289,24 +289,24 @@ export function processData(
   const disciplinasAtivas = new Set(
     disciplinas
       .filter((disciplina) => disciplina.ativo)
-      .map((disciplina) => disciplina.id)
+      .map((disciplina) => disciplina.id),
   );
   const docentesAtivos = new Set(
-    docentes.filter((docente) => docente.ativo).map((docente) => docente.nome)
+    docentes.filter((docente) => docente.ativo).map((docente) => docente.nome),
   );
 
   // Filtrar os formularios com base nas disciplinas e docentes ativos
   const processedFormularios: Formulario[] = formularios.filter(
     (formulario) =>
       disciplinasAtivas.has(formulario.id_disciplina) &&
-      docentesAtivos.has(formulario.nome_docente)
+      docentesAtivos.has(formulario.nome_docente),
   );
 
   // Filtrar as travas com base nas disciplinas e docentes ativos
   const processedTravas: Celula[] = travas.filter(
     (trava) =>
       disciplinasAtivas.has(trava.id_disciplina) &&
-      docentesAtivos.has(trava.nome_docente)
+      docentesAtivos.has(trava.nome_docente),
   );
 
   // Filtrar as atribuições com base nas disciplinas e docentes ativos
@@ -317,7 +317,7 @@ export function processData(
       return {
         ...atribuicao,
         docentes: atribuicao.docentes.filter((docente) =>
-          docentesAtivos.has(docente)
+          docentesAtivos.has(docente),
         ), // Mantém apenas os docentes ativos
       };
     });
@@ -335,7 +335,7 @@ export function processData(
 export function getActiveFormularios(
   formularios: Formulario[],
   disciplinas: Disciplina[],
-  docentes: Docente[]
+  docentes: Docente[],
 ) {
   const disciplinasAtivas = getActives(disciplinas).map((obj) => obj.id);
   const docentesAtivos = getActives(docentes).map((obj) => obj.nome);
@@ -343,7 +343,7 @@ export function getActiveFormularios(
   return formularios.filter(
     (formulario) =>
       disciplinasAtivas.includes(formulario.id_disciplina) &&
-      docentesAtivos.includes(formulario.nome_docente)
+      docentesAtivos.includes(formulario.nome_docente),
   );
 }
 
@@ -359,4 +359,38 @@ export function disciplinasConflitam(d1: Disciplina, d2: Disciplina): boolean {
     }
   }
   return false;
+}
+
+/**
+ * Ensina o JSON.stringify a transformar Map e Set em um formato que pode ser salvo como texto.
+ */
+export function jsonReplacer(key: string, value: any) {
+  if (value instanceof Map) {
+    return {
+      _isComplexType: "Map",
+      value: Array.from(value.entries()), // Transforma o Map em um array de chave/valor
+    };
+  }
+  if (value instanceof Set) {
+    return {
+      _isComplexType: "Set",
+      value: Array.from(value.values()), // Transforma o Set em um array simples
+    };
+  }
+  return value;
+}
+
+/**
+ * Ensina o JSON.parse a identificar as estruturas salvas e reconstruí-las como Map e Set na memória.
+ */
+export function jsonReviver(key: string, value: any) {
+  if (typeof value === "object" && value !== null) {
+    if (value._isComplexType === "Map") {
+      return new Map(value.value); // Reconstrói o Map
+    }
+    if (value._isComplexType === "Set") {
+      return new Set(value.value); // Reconstrói o Set
+    }
+  }
+  return value;
 }
