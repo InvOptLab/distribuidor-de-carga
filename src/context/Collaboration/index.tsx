@@ -14,6 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
 import { useTranslations } from "next-intl";
+import { jsonReplacer } from "../Global/utils";
 
 // Tipos
 export type RoomConfig = {
@@ -40,13 +41,13 @@ type SelectionUpdatePayload = {
 
 type DataUpdatePayload = {
   type: "FULL_DATA" | "PARTIAL_DATA";
-  data: any;
+  data: string;
   timestamp: number;
 };
 
 type AssignmentUpdatePayload = {
   type: "ASSIGNMENT_CHANGE";
-  assignment: any;
+  assignment: string;
   action: "add" | "remove" | "update";
   timestamp: number;
 };
@@ -86,52 +87,6 @@ type CollaborationContextType = {
 };
 
 const CollaborationContext = createContext<CollaborationContextType>({} as any);
-
-// =========================================================
-// FUNÇÕES AUXILIARES DE CONVERSÃO (Map/Set <-> Array)
-// =========================================================
-
-export const serializeContextData = (data: any) => {
-  return {
-    ...data,
-    // Converte Map de formulários dentro de cada Docente para Array
-    docentes: data.docentes?.map((d: any) => ({
-      ...d,
-      formularios: d.formularios ? Array.from(d.formularios.entries()) : [],
-    })),
-    // Converte Set de conflitos dentro de cada Disciplina para Array
-    disciplinas: data.disciplinas?.map((d: any) => ({
-      ...d,
-      conflitos: d.conflitos ? Array.from(d.conflitos) : [],
-    })),
-    // Filtros são objetos simples, passam direto, mas garantimos que estão no payload
-    docenteFilters: data.docenteFilters,
-    disciplinaFilters: data.disciplinaFilters,
-  };
-};
-
-export const deserializeContextData = (data: any) => {
-  const result = { ...data };
-
-  // Verifica se o campo existe antes de tentar mapear
-  if (data.docentes) {
-    result.docentes = data.docentes.map((d: any) => ({
-      ...d,
-      formularios: new Map(d.formularios),
-    }));
-  }
-
-  if (data.disciplinas) {
-    result.disciplinas = data.disciplinas.map((d: any) => ({
-      ...d,
-      conflitos: new Set(d.conflitos),
-    }));
-  }
-
-  // Filtros já vêm no formato correto (JSON), não precisam de conversão especial
-
-  return result;
-};
 
 export const CollaborationProvider = ({
   children,
@@ -174,6 +129,8 @@ export const CollaborationProvider = ({
     Set<(payload: SelectionUpdatePayload) => void>
   >(new Set());
   const dataRequestCallbacksRef = useRef<Set<() => void>>(new Set());
+
+  const channelReadyRef = useRef(false);
 
   // =========================================================
   // LÓGICA DE CRIAR SALA
@@ -307,6 +264,7 @@ export const CollaborationProvider = ({
       )
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
+          channelReadyRef.current = true;
           await channel.track({
             userId,
             name: uName,
@@ -333,7 +291,7 @@ export const CollaborationProvider = ({
   };
 
   useEffect(() => {
-    if (channelRef.current && userName) {
+    if (channelRef.current && userName && channelReadyRef.current) {
       channelRef.current.track({
         userId,
         name: userName,
@@ -350,7 +308,11 @@ export const CollaborationProvider = ({
   // SAIR DA SALA
   // =========================================================
   const leaveRoomLogic = async (deleteFromDb = true) => {
-    if (channelRef.current) supabase.removeChannel(channelRef.current);
+    if (channelRef.current) {
+      channelRef.current.untrack();
+      channelReadyRef.current = false;
+      supabase.removeChannel(channelRef.current);
+    }
 
     if (deleteFromDb && roomId) {
       if (isOwner) {
@@ -401,7 +363,7 @@ export const CollaborationProvider = ({
 
       const payload: DataUpdatePayload = {
         type,
-        data,
+        data: JSON.stringify(data, jsonReplacer), // Serializa com a mesma regra do Storage
         timestamp: Date.now(),
       };
 
@@ -420,7 +382,7 @@ export const CollaborationProvider = ({
 
       const payload: AssignmentUpdatePayload = {
         type: "ASSIGNMENT_CHANGE",
-        assignment,
+        assignment: JSON.stringify(assignment, jsonReplacer), // Serializa a atribuição
         action,
         timestamp: Date.now(),
       };

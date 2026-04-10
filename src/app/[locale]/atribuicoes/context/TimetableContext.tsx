@@ -32,17 +32,16 @@ import {
   Solucao,
   TipoTrava,
 } from "@/algoritmo/communs/interfaces/interfaces";
-import { ContextoExecucao, getActiveFormularios } from "@/context/Global/utils";
+import {
+  ContextoExecucao,
+  getActiveFormularios,
+  jsonReviver,
+} from "@/context/Global/utils";
 import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 import { calculateManualSolution } from "@/algoritmo/communs/calculateManualSolution";
 import Algorithm from "@/algoritmo/abstractions/Algorithm";
 import Constraint from "@/algoritmo/abstractions/Constraint";
-import {
-  deserializeContextData,
-  RoomConfig,
-  serializeContextData,
-  useCollaboration,
-} from "@/context/Collaboration";
+import { RoomConfig, useCollaboration } from "@/context/Collaboration";
 
 /**
  * Remover essa classe depois desse local.
@@ -55,7 +54,7 @@ class InsercaoManual extends Algorithm<any> {
     solution: Solucao | undefined,
     objectiveType: "min" | "max",
     objectiveComponentes: ObjectiveComponent<any>[],
-    maiorPrioridade: number | undefined
+    maiorPrioridade: number | undefined,
   ) {
     super(
       name,
@@ -65,7 +64,7 @@ class InsercaoManual extends Algorithm<any> {
       objectiveType,
       objectiveComponentes,
       maiorPrioridade,
-      true
+      true,
     );
   }
 
@@ -102,7 +101,7 @@ interface TimetableContextType {
       isInRoom: boolean;
       isOwner: boolean;
       config: RoomConfig;
-    }
+    },
   ) => void;
   handleColumnClick: (event: React.MouseEvent, trava: Celula) => void;
   handleRowClick: (event: React.MouseEvent, trava: Celula) => void;
@@ -112,7 +111,7 @@ interface TimetableContextType {
 }
 
 const TimetableContext = createContext<TimetableContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function TimetableProvider({ children }: { children: ReactNode }) {
@@ -155,7 +154,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     {
       search: "",
       rules: [],
-    }
+    },
   );
 
   // =======================================================
@@ -168,7 +167,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
 
     const unsubscribe = onDataUpdate((payload) => {
       if (payload.type === "FULL_DATA" && payload.data) {
-        const hydrated = deserializeContextData(payload.data);
+        const hydrated = JSON.parse(payload.data, jsonReviver);
 
         // Atualiza filtros se vierem no pacote e se forem diferentes
         // (Isso permite que o líder force o filtro nos convidados se config.guestsCanFilter = false)
@@ -180,14 +179,14 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
           setDocenteFilters((prev) =>
             JSON.stringify(prev) !== JSON.stringify(hydrated.docenteFilters)
               ? hydrated.docenteFilters
-              : prev
+              : prev,
           );
         }
         if (hydrated.disciplinaFilters) {
           setDisciplinaFilters((prev) =>
             JSON.stringify(prev) !== JSON.stringify(hydrated.disciplinaFilters)
               ? hydrated.disciplinaFilters
-              : prev
+              : prev,
           );
         }
       }
@@ -200,7 +199,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         // Precisamos mandar os filtros. Podemos mandar um pacote parcial ou completo.
         // Para garantir consistência, mandamos tudo o que temos acesso ou um pacote de filtros.
         broadcastDataUpdate(
-          serializeContextData({
+          {
             docentes,
             disciplinas,
             atribuicoes,
@@ -208,8 +207,8 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
             travas,
             docenteFilters,
             disciplinaFilters,
-          }),
-          "FULL_DATA"
+          },
+          "FULL_DATA",
         );
       }
     });
@@ -258,13 +257,13 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         // Enviamos um FULL_DATA com os filtros atualizados.
         // Note: O ideal seria um evento "FILTER_UPDATE", mas FULL_DATA funciona com o merge no deserialize.
         broadcastDataUpdate(
-          serializeContextData({
+          {
             docenteFilters,
             disciplinaFilters,
             // Opcional: mandar o resto para garantir integridade, mas pode ser pesado.
             // O deserialize trata campos ausentes, então podemos mandar só filtros.
-          }),
-          "FULL_DATA"
+          },
+          "FULL_DATA",
         );
 
         lastBroadcastedFiltersRef.current.d = currentString;
@@ -287,11 +286,11 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     const activeFormularios = getActiveFormularios(
       formularios,
       disciplinas,
-      docentes
+      docentes,
     );
     return activeFormularios.reduce(
       (max, form) => Math.max(max, form.prioridade),
-      0
+      0,
     );
   }, [formularios, disciplinas, docentes]);
 
@@ -428,41 +427,39 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
   const adicionarDocente = useCallback(
     (id_disciplina: string, nome_docente: string) => {
       let novaAtribuicaoParaBroadcast: Atribuicao | null = null;
+      const newAtribuicoes = [...atribuicoes];
+
+      const index = newAtribuicoes.findIndex(
+        (a) => a.id_disciplina === id_disciplina,
+      );
+
+      if (index !== -1) {
+        // Atualiza existente
+        const updated = {
+          ...newAtribuicoes[index],
+          docentes: [...newAtribuicoes[index].docentes, nome_docente],
+        };
+        novaAtribuicaoParaBroadcast = updated;
+        newAtribuicoes[index] = updated;
+      } else {
+        // Cria nova
+        const nova = {
+          id_disciplina: id_disciplina,
+          docentes: [nome_docente],
+        };
+        novaAtribuicaoParaBroadcast = nova;
+        newAtribuicoes.push(nova);
+      }
 
       // Atualiza o estado local
-      setAtribuicoes((prevAtribuicoes) => {
-        const index = prevAtribuicoes.findIndex(
-          (a) => a.id_disciplina === id_disciplina
-        );
+      setAtribuicoes(newAtribuicoes);
 
-        if (index !== -1) {
-          // Atualiza existente
-          const updated = {
-            ...prevAtribuicoes[index],
-            docentes: [...prevAtribuicoes[index].docentes, nome_docente],
-          };
-          novaAtribuicaoParaBroadcast = updated;
-
-          const novoArray = [...prevAtribuicoes];
-          novoArray[index] = updated;
-          return novoArray;
-        } else {
-          // Cria nova
-          const nova = {
-            id_disciplina: id_disciplina,
-            docentes: [nome_docente],
-          };
-          novaAtribuicaoParaBroadcast = nova;
-          return [...prevAtribuicoes, nova];
-        }
-      });
-
-      // LÓGICA DE COLABORAÇÃO: Broadcast após atualização local
+      // LÓGICA DE COLABORAÇÃO: Broadcast com a variável preenchida
       if (isInRoom && novaAtribuicaoParaBroadcast) {
         broadcastAssignmentChange(novaAtribuicaoParaBroadcast, "update");
       }
     },
-    [setAtribuicoes, isInRoom, broadcastAssignmentChange]
+    [atribuicoes, setAtribuicoes, isInRoom, broadcastAssignmentChange],
   );
 
   /**
@@ -471,7 +468,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
   const removerDocente = useCallback(
     (idDisciplina: string, docenteARemover: string) => {
       const index = atribuicoes.findIndex(
-        (a) => a.id_disciplina === idDisciplina
+        (a) => a.id_disciplina === idDisciplina,
       );
 
       if (index !== -1) {
@@ -479,7 +476,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         const updatedAtribuicao = {
           ...atribuicoes[index],
           docentes: atribuicoes[index].docentes.filter(
-            (docente) => docente != docenteARemover
+            (docente) => docente != docenteARemover,
           ),
         };
         const newAtribuicoesList = [...atribuicoes];
@@ -494,7 +491,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    [atribuicoes, setAtribuicoes, isInRoom, broadcastAssignmentChange]
+    [atribuicoes, setAtribuicoes, isInRoom, broadcastAssignmentChange],
   );
 
   /**
@@ -507,7 +504,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       isInRoom: boolean;
       isOwner: boolean;
       config: RoomConfig;
-    }
+    },
   ) => {
     // Security Check
     if (params.isInRoom) {
@@ -515,7 +512,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       if (!canEdit) {
         addAlerta(
           "Apenas o líder da sala pode realizar alterações.",
-          "warning"
+          "warning",
         );
         return;
       }
@@ -525,14 +522,14 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       // Lógica de TRAVAS (Locks)
       let newTravas = [...travas];
       const exists = travas.some(
-        (obj) => JSON.stringify(obj) === JSON.stringify(celula)
+        (obj) => JSON.stringify(obj) === JSON.stringify(celula),
       );
 
       if (!exists) {
         newTravas.push(celula);
       } else {
         newTravas = newTravas.filter(
-          (obj) => JSON.stringify(obj) !== JSON.stringify(celula)
+          (obj) => JSON.stringify(obj) !== JSON.stringify(celula),
         );
       }
 
@@ -541,14 +538,14 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       // Broadcast Específico para Travas (FULL_DATA com travas atualizadas)
       if (isInRoom) {
         broadcastDataUpdate(
-          serializeContextData({
+          {
             docentes,
             disciplinas,
             formularios,
             atribuicoes, // Estado atual
             travas: newTravas, // Novo estado de travas
-          }),
-          "FULL_DATA"
+          },
+          "FULL_DATA",
         );
       }
     } else {
@@ -557,18 +554,18 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         !travas.some(
           (trava) =>
             trava.id_disciplina === celula.id_disciplina &&
-            trava.nome_docente === celula.nome_docente
+            trava.nome_docente === celula.nome_docente,
         )
       ) {
         const newAtribuicao = atribuicoes.find(
-          (atribuicao) => atribuicao.id_disciplina == celula.id_disciplina
+          (atribuicao) => atribuicao.id_disciplina == celula.id_disciplina,
         );
 
         if (
           !newAtribuicao ||
           (newAtribuicao &&
             !newAtribuicao.docentes.some(
-              (docente) => docente == celula.nome_docente
+              (docente) => docente == celula.nome_docente,
             ))
         ) {
           adicionarDocente(celula.id_disciplina, celula.nome_docente!);
@@ -590,7 +587,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     if (event.ctrlKey) {
       let newTravas = [...travas];
       const exists = travas.some(
-        (obj) => JSON.stringify(obj) === JSON.stringify(trava)
+        (obj) => JSON.stringify(obj) === JSON.stringify(trava),
       );
 
       if (!exists) {
@@ -609,7 +606,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
             (obj) =>
               (obj.tipo_trava !== TipoTrava.ColumnCell &&
                 obj.tipo_trava !== TipoTrava.Column) ||
-              obj.id_disciplina != trava.id_disciplina
+              obj.id_disciplina != trava.id_disciplina,
           );
         }
       }
@@ -620,14 +617,14 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       // Broadcast Travas
       if (isInRoom) {
         broadcastDataUpdate(
-          serializeContextData({
+          {
             docentes,
             disciplinas,
             formularios,
             atribuicoes,
             travas: newTravas,
-          }),
-          "FULL_DATA"
+          },
+          "FULL_DATA",
         );
       }
     }
@@ -640,7 +637,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     if (event.ctrlKey) {
       let newTravas = [...travas];
       const exists = travas.some(
-        (obj) => JSON.stringify(obj) === JSON.stringify(trava)
+        (obj) => JSON.stringify(obj) === JSON.stringify(trava),
       );
 
       if (!exists) {
@@ -659,7 +656,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
             (obj) =>
               (obj.tipo_trava !== TipoTrava.RowCell &&
                 obj.tipo_trava !== TipoTrava.Row) ||
-              obj.nome_docente != trava.nome_docente
+              obj.nome_docente != trava.nome_docente,
           );
         }
       }
@@ -670,14 +667,14 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       // Broadcast Travas
       if (isInRoom) {
         broadcastDataUpdate(
-          serializeContextData({
+          {
             docentes,
             disciplinas,
             formularios,
             atribuicoes,
             travas: newTravas,
-          }),
-          "FULL_DATA"
+          },
+          "FULL_DATA",
         );
       }
     }
@@ -696,7 +693,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
           travas.find(
             (trava) =>
               trava.id_disciplina === atribuicao.id_disciplina &&
-              docente === trava.nome_docente
+              docente === trava.nome_docente,
           ) ||
           !docentes.find((doc) => doc.nome === docente)?.ativo ||
           !disciplinas.find((disc) => disc.id === atribuicao.id_disciplina)
@@ -710,8 +707,8 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
                   travas.find(
                     (t) =>
                       t.id_disciplina === atribuicao.id_disciplina &&
-                      d === t.nome_docente
-                  ) || !docentes.find((doc) => doc.nome === d)?.ativo
+                      d === t.nome_docente,
+                  ) || !docentes.find((doc) => doc.nome === d)?.ativo,
               ),
             });
             found = true;
@@ -734,14 +731,14 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     if (isInRoom) {
       // Envia todo o conjunto de atribuições atualizado (limpo)
       broadcastDataUpdate(
-        serializeContextData({
+        {
           atribuicoes: atribuicoesLimpa,
           disciplinas: disciplinas,
           docentes: docentes,
           formularios: formularios,
           travas: travas,
-        }),
-        "FULL_DATA"
+        },
+        "FULL_DATA",
       );
     }
   };
@@ -752,7 +749,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
   const saveAlterations = async () => {
     try {
       const objectives: ObjectiveComponent<any>[] = Array.from(
-        objectiveComponents.values()
+        objectiveComponents.values(),
       ).filter((entry) => entry.isActive);
 
       const ativos = removeInativos(docentes, disciplinas, atribuicoes);
@@ -766,7 +763,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         softConstraints, // Map de restrições soft
         hardConstraints, // Map de restrições hard
         objectives,
-        maxPriority
+        maxPriority,
       );
 
       const contextoExecucao: ContextoExecucao = {
@@ -794,7 +791,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         solucaoManual,
         "max",
         [...objectiveComponents.values()],
-        maxPriority
+        maxPriority,
       );
 
       saveAtribuicoesInHistoryState(
@@ -805,7 +802,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         setSolucaoAtual,
         contextoExecucao,
         algorithm,
-        solucaoManual.estatisticas
+        solucaoManual.estatisticas,
       );
 
       addAlerta("As atribuições foram adicionadas ao histórico!", "success");
@@ -834,7 +831,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         disciplinas,
         atribuicoes,
         travas,
-        historicoSolucoes.get(solucaoAtual.idHistorico)
+        historicoSolucoes.get(solucaoAtual.idHistorico),
       );
     } else {
       filename = getFormattedDate() + ".json";

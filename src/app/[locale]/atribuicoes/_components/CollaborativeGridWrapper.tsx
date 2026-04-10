@@ -2,12 +2,7 @@
 
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import {
-  deserializeContextData,
-  serializeContextData,
-  useCollaboration,
-  type RoomConfig,
-} from "@/context/Collaboration";
+import { useCollaboration, type RoomConfig } from "@/context/Collaboration";
 import {
   Paper,
   Typography,
@@ -41,6 +36,7 @@ import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SyncIcon from "@mui/icons-material/Sync";
 import { useGlobalContext } from "@/context/Global";
+import { jsonReviver } from "@/context/Global/utils";
 
 // Função para gerar cor consistente baseada no nome
 const stringToColor = (string: string) => {
@@ -162,37 +158,37 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
 
   // LÍDER: Serializa e Envia Dados Completos (FULL_DATA) quando solicitado
   // Apenas o líder responde a "Pedidos de Dados" de novos entrantes.
-  useEffect(() => {
-    if (!isInRoom || !isOwner) return;
+  // useEffect(() => {
+  //   if (!isInRoom || !isOwner) return;
 
-    const unsubscribe = onDataRequest(() => {
-      const rawData = {
-        docentes,
-        disciplinas,
-        atribuicoes,
-        formularios,
-        travas,
-      };
+  //   // const unsubscribe = onDataRequest(() => {
+  //   //   const rawData = {
+  //   //     docentes,
+  //   //     disciplinas,
+  //   //     atribuicoes,
+  //   //     formularios,
+  //   //     travas,
+  //   //   };
 
-      // Convertemos Map/Set para Array antes de enviar
-      const serializedPayload = serializeContextData(rawData);
+  //   //   // Convertemos Map/Set para Array antes de enviar
+  //   //   const serializedPayload = serializeContextData(rawData);
 
-      console.log("📤 Líder enviando dados serializados...", serializedPayload);
-      broadcastDataUpdate(serializedPayload, "FULL_DATA");
-    });
+  //   //   console.log("📤 Líder enviando dados serializados...", serializedPayload);
+  //   //   broadcastDataUpdate(serializedPayload, "FULL_DATA");
+  //   // });
 
-    return () => unsubscribe();
-  }, [
-    isInRoom,
-    isOwner,
-    onDataRequest,
-    broadcastDataUpdate,
-    docentes,
-    disciplinas,
-    atribuicoes,
-    formularios,
-    travas,
-  ]);
+  //   // return () => unsubscribe();
+  // }, [
+  //   isInRoom,
+  //   isOwner,
+  //   onDataRequest,
+  //   broadcastDataUpdate,
+  //   docentes,
+  //   disciplinas,
+  //   atribuicoes,
+  //   formularios,
+  //   travas,
+  // ]);
 
   // TODOS (Líder e Convidados): Recebem atualizações
   // IMPORTANTE: Removido '|| isOwner' para que o líder também receba edits dos convidados.
@@ -204,7 +200,8 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
     const unsubscribeData = onDataUpdate((payload) => {
       if (payload.type === "FULL_DATA" && payload.data) {
         console.log("📥 Recebendo dados sincronizados:", payload.data);
-        const hydratedData = deserializeContextData(payload.data);
+        // Transforma de volta nos Maps e Sets corretos da aplicação
+        const hydratedData = JSON.parse(payload.data, jsonReviver);
 
         if (hydratedData.docentes) setDocentes(hydratedData.docentes);
         if (hydratedData.disciplinas) setDisciplinas(hydratedData.disciplinas);
@@ -217,17 +214,19 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
     // Escuta mudanças pontuais na grade (Click/Add/Remove)
     const unsubscribeAssignment = onAssignmentChange((payload) => {
       if (payload.assignment) {
-        console.log("📥 Atualização de atribuição recebida:", payload);
+        // Revive a atribuição individual
+        const parsedAssignment = JSON.parse(payload.assignment, jsonReviver);
+
         setAtribuicoes((prev) => {
           const index = prev.findIndex(
-            (a) => a.id_disciplina === payload.assignment.id_disciplina
+            (a) => a.id_disciplina === parsedAssignment.id_disciplina,
           );
           if (index !== -1) {
             const newArr = [...prev];
-            newArr[index] = payload.assignment;
+            newArr[index] = parsedAssignment;
             return newArr;
           }
-          return [...prev, payload.assignment];
+          return [...prev, parsedAssignment];
         });
       }
     });

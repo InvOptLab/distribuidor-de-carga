@@ -109,21 +109,29 @@ export function GlobalWrapper({ children }: { children: React.ReactNode }) {
     // Só começa a salvar depois que carregou, para não sobrescrever os dados com arrays vazios
     if (!isHydrated) return;
 
-    const estadoParaSalvar = {
-      docentes,
-      disciplinas,
-      atribuicoes,
-      formularios,
-      travas,
-      solucaoAtual,
-      historicoSolucoes, // O jsonReplacer cuida do formato Map!
-    };
+    const timeoutId = setTimeout(() => {
+      const estadoParaSalvar = {
+        docentes,
+        disciplinas,
+        atribuicoes,
+        formularios,
+        travas,
+        solucaoAtual,
+        historicoSolucoes,
+      };
 
-    // Salva tudo de uma vez de forma atômica
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(estadoParaSalvar, jsonReplacer),
-    );
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(estadoParaSalvar, jsonReplacer),
+      );
+    }, 1000); // Ajustar este tempo conforme achar necessário
+
+    // Função de limpeza (Cleanup):
+    // Se algum dos estados mudar ANTES do 1 segundo passar, o React chama essa função,
+    // cancela o salvamento anterior que estava na fila, e recomeça a contagem de 1 segundo.
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [
     isHydrated,
     docentes,
