@@ -140,6 +140,8 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [tempConfig, setTempConfig] = useState<RoomConfig>(config);
 
+  const lastMouseUpdate = useRef(0);
+
   // =========================================================
   // LÓGICA DE SINCRONIZAÇÃO
   // =========================================================
@@ -250,9 +252,14 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
   if (!isInRoom) return <>{children}</>;
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      broadcastMouse(e.clientX - rect.left, e.clientY - rect.top);
+    const now = Date.now();
+    // Só envia pacote se tiver passado 50 milissegundos desde o último
+    if (now - lastMouseUpdate.current > 50) {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        broadcastMouse(e.clientX - rect.left, e.clientY - rect.top);
+        lastMouseUpdate.current = now;
+      }
     }
   };
 

@@ -16,6 +16,20 @@ import { v4 as uuidv4 } from "uuid";
 import { useTranslations } from "next-intl";
 import { jsonReplacer } from "../Global/utils";
 
+const stringToColor = (string: string | null) => {
+  if (!string) return "#1976d2"; // Cor padrão caso o nome não exista
+  let hash = 0;
+  for (let i = 0; i < string.length; i++) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = "#";
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
+};
+
 // Tipos
 export type RoomConfig = {
   guestsCanEdit: boolean;
@@ -115,9 +129,6 @@ export const CollaborationProvider = ({
   const [cursors, setCursors] = useState<Record<string, UserCursor>>({});
   const [usersInRoom, setUsersInRoom] = useState(0);
   const channelRef = useRef<RealtimeChannel | null>(null);
-  const myColor = useRef(
-    "#" + Math.floor(Math.random() * 16777215).toString(16),
-  );
 
   const dataUpdateCallbacksRef = useRef<
     Set<(payload: DataUpdatePayload) => void>
@@ -208,14 +219,53 @@ export const CollaborationProvider = ({
         const activeUsers = Object.keys(state).length;
         setUsersInRoom(activeUsers);
 
-        const newCursors: Record<string, UserCursor> = {};
-        Object.values(state).forEach((pres: any) => {
-          const p = pres[0];
-          if (p.userId !== userId && p.pathname === window.location.pathname) {
-            newCursors[p.userId] = p;
-          }
+        // Atualiza a lista de usuários sem destruir as posições X/Y em movimento
+        setCursors((prev) => {
+          const updated = { ...prev };
+
+          // 1. Adiciona novos usuários na porta de entrada (0,0)
+          Object.values(state).forEach((pres: any) => {
+            const p = pres[0];
+            if (
+              p.userId !== userId &&
+              p.pathname === window.location.pathname
+            ) {
+              if (!updated[p.userId]) {
+                updated[p.userId] = p;
+              }
+            }
+          });
+
+          // 2. Remove da tela quem saiu da sala
+          const activeIds = Object.values(state).map(
+            (pres: any) => pres[0].userId,
+          );
+          Object.keys(updated).forEach((id) => {
+            if (!activeIds.includes(id)) {
+              delete updated[id];
+            }
+          });
+
+          return updated;
         });
-        setCursors(newCursors);
+      })
+      // Ouvinte dedicado para renderizar o movimento do mouse
+      .on("broadcast", { event: "CURSOR_MOVE" }, ({ payload }) => {
+        setCursors((prev) => {
+          if (
+            payload.userId !== userId &&
+            payload.pathname === window.location.pathname
+          ) {
+            return {
+              ...prev,
+              [payload.userId]: {
+                ...prev[payload.userId], // Mantém dados base
+                ...payload, // Atualiza instantaneamente o X e Y
+              },
+            };
+          }
+          return prev;
+        });
       })
       .on("broadcast", { event: "DATA_UPDATE" }, ({ payload }) => {
         dataUpdateCallbacksRef.current.forEach((cb) =>
@@ -268,7 +318,7 @@ export const CollaborationProvider = ({
           await channel.track({
             userId,
             name: uName,
-            color: myColor.current,
+            color: stringToColor(uName),
             x: 0,
             y: 0,
             pathname: window.location.pathname,
@@ -295,7 +345,7 @@ export const CollaborationProvider = ({
       channelRef.current.track({
         userId,
         name: userName,
-        color: myColor.current,
+        color: stringToColor(userName),
         x: 0,
         y: 0,
         pathname,
@@ -340,14 +390,18 @@ export const CollaborationProvider = ({
   // =========================================================
   const broadcastMouse = (x: number, y: number) => {
     if (channelRef.current) {
-      channelRef.current.track({
-        userId,
-        name: userName,
-        color: myColor.current,
-        x,
-        y,
-        pathname,
-        isOwner,
+      channelRef.current.send({
+        type: "broadcast",
+        event: "CURSOR_MOVE",
+        payload: {
+          userId,
+          name: userName,
+          color: stringToColor(userName),
+          x,
+          y,
+          pathname,
+          isOwner,
+        },
       });
     }
   };
