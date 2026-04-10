@@ -7,9 +7,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Await é necessário pois requestLocale agora é uma Promise
   let locale = await requestLocale;
 
-  if (!locale || !locales.includes(locale as any)) {
+  // INFO: descomentar a segunda parte da condição quando houverem mais idiomas disponíveis
+  if (!locale /*|| !locales.includes(locale as any)*/) {
     notFound();
   }
+
+  locale = locale === "pt-BR" ? "pt-BR" : "en";
 
   return {
     locale,

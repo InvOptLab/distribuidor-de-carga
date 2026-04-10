@@ -21,7 +21,7 @@ export class SupabaseVectorStoreRepo implements IVectorStoreRepository {
 
     this.client = createClient(sbUrl, sbKey);
     this.embeddings = new GoogleGenerativeAIEmbeddings({
-      modelName: "text-embedding-004",
+      modelName: "gemini-embedding-001",
       apiKey: googleKey,
       taskType: TaskType.RETRIEVAL_QUERY,
     });
@@ -36,7 +36,7 @@ export class SupabaseVectorStoreRepo implements IVectorStoreRepository {
         client: this.client,
         tableName: "documents",
         queryName: "match_documents",
-      }
+      },
     );
 
     // 2. Verifica se o banco já tem dados

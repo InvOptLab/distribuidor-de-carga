@@ -14,7 +14,7 @@ const BATCH_SIZE = 5;
 const DELAY_BETWEEN_BATCHES = 2000;
 
 async function main() {
-  console.log("🚀 Iniciando Ingestão (Modelo: text-embedding-004)...");
+  console.log("🚀 Iniciando Ingestão (Modelo: gemini-embedding-001)...");
 
   // 1. Configuração
   const sbUrl = process.env.SUPABASE_URL;
@@ -29,7 +29,7 @@ async function main() {
   const client = createClient(sbUrl, sbKey);
 
   const embeddings = new GoogleGenerativeAIEmbeddings({
-    modelName: "text-embedding-004", // Modelo mais novo e estável
+    modelName: "gemini-embedding-001", // Modelo mais novo e estável
     apiKey: googleKey,
     taskType: TaskType.RETRIEVAL_DOCUMENT, // Diz ao Google que isso é um documento para ser buscado
     title: "Manual do Sistema", // Opcional: ajuda o modelo a contextualizar
@@ -58,7 +58,7 @@ async function main() {
 
   // Filtra textos curtos/vazios
   const docsToProcess = splitDocs.filter(
-    (doc) => doc.pageContent && doc.pageContent.replace(/\s/g, "").length > 20
+    (doc) => doc.pageContent && doc.pageContent.replace(/\s/g, "").length > 20,
   );
 
   console.log(`✂️  ${docsToProcess.length} trechos válidos. Iniciando...`);
@@ -86,7 +86,7 @@ async function main() {
           console.warn(
             `\n⚠️  Vetor VAZIO retornado pelo Google. Texto original: "${batchTexts[
               index
-            ].substring(0, 50)}..."`
+            ].substring(0, 50)}..."`,
           );
         }
       });
