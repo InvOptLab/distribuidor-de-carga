@@ -158,40 +158,6 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
   // Os filtros estão apenas no TimetableContext.
   // Vamos manter a sincronização de filtros no TimetableContext.
 
-  // LÍDER: Serializa e Envia Dados Completos (FULL_DATA) quando solicitado
-  // Apenas o líder responde a "Pedidos de Dados" de novos entrantes.
-  // useEffect(() => {
-  //   if (!isInRoom || !isOwner) return;
-
-  //   // const unsubscribe = onDataRequest(() => {
-  //   //   const rawData = {
-  //   //     docentes,
-  //   //     disciplinas,
-  //   //     atribuicoes,
-  //   //     formularios,
-  //   //     travas,
-  //   //   };
-
-  //   //   // Convertemos Map/Set para Array antes de enviar
-  //   //   const serializedPayload = serializeContextData(rawData);
-
-  //   //   console.log("📤 Líder enviando dados serializados...", serializedPayload);
-  //   //   broadcastDataUpdate(serializedPayload, "FULL_DATA");
-  //   // });
-
-  //   // return () => unsubscribe();
-  // }, [
-  //   isInRoom,
-  //   isOwner,
-  //   onDataRequest,
-  //   broadcastDataUpdate,
-  //   docentes,
-  //   disciplinas,
-  //   atribuicoes,
-  //   formularios,
-  //   travas,
-  // ]);
-
   // TODOS (Líder e Convidados): Recebem atualizações
   // IMPORTANTE: Removido '|| isOwner' para que o líder também receba edits dos convidados.
   useEffect(() => {
