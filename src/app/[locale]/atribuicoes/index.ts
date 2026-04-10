@@ -20,7 +20,7 @@ import { addNewSolutionToHistory } from "@/context/SolutionHistory/utils";
  */
 export function getPriorityColor(
   priority: number,
-  maxPriority: number
+  maxPriority: number,
 ): string {
   // Se a prioridade for null ou undefined, não altera a cor
   if (priority === null || priority === undefined) {
@@ -60,7 +60,7 @@ export function setCellColor(
   prioridade: number,
   celula: Celula,
   atribuido: boolean,
-  maxPriority: number
+  maxPriority: number,
 ) {
   // Célula travada
   if (celula.trava) {
@@ -125,7 +125,7 @@ export function exportJson(
   disciplinas: Disciplina[],
   atribuicoes: Atribuicao[],
   travas: Celula[],
-  solucaoHistorico?: HistoricoSolucao
+  solucaoHistorico?: HistoricoSolucao,
 ) {
   /**
    * Ajustar as disciplinas
@@ -230,14 +230,14 @@ export function exportJson(
 
     if (solucao.estatisticas) {
       const tempoPorIteracao = Array.from(
-        solucao.estatisticas.tempoPorIteracao
+        solucao.estatisticas.tempoPorIteracao,
       );
       const avaliacaoPorIteracao = Array.from(
-        solucao.estatisticas.avaliacaoPorIteracao
+        solucao.estatisticas.avaliacaoPorIteracao,
       );
 
       dados["solucao"] = {
-        ...solucaoDTO,
+        // ...solucaoDTO,
         solucao: {
           avaliacao: solucao.avaliacao,
           estatisticas: {
@@ -252,7 +252,7 @@ export function exportJson(
       };
     } else {
       dados["solucao"] = {
-        ...solucaoDTO,
+        // ...solucaoDTO,
         solucao: {
           avaliacao: solucao.avaliacao,
         },
@@ -281,7 +281,7 @@ export function saveAtribuicoesInHistoryState(
   setSolucaoAtual,
   contextoExecucao: ContextoExecucao,
   algorithm?: Algorithm<any>,
-  statistics?: Statistics
+  statistics?: Statistics,
 ) {
   const novaSolucao: Solucao = {
     atribuicoes: atribuicoes,
@@ -295,7 +295,7 @@ export function saveAtribuicoesInHistoryState(
     setHistoricoSolucoes,
     historicoSolucoes,
     TipoInsercao.Manual,
-    contextoExecucao
+    contextoExecucao,
   );
 
   novaSolucao.idHistorico = id;
@@ -306,13 +306,13 @@ export function saveAtribuicoesInHistoryState(
 export function removeInativos(
   docentes: Docente[],
   turmas: Disciplina[],
-  atribuicoes: Atribuicao[]
+  atribuicoes: Atribuicao[],
 ) {
   const activeDocentes = new Map<string, Docente>(
-    docentes.filter((doc) => doc.ativo).map((doc) => [doc.nome, doc])
+    docentes.filter((doc) => doc.ativo).map((doc) => [doc.nome, doc]),
   );
   const activeTurmas = new Map<string, Disciplina>(
-    turmas.filter((disc) => disc.ativo).map((disc) => [disc.id, disc])
+    turmas.filter((disc) => disc.ativo).map((disc) => [disc.id, disc]),
   );
 
   const activeAtribuicoes: Atribuicao[] = [];
