@@ -71,29 +71,42 @@ export default function TurmaCard({
   onClick,
   canNavigate = true,
 }: Props) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const menuOpen = Boolean(anchorEl);
+  // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  // const menuOpen = Boolean(anchorEl);
 
-  const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-  };
+  // const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
+  //   event.stopPropagation();
+  //   setAnchorEl(event.currentTarget);
+  // };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  // const handleMenuClose = () => {
+  //   setAnchorEl(null);
+  // };
 
-  const handleAction = () => {
-    handleMenuClose();
-    if (!isTravada || !isAtribuida) {
-      onAction();
-    }
-  };
+  // const handleAction = () => {
+  //   handleMenuClose();
+  //   if (!isTravada || !isAtribuida) {
+  //     onAction();
+  //   }
+  // };
 
-  const handleTravar = () => {
-    handleMenuClose();
-    onTravar?.();
-  };
+  // const handleTravar = () => {
+  //   handleMenuClose();
+  //   onTravar?.();
+  // };
+
+  // Estilo invisível visualmente, mas lido por leitores de tela
+  const srOnlyStyle = {
+    position: "absolute",
+    width: "1px",
+    height: "1px",
+    padding: 0,
+    margin: "-1px",
+    overflow: "hidden",
+    clip: "rect(0, 0, 0, 0)",
+    whiteSpace: "nowrap",
+    borderWidth: 0,
+  } as const;
 
   const bgColor = isTravada
     ? alpha("#ff9800", 0.1)
@@ -301,73 +314,77 @@ export default function TurmaCard({
         </Box>
 
         {/* Menu de Ações */}
-        <Tooltip title="Ações">
-          <span>
-            <IconButton
-              size="small"
-              onClick={handleMenuOpen}
-              disabled={!canNavigate}
-              sx={{ bgcolor: alpha("#000", 0.05) }}
-            >
-              <MoreIcon fontSize="small" />
-            </IconButton>
-          </span>
-        </Tooltip>
+        <Stack direction="row" spacing={1}>
+          {/* Botão de Adicionar/Remover */}
+          <Tooltip
+            title={
+              !canNavigate
+                ? "Ação desabilitada"
+                : isTravada
+                  ? "Ação bloqueada (Item travado)"
+                  : isAtribuida
+                    ? "Remover atribuição"
+                    : "Atribuir"
+            }
+          >
+            <span onClick={(e) => e.stopPropagation()}>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAction();
+                }}
+                disabled={!canNavigate || isTravada}
+                color={isAtribuida ? "error" : "primary"}
+                sx={{
+                  bgcolor: alpha(isAtribuida ? "#d32f2f" : "#1976d2", 0.05),
+                }}
+              >
+                {isAtribuida ? (
+                  <RemoveIcon fontSize="small" />
+                ) : (
+                  <AddIcon fontSize="small" />
+                )}
+                <span style={srOnlyStyle}>
+                  {isAtribuida ? "Remover atribuição" : "Atribuir"}
+                </span>
+              </IconButton>
+            </span>
+          </Tooltip>
 
-        <Menu
-          anchorEl={anchorEl}
-          open={menuOpen}
-          onClose={handleMenuClose}
-          onClick={(e) => e.stopPropagation()}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          transformOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-        >
-          {isAtribuida ? (
-            <Box>
-              <MenuItem onClick={handleAction} disabled={isTravada}>
-                <ListItemIcon>
-                  <RemoveIcon fontSize="small" color="error" />
-                </ListItemIcon>
-                <ListItemText>
-                  {isTravada ? "Travado - Não pode remover" : "Remover"}
-                </ListItemText>
-              </MenuItem>
-              <MenuItem onClick={handleTravar}>
-                <ListItemIcon>
-                  {isTravada ? (
-                    <LockOpenIcon fontSize="small" color="warning" />
-                  ) : (
-                    <LockIcon fontSize="small" color="warning" />
-                  )}
-                </ListItemIcon>
-                <ListItemText>
-                  {isTravada ? "Destravar" : "Travar"}
-                </ListItemText>
-              </MenuItem>
-            </Box>
-          ) : (
-            <Box>
-              <MenuItem onClick={handleAction}>
-                <ListItemIcon>
-                  <AddIcon fontSize="small" color="primary" />
-                </ListItemIcon>
-                <ListItemText>Adicionar</ListItemText>
-              </MenuItem>
-              <MenuItem onClick={handleTravar}>
-                <ListItemIcon>
-                  <LockIcon fontSize="small" color="warning" />
-                </ListItemIcon>
-                <ListItemText>Adicionar e Travar</ListItemText>
-              </MenuItem>
-            </Box>
-          )}
-        </Menu>
+          {/* Botão de Travar/Destravar */}
+          <Tooltip
+            title={
+              !canNavigate
+                ? "Ação desabilitada"
+                : isTravada
+                  ? "Destravar"
+                  : "Travar"
+            }
+          >
+            <span onClick={(e) => e.stopPropagation()}>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTravar?.();
+                }}
+                disabled={!canNavigate}
+                color="warning"
+                sx={{ bgcolor: alpha("#ff9800", 0.05) }}
+              >
+                {isTravada ? (
+                  <LockOpenIcon fontSize="small" />
+                ) : (
+                  <LockIcon fontSize="small" />
+                )}
+                <span style={srOnlyStyle}>
+                  {isTravada ? "Destravar item" : "Travar item"}
+                </span>
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Stack>
       </Box>
     </Paper>
   );

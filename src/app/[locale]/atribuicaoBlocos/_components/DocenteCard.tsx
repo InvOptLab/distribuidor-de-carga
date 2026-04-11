@@ -55,29 +55,17 @@ export default function DocenteCard({
   onClick,
   canNavigate = true,
 }: Props) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const menuOpen = Boolean(anchorEl);
-
-  const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleAction = () => {
-    handleMenuClose();
-    if (!isTravado || !isAtribuido) {
-      onAction();
-    }
-  };
-
-  const handleTravar = () => {
-    handleMenuClose();
-    onTravar?.();
-  };
+  const srOnlyStyle = {
+    position: "absolute",
+    width: "1px",
+    height: "1px",
+    padding: 0,
+    margin: "-1px",
+    overflow: "hidden",
+    clip: "rect(0, 0, 0, 0)",
+    whiteSpace: "nowrap",
+    borderWidth: 0,
+  } as const;
 
   const bgColor = isTravado
     ? alpha("#ff9800", 0.1)
@@ -259,73 +247,77 @@ export default function DocenteCard({
         gap={1}
       >
         {/* Menu de Ações */}
-        <Tooltip title="Ações">
-          <span>
-            <IconButton
-              size="small"
-              onClick={handleMenuOpen}
-              disabled={!canNavigate}
-              sx={{ bgcolor: alpha("#000", 0.05) }}
-            >
-              <MoreIcon fontSize="small" />
-            </IconButton>
-          </span>
-        </Tooltip>
+        <Stack direction="row" spacing={1}>
+          {/* Botão de Adicionar/Remover */}
+          <Tooltip
+            title={
+              !canNavigate
+                ? "Ação desabilitada"
+                : isTravado
+                  ? "Ação bloqueada (Item travado)"
+                  : isAtribuido
+                    ? "Remover atribuição"
+                    : "Atribuir docente"
+            }
+          >
+            <span onClick={(e) => e.stopPropagation()}>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAction();
+                }}
+                disabled={!canNavigate || isTravado}
+                color={isAtribuido ? "error" : "primary"}
+                sx={{
+                  bgcolor: alpha(isAtribuido ? "#d32f2f" : "#1976d2", 0.05),
+                }}
+              >
+                {isAtribuido ? (
+                  <RemoveIcon fontSize="small" />
+                ) : (
+                  <AddIcon fontSize="small" />
+                )}
+                <span style={srOnlyStyle}>
+                  {isAtribuido ? "Remover atribuição" : "Atribuir"}
+                </span>
+              </IconButton>
+            </span>
+          </Tooltip>
 
-        <Menu
-          anchorEl={anchorEl}
-          open={menuOpen}
-          onClose={handleMenuClose}
-          onClick={(e) => e.stopPropagation()}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          transformOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-        >
-          {isAtribuido ? (
-            <Box>
-              <MenuItem onClick={handleAction} disabled={isTravado}>
-                <ListItemIcon>
-                  <RemoveIcon fontSize="small" color="error" />
-                </ListItemIcon>
-                <ListItemText>
-                  {isTravado ? "Travado - Não pode remover" : "Remover"}
-                </ListItemText>
-              </MenuItem>
-              <MenuItem onClick={handleTravar}>
-                <ListItemIcon>
-                  {isTravado ? (
-                    <LockOpenIcon fontSize="small" color="warning" />
-                  ) : (
-                    <LockIcon fontSize="small" color="warning" />
-                  )}
-                </ListItemIcon>
-                <ListItemText>
-                  {isTravado ? "Destravar" : "Travar"}
-                </ListItemText>
-              </MenuItem>
-            </Box>
-          ) : (
-            <Box>
-              <MenuItem onClick={handleAction}>
-                <ListItemIcon>
-                  <AddIcon fontSize="small" color="primary" />
-                </ListItemIcon>
-                <ListItemText>Adicionar</ListItemText>
-              </MenuItem>
-              <MenuItem onClick={handleTravar}>
-                <ListItemIcon>
-                  <LockIcon fontSize="small" color="warning" />
-                </ListItemIcon>
-                <ListItemText>Adicionar e Travar</ListItemText>
-              </MenuItem>
-            </Box>
-          )}
-        </Menu>
+          {/* Botão de Travar/Destravar */}
+          <Tooltip
+            title={
+              !canNavigate
+                ? "Ação desabilitada"
+                : isTravado
+                  ? "Destravar"
+                  : "Travar"
+            }
+          >
+            <span onClick={(e) => e.stopPropagation()}>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTravar?.();
+                }}
+                disabled={!canNavigate}
+                color="warning"
+                sx={{ bgcolor: alpha("#ff9800", 0.05) }}
+              >
+                {isTravado ? (
+                  <LockOpenIcon fontSize="small" />
+                ) : (
+                  <LockIcon fontSize="small" />
+                )}
+                <span style={srOnlyStyle}>
+                  {isTravado ? "Destravar item" : "Travar item"}
+                </span>
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Stack>
       </Box>
     </Paper>
   );

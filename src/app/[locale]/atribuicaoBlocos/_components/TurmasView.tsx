@@ -37,7 +37,7 @@ interface Props {
   canNavigate: boolean;
   onBack?: () => void;
   showBackButton?: boolean;
-  celulas?: Celula[];
+  travas?: Celula[];
 }
 
 export default function TurmasView({
@@ -52,7 +52,7 @@ export default function TurmasView({
   canNavigate,
   onBack,
   showBackButton = false,
-  celulas = [],
+  travas = [],
 }: Props) {
   const total = turmas.length;
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -166,7 +166,7 @@ export default function TurmasView({
                   onAddAtribuicao={onAddAtribuicao}
                   onDocenteClick={onDocenteClick}
                   onTravar={onTravar}
-                  celulas={celulas}
+                  travas={travas}
                   canNavigate={canNavigate}
                 />
               </div>

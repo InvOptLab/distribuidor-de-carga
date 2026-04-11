@@ -48,7 +48,7 @@ type Props = {
   onAddAtribuicao: (nomeDocente: string, idDisciplina: string) => void;
   onDocenteClick?: (nomeDocente: string) => void;
   onTravar?: (nome_docente: string, id_disciplina: string) => void;
-  celulas?: Celula[];
+  travas?: Celula[];
   canNavigate?: boolean;
 };
 
@@ -72,15 +72,15 @@ export default function TurmaRow({
   onAddAtribuicao,
   onDocenteClick,
   onTravar,
-  celulas = [],
+  travas = [],
   canNavigate = true,
 }: Props) {
   // Função para verificar se um docente está travado nesta turma
   const isDocenteTravado = (nomeDocente: string): boolean => {
-    const celula = celulas.find(
+    // Se a combinação docente/disciplina existe no array, está travada.
+    return travas.some(
       (c) => c.id_disciplina === id && c.nome_docente === nomeDocente,
     );
-    return celula?.trava === true && celula?.tipo_trava !== TipoTrava.NotTrava;
   };
 
   const handleTravar = (nomeDocente: string) => {
@@ -333,11 +333,7 @@ export default function TurmaRow({
                     isAtribuido={false}
                     isTravado={isDocenteTravado(docente.nome)}
                     onAction={() => onAddAtribuicao(docente.nome, id)}
-                    onTravar={() => {
-                      // Adicionar e travar
-                      onAddAtribuicao(docente.nome, id);
-                      handleTravar(docente.nome);
-                    }}
+                    onTravar={() => handleTravar(docente.nome)} // Apenas travar!
                     onClick={() => onDocenteClick?.(docente.nome)}
                     canNavigate={canNavigate}
                   />

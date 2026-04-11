@@ -14,7 +14,7 @@ import { motion } from "framer-motion";
 import TurmaCard from "./TurmaCard";
 import { Disciplina } from "@/context/Global/utils";
 import { useMemo } from "react";
-import { Celula, TipoTrava } from "@/algoritmo/communs/interfaces/interfaces";
+import { Celula } from "@/algoritmo/communs/interfaces/interfaces";
 
 type Props = {
   nome: string;
@@ -30,7 +30,7 @@ type Props = {
   onHoveredDocente: (nome: string | null) => void;
   onTurmaClick?: (idTurma: string) => void;
   onTravar?: (nome_docente: string, id_disciplina: string) => void;
-  celulas?: Celula[];
+  travas?: Celula[];
   canNavigate?: boolean;
 };
 
@@ -48,7 +48,7 @@ export default function DocenteRow({
   onHoveredDocente,
   onTurmaClick,
   onTravar,
-  celulas = [],
+  travas = [],
   canNavigate = true,
 }: Props) {
   const cargaFormatada = Number(cargaDidatica).toFixed(2);
@@ -75,10 +75,10 @@ export default function DocenteRow({
 
   // Função para verificar se uma célula está travada
   const isTurmaTravada = (idDisciplina: string): boolean => {
-    const celula = celulas.find(
+    // Se a combinação docente/disciplina existe no array, está travada.
+    return travas.some(
       (c) => c.id_disciplina === idDisciplina && c.nome_docente === nome,
     );
-    return celula?.trava === true && celula?.tipo_trava !== TipoTrava.NotTrava;
   };
 
   const handleTravar = (idDisciplina: string) => {
@@ -281,11 +281,7 @@ export default function DocenteRow({
                     curso={turma.cursos}
                     hasConflict={idsComConflito.has(turma.id)}
                     onAction={() => onAddAtribuicao(nome, turma.id)}
-                    onTravar={() => {
-                      // Adicionar e travar
-                      onAddAtribuicao(nome, turma.id);
-                      handleTravar(turma.id);
-                    }}
+                    onTravar={() => handleTravar(turma.id)} // Apenas travar!
                     onClick={() => onTurmaClick?.(turma.id)}
                     canNavigate={canNavigate}
                   />

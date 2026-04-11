@@ -1,14 +1,5 @@
 "use client";
-import {
-  Box,
-  Container,
-  Typography,
-  Chip,
-  Stack,
-  Alert,
-  Snackbar,
-  Button,
-} from "@mui/material";
+import { Box, Container, Typography, Chip, Stack } from "@mui/material";
 import { useGlobalContext } from "@/context/Global";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useCollaboration } from "@/context/Collaboration";
@@ -28,9 +19,10 @@ import TurmasView, { TurmaData } from "./_components/TurmasView";
 import { DocenteInfo } from "./_components/TurmaRow";
 import PersonIcon from "@mui/icons-material/Person";
 import ClassIcon from "@mui/icons-material/Class";
-import { Celula, TipoTrava } from "@/algoritmo/communs/interfaces/interfaces";
-import { useParams, useRouter } from "next/navigation";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { TipoTrava } from "@/algoritmo/communs/interfaces/interfaces";
+import { useAlertsContext } from "@/context/Alerts";
+import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
+import NoDataFound from "@/components/NoDataFound";
 
 // Tipos para a pilha de navegação
 type ViewType = "docente" | "turma";
@@ -117,11 +109,9 @@ export default function AtribuicaoEmBlocosPage() {
     formularios,
     updateAtribuicoesDocente,
     updateAtribuicoes,
+    travas,
+    setTravas,
   } = useGlobalContext();
-
-  const router = useRouter();
-  const params = useParams();
-  const locale = params?.locale || "pt-BR";
 
   const { softConstraints, hardConstraints } = useAlgorithmContext();
   const constraints = new Map([...softConstraints, ...hardConstraints]);
@@ -134,14 +124,12 @@ export default function AtribuicaoEmBlocosPage() {
     broadcastAssignmentChange,
     broadcastSelectionChange,
     onSelectionChange,
+    broadcastDataUpdate,
   } = useCollaboration();
 
-  // Estado de Células Travadas
-  const [celulas, setCelulas] = useState<Celula[]>([]);
+  const { addAlerta } = useAlertsContext();
 
-  // Estado de Alerta
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
+  const { cleanSolucaoAtual } = useSolutionHistory();
 
   // Pilha de navegação
   const [navigationStack, setNavigationStack] = useState<StackItem[]>([
@@ -327,7 +315,7 @@ export default function AtribuicaoEmBlocosPage() {
   // Verificar se existe docente travado para uma turma
   const getDocenteTravado = useCallback(
     (idDisciplina: string): string | null => {
-      const celulaTravada = celulas.find(
+      const celulaTravada = travas.find(
         (c) =>
           c.id_disciplina === idDisciplina &&
           c.trava === true &&
@@ -335,24 +323,30 @@ export default function AtribuicaoEmBlocosPage() {
       );
       return celulaTravada?.nome_docente || null;
     },
-    [celulas],
+    [travas],
   );
 
   // Handler de Remoção de Atribuição
   const onDeleteAtribuicao = useCallback(
     (nome_docente: string, id_disciplina: string) => {
-      if (!canNavigate) return;
+      if (!canNavigate) {
+        addAlerta(
+          "Você não tem permissão para desfazer uma atribuição",
+          "warning",
+        );
+        return;
+      }
 
       // Verificar se está travado
-      const celula = celulas.find(
+      const celula = travas.find(
         (c) =>
           c.id_disciplina === id_disciplina && c.nome_docente === nome_docente,
       );
       if (celula?.trava && celula?.tipo_trava !== TipoTrava.NotTrava) {
-        setAlertMessage(
+        addAlerta(
           "Esta atribuição está travada e não pode ser removida.",
+          "warning",
         );
-        setAlertOpen(true);
         return;
       }
 
@@ -375,7 +369,7 @@ export default function AtribuicaoEmBlocosPage() {
     },
     [
       canNavigate,
-      celulas,
+      travas,
       updateAtribuicoesDocente,
       isInRoom,
       atribuicoes,
@@ -386,7 +380,13 @@ export default function AtribuicaoEmBlocosPage() {
   // Handler de Adição de Atribuição
   const onAddAtribuicao = useCallback(
     (nome_docente: string, id_disciplina: string) => {
-      if (!canNavigate) return;
+      if (!canNavigate) {
+        addAlerta(
+          "Você não tem permissão para realizar uma atribuição",
+          "warning",
+        );
+        return;
+      }
 
       // Verificar se existe docente travado
       const docenteTravado = getDocenteTravado(id_disciplina);
@@ -402,10 +402,11 @@ export default function AtribuicaoEmBlocosPage() {
           // Se existe docente travado, adicionar ao invés de substituir
           if (!atribuicaoAtual.docentes.includes(nome_docente)) {
             novosDocentes = [...atribuicaoAtual.docentes, nome_docente];
-            setAlertMessage(
+
+            addAlerta(
               `Já existe um docente travado (${docenteTravado}). O docente ${nome_docente} foi adicionado.`,
+              "info",
             );
-            setAlertOpen(true);
           } else {
             return; // Docente já está atribuído
           }
@@ -445,50 +446,68 @@ export default function AtribuicaoEmBlocosPage() {
   // Handler de Travar/Destravar
   const onTravar = useCallback(
     (nome_docente: string, id_disciplina: string) => {
-      if (!canNavigate) return;
+      if (!canNavigate) {
+        addAlerta("Você não tem permissão para travar/destravar.", "warning");
+        return;
+      }
 
-      setCelulas((prev) => {
-        const existingIndex = prev.findIndex(
-          (c) =>
-            c.id_disciplina === id_disciplina &&
-            c.nome_docente === nome_docente,
+      let novasTravas = [...travas];
+      const existingIndex = travas.findIndex(
+        (c) =>
+          c.id_disciplina === id_disciplina &&
+          c.nome_docente === nome_docente &&
+          c.tipo_trava === TipoTrava.Cell,
+      );
+
+      if (existingIndex !== -1) {
+        // A trava já existe. O comportamento correto é REMOVÊ-LA (destravar).
+        novasTravas = novasTravas.filter((_, index) => index !== existingIndex);
+      } else {
+        // A trava não existe. Adicionamos na lista de restrições.
+        // ATENÇÃO: Nós APENAS inserimos em novasTravas. Não chamamos nenhum "adicionarDocente"
+        // nas atribuições. Isso resolve o seu bug de atribuição automática.
+        novasTravas.push({
+          nome_docente,
+          id_disciplina,
+          // trava: true,
+          tipo_trava: TipoTrava.Cell,
+        });
+      }
+
+      // Salva no estado Global
+      setTravas(novasTravas);
+
+      // Transmite para a Sala Colaborativa
+      if (isInRoom && broadcastDataUpdate) {
+        broadcastDataUpdate(
+          {
+            docentes,
+            disciplinas,
+            formularios,
+            atribuicoes, // Enviamos o estado atual de atribuições INTACTO
+            travas: novasTravas, // Enviamos as novas travas
+          },
+          "FULL_DATA",
         );
+      }
 
-        if (existingIndex !== -1) {
-          // Toggle trava existente
-          const updated = [...prev];
-          const current = updated[existingIndex];
-          if (current.trava) {
-            // Destravar
-            updated[existingIndex] = {
-              ...current,
-              trava: false,
-              tipo_trava: TipoTrava.NotTrava,
-            };
-          } else {
-            // Travar
-            updated[existingIndex] = {
-              ...current,
-              trava: true,
-              tipo_trava: TipoTrava.Cell,
-            };
-          }
-          return updated;
-        } else {
-          // Criar nova célula travada
-          return [
-            ...prev,
-            {
-              id_disciplina,
-              nome_docente,
-              trava: true,
-              tipo_trava: TipoTrava.Cell,
-            },
-          ];
-        }
-      });
+      // Limpa a solução visual e os cálculos passados do algoritmo
+      if (cleanSolucaoAtual) {
+        cleanSolucaoAtual();
+      }
     },
-    [canNavigate],
+    [
+      canNavigate,
+      travas,
+      setTravas,
+      isInRoom,
+      docentes,
+      disciplinas,
+      formularios,
+      atribuicoes,
+      broadcastDataUpdate,
+      cleanSolucaoAtual,
+    ],
   );
 
   // Navegar para uma Turma
@@ -560,83 +579,7 @@ export default function AtribuicaoEmBlocosPage() {
       <Container maxWidth="xl">
         <CollaborativeGridWrapper>
           {!hasData ? (
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              minHeight="70vh"
-              gap={3}
-            >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  gap={2}
-                >
-                  {/* Animação do Ícone Flutuando */}
-                  <motion.div
-                    animate={{ y: [0, -15, 0] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 2.5,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        bgcolor: "rgba(25, 118, 210, 0.1)",
-                        borderRadius: "50%",
-                        p: 3,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        mb: 1,
-                      }}
-                    >
-                      <CloudUploadIcon
-                        sx={{ fontSize: 80, color: "primary.main" }}
-                      />
-                    </Box>
-                  </motion.div>
-
-                  <Typography
-                    variant="h5"
-                    color="text.secondary"
-                    fontWeight="bold"
-                  >
-                    Nenhum dado encontrado
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    align="center"
-                    maxWidth={450}
-                  >
-                    Parece que você ainda não carregou os dados necessários para
-                    realizar a atribuição. Importe os docentes e turmas para
-                    começar.
-                  </Typography>
-
-                  <Button
-                    variant="contained"
-                    size="large"
-                    color="primary"
-                    component="span"
-                    startIcon={<CloudUploadIcon />}
-                    onClick={() => router.push(`/${locale}/inputfile`)}
-                    sx={{ mt: 2, mb: 2 }}
-                  >
-                    Carregar Dados
-                  </Button>
-                </Box>
-              </motion.div>
-            </Box>
+            <NoDataFound />
           ) : (
             <Box width="100%">
               {/* Breadcrumb / Indicador de navegação */}
@@ -719,7 +662,7 @@ export default function AtribuicaoEmBlocosPage() {
                       canNavigate={canNavigate}
                       onBack={handleBack}
                       showBackButton={navigationStack.length > 1}
-                      celulas={celulas}
+                      travas={travas}
                     />
                   ) : (
                     <TurmasView
@@ -734,7 +677,7 @@ export default function AtribuicaoEmBlocosPage() {
                       canNavigate={canNavigate}
                       onBack={handleBack}
                       showBackButton={navigationStack.length > 1}
-                      celulas={celulas}
+                      travas={travas}
                     />
                   )}
                 </motion.div>
@@ -742,22 +685,6 @@ export default function AtribuicaoEmBlocosPage() {
             </Box>
           )}
         </CollaborativeGridWrapper>
-
-        {/* Snackbar de Alerta */}
-        <Snackbar
-          open={alertOpen}
-          autoHideDuration={4000}
-          onClose={() => setAlertOpen(false)}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert
-            onClose={() => setAlertOpen(false)}
-            severity="warning"
-            sx={{ width: "100%" }}
-          >
-            {alertMessage}
-          </Alert>
-        </Snackbar>
       </Container>
     </Box>
   );

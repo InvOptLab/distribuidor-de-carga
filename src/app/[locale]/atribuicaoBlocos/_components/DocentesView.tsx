@@ -27,7 +27,7 @@ interface Props {
   canNavigate: boolean;
   onBack?: () => void;
   showBackButton?: boolean;
-  celulas?: Celula[];
+  travas?: Celula[];
 }
 
 export default function DocentesView({
@@ -46,7 +46,7 @@ export default function DocentesView({
   canNavigate,
   onBack,
   showBackButton = false,
-  celulas = [],
+  travas = [],
 }: Props) {
   const total = docentes.length;
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -164,7 +164,7 @@ export default function DocentesView({
                   onHoveredDocente={onHoveredDocente}
                   onTurmaClick={onTurmaClick}
                   onTravar={onTravar}
-                  celulas={celulas}
+                  travas={travas}
                   canNavigate={canNavigate}
                 />
               </div>
