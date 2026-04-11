@@ -7,6 +7,7 @@ import {
   Stack,
   Alert,
   Snackbar,
+  Button,
 } from "@mui/material";
 import { useGlobalContext } from "@/context/Global";
 import { useAlgorithmContext } from "@/context/Algorithm";
@@ -28,6 +29,8 @@ import { DocenteInfo } from "./_components/TurmaRow";
 import PersonIcon from "@mui/icons-material/Person";
 import ClassIcon from "@mui/icons-material/Class";
 import { Celula, TipoTrava } from "@/algoritmo/communs/interfaces/interfaces";
+import { useParams, useRouter } from "next/navigation";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 // Tipos para a pilha de navegação
 type ViewType = "docente" | "turma";
@@ -116,6 +119,10 @@ export default function AtribuicaoEmBlocosPage() {
     updateAtribuicoes,
   } = useGlobalContext();
 
+  const router = useRouter();
+  const params = useParams();
+  const locale = params?.locale || "pt-BR";
+
   const { softConstraints, hardConstraints } = useAlgorithmContext();
   const constraints = new Map([...softConstraints, ...hardConstraints]);
 
@@ -161,6 +168,8 @@ export default function AtribuicaoEmBlocosPage() {
     () => disciplinas.filter((d) => d.ativo),
     [disciplinas],
   );
+
+  const hasData = docentesAtivos.length > 0 && turmasAtivas.length > 0;
 
   const maxCargaDidatica = useMemo(() => {
     const constraint = constraints.get("Carga Didática Máxima");
@@ -273,17 +282,47 @@ export default function AtribuicaoEmBlocosPage() {
       const unsubscribe = onSelectionChange((payload) => {
         setNavigationStack((prev) => {
           const newStack = [...prev];
-          const current = newStack[newStack.length - 1];
+          // Crie uma cópia do objeto (Desestruturação) para evitar mutar o histórico
+          const current = { ...newStack[newStack.length - 1] };
+
           if (current.type === "docente") {
             current.index = payload.index;
             current.id = docentesAtivos[payload.index]?.nome || "";
           }
+
+          newStack[newStack.length - 1] = current; // Devolve o clone atualizado
           return newStack;
         });
       });
       return () => unsubscribe();
     }
   }, [isInRoom, onSelectionChange, docentesAtivos]);
+
+  // Atualizar índice na view atual
+  const handleIndexChange = useCallback(
+    (index: number) => {
+      setNavigationStack((prev) => {
+        const newStack = [...prev];
+        // Crie uma cópia do objeto para evitar mutar o histórico
+        const current = { ...newStack[newStack.length - 1] };
+
+        if (current.type === "docente") {
+          current.id = docentesAtivos[index]?.nome || "";
+          current.index = index;
+          if (isInRoom) {
+            broadcastSelectionChange(index);
+          }
+        } else {
+          current.id = turmasData[index]?.id || "";
+          current.index = index;
+        }
+
+        newStack[newStack.length - 1] = current; // Devolve o clone atualizado
+        return newStack;
+      });
+    },
+    [docentesAtivos, turmasData, isInRoom, broadcastSelectionChange],
+  );
 
   // Verificar se existe docente travado para uma turma
   const getDocenteTravado = useCallback(
@@ -492,28 +531,6 @@ export default function AtribuicaoEmBlocosPage() {
     }
   }, [navigationStack.length]);
 
-  // Atualizar índice na view atual
-  const handleIndexChange = useCallback(
-    (index: number) => {
-      setNavigationStack((prev) => {
-        const newStack = [...prev];
-        const current = newStack[newStack.length - 1];
-        if (current.type === "docente") {
-          current.id = docentesAtivos[index]?.nome || "";
-          current.index = index;
-          if (isInRoom) {
-            broadcastSelectionChange(index);
-          }
-        } else {
-          current.id = turmasData[index]?.id || "";
-          current.index = index;
-        }
-        return newStack;
-      });
-    },
-    [docentesAtivos, turmasData, isInRoom, broadcastSelectionChange],
-  );
-
   // Indicador de navegação (breadcrumb)
   const breadcrumb = useMemo(() => {
     return navigationStack.map((item) => {
@@ -542,104 +559,188 @@ export default function AtribuicaoEmBlocosPage() {
     <Box sx={{ minHeight: "100vh", bgcolor: "#f4f6f8", py: 4 }}>
       <Container maxWidth="xl">
         <CollaborativeGridWrapper>
-          <Box width="100%">
-            {/* Breadcrumb / Indicador de navegação */}
-            {navigationStack.length > 1 && (
-              <Stack
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                sx={{ mb: 2, px: 2 }}
-                flexWrap="wrap"
-              >
-                <Typography variant="caption" color="text.secondary">
-                  Navegação:
-                </Typography>
-                {breadcrumb.map((item, idx) => (
-                  <Box key={idx} display="flex" alignItems="center" gap={0.5}>
-                    {idx > 0 && (
-                      <Typography variant="caption" color="text.secondary">
-                        →
-                      </Typography>
-                    )}
-                    <Chip
-                      icon={
-                        item.type === "docente" ? <PersonIcon /> : <ClassIcon />
-                      }
-                      label={item.label}
-                      size="small"
-                      variant={
-                        idx === breadcrumb.length - 1 ? "filled" : "outlined"
-                      }
-                      color={
-                        idx === breadcrumb.length - 1 ? "primary" : "default"
-                      }
-                      sx={{ height: 24, fontSize: "0.75rem" }}
-                    />
-                  </Box>
-                ))}
-              </Stack>
-            )}
-
-            {/* Container com animação */}
-            <AnimatePresence mode="wait">
+          {!hasData ? (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              minHeight="70vh"
+              gap={3}
+            >
               <motion.div
-                key={`${currentView.type}-${currentView.id}`}
-                initial={{
-                  opacity: 0,
-                  x: slideDirection === "left" ? 100 : -100,
-                }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  x: slideDirection === "left" ? -100 : 100,
-                }}
-                transition={{
-                  duration: 0.3,
-                  ease: "easeInOut",
-                }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
               >
-                {currentView.type === "docente" ? (
-                  <DocentesView
-                    docentes={docentesAtivos}
-                    atribuicoesMap={atribuicoesMap}
-                    naoAtribuidasMap={naoAtribuidasMap}
-                    cargaDidaticaMap={cargaDidaticaMap}
-                    maxCarga={maxCargaDidatica}
-                    onDeleteAtribuicao={onDeleteAtribuicao}
-                    onAddAtribuicao={onAddAtribuicao}
-                    onHoveredDocente={handleHoveredDocente}
-                    onTurmaClick={handleTurmaClick}
-                    onTravar={onTravar}
-                    selectedIndex={currentView.index}
-                    onChangeIndex={handleIndexChange}
-                    canNavigate={canNavigate}
-                    onBack={handleBack}
-                    showBackButton={navigationStack.length > 1}
-                    celulas={celulas}
-                  />
-                ) : (
-                  <TurmasView
-                    turmas={turmasData}
-                    maxCarga={maxCargaDidatica}
-                    onDeleteAtribuicao={onDeleteAtribuicao}
-                    onAddAtribuicao={onAddAtribuicao}
-                    onDocenteClick={handleDocenteClick}
-                    onTravar={onTravar}
-                    selectedIndex={currentView.index}
-                    onChangeIndex={handleIndexChange}
-                    canNavigate={canNavigate}
-                    onBack={handleBack}
-                    showBackButton={navigationStack.length > 1}
-                    celulas={celulas}
-                  />
-                )}
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  gap={2}
+                >
+                  {/* Animação do Ícone Flutuando */}
+                  <motion.div
+                    animate={{ y: [0, -15, 0] }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 2.5,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        bgcolor: "rgba(25, 118, 210, 0.1)",
+                        borderRadius: "50%",
+                        p: 3,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mb: 1,
+                      }}
+                    >
+                      <CloudUploadIcon
+                        sx={{ fontSize: 80, color: "primary.main" }}
+                      />
+                    </Box>
+                  </motion.div>
+
+                  <Typography
+                    variant="h5"
+                    color="text.secondary"
+                    fontWeight="bold"
+                  >
+                    Nenhum dado encontrado
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    align="center"
+                    maxWidth={450}
+                  >
+                    Parece que você ainda não carregou os dados necessários para
+                    realizar a atribuição. Importe os docentes e turmas para
+                    começar.
+                  </Typography>
+
+                  <Button
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    component="span"
+                    startIcon={<CloudUploadIcon />}
+                    onClick={() => router.push(`/${locale}/inputfile`)}
+                    sx={{ mt: 2, mb: 2 }}
+                  >
+                    Carregar Dados
+                  </Button>
+                </Box>
               </motion.div>
-            </AnimatePresence>
-          </Box>
+            </Box>
+          ) : (
+            <Box width="100%">
+              {/* Breadcrumb / Indicador de navegação */}
+              {navigationStack.length > 1 && (
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{ mb: 2, px: 2 }}
+                  flexWrap="wrap"
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    Navegação:
+                  </Typography>
+                  {breadcrumb.map((item, idx) => (
+                    <Box key={idx} display="flex" alignItems="center" gap={0.5}>
+                      {idx > 0 && (
+                        <Typography variant="caption" color="text.secondary">
+                          →
+                        </Typography>
+                      )}
+                      <Chip
+                        icon={
+                          item.type === "docente" ? (
+                            <PersonIcon />
+                          ) : (
+                            <ClassIcon />
+                          )
+                        }
+                        label={item.label}
+                        size="small"
+                        variant={
+                          idx === breadcrumb.length - 1 ? "filled" : "outlined"
+                        }
+                        color={
+                          idx === breadcrumb.length - 1 ? "primary" : "default"
+                        }
+                        sx={{ height: 24, fontSize: "0.75rem" }}
+                      />
+                    </Box>
+                  ))}
+                </Stack>
+              )}
+
+              {/* Container com animação */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={navigationStack.length}
+                  initial={{
+                    opacity: 0,
+                    x: slideDirection === "left" ? 100 : -100,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    x: 0,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    x: slideDirection === "left" ? -100 : 100,
+                  }}
+                  transition={{
+                    duration: 0.1,
+                    ease: "easeInOut",
+                  }}
+                >
+                  {currentView.type === "docente" ? (
+                    <DocentesView
+                      docentes={docentesAtivos}
+                      atribuicoesMap={atribuicoesMap}
+                      naoAtribuidasMap={naoAtribuidasMap}
+                      cargaDidaticaMap={cargaDidaticaMap}
+                      maxCarga={maxCargaDidatica}
+                      onDeleteAtribuicao={onDeleteAtribuicao}
+                      onAddAtribuicao={onAddAtribuicao}
+                      onHoveredDocente={handleHoveredDocente}
+                      onTurmaClick={handleTurmaClick}
+                      onTravar={onTravar}
+                      selectedIndex={currentView.index}
+                      onChangeIndex={handleIndexChange}
+                      canNavigate={canNavigate}
+                      onBack={handleBack}
+                      showBackButton={navigationStack.length > 1}
+                      celulas={celulas}
+                    />
+                  ) : (
+                    <TurmasView
+                      turmas={turmasData}
+                      maxCarga={maxCargaDidatica}
+                      onDeleteAtribuicao={onDeleteAtribuicao}
+                      onAddAtribuicao={onAddAtribuicao}
+                      onDocenteClick={handleDocenteClick}
+                      onTravar={onTravar}
+                      selectedIndex={currentView.index}
+                      onChangeIndex={handleIndexChange}
+                      canNavigate={canNavigate}
+                      onBack={handleBack}
+                      showBackButton={navigationStack.length > 1}
+                      celulas={celulas}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </Box>
+          )}
         </CollaborativeGridWrapper>
 
         {/* Snackbar de Alerta */}

@@ -103,7 +103,12 @@ export default function DocenteCard({
   return (
     <Paper
       elevation={isAtribuido ? 2 : 1}
-      onClick={onClick}
+      onClick={(e) => {
+        if (onClick) {
+          e.stopPropagation(); // Impede que o clique vaze para a linha (Row)
+          onClick();
+        }
+      }}
       sx={{
         width: 280,
         minWidth: 280,
@@ -255,14 +260,16 @@ export default function DocenteCard({
       >
         {/* Menu de Ações */}
         <Tooltip title="Ações">
-          <IconButton
-            size="small"
-            onClick={handleMenuOpen}
-            disabled={!canNavigate}
-            sx={{ bgcolor: alpha("#000", 0.05) }}
-          >
-            <MoreIcon fontSize="small" />
-          </IconButton>
+          <span>
+            <IconButton
+              size="small"
+              onClick={handleMenuOpen}
+              disabled={!canNavigate}
+              sx={{ bgcolor: alpha("#000", 0.05) }}
+            >
+              <MoreIcon fontSize="small" />
+            </IconButton>
+          </span>
         </Tooltip>
 
         <Menu
