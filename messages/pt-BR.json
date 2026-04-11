@@ -605,7 +605,8 @@
     "error": "Ocorreu um erro. Por favor, tente novamente.",
     "unknownError": "Ocorreu um erro desconhecido. Por favor, tente novamente.",
     "save": "Salvar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "close": "Fechar"
   },
   "Components": {
     "ClearStorageModal": {

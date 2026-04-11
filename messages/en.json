@@ -604,8 +604,9 @@
     "loading": "Loading...",
     "error": "An error occurred. Please try again.",
     "unknownError": "An unknown error occurred. Please try again.",
-    "save": "Salvar",
-    "cancel": "Cancelar"
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "Components": {
     "ClearStorageModal": {
