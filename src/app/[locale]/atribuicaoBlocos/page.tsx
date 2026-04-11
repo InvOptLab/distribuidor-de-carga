@@ -1,6 +1,13 @@
 "use client";
-import { Box, Container, Typography } from "@mui/material";
-import DocentesView from "./_components/DocentesView";
+import {
+  Box,
+  Container,
+  Typography,
+  Chip,
+  Stack,
+  Alert,
+  Snackbar,
+} from "@mui/material";
 import { useGlobalContext } from "@/context/Global";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useCollaboration } from "@/context/Collaboration";
@@ -13,9 +20,25 @@ import {
 } from "@/context/Global/utils";
 import { CargaDeTrabalhoMaximaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMaximaDocente";
 import { calcularCargaDidatica } from "@/algoritmo/communs/utils";
-import { useRef, useState, useMemo, useEffect } from "react";
-import HoveredDocente from "../atribuicoes/_components/HoveredDocente";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import DocentesView from "./_components/DocentesView";
+import TurmasView, { TurmaData } from "./_components/TurmasView";
+import { DocenteInfo } from "./_components/TurmaRow";
+import PersonIcon from "@mui/icons-material/Person";
+import ClassIcon from "@mui/icons-material/Class";
+import { Celula, TipoTrava } from "@/algoritmo/communs/interfaces/interfaces";
 
+// Tipos para a pilha de navegação
+type ViewType = "docente" | "turma";
+
+interface StackItem {
+  type: ViewType;
+  id: string;
+  index: number;
+}
+
+// Helper: gera mapa de atribuições por docente
 function generateAtribuicoesMap(
   docentes: Docente[],
   turmas: Disciplina[],
@@ -47,12 +70,13 @@ function generateAtribuicoesMap(
   return docentesMap;
 }
 
+// Helper: gera mapa de turmas não atribuídas por docente
 function generateNaoAtribuidasMap(
   docentes: Docente[],
   turmas: Disciplina[],
   atribuicoes: Atribuicao[],
   formularios: Formulario[],
-) {
+): Map<string, Disciplina[]> {
   const docentesMap = new Map<string, Disciplina[]>();
   for (const docente of docentes) {
     const naoAtirbuidas: Disciplina[] = [];
@@ -82,7 +106,7 @@ function generateNaoAtribuidasMap(
   return docentesMap;
 }
 
-export default function DocentesPage() {
+export default function AtribuicaoEmBlocosPage() {
   const {
     docentes,
     disciplinas,
@@ -105,32 +129,38 @@ export default function DocentesPage() {
     onSelectionChange,
   } = useCollaboration();
 
-  // Estado Local da Seleção
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  // Estado de Células Travadas
+  const [celulas, setCelulas] = useState<Celula[]>([]);
+
+  // Estado de Alerta
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  // Pilha de navegação
+  const [navigationStack, setNavigationStack] = useState<StackItem[]>([
+    { type: "docente", id: "", index: 0 },
+  ]);
+
+  // Estado atual é o topo da pilha
+  const currentView = navigationStack[navigationStack.length - 1];
+
+  // Direção da animação
+  const [slideDirection, setSlideDirection] = useState<"left" | "right">(
+    "left",
+  );
 
   // Lógica de Permissão de Navegação
   const canNavigate = !isInRoom || isOwner || config.guestsCanEdit;
 
-  // Handler de Navegação (Local + Remoto)
-  const handleIndexChange = (index: number) => {
-    if (canNavigate) {
-      setSelectedIndex(index);
-      if (isInRoom) {
-        broadcastSelectionChange(index);
-      }
-    }
-  };
-
-  // Efeito para ouvir mudanças remotas de seleção
-  useEffect(() => {
-    if (isInRoom) {
-      const unsubscribe = onSelectionChange((payload) => {
-        // Atualiza o índice localmente quando recebe um evento da sala
-        setSelectedIndex(payload.index);
-      });
-      return () => unsubscribe();
-    }
-  }, [isInRoom, onSelectionChange]);
+  // Dados computados
+  const docentesAtivos = useMemo(
+    () => docentes.filter((d) => d.ativo),
+    [docentes],
+  );
+  const turmasAtivas = useMemo(
+    () => disciplinas.filter((d) => d.ativo),
+    [disciplinas],
+  );
 
   const maxCargaDidatica = useMemo(() => {
     const constraint = constraints.get("Carga Didática Máxima");
@@ -140,142 +170,493 @@ export default function DocentesPage() {
     return 0;
   }, [constraints]);
 
-  const docentesAtivos = docentes.filter((d) => d.ativo);
-  const turmasAtivas = disciplinas.filter((d) => d.ativo);
+  const cargaDidaticaMap = useMemo(() => {
+    const map = new Map<string, number>();
+    docentesAtivos.forEach((docente) => {
+      const carga = calcularCargaDidatica(docente, atribuicoes, turmasAtivas);
+      map.set(docente.nome, carga);
+    });
+    return map;
+  }, [docentesAtivos, atribuicoes, turmasAtivas]);
 
-  const onDeleteAtribuicao = (nome_docente: string, id_disciplina: string) => {
-    if (!canNavigate) return; // Segurança extra
+  const atribuicoesMap = useMemo(
+    () =>
+      generateAtribuicoesMap(
+        docentesAtivos,
+        turmasAtivas,
+        atribuicoes,
+        formularios,
+      ),
+    [docentesAtivos, turmasAtivas, atribuicoes, formularios],
+  );
 
-    updateAtribuicoesDocente(nome_docente, id_disciplina);
+  const naoAtribuidasMap = useMemo(
+    () =>
+      generateNaoAtribuidasMap(
+        docentesAtivos,
+        turmasAtivas,
+        atribuicoes,
+        formularios,
+      ),
+    [docentesAtivos, turmasAtivas, atribuicoes, formularios],
+  );
+
+  // Gera dados das turmas para TurmasView
+  const turmasData = useMemo((): TurmaData[] => {
+    return turmasAtivas.map((turma) => {
+      const atribuicao = atribuicoes.find((a) => a.id_disciplina === turma.id);
+      const nomesAtribuidos = atribuicao?.docentes || [];
+
+      const docentesAtribuidos: DocenteInfo[] = nomesAtribuidos.map((nome) => {
+        const docente = docentes.find((d) => d.nome === nome);
+        const formulario = formularios.find(
+          (f) => f.nome_docente === nome && f.id_disciplina === turma.id,
+        );
+        return {
+          nome,
+          saldo: docente?.saldo || 0,
+          prioridade: formulario?.prioridade || 0,
+          totalFormularios: docente?.formularios?.size || 0,
+          cargaDidaticaAtribuida: cargaDidaticaMap.get(nome) || 0,
+        };
+      });
+
+      const formulariosParaTurma = formularios.filter(
+        (f) =>
+          f.id_disciplina === turma.id &&
+          !nomesAtribuidos.includes(f.nome_docente),
+      );
+
+      const docentesComPrioridade: DocenteInfo[] = formulariosParaTurma
+        .filter((f) => f.prioridade > 0)
+        .map((f) => {
+          const docente = docentes.find((d) => d.nome === f.nome_docente);
+          return {
+            nome: f.nome_docente,
+            saldo: docente?.saldo || 0,
+            prioridade: f.prioridade,
+            totalFormularios: docente?.formularios?.size || 0,
+            cargaDidaticaAtribuida: cargaDidaticaMap.get(f.nome_docente) || 0,
+          };
+        })
+        .sort((a, b) => b.prioridade - a.prioridade);
+
+      return {
+        id: turma.id,
+        nome: turma.nome,
+        codigo: turma.codigo,
+        turma: turma.turma,
+        horarios: turma.horarios,
+        curso: turma.cursos,
+        nivel: turma.nivel,
+        noturna: turma.noturna,
+        ingles: turma.ingles,
+        carga: turma.carga || 0,
+        docentesAtribuidos,
+        docentesComPrioridade,
+      };
+    });
+  }, [turmasAtivas, atribuicoes, formularios, docentes, cargaDidaticaMap]);
+
+  // Inicializar navegação com primeiro docente
+  useEffect(() => {
+    if (docentesAtivos.length > 0 && navigationStack[0].id === "") {
+      setNavigationStack([
+        { type: "docente", id: docentesAtivos[0].nome, index: 0 },
+      ]);
+    }
+  }, [docentesAtivos, navigationStack]);
+
+  // Efeito para ouvir mudanças remotas de seleção
+  useEffect(() => {
     if (isInRoom) {
+      const unsubscribe = onSelectionChange((payload) => {
+        setNavigationStack((prev) => {
+          const newStack = [...prev];
+          const current = newStack[newStack.length - 1];
+          if (current.type === "docente") {
+            current.index = payload.index;
+            current.id = docentesAtivos[payload.index]?.nome || "";
+          }
+          return newStack;
+        });
+      });
+      return () => unsubscribe();
+    }
+  }, [isInRoom, onSelectionChange, docentesAtivos]);
+
+  // Verificar se existe docente travado para uma turma
+  const getDocenteTravado = useCallback(
+    (idDisciplina: string): string | null => {
+      const celulaTravada = celulas.find(
+        (c) =>
+          c.id_disciplina === idDisciplina &&
+          c.trava === true &&
+          c.tipo_trava !== TipoTrava.NotTrava,
+      );
+      return celulaTravada?.nome_docente || null;
+    },
+    [celulas],
+  );
+
+  // Handler de Remoção de Atribuição
+  const onDeleteAtribuicao = useCallback(
+    (nome_docente: string, id_disciplina: string) => {
+      if (!canNavigate) return;
+
+      // Verificar se está travado
+      const celula = celulas.find(
+        (c) =>
+          c.id_disciplina === id_disciplina && c.nome_docente === nome_docente,
+      );
+      if (celula?.trava && celula?.tipo_trava !== TipoTrava.NotTrava) {
+        setAlertMessage(
+          "Esta atribuição está travada e não pode ser removida.",
+        );
+        setAlertOpen(true);
+        return;
+      }
+
+      updateAtribuicoesDocente(nome_docente, id_disciplina);
+      if (isInRoom) {
+        const atribuicaoAtual = atribuicoes.find(
+          (a) => a.id_disciplina === id_disciplina,
+        );
+        if (atribuicaoAtual) {
+          const novosDocentes = atribuicaoAtual.docentes.filter(
+            (d) => d !== nome_docente,
+          );
+          const atribuicaoAtualizada = {
+            ...atribuicaoAtual,
+            docentes: novosDocentes,
+          };
+          broadcastAssignmentChange(atribuicaoAtualizada, "update");
+        }
+      }
+    },
+    [
+      canNavigate,
+      celulas,
+      updateAtribuicoesDocente,
+      isInRoom,
+      atribuicoes,
+      broadcastAssignmentChange,
+    ],
+  );
+
+  // Handler de Adição de Atribuição
+  const onAddAtribuicao = useCallback(
+    (nome_docente: string, id_disciplina: string) => {
+      if (!canNavigate) return;
+
+      // Verificar se existe docente travado
+      const docenteTravado = getDocenteTravado(id_disciplina);
+
       const atribuicaoAtual = atribuicoes.find(
         (a) => a.id_disciplina === id_disciplina,
       );
+
       if (atribuicaoAtual) {
-        const novosDocentes = atribuicaoAtual.docentes.filter(
-          (d) => d !== nome_docente,
-        );
+        let novosDocentes: string[];
+
+        if (docenteTravado) {
+          // Se existe docente travado, adicionar ao invés de substituir
+          if (!atribuicaoAtual.docentes.includes(nome_docente)) {
+            novosDocentes = [...atribuicaoAtual.docentes, nome_docente];
+            setAlertMessage(
+              `Já existe um docente travado (${docenteTravado}). O docente ${nome_docente} foi adicionado.`,
+            );
+            setAlertOpen(true);
+          } else {
+            return; // Docente já está atribuído
+          }
+        } else {
+          // Comportamento padrão: substituir
+          novosDocentes = [nome_docente];
+        }
+
         const atribuicaoAtualizada = {
           ...atribuicaoAtual,
           docentes: novosDocentes,
         };
-        broadcastAssignmentChange(atribuicaoAtualizada, "update");
+
+        const newAtribuicoes = [...atribuicoes];
+        const index = newAtribuicoes.findIndex(
+          (a) => a.id_disciplina === id_disciplina,
+        );
+        if (index !== -1) {
+          newAtribuicoes[index] = atribuicaoAtualizada;
+          updateAtribuicoes(newAtribuicoes);
+        }
+        if (isInRoom) {
+          broadcastAssignmentChange(atribuicaoAtualizada, "update");
+        }
       }
-    }
-  };
+    },
+    [
+      canNavigate,
+      getDocenteTravado,
+      atribuicoes,
+      updateAtribuicoes,
+      isInRoom,
+      broadcastAssignmentChange,
+    ],
+  );
 
-  const onAddAtribuicao = (nome_docente: string, id_disciplina: string) => {
-    if (!canNavigate) return; // Segurança extra
+  // Handler de Travar/Destravar
+  const onTravar = useCallback(
+    (nome_docente: string, id_disciplina: string) => {
+      if (!canNavigate) return;
 
-    const atribuicaoAtual = atribuicoes.find(
-      (a) => a.id_disciplina === id_disciplina,
-    );
-    if (atribuicaoAtual) {
-      const novosDocentes = [nome_docente];
-      const atribuicaoAtualizada = {
-        ...atribuicaoAtual,
-        docentes: novosDocentes,
-      };
+      setCelulas((prev) => {
+        const existingIndex = prev.findIndex(
+          (c) =>
+            c.id_disciplina === id_disciplina &&
+            c.nome_docente === nome_docente,
+        );
 
-      const newAtribuicoes = [...atribuicoes];
-      const index = newAtribuicoes.findIndex(
-        (a) => a.id_disciplina === id_disciplina,
+        if (existingIndex !== -1) {
+          // Toggle trava existente
+          const updated = [...prev];
+          const current = updated[existingIndex];
+          if (current.trava) {
+            // Destravar
+            updated[existingIndex] = {
+              ...current,
+              trava: false,
+              tipo_trava: TipoTrava.NotTrava,
+            };
+          } else {
+            // Travar
+            updated[existingIndex] = {
+              ...current,
+              trava: true,
+              tipo_trava: TipoTrava.Cell,
+            };
+          }
+          return updated;
+        } else {
+          // Criar nova célula travada
+          return [
+            ...prev,
+            {
+              id_disciplina,
+              nome_docente,
+              trava: true,
+              tipo_trava: TipoTrava.Cell,
+            },
+          ];
+        }
+      });
+    },
+    [canNavigate],
+  );
+
+  // Navegar para uma Turma
+  const handleTurmaClick = useCallback(
+    (idTurma: string) => {
+      const turmaIndex = turmasData.findIndex((t) => t.id === idTurma);
+      if (turmaIndex !== -1) {
+        setSlideDirection("left");
+        setNavigationStack((prev) => [
+          ...prev,
+          { type: "turma", id: idTurma, index: turmaIndex },
+        ]);
+      }
+    },
+    [turmasData],
+  );
+
+  // Navegar para um Docente
+  const handleDocenteClick = useCallback(
+    (nomeDocente: string) => {
+      const docenteIndex = docentesAtivos.findIndex(
+        (d) => d.nome === nomeDocente,
       );
-      if (index !== -1) {
-        newAtribuicoes[index] = atribuicaoAtualizada;
-        updateAtribuicoes(newAtribuicoes);
+      if (docenteIndex !== -1) {
+        setSlideDirection("left");
+        setNavigationStack((prev) => [
+          ...prev,
+          { type: "docente", id: nomeDocente, index: docenteIndex },
+        ]);
       }
-      if (isInRoom) {
-        broadcastAssignmentChange(atribuicaoAtualizada, "update");
-      }
-    }
-  };
-
-  const atribuicoesMap = generateAtribuicoesMap(
-    docentesAtivos,
-    turmasAtivas,
-    atribuicoes,
-    formularios,
-  );
-  const naoAtribuidasMap = generateNaoAtribuidasMap(
-    docentesAtivos,
-    turmasAtivas,
-    atribuicoes,
-    formularios,
+    },
+    [docentesAtivos],
   );
 
-  const cargaDidaticaMap = new Map<string, number>();
-  docentesAtivos.forEach((docente) => {
-    const carga = calcularCargaDidatica(docente, atribuicoes, turmasAtivas);
-    cargaDidaticaMap.set(docente.nome, carga);
-  });
-
-  const [hoveredDocente, setHoveredDocente] = useState<Docente | null>(null);
-  const enterTimer = useRef<NodeJS.Timeout | null>(null);
-  const leaveTimer = useRef<NodeJS.Timeout | null>(null);
-  const LEAVE_DELAY_MS = 200;
-
-  const handleMouseActionsDocente = (nome: string | null) => {
-    if (nome === null) setHoveredDocente(null);
-    else setHoveredDocente(docentes.find((d) => d.nome === nome) || null);
-  };
-  const clearTimers = () => {
-    if (enterTimer.current) {
-      clearTimeout(enterTimer.current);
-      enterTimer.current = null;
+  // Voltar (remover do topo da pilha)
+  const handleBack = useCallback(() => {
+    if (navigationStack.length > 1) {
+      setSlideDirection("right");
+      setNavigationStack((prev) => prev.slice(0, -1));
     }
-    if (leaveTimer.current) {
-      clearTimeout(leaveTimer.current);
-      leaveTimer.current = null;
-    }
-  };
-  const handleMouseLeave = () => {
-    clearTimers();
-    leaveTimer.current = setTimeout(() => {
-      setHoveredDocente(null);
-    }, LEAVE_DELAY_MS);
-  };
+  }, [navigationStack.length]);
+
+  // Atualizar índice na view atual
+  const handleIndexChange = useCallback(
+    (index: number) => {
+      setNavigationStack((prev) => {
+        const newStack = [...prev];
+        const current = newStack[newStack.length - 1];
+        if (current.type === "docente") {
+          current.id = docentesAtivos[index]?.nome || "";
+          current.index = index;
+          if (isInRoom) {
+            broadcastSelectionChange(index);
+          }
+        } else {
+          current.id = turmasData[index]?.id || "";
+          current.index = index;
+        }
+        return newStack;
+      });
+    },
+    [docentesAtivos, turmasData, isInRoom, broadcastSelectionChange],
+  );
+
+  // Indicador de navegação (breadcrumb)
+  const breadcrumb = useMemo(() => {
+    return navigationStack.map((item) => {
+      if (item.type === "docente") {
+        const docente = docentesAtivos.find((d) => d.nome === item.id);
+        return {
+          label: docente?.nome || "Docente",
+          type: "docente" as const,
+        };
+      } else {
+        const turma = turmasData.find((t) => t.id === item.id);
+        return {
+          label: turma ? `${turma.codigo}-T${turma.turma}` : "Turma",
+          type: "turma" as const,
+        };
+      }
+    });
+  }, [navigationStack, docentesAtivos, turmasData]);
+
+  // Handler para hover de docente
+  const handleHoveredDocente = useCallback(() => {
+    // Implementação opcional de hover
+  }, []);
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#f4f6f8", py: 4 }}>
       <Container maxWidth="xl">
         <CollaborativeGridWrapper>
           <Box width="100%">
-            {/* <Box mb={4}>
-              <Typography variant="h4" fontWeight="bold" color="text.primary">
-                Atribuição em Blocos
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                {isInRoom
-                  ? "Modo Colaborativo: Navegação sincronizada."
-                  : "Gerencie as atribuições sequencialmente ou navegue pela lista."}
-              </Typography>
-            </Box> */}
+            {/* Breadcrumb / Indicador de navegação */}
+            {navigationStack.length > 1 && (
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={{ mb: 2, px: 2 }}
+                flexWrap="wrap"
+              >
+                <Typography variant="caption" color="text.secondary">
+                  Navegação:
+                </Typography>
+                {breadcrumb.map((item, idx) => (
+                  <Box key={idx} display="flex" alignItems="center" gap={0.5}>
+                    {idx > 0 && (
+                      <Typography variant="caption" color="text.secondary">
+                        →
+                      </Typography>
+                    )}
+                    <Chip
+                      icon={
+                        item.type === "docente" ? <PersonIcon /> : <ClassIcon />
+                      }
+                      label={item.label}
+                      size="small"
+                      variant={
+                        idx === breadcrumb.length - 1 ? "filled" : "outlined"
+                      }
+                      color={
+                        idx === breadcrumb.length - 1 ? "primary" : "default"
+                      }
+                      sx={{ height: 24, fontSize: "0.75rem" }}
+                    />
+                  </Box>
+                ))}
+              </Stack>
+            )}
 
-            <DocentesView
-              docentes={docentesAtivos}
-              atribuicoesMap={atribuicoesMap}
-              naoAtribuidasMap={naoAtribuidasMap}
-              cargaDidaticaMap={cargaDidaticaMap}
-              maxCarga={maxCargaDidatica}
-              onDeleteAtribuicao={onDeleteAtribuicao}
-              onAddAtribuicao={onAddAtribuicao}
-              onHoveredDocente={handleMouseActionsDocente}
-              // Novas props de controle de estado
-              selectedIndex={selectedIndex}
-              onChangeIndex={handleIndexChange}
-              canNavigate={canNavigate}
-            />
+            {/* Container com animação */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${currentView.type}-${currentView.id}`}
+                initial={{
+                  opacity: 0,
+                  x: slideDirection === "left" ? 100 : -100,
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  x: slideDirection === "left" ? -100 : 100,
+                }}
+                transition={{
+                  duration: 0.3,
+                  ease: "easeInOut",
+                }}
+              >
+                {currentView.type === "docente" ? (
+                  <DocentesView
+                    docentes={docentesAtivos}
+                    atribuicoesMap={atribuicoesMap}
+                    naoAtribuidasMap={naoAtribuidasMap}
+                    cargaDidaticaMap={cargaDidaticaMap}
+                    maxCarga={maxCargaDidatica}
+                    onDeleteAtribuicao={onDeleteAtribuicao}
+                    onAddAtribuicao={onAddAtribuicao}
+                    onHoveredDocente={handleHoveredDocente}
+                    onTurmaClick={handleTurmaClick}
+                    onTravar={onTravar}
+                    selectedIndex={currentView.index}
+                    onChangeIndex={handleIndexChange}
+                    canNavigate={canNavigate}
+                    onBack={handleBack}
+                    showBackButton={navigationStack.length > 1}
+                    celulas={celulas}
+                  />
+                ) : (
+                  <TurmasView
+                    turmas={turmasData}
+                    maxCarga={maxCargaDidatica}
+                    onDeleteAtribuicao={onDeleteAtribuicao}
+                    onAddAtribuicao={onAddAtribuicao}
+                    onDocenteClick={handleDocenteClick}
+                    onTravar={onTravar}
+                    selectedIndex={currentView.index}
+                    onChangeIndex={handleIndexChange}
+                    canNavigate={canNavigate}
+                    onBack={handleBack}
+                    showBackButton={navigationStack.length > 1}
+                    celulas={celulas}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </Box>
         </CollaborativeGridWrapper>
 
-        {/* {hoveredDocente && (
-          <HoveredDocente
-            docente={hoveredDocente}
-            onMouseEnter={clearTimers}
-            onMouseLeave={handleMouseLeave}
-          />
-        )} */}
+        {/* Snackbar de Alerta */}
+        <Snackbar
+          open={alertOpen}
+          autoHideDuration={4000}
+          onClose={() => setAlertOpen(false)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => setAlertOpen(false)}
+            severity="warning"
+            sx={{ width: "100%" }}
+          >
+            {alertMessage}
+          </Alert>
+        </Snackbar>
       </Container>
     </Box>
   );

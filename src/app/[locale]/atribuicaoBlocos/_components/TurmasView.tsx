@@ -2,8 +2,7 @@
 import { useRef, useEffect } from "react";
 import { Stack, Box, Button, IconButton, Tooltip } from "@mui/material";
 import { LayoutGroup } from "framer-motion";
-import DocenteRow from "./DocenteRow";
-import { Disciplina } from "@/context/Global/utils";
+import TurmaRow, { DocenteInfo } from "./TurmaRow";
 import {
   KeyboardArrowUp,
   KeyboardArrowDown,
@@ -11,16 +10,27 @@ import {
 } from "@mui/icons-material";
 import { Celula } from "@/algoritmo/communs/interfaces/interfaces";
 
+export interface TurmaData {
+  id: string;
+  nome: string;
+  codigo: string;
+  turma: number;
+  horarios: { dia: string; inicio: string; fim: string }[];
+  curso: string;
+  nivel: string;
+  noturna: boolean;
+  ingles: boolean;
+  carga: number;
+  docentesAtribuidos: DocenteInfo[];
+  docentesComPrioridade: DocenteInfo[];
+}
+
 interface Props {
-  docentes: { nome: string; saldo?: number }[];
-  atribuicoesMap: Map<string, Disciplina[]>;
-  naoAtribuidasMap: Map<string, Disciplina[]>;
-  cargaDidaticaMap: Map<string, number>;
+  turmas: TurmaData[];
   maxCarga: number;
-  onDeleteAtribuicao: (nome: string, id: string) => void;
-  onAddAtribuicao: (nome: string, id: string) => void;
-  onHoveredDocente: (nome: string | null) => void;
-  onTurmaClick?: (idTurma: string) => void;
+  onDeleteAtribuicao: (nomeDocente: string, idDisciplina: string) => void;
+  onAddAtribuicao: (nomeDocente: string, idDisciplina: string) => void;
+  onDocenteClick?: (nomeDocente: string) => void;
   onTravar?: (nome_docente: string, id_disciplina: string) => void;
   selectedIndex: number;
   onChangeIndex: (index: number) => void;
@@ -30,16 +40,12 @@ interface Props {
   celulas?: Celula[];
 }
 
-export default function DocentesView({
-  docentes,
-  atribuicoesMap,
-  naoAtribuidasMap,
-  cargaDidaticaMap,
+export default function TurmasView({
+  turmas,
   maxCarga,
   onDeleteAtribuicao,
   onAddAtribuicao,
-  onHoveredDocente,
-  onTurmaClick,
+  onDocenteClick,
   onTravar,
   selectedIndex,
   onChangeIndex,
@@ -48,11 +54,11 @@ export default function DocentesView({
   showBackButton = false,
   celulas = [],
 }: Props) {
-  const total = docentes.length;
+  const total = turmas.length;
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  const scrollToDocente = (nome: string) => {
-    const element = itemRefs.current.get(nome);
+  const scrollToTurma = (id: string) => {
+    const element = itemRefs.current.get(id);
     if (element) {
       element.scrollIntoView({
         behavior: "smooth",
@@ -68,26 +74,27 @@ export default function DocentesView({
   };
 
   const next = () => {
-    if (canNavigate) {
+    if (canNavigate && total > 0) {
       onChangeIndex((selectedIndex + 1) % total);
     }
   };
 
   const prev = () => {
-    if (canNavigate) {
+    if (canNavigate && total > 0) {
       onChangeIndex((selectedIndex - 1 + total) % total);
     }
   };
 
   useEffect(() => {
-    const docente = docentes[selectedIndex];
-    if (docente) {
-      scrollToDocente(docente.nome);
+    const turma = turmas[selectedIndex];
+    if (turma) {
+      scrollToTurma(turma.id);
     }
-  }, [selectedIndex, docentes]);
+  }, [selectedIndex, turmas]);
 
   return (
     <Box sx={{ width: "100%", maxWidth: 1200, margin: "0 auto" }}>
+      {/* Header com Voltar e Navegação */}
       <Box
         display="flex"
         justifyContent="center"
@@ -111,11 +118,11 @@ export default function DocentesView({
         <Button
           variant="contained"
           onClick={prev}
-          disabled={!canNavigate}
+          disabled={!canNavigate || total === 0}
           startIcon={<KeyboardArrowUp />}
           sx={{ borderRadius: 8, textTransform: "none", px: 4 }}
         >
-          Docente Anterior
+          Turma Anterior
         </Button>
       </Box>
 
@@ -140,29 +147,24 @@ export default function DocentesView({
         }}
       >
         <LayoutGroup>
-          {docentes.map((docente, i) => {
+          {turmas.map((turma, i) => {
             const isSelected = i === selectedIndex;
             return (
               <div
-                key={docente.nome}
+                key={turma.id}
                 ref={(el) => {
-                  if (el) itemRefs.current.set(docente.nome, el);
-                  else itemRefs.current.delete(docente.nome);
+                  if (el) itemRefs.current.set(turma.id, el);
+                  else itemRefs.current.delete(turma.id);
                 }}
               >
-                <DocenteRow
-                  nome={docente.nome}
-                  saldo={docente.saldo || 0}
-                  turmas={atribuicoesMap.get(docente.nome) || []}
-                  turmasNaoAtribuidas={naoAtribuidasMap.get(docente.nome) || []}
-                  cargaDidatica={cargaDidaticaMap.get(docente.nome) || 0}
+                <TurmaRow
+                  {...turma}
                   maxCarga={maxCarga}
                   selecionado={isSelected}
                   onClick={() => handleSelect(i)}
                   onDeleteAtribuicao={onDeleteAtribuicao}
                   onAddAtribuicao={onAddAtribuicao}
-                  onHoveredDocente={onHoveredDocente}
-                  onTurmaClick={onTurmaClick}
+                  onDocenteClick={onDocenteClick}
                   onTravar={onTravar}
                   celulas={celulas}
                   canNavigate={canNavigate}
@@ -177,11 +179,11 @@ export default function DocentesView({
         <Button
           variant="contained"
           onClick={next}
-          disabled={!canNavigate}
+          disabled={!canNavigate || total === 0}
           endIcon={<KeyboardArrowDown />}
           sx={{ borderRadius: 8, textTransform: "none", px: 4 }}
         >
-          Próximo Docente
+          Próxima Turma
         </Button>
       </Box>
     </Box>

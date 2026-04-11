@@ -1,3 +1,4 @@
+"use client";
 import { Horario } from "@/algoritmo/communs/interfaces/interfaces";
 import {
   Box,
@@ -10,6 +11,10 @@ import {
   alpha,
   Avatar,
   AvatarGroup,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import {
   AccessTime as TimeIcon,
@@ -17,11 +22,13 @@ import {
   AddCircleOutline as AddIcon,
   RemoveCircleOutline as RemoveIcon,
   NightsStay as NightIcon,
-  School as SchoolIcon, // Para Nível
-  Language as LangIcon, // Para Inglês
+  Language as LangIcon,
+  Lock as LockIcon,
+  LockOpen as LockOpenIcon,
+  MoreVert as MoreIcon,
 } from "@mui/icons-material";
-
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import { useState, MouseEvent } from "react";
 
 type Props = {
   nome: string;
@@ -35,10 +42,13 @@ type Props = {
   noturna: boolean;
   ingles: boolean;
   docentesAtribuidos?: string[];
-
   isAtribuida: boolean;
+  isTravada?: boolean;
   hasConflict?: boolean;
   onAction: () => void;
+  onTravar?: () => void;
+  onClick?: () => void;
+  canNavigate?: boolean;
 };
 
 export default function TurmaCard({
@@ -54,54 +64,92 @@ export default function TurmaCard({
   ingles,
   docentesAtribuidos = [],
   isAtribuida,
+  isTravada = false,
   hasConflict = false,
   onAction,
+  onTravar,
+  onClick,
+  canNavigate = true,
 }: Props) {
-  const bgColor = hasConflict
-    ? alpha("#d32f2f", 0.05)
-    : isAtribuida
-    ? alpha("#1976d2", 0.05)
-    : "#fff";
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(anchorEl);
 
-  const borderColor = hasConflict
-    ? "#d32f2f"
-    : isAtribuida
-    ? "#1976d2"
-    : "#e0e0e0";
+  const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleAction = () => {
+    handleMenuClose();
+    if (!isTravada || !isAtribuida) {
+      onAction();
+    }
+  };
+
+  const handleTravar = () => {
+    handleMenuClose();
+    onTravar?.();
+  };
+
+  const bgColor = isTravada
+    ? alpha("#ff9800", 0.1)
+    : hasConflict
+      ? alpha("#d32f2f", 0.05)
+      : isAtribuida
+        ? alpha("#1976d2", 0.05)
+        : "#fff";
+
+  const borderColor = isTravada
+    ? "#ff9800"
+    : hasConflict
+      ? "#d32f2f"
+      : isAtribuida
+        ? "#1976d2"
+        : "#e0e0e0";
 
   return (
     <Paper
       elevation={isAtribuida ? 2 : 1}
+      onClick={onClick}
       sx={{
-        width: 280, // Aumentei um pouco para caber as infos
+        width: 280,
         minWidth: 280,
         p: 1.5,
         borderRadius: 2,
         bgcolor: bgColor,
         border: `1px solid ${borderColor}`,
-        borderLeftWidth: hasConflict ? 6 : isAtribuida ? 4 : 1,
+        borderLeftWidth: isTravada ? 6 : hasConflict ? 6 : isAtribuida ? 4 : 1,
         transition: "all 0.2s ease-in-out",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         position: "relative",
+        cursor: onClick ? "pointer" : "default",
         "&:hover": {
           transform: "translateY(-2px)",
           boxShadow: 3,
         },
       }}
     >
-      {/* Indicador de Conflito */}
-      {hasConflict && (
-        <Tooltip title="Choque de horário com outra disciplina">
-          <Box position="absolute" top={8} right={8} color="error.main">
-            <WarningIcon fontSize="small" />
-          </Box>
-        </Tooltip>
-      )}
+      {/* Indicadores no canto superior direito */}
+      <Box position="absolute" top={8} right={8} display="flex" gap={0.5}>
+        {isTravada && (
+          <Tooltip title="Esta atribuição está travada">
+            <LockIcon fontSize="small" sx={{ color: "warning.main" }} />
+          </Tooltip>
+        )}
+        {hasConflict && (
+          <Tooltip title="Choque de horário com outra disciplina">
+            <WarningIcon fontSize="small" sx={{ color: "error.main" }} />
+          </Tooltip>
+        )}
+      </Box>
 
       <Box>
-        {/* Título e Código */}
         <Typography
           variant="subtitle2"
           fontWeight="bold"
@@ -121,7 +169,6 @@ export default function TurmaCard({
             {codigo} — T{turma}
           </Typography>
 
-          {/* Chips de Características */}
           <Stack direction="row" spacing={0.5}>
             {noturna && (
               <Tooltip title="Curso Noturno">
@@ -163,7 +210,6 @@ export default function TurmaCard({
           {curso}
         </Typography>
 
-        {/* Informações de Carga e Prioridade */}
         <Stack direction="row" spacing={1} alignItems="center" my={1}>
           <Tooltip title={`Carga didática da turma ${codigo}-${turma}.`}>
             <Chip
@@ -188,7 +234,6 @@ export default function TurmaCard({
           />
         </Stack>
 
-        {/* Horários */}
         <Stack spacing={0.5} mt={1}>
           {horarios.length > 0 ? (
             horarios.map((h, i) => (
@@ -217,7 +262,6 @@ export default function TurmaCard({
         </Stack>
       </Box>
 
-      {/* Footer: Docentes e Ação */}
       <Box
         mt={2}
         pt={1}
@@ -226,7 +270,6 @@ export default function TurmaCard({
         justifyContent="space-between"
         alignItems="center"
       >
-        {/* Docentes Atribuídos */}
         <Box display="flex" alignItems="center">
           {docentesAtribuidos.length > 0 ? (
             <AvatarGroup
@@ -252,25 +295,72 @@ export default function TurmaCard({
           )}
         </Box>
 
-        <Tooltip
-          title={isAtribuida ? "Remover atribuição" : "Atribuir ao docente"}
-        >
+        {/* Menu de Ações */}
+        <Tooltip title="Ações">
           <IconButton
             size="small"
-            onClick={(e) => {
-              e.stopPropagation();
-              onAction();
-            }}
-            color={isAtribuida ? "error" : "primary"}
-            sx={{ bgcolor: alpha(isAtribuida ? "#d32f2f" : "#1976d2", 0.1) }}
+            onClick={handleMenuOpen}
+            disabled={!canNavigate}
+            sx={{ bgcolor: alpha("#000", 0.05) }}
           >
-            {isAtribuida ? (
-              <RemoveIcon fontSize="small" />
-            ) : (
-              <AddIcon fontSize="small" />
-            )}
+            <MoreIcon fontSize="small" />
           </IconButton>
         </Tooltip>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={menuOpen}
+          onClose={handleMenuClose}
+          onClick={(e) => e.stopPropagation()}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+        >
+          {isAtribuida ? (
+            <Box>
+              <MenuItem onClick={handleAction} disabled={isTravada}>
+                <ListItemIcon>
+                  <RemoveIcon fontSize="small" color="error" />
+                </ListItemIcon>
+                <ListItemText>
+                  {isTravada ? "Travado - Não pode remover" : "Remover"}
+                </ListItemText>
+              </MenuItem>
+              <MenuItem onClick={handleTravar}>
+                <ListItemIcon>
+                  {isTravada ? (
+                    <LockOpenIcon fontSize="small" color="warning" />
+                  ) : (
+                    <LockIcon fontSize="small" color="warning" />
+                  )}
+                </ListItemIcon>
+                <ListItemText>
+                  {isTravada ? "Destravar" : "Travar"}
+                </ListItemText>
+              </MenuItem>
+            </Box>
+          ) : (
+            <Box>
+              <MenuItem onClick={handleAction}>
+                <ListItemIcon>
+                  <AddIcon fontSize="small" color="primary" />
+                </ListItemIcon>
+                <ListItemText>Adicionar</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={handleTravar}>
+                <ListItemIcon>
+                  <LockIcon fontSize="small" color="warning" />
+                </ListItemIcon>
+                <ListItemText>Adicionar e Travar</ListItemText>
+              </MenuItem>
+            </Box>
+          )}
+        </Menu>
       </Box>
     </Paper>
   );

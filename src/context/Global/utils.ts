@@ -394,3 +394,14 @@ export function jsonReviver(key: string, value: any) {
   }
   return value;
 }
+
+// Helper para verificar se uma célula está travada
+export function isCelulaTravada(celula?: Celula): boolean {
+  if (!celula) return false;
+  return celula.trava === true && celula.tipo_trava !== TipoTrava.NotTrava;
+}
+
+// Helper para obter o tipo de trava de uma célula
+export function getTipoTrava(celula?: Celula): TipoTrava {
+  return celula?.tipo_trava ?? TipoTrava.NotTrava;
+}

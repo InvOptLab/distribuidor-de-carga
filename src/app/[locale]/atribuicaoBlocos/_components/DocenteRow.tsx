@@ -1,3 +1,4 @@
+"use client";
 import {
   Box,
   Typography,
@@ -13,19 +14,24 @@ import { motion } from "framer-motion";
 import TurmaCard from "./TurmaCard";
 import { Disciplina } from "@/context/Global/utils";
 import { useMemo } from "react";
+import { Celula, TipoTrava } from "@/algoritmo/communs/interfaces/interfaces";
 
 type Props = {
   nome: string;
   turmas: Disciplina[];
   selecionado: boolean;
   cargaDidatica: number;
-  saldo: number; // Nova prop
+  saldo: number;
   maxCarga?: number;
   onClick: () => void;
   onDeleteAtribuicao: (nome_docente: string, id_disciplina: string) => void;
   turmasNaoAtribuidas: Disciplina[];
   onAddAtribuicao: (nome_docente: string, id_disciplina: string) => void;
   onHoveredDocente: (nome: string | null) => void;
+  onTurmaClick?: (idTurma: string) => void;
+  onTravar?: (nome_docente: string, id_disciplina: string) => void;
+  celulas?: Celula[];
+  canNavigate?: boolean;
 };
 
 export default function DocenteRow({
@@ -40,23 +46,23 @@ export default function DocenteRow({
   turmasNaoAtribuidas,
   onAddAtribuicao,
   onHoveredDocente,
+  onTurmaClick,
+  onTravar,
+  celulas = [],
+  canNavigate = true,
 }: Props) {
-  // Arredondamento da carga para visualização
   const cargaFormatada = Number(cargaDidatica).toFixed(2);
   const metaFormatada = maxCarga > 0 ? Number(maxCarga).toFixed(2) : "--";
 
-  // Lógica da Barra de Progresso
   const progress =
     maxCarga > 0 ? Math.min((cargaDidatica / maxCarga) * 100, 100) : 0;
   const isOverload = maxCarga > 0 && cargaDidatica > maxCarga;
 
-  // Lógica de Cor do Saldo
   const saldoColor =
     saldo > 0 ? "success.main" : saldo < 0 ? "error.main" : "text.primary";
 
   const saldoTexto = saldo > 0 ? `+${saldo.toFixed(2)}` : saldo.toFixed(2);
 
-  // Lógica de Conflito
   const idsComConflito = useMemo(() => {
     const conflitos = new Set<string>();
     turmas.forEach((t) => {
@@ -66,6 +72,18 @@ export default function DocenteRow({
     });
     return conflitos;
   }, [turmas]);
+
+  // Função para verificar se uma célula está travada
+  const isTurmaTravada = (idDisciplina: string): boolean => {
+    const celula = celulas.find(
+      (c) => c.id_disciplina === idDisciplina && c.nome_docente === nome,
+    );
+    return celula?.trava === true && celula?.tipo_trava !== TipoTrava.NotTrava;
+  };
+
+  const handleTravar = (idDisciplina: string) => {
+    onTravar?.(nome, idDisciplina);
+  };
 
   return (
     <motion.div
@@ -116,7 +134,6 @@ export default function DocenteRow({
               >
                 {nome}
               </Typography>
-              {/* Display do Saldo */}
               <Chip
                 label={`Saldo: ${saldoTexto}`}
                 size="small"
@@ -196,9 +213,17 @@ export default function DocenteRow({
                     ingles={turma.ingles}
                     docentesAtribuidos={turma.docentes || []}
                     isAtribuida={true}
+                    isTravada={isTurmaTravada(turma.id)}
                     hasConflict={idsComConflito.has(turma.id)}
                     curso={turma.cursos}
-                    onAction={() => onDeleteAtribuicao(nome, turma.id)}
+                    onAction={() => {
+                      if (!isTurmaTravada(turma.id)) {
+                        onDeleteAtribuicao(nome, turma.id);
+                      }
+                    }}
+                    onTravar={() => handleTravar(turma.id)}
+                    onClick={() => onTurmaClick?.(turma.id)}
+                    canNavigate={canNavigate}
                   />
                 ))
               ) : (
@@ -252,9 +277,17 @@ export default function DocenteRow({
                     ingles={turma.ingles}
                     docentesAtribuidos={turma.docentes || []}
                     isAtribuida={false}
+                    isTravada={isTurmaTravada(turma.id)}
                     curso={turma.cursos}
                     hasConflict={idsComConflito.has(turma.id)}
                     onAction={() => onAddAtribuicao(nome, turma.id)}
+                    onTravar={() => {
+                      // Adicionar e travar
+                      onAddAtribuicao(nome, turma.id);
+                      handleTravar(turma.id);
+                    }}
+                    onClick={() => onTurmaClick?.(turma.id)}
+                    canNavigate={canNavigate}
                   />
                 ))
               ) : (
