@@ -619,6 +619,11 @@
       "closeAriaLabel": "Close modal",
       "continueAriaDescription": "Continues with the previously saved data without making changes",
       "clearAriaDescription": "Removes all saved data and reloads the page to start a new planning session"
+    },
+    "NoDataFound": {
+      "noDataFound": "No data found",
+      "description": "It appears you haven't yet uploaded the necessary data to complete the assignment. Import the teachers and classes to begin.",
+      "loadData": "Load Data"
     }
   }
 }

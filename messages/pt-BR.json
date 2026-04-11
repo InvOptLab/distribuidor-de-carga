@@ -619,6 +619,11 @@
       "closeAriaLabel": "Fechar modal",
       "continueAriaDescription": "Continua com os dados salvos anteriormente sem fazer alterações",
       "clearAriaDescription": "Remove todos os dados salvos e recarrega a página para começar um novo planejamento"
+    },
+    "NoDataFound": {
+      "noDataFound": "Nenhum dado encontrado",
+      "description": "Parece que você ainda não carregou os dados necessários para realizar a atribuição. Importe os docentes e turmas para começar.",
+      "loadData": "Carregar Dados"
     }
   }
 }
