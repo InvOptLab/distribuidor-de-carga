@@ -725,7 +725,8 @@
     },
     "description": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela clicando no X localizado acima.",
     "stop": "Parar",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "linearProgressLabel": "Atribuições: {current} de {total}"
   },
   "Spreadsheet": {
     "DocenteSelectionDialog": {

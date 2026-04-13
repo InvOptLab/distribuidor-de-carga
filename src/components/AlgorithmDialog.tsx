@@ -30,7 +30,7 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 import { Estatisticas } from "@/algoritmo/communs/interfaces/interfaces";
 import { LineChart } from "@mui/x-charts";
-import { useTranslations } from "next-intl";
+import { _Translator, useTranslations } from "next-intl";
 
 export interface IProgressBar {
   total: number;
@@ -55,7 +55,11 @@ interface AlgoritmoDialogProps {
  * Componente de barra de progresso com label
  */
 function LinearProgressWithLabel(
-  props: LinearProgressProps & { value: number; progress: IProgressBar },
+  props: LinearProgressProps & {
+    value: number;
+    progress: IProgressBar;
+    t: _Translator<Record<string, any>, string>;
+  },
 ) {
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -64,7 +68,11 @@ function LinearProgressWithLabel(
       </Box>
       <Box sx={{ minWidth: 35 }}>
         <Tooltip
-          title={`Alocações: ${props.progress.current} de ${props.progress.total}`}
+          title={props.t("linearProgressLabel", {
+            current: props.progress.current,
+            total: props.progress.total,
+          })}
+          // {`Alocações: ${props.progress.current} de ${props.progress.total}`}
         >
           <Typography
             variant="body2"
@@ -277,6 +285,7 @@ export default function AlgoritmoDialog({
                 <LinearProgressWithLabel
                   value={progressPercentage()}
                   progress={progress}
+                  t={t}
                 />
               </Box>
 

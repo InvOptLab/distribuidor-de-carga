@@ -726,7 +726,8 @@
     },
     "description": "The process is complete! You can now apply the solution or close this screen by clicking the X located above.",
     "stop": "Stop",
-    "apply": "Apply"
+    "apply": "Apply",
+    "linearProgressLabel": "Assignments: {current} de {total}"
   },
   "Spreadsheet": {
     "DocenteSelectionDialog": {
