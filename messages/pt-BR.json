@@ -410,6 +410,81 @@
       "manageColumns": "Gerenciar Colunas",
       "displayingCount": "Exibindo {visible} de {total} {total, plural, =1 {turma} other {turmas}}",
       "filtered": " (filtrado)"
+    },
+    "AllocationBlocks": {
+      "navigation": "Navegação:",
+      "Alerts": {
+        "noPermissionToUndo": "Você não tem permissão para desfazer uma atribuição.",
+        "allocationLocked": "Esta atribuição está travada e não pode ser removida.",
+        "noPermissionToAssignm": "Você não tem permissão para realizar uma atribuição.",
+        "professorAlreadyLocked": "Já existe um docente travado ({docenteTravado}). O docente {nome_docente} foi adicionado.",
+        "noPermissionToLockUnlock": "Você não tem permissão para travar/destravar."
+      },
+      "TurmasView": {
+        "previousClass": "Turma Anterior",
+        "nextClass": "Próxima Turma"
+      },
+      "TurmaRow": {
+        "eveningCourse": "Curso Noturno",
+        "taughtInEnglish": "Ministrada em Inglês",
+        "undergraduate": "Graduação",
+        "graduate": "Pós-graduação",
+        "workload": "Carga: {carga}h",
+        "noProfessor": "Sem docente",
+        "assignedProfessors": "Docentes Atribuídos",
+        "noProfessorAssigned": "Nenhum docente atribuído",
+        "professorsWithPriority": "Docentes com Prioridade para esta Turma",
+        "noPriorityIndicated": "Nenhum docente indicou prioridade para esta turma"
+      },
+      "TurmaCard": {
+        "allocationLocked": "Esta atribuição está travada",
+        "scheduleClash": "Choque de horário com outra turma",
+        "eveningCourse": "Curso Noturno",
+        "taughtInEnglish": "Ministrada em Inglês",
+        "undergraduate": "Graduação",
+        "graduate": "Pós-graduação",
+        "teachingWorkload": "Carga didática da turma {codigo}-{turma}.",
+        "priorityLevel": "Prioridade {prioridade}",
+        "noScheduleDefined": "Sem horário definido",
+        "noProfessor": "Nenhum docente",
+        "actionDisabled": "Ação desabilitada",
+        "actionBlocked": "Ação bloqueada (Item travado)",
+        "removeAllocation": "Remover atribuição",
+        "assign": "Atribuir",
+        "unlock": "Destravar",
+        "lock": "Travar",
+        "unlockItem": "Destravar item",
+        "lockItem": "Travar item"
+      },
+      "DocentesView": {
+        "previousTeacher": "Docente Anterior",
+        "nextTeacher": "Próximo Docente"
+      },
+      "DocenteRow": {
+        "balance": "Saldo: {saldo}",
+        "assignedClasses": "Turmas Atribuídas",
+        "noAssignedClasses": "Nenhuma turma atribuída",
+        "availableForAllocation": "Disponíveis para atribuição",
+        "noSuggestionsAtTheMoment": "Sem sugestões no momento"
+      },
+      "DocenteCard": {
+        "allocationLocked": "Esta atribuição está travada",
+        "balance": "Saldo: {saldo}",
+        "indicatedPriority": "Prioridade informada para esta turma",
+        "priorityLevel": "Prioridade {prioridade}",
+        "totalFormsFilled": "Total de formulários preenchidos pelo docente",
+        "assignedTeachingWorkload": "Carga didática já atribuída ao docente",
+        "teachingWorkload": "Carga: {carga}h.",
+        "actionDisabled": "Ação desabilitada",
+        "actionBlocked": "Ação bloqueada (Item travado)",
+        "removeAllocation": "Remover atribuição",
+        "assignProfessor": "Atribuir docente",
+        "assign": "Atribuir",
+        "unlock": "Destravar",
+        "lock": "Travar",
+        "unlockItem": "Destravar item",
+        "lockItem": "Travar item"
+      }
     }
   },
   "Accessibility": {

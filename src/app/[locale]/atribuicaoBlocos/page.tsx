@@ -23,6 +23,7 @@ import { TipoTrava } from "@/algoritmo/communs/interfaces/interfaces";
 import { useAlertsContext } from "@/context/Alerts";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
 import NoDataFound from "@/components/NoDataFound";
+import { useTranslations } from "next-intl";
 
 // Tipos para a pilha de navegação
 type ViewType = "docente" | "turma";
@@ -130,6 +131,8 @@ export default function AtribuicaoEmBlocosPage() {
   const { addAlerta } = useAlertsContext();
 
   const { cleanSolucaoAtual } = useSolutionHistory();
+
+  const t = useTranslations("Pages.AllocationBlocks");
 
   // Pilha de navegação
   const [navigationStack, setNavigationStack] = useState<StackItem[]>([
@@ -330,10 +333,7 @@ export default function AtribuicaoEmBlocosPage() {
   const onDeleteAtribuicao = useCallback(
     (nome_docente: string, id_disciplina: string) => {
       if (!canNavigate) {
-        addAlerta(
-          "Você não tem permissão para desfazer uma atribuição",
-          "warning",
-        );
+        addAlerta(t("Alerts.noPermissionToUndo"), "warning");
         return;
       }
 
@@ -343,10 +343,7 @@ export default function AtribuicaoEmBlocosPage() {
           c.id_disciplina === id_disciplina && c.nome_docente === nome_docente,
       );
       if (celula?.trava && celula?.tipo_trava !== TipoTrava.NotTrava) {
-        addAlerta(
-          "Esta atribuição está travada e não pode ser removida.",
-          "warning",
-        );
+        addAlerta(t("Alerts.allocationLocked"), "warning");
         return;
       }
 
@@ -381,10 +378,7 @@ export default function AtribuicaoEmBlocosPage() {
   const onAddAtribuicao = useCallback(
     (nome_docente: string, id_disciplina: string) => {
       if (!canNavigate) {
-        addAlerta(
-          "Você não tem permissão para realizar uma atribuição",
-          "warning",
-        );
+        addAlerta(t("Alerts.noPermissionToAssignm"), "warning");
         return;
       }
 
@@ -404,7 +398,10 @@ export default function AtribuicaoEmBlocosPage() {
             novosDocentes = [...atribuicaoAtual.docentes, nome_docente];
 
             addAlerta(
-              `Já existe um docente travado (${docenteTravado}). O docente ${nome_docente} foi adicionado.`,
+              t("Alerts.professorAlreadyLocked", {
+                docenteTravado: docenteTravado,
+                nome_docente: nome_docente,
+              }),
               "info",
             );
           } else {
@@ -447,7 +444,7 @@ export default function AtribuicaoEmBlocosPage() {
   const onTravar = useCallback(
     (nome_docente: string, id_disciplina: string) => {
       if (!canNavigate) {
-        addAlerta("Você não tem permissão para travar/destravar.", "warning");
+        addAlerta(t("Alerts.noPermissionToLockUnlock"), "warning");
         return;
       }
 
@@ -592,7 +589,7 @@ export default function AtribuicaoEmBlocosPage() {
                   flexWrap="wrap"
                 >
                   <Typography variant="caption" color="text.secondary">
-                    Navegação:
+                    {t("navigation")}
                   </Typography>
                   {breadcrumb.map((item, idx) => (
                     <Box key={idx} display="flex" alignItems="center" gap={0.5}>

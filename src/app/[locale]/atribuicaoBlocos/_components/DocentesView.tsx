@@ -10,6 +10,7 @@ import {
   ArrowBack,
 } from "@mui/icons-material";
 import { Celula } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 
 interface Props {
   docentes: { nome: string; saldo?: number }[];
@@ -50,6 +51,8 @@ export default function DocentesView({
 }: Props) {
   const total = docentes.length;
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  const t = useTranslations("Pages.AllocationBlocks.DocentesView");
 
   const scrollToDocente = (nome: string) => {
     const element = itemRefs.current.get(nome);
@@ -115,7 +118,7 @@ export default function DocentesView({
           startIcon={<KeyboardArrowUp />}
           sx={{ borderRadius: 8, textTransform: "none", px: 4 }}
         >
-          Docente Anterior
+          {t("previousTeacher")}
         </Button>
       </Box>
 
@@ -181,7 +184,7 @@ export default function DocentesView({
           endIcon={<KeyboardArrowDown />}
           sx={{ borderRadius: 8, textTransform: "none", px: 4 }}
         >
-          Próximo Docente
+          {t("nextTeacher")}
         </Button>
       </Box>
     </Box>

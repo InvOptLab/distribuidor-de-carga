@@ -29,6 +29,7 @@ import {
 } from "@mui/icons-material";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import { useState, MouseEvent } from "react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   nome: string;
@@ -71,29 +72,7 @@ export default function TurmaCard({
   onClick,
   canNavigate = true,
 }: Props) {
-  // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  // const menuOpen = Boolean(anchorEl);
-
-  // const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
-  //   event.stopPropagation();
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // const handleMenuClose = () => {
-  //   setAnchorEl(null);
-  // };
-
-  // const handleAction = () => {
-  //   handleMenuClose();
-  //   if (!isTravada || !isAtribuida) {
-  //     onAction();
-  //   }
-  // };
-
-  // const handleTravar = () => {
-  //   handleMenuClose();
-  //   onTravar?.();
-  // };
+  const t = useTranslations("Pages.AllocationBlocks.TurmaCard");
 
   // Estilo invisível visualmente, mas lido por leitores de tela
   const srOnlyStyle = {
@@ -156,12 +135,12 @@ export default function TurmaCard({
       {/* Indicadores no canto superior direito */}
       <Box position="absolute" top={8} right={8} display="flex" gap={0.5}>
         {isTravada && (
-          <Tooltip title="Esta atribuição está travada">
+          <Tooltip title={t("allocationLocked")}>
             <LockIcon fontSize="small" sx={{ color: "warning.main" }} />
           </Tooltip>
         )}
         {hasConflict && (
-          <Tooltip title="Choque de horário com outra disciplina">
+          <Tooltip title={t("scheduleClash")}>
             <WarningIcon fontSize="small" sx={{ color: "error.main" }} />
           </Tooltip>
         )}
@@ -189,7 +168,7 @@ export default function TurmaCard({
 
           <Stack direction="row" spacing={0.5}>
             {noturna && (
-              <Tooltip title="Curso Noturno">
+              <Tooltip title={t("eveningCourse")}>
                 <NightIcon
                   fontSize="inherit"
                   sx={{ fontSize: 14, color: "indigo" }}
@@ -197,7 +176,7 @@ export default function TurmaCard({
               </Tooltip>
             )}
             {ingles && (
-              <Tooltip title="Ministrada em Inglês">
+              <Tooltip title={t("taughtInEnglish")}>
                 <LangIcon
                   fontSize="inherit"
                   sx={{ fontSize: 14, color: "teal" }}
@@ -205,7 +184,9 @@ export default function TurmaCard({
               </Tooltip>
             )}
             {nivel && (
-              <Tooltip title={nivel === "g" ? "Graduação" : "Pós-graduação"}>
+              <Tooltip
+                title={nivel === "g" ? t("undergraduate") : t("graduate")}
+              >
                 <Chip
                   label={nivel.substring(0, 4)}
                   size="small"
@@ -229,7 +210,9 @@ export default function TurmaCard({
         </Typography>
 
         <Stack direction="row" spacing={1} alignItems="center" my={1}>
-          <Tooltip title={`Carga didática da turma ${codigo}-${turma}.`}>
+          <Tooltip
+            title={t("teachingWorkload", { codigo: codigo, turma: turma })}
+          >
             <Chip
               icon={
                 <FitnessCenterIcon sx={{ fontSize: "0.8rem !important" }} />
@@ -244,7 +227,9 @@ export default function TurmaCard({
             />
           </Tooltip>
           <Chip
-            label={`Prioridade ${prioridade}`}
+            label={t("priorityLevel", {
+              prioridade: prioridade,
+            })}
             size="small"
             color={prioridade > 0 ? "primary" : "default"}
             variant={prioridade > 0 ? "filled" : "outlined"}
@@ -274,7 +259,7 @@ export default function TurmaCard({
               color="text.disabled"
               fontStyle="italic"
             >
-              Sem horário definido
+              {t("noScheduleDefined")}
             </Typography>
           )}
         </Stack>
@@ -308,7 +293,7 @@ export default function TurmaCard({
             </AvatarGroup>
           ) : (
             <Typography variant="caption" color="text.disabled">
-              Nenhum docente
+              {t("noProfessor")}
             </Typography>
           )}
         </Box>
@@ -319,12 +304,12 @@ export default function TurmaCard({
           <Tooltip
             title={
               !canNavigate
-                ? "Ação desabilitada"
+                ? t("actionDisabled")
                 : isTravada
-                  ? "Ação bloqueada (Item travado)"
+                  ? t("actionBlocked")
                   : isAtribuida
-                    ? "Remover atribuição"
-                    : "Atribuir"
+                    ? t("removeAllocation")
+                    : t("assign")
             }
           >
             <span onClick={(e) => e.stopPropagation()}>
@@ -346,7 +331,7 @@ export default function TurmaCard({
                   <AddIcon fontSize="small" />
                 )}
                 <span style={srOnlyStyle}>
-                  {isAtribuida ? "Remover atribuição" : "Atribuir"}
+                  {isAtribuida ? t("removeAllocation") : t("assign")}
                 </span>
               </IconButton>
             </span>
@@ -356,10 +341,10 @@ export default function TurmaCard({
           <Tooltip
             title={
               !canNavigate
-                ? "Ação desabilitada"
+                ? t("actionDisabled")
                 : isTravada
-                  ? "Destravar"
-                  : "Travar"
+                  ? t("unlock")
+                  : t("lock")
             }
           >
             <span onClick={(e) => e.stopPropagation()}>
@@ -379,7 +364,7 @@ export default function TurmaCard({
                   <LockIcon fontSize="small" />
                 )}
                 <span style={srOnlyStyle}>
-                  {isTravada ? "Destravar item" : "Travar item"}
+                  {isTravada ? t("unlockItem") : t("lockItem")}
                 </span>
               </IconButton>
             </span>

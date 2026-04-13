@@ -19,6 +19,7 @@ import {
   Language as LangIcon,
 } from "@mui/icons-material";
 import { Celula, TipoTrava } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 
 export interface DocenteInfo {
   nome: string;
@@ -87,6 +88,8 @@ export default function TurmaRow({
     onTravar?.(nomeDocente, id);
   };
 
+  const t = useTranslations("Pages.AllocationBlocks.TurmaRow");
+
   return (
     <motion.div
       layout
@@ -144,7 +147,7 @@ export default function TurmaRow({
               {/* Chips de Características */}
               <Stack direction="row" spacing={0.5} alignItems="center">
                 {noturna && (
-                  <Tooltip title="Curso Noturno">
+                  <Tooltip title={t("eveningCourse")}>
                     <NightIcon
                       fontSize="small"
                       sx={{ fontSize: 16, color: "indigo" }}
@@ -152,15 +155,18 @@ export default function TurmaRow({
                   </Tooltip>
                 )}
                 {ingles && (
-                  <Tooltip title="Ministrada em Inglês">
+                  <Tooltip title={t("taughtInEnglish")}>
                     <LangIcon
                       fontSize="small"
                       sx={{ fontSize: 16, color: "teal" }}
                     />
                   </Tooltip>
                 )}
-                <Tooltip title={nivel === "g" ? "Graduação" : "Pós-graduação"}>
+                <Tooltip
+                  title={nivel === "g" ? t("graduate") : t("undergraduate")}
+                >
                   <Chip
+                    // TODO: ver como ficará a tradução
                     label={nivel === "g" ? "Grad" : "Pós"}
                     size="small"
                     variant="filled"
@@ -169,7 +175,7 @@ export default function TurmaRow({
                   />
                 </Tooltip>
                 <Chip
-                  label={`Carga: ${carga}h`}
+                  label={t("workload", { carga })}
                   size="small"
                   variant="outlined"
                   sx={{ height: 20, fontSize: "0.7rem" }}
@@ -225,7 +231,7 @@ export default function TurmaRow({
               </AvatarGroup>
             ) : (
               <Chip
-                label="Sem docente"
+                label={t("noProfessor")}
                 size="small"
                 variant="outlined"
                 color="warning"
@@ -248,7 +254,7 @@ export default function TurmaRow({
                 fontSize: "0.75rem",
               }}
             >
-              Docentes Atribuídos
+              {t("assignedProfessors")}
             </Typography>
 
             <Stack
@@ -292,7 +298,7 @@ export default function TurmaRow({
                   py={4}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    Nenhum docente atribuído
+                    {t("noProfessorAssigned")}
                   </Typography>
                 </Box>
               )}
@@ -310,7 +316,7 @@ export default function TurmaRow({
                 fontSize: "0.75rem",
               }}
             >
-              Docentes com Prioridade para esta Turma
+              {t("professorsWithPriority")}
             </Typography>
 
             <Stack
@@ -341,7 +347,7 @@ export default function TurmaRow({
               ) : (
                 <Box p={2}>
                   <Typography variant="body2" color="text.secondary">
-                    Nenhum docente indicou prioridade para esta turma
+                    {t("noPriorityIndicated")}
                   </Typography>
                 </Box>
               )}

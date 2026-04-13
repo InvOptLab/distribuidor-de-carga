@@ -9,6 +9,7 @@ import {
   ArrowBack,
 } from "@mui/icons-material";
 import { Celula } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 
 export interface TurmaData {
   id: string;
@@ -56,6 +57,8 @@ export default function TurmasView({
 }: Props) {
   const total = turmas.length;
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  const t = useTranslations("Pages.AllocationBlocks.TurmasView");
 
   const scrollToTurma = (id: string) => {
     const element = itemRefs.current.get(id);
@@ -122,7 +125,7 @@ export default function TurmasView({
           startIcon={<KeyboardArrowUp />}
           sx={{ borderRadius: 8, textTransform: "none", px: 4 }}
         >
-          Turma Anterior
+          {t("previousClass")}
         </Button>
       </Box>
 
@@ -183,7 +186,7 @@ export default function TurmasView({
           endIcon={<KeyboardArrowDown />}
           sx={{ borderRadius: 8, textTransform: "none", px: 4 }}
         >
-          Próxima Turma
+          {t("nextClass")}
         </Button>
       </Box>
     </Box>

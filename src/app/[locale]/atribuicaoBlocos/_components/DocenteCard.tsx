@@ -25,6 +25,7 @@ import {
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import ArticleIcon from "@mui/icons-material/Article";
 import { useState, MouseEvent } from "react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   nome: string;
@@ -88,6 +89,8 @@ export default function DocenteCard({
     maxCarga > 0 ? Math.min((cargaDidaticaAtribuida / maxCarga) * 100, 100) : 0;
   const isOverload = maxCarga > 0 && cargaDidaticaAtribuida > maxCarga;
 
+  const t = useTranslations("Pages.AllocationBlocks.DocenteCard");
+
   return (
     <Paper
       elevation={isAtribuido ? 2 : 1}
@@ -119,7 +122,7 @@ export default function DocenteCard({
     >
       {/* Indicador de Trava */}
       {isTravado && (
-        <Tooltip title="Esta atribuição está travada">
+        <Tooltip title={t("allocationLocked")}>
           <Box position="absolute" top={8} right={8} color="warning.main">
             <LockIcon fontSize="small" />
           </Box>
@@ -154,7 +157,7 @@ export default function DocenteCard({
             </Typography>
             {/* Chip de Saldo */}
             <Chip
-              label={`Saldo: ${saldoTexto}`}
+              label={t("balance", { saldo: saldoTexto })}
               size="small"
               variant="outlined"
               sx={{
@@ -194,16 +197,16 @@ export default function DocenteCard({
 
         {/* Informações de Prioridade e Formulários */}
         <Stack direction="row" spacing={1} alignItems="center" mt={1}>
-          <Tooltip title="Prioridade informada para esta turma">
+          <Tooltip title={t("indicatedPriority")}>
             <Chip
-              label={`Prioridade ${prioridade}`}
+              label={t("priorityLevel", { prioridade: prioridade })}
               size="small"
               color={prioridade > 0 ? "primary" : "default"}
               variant={prioridade > 0 ? "filled" : "outlined"}
               sx={{ height: 20, fontSize: "0.7rem" }}
             />
           </Tooltip>
-          <Tooltip title="Total de formulários preenchidos pelo docente">
+          <Tooltip title={t("totalFormsFilled")}>
             <Chip
               icon={<ArticleIcon sx={{ fontSize: "0.8rem !important" }} />}
               label={`${totalFormularios} form.`}
@@ -219,12 +222,14 @@ export default function DocenteCard({
 
         {/* Carga Didática Atribuída */}
         <Stack direction="row" spacing={1} alignItems="center" mt={1}>
-          <Tooltip title="Carga didática já atribuída ao docente">
+          <Tooltip title={t("assignedTeachingWorkload")}>
             <Chip
               icon={
                 <FitnessCenterIcon sx={{ fontSize: "0.8rem !important" }} />
               }
-              label={`Carga: ${cargaDidaticaAtribuida.toFixed(2)}h`}
+              label={t("teachingWorkload", {
+                carga: cargaDidaticaAtribuida.toFixed(2),
+              })}
               size="small"
               sx={{
                 height: 20,
@@ -252,12 +257,12 @@ export default function DocenteCard({
           <Tooltip
             title={
               !canNavigate
-                ? "Ação desabilitada"
+                ? t("actionDisabled")
                 : isTravado
-                  ? "Ação bloqueada (Item travado)"
+                  ? t("actionBlocked")
                   : isAtribuido
-                    ? "Remover atribuição"
-                    : "Atribuir docente"
+                    ? t("removeAllocation")
+                    : t("assignProfessor")
             }
           >
             <span onClick={(e) => e.stopPropagation()}>
@@ -279,7 +284,7 @@ export default function DocenteCard({
                   <AddIcon fontSize="small" />
                 )}
                 <span style={srOnlyStyle}>
-                  {isAtribuido ? "Remover atribuição" : "Atribuir"}
+                  {isAtribuido ? t("removeAllocation") : t("assign")}
                 </span>
               </IconButton>
             </span>
@@ -289,10 +294,10 @@ export default function DocenteCard({
           <Tooltip
             title={
               !canNavigate
-                ? "Ação desabilitada"
+                ? t("actionDisabled")
                 : isTravado
-                  ? "Destravar"
-                  : "Travar"
+                  ? t("unlock")
+                  : t("lock")
             }
           >
             <span onClick={(e) => e.stopPropagation()}>
@@ -312,7 +317,7 @@ export default function DocenteCard({
                   <LockIcon fontSize="small" />
                 )}
                 <span style={srOnlyStyle}>
-                  {isTravado ? "Destravar item" : "Travar item"}
+                  {isTravado ? t("unlockItem") : t("lockItem")}
                 </span>
               </IconButton>
             </span>

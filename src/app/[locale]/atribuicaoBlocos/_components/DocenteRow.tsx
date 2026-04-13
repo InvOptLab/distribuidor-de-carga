@@ -15,6 +15,7 @@ import TurmaCard from "./TurmaCard";
 import { Disciplina } from "@/context/Global/utils";
 import { useMemo } from "react";
 import { Celula } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 
 type Props = {
   nome: string;
@@ -85,6 +86,8 @@ export default function DocenteRow({
     onTravar?.(nome, idDisciplina);
   };
 
+  const t = useTranslations("Pages.AllocationBlocks.DocenteRow");
+
   return (
     <motion.div
       layout
@@ -135,7 +138,7 @@ export default function DocenteRow({
                 {nome}
               </Typography>
               <Chip
-                label={`Saldo: ${saldoTexto}`}
+                label={t("balance", { saldo: saldoTexto })}
                 size="small"
                 variant="outlined"
                 sx={{
@@ -192,7 +195,7 @@ export default function DocenteRow({
                 fontSize: "0.75rem",
               }}
             >
-              Turmas Atribuídas
+              {t("assignedClasses")}
             </Typography>
 
             <Stack
@@ -238,7 +241,7 @@ export default function DocenteRow({
                   py={4}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    Nenhuma turma atribuída
+                    {t("noAssignedClasses")}
                   </Typography>
                 </Box>
               )}
@@ -256,7 +259,7 @@ export default function DocenteRow({
                 fontSize: "0.75rem",
               }}
             >
-              Disponíveis para atribuição
+              {t("availableForAllocation")}
             </Typography>
 
             <Stack
@@ -289,7 +292,7 @@ export default function DocenteRow({
               ) : (
                 <Box p={2}>
                   <Typography variant="body2" color="text.secondary">
-                    Sem sugestões no momento
+                    {t("noSuggestionsAtTheMoment")}
                   </Typography>
                 </Box>
               )}

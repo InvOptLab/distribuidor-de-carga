@@ -410,6 +410,82 @@
       "manageColumns": "Manage Columns",
       "displayingCount": "Showing {visible} of {total} {total, plural, =1 {class} other {classes}}",
       "filtered": " (filtered)"
+    },
+    "AllocationBlocks": {
+      "navigation": "Navigation:",
+      "blankSpace": "",
+      "Alerts": {
+        "noPermissionToUndo": "You are not allowed to undo an assignment.",
+        "allocationLocked": "This assignment is locked and cannot be removed.",
+        "noPermissionToAssignm": "You do not have permission to make an assignment.",
+        "professorAlreadyLocked": "There is already a locked professor ({docenteTravado}). The professor {nome_docente} has been added.",
+        "noPermissionToLockUnlock": "You do not have permission to lock/unlock."
+      },
+      "TurmasView": {
+        "previousClass": "Previous Class",
+        "nextClass": "Next Class"
+      },
+      "TurmaRow": {
+        "eveningCourse": "Evening Course",
+        "taughtInEnglish": "Taught in English",
+        "undergraduate": "Undergraduate",
+        "graduate": "Graduate",
+        "workload": "Workload: {carga}h",
+        "noProfessor": "No professor",
+        "assignedProfessors": "Assigned Professors",
+        "noProfessorAssigned": "No professor assigned",
+        "professorsWithPriority": "Professors with Priority for this Class",
+        "noPriorityIndicated": "No professor indicated priority for this class"
+      },
+      "TurmaCard": {
+        "allocationLocked": "This allocation is locked",
+        "scheduleClash": "Schedule clash with another class",
+        "eveningCourse": "Evening Course",
+        "taughtInEnglish": "Taught in English",
+        "undergraduate": "Undergraduate",
+        "graduate": "Graduate",
+        "teachingWorkload": "Teaching workload for class {codigo}-{turma}.",
+        "priorityLevel": "Priority {prioridade}",
+        "noScheduleDefined": "No schedule defined",
+        "noProfessor": "No professor",
+        "actionDisabled": "Action disabled",
+        "actionBlocked": "Action blocked (Item locked)",
+        "removeAllocation": "Remove allocation",
+        "assign": "Assign",
+        "unlock": "Unlock",
+        "lock": "Lock",
+        "unlockItem": "Unlock item",
+        "lockItem": "Lock item"
+      },
+      "DocentesView": {
+        "previousTeacher": "Previous Teacher",
+        "nextTeacher": "Next Teacher"
+      },
+      "DocenteRow": {
+        "balance": "Balance: {saldo}",
+        "assignedClasses": "Assigned Classes",
+        "noAssignedClasses": "No classes assigned",
+        "availableForAllocation": "Available for allocation",
+        "noSuggestionsAtTheMoment": "No suggestions at the moment"
+      },
+      "DocenteCard": {
+        "allocationLocked": "This allocation is locked",
+        "balance": "Balance: {saldo}",
+        "indicatedPriority": "Priority indicated for this class",
+        "priorityLevel": "Priority {prioridade}",
+        "totalFormsFilled": "Total forms filled out by the professor",
+        "assignedTeachingWorkload": "Teaching workload already assigned to the professor",
+        "teachingWorkload": "Workload: {carga}h.",
+        "actionDisabled": "Action disabled",
+        "actionBlocked": "Action blocked (Item locked)",
+        "removeAllocation": "Remove allocation",
+        "assignProfessor": "Assign professor",
+        "assign": "Assign",
+        "unlock": "Unlock",
+        "lock": "Lock",
+        "unlockItem": "Unlock item",
+        "lockItem": "Lock item"
+      }
     }
   },
   "Accessibility": {
