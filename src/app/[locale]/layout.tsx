@@ -6,7 +6,7 @@ import { GlobalWrapper } from "@/context/Global";
 import { AvatarChatProvider } from "@/context/AvatarChat/AvatarChatContext";
 import { AvatarChatWidget } from "@/components/AvatarChat/AvatarChatWidget";
 
-import { CssBaseline } from "@mui/material";
+import { Box, CssBaseline } from "@mui/material";
 
 import "katex/dist/katex.min.css";
 import { CollaborationProvider } from "@/context/Collaboration";
@@ -45,22 +45,52 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body style={{ margin: 0 }}>
+      <body
+        style={{
+          margin: 0,
+          padding: 0,
+          height: "100vh", // Trava a altura para ser exatamente o tamanho da janela
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden", // Proíbe o navegador de ter sua própria barra de rolagem
+        }}
+      >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AccessibilityProvider>
             <AccessibilityBar />
             <CssBaseline />
+
+            {/* Descomentado o PageHeaderProvider para ativar o Contexto Global */}
+            {/* <PageHeaderProvider> */}
             <AvatarChatProvider>
               <CollaborationProvider>
-                <Navbar />
+                {/* Container para proteger as barras de serem "amassadas" pelo flexbox */}
+                <Box sx={{ flexShrink: 0 }}>
+                  <Navbar />
+                  {/* <CollapsibleHeader /> */}
+                </Box>
+
                 <GlobalWrapper>
                   <AlgorithmWrapper>
                     <AlertsWrapper>
                       <HistorySolutionProvider>
-                        <div id="main-content" style={{ padding: "15px" }}>
+                        {/* Substituímos a <div> nativa pelo Box do MUI para controlar o scroll */}
+                        <Box
+                          component="main"
+                          id="main-content"
+                          sx={{
+                            flexGrow: 1, // Faz este bloco crescer para preencher a tela restante
+                            overflowY: "auto", // O scroll VAI ACONTECER AQUI!
+                            overflowX: "hidden",
+                            display: "flex",
+                            flexDirection: "column",
+                            position: "relative", // Evita bugs com modais/tooltips internas
+                          }}
+                        >
                           <ClearStorageModal />
                           {children}
-                        </div>
+                        </Box>
+
                         <AvatarChatWidget />
                       </HistorySolutionProvider>
                     </AlertsWrapper>
@@ -68,6 +98,7 @@ export default async function RootLayout({
                 </GlobalWrapper>
               </CollaborationProvider>
             </AvatarChatProvider>
+            {/* </PageHeaderProvider> */}
 
             <VLibras forceOnload />
           </AccessibilityProvider>

@@ -43,6 +43,17 @@ import {
   type Docente,
   isDisciplina,
 } from "@/context/Global/utils";
+import { useTranslations } from "next-intl";
+
+// Mapa para relacionar a chave neutra com o dado em pt-br que vem do arquivo
+const dayDataMapping: Record<string, string> = {
+  mon: "Seg.",
+  tue: "Ter.",
+  wed: "Qua.",
+  thu: "Qui.",
+  fri: "Sex.",
+  sat: "Sáb.",
+};
 
 interface FilterRule {
   id: string;
@@ -73,38 +84,40 @@ export default function CustomSelector({
   const [advancedFilters, setAdvancedFilters] = useState<FilterRule[]>([]);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
 
+  const t = useTranslations("Pages.Select.CustomSelector");
+
   // Determinar se estamos lidando com docentes ou disciplinas
   const isDocenteList = items.length > 0 && !isDisciplina(items[0]);
 
   // Campos disponíveis para filtros
   const docenteFields = [
-    { key: "nome", label: "Nome", type: "text" },
-    { key: "ativo", label: "Ativo", type: "boolean" },
-    { key: "comentario", label: "Comentário", type: "text" },
+    { key: "nome", label: t("name"), type: "text" },
+    { key: "ativo", label: t("active"), type: "boolean" },
+    { key: "comentario", label: t("comment"), type: "text" },
     {
       key: "agrupar",
-      label: "Agrupar",
+      label: t("groupPreference"),
       type: "chips",
-      options: ["Agrupar", "Indiferente", "Espalhar"],
+      options: [t("groupPreference"), t("indifferent"), t("spreadPreference")],
     },
   ];
 
   const disciplinaFields = [
-    { key: "nome", label: "Nome", type: "text" },
-    { key: "codigo", label: "Código", type: "text" },
+    { key: "nome", label: t("name"), type: "text" },
+    { key: "codigo", label: t("code"), type: "text" },
     { key: "id", label: "ID", type: "text" },
-    { key: "nivel", label: "Nível", type: "chips", options: [] }, // Será preenchido dinamicamente
-    { key: "grupo", label: "Grupo", type: "chips", options: [] }, // Será preenchido dinamicamente
-    { key: "noturna", label: "Noturna", type: "boolean" },
-    { key: "ingles", label: "Inglês", type: "boolean" },
-    { key: "ativo", label: "Ativo", type: "boolean" },
+    { key: "nivel", label: t("level"), type: "chips", options: [] }, // Será preenchido dinamicamente
+    { key: "grupo", label: t("group"), type: "chips", options: [] }, // Será preenchido dinamicamente
+    { key: "noturna", label: t("evening"), type: "boolean" },
+    { key: "ingles", label: t("english"), type: "boolean" },
+    { key: "ativo", label: t("active"), type: "boolean" },
     {
       key: "horarios_dias",
-      label: "Dias da Semana",
+      label: t("weekDaysLabel"),
       type: "chips",
-      options: ["Seg.", "Ter.", "Qua.", "Qui.", "Sex.", "Sáb."],
+      options: ["mon", "tue", "wed", "thu", "fri", "sat"],
     },
-    { key: "horarios_tempo", label: "Horário", type: "timeRange" },
+    { key: "horarios_tempo", label: t("schedule"), type: "timeRange" },
   ];
 
   // Obter opções únicas para campos de chips
@@ -159,8 +172,18 @@ export default function CustomSelector({
       case "chips":
         if (rule.fieldKey === "horarios") {
           if (!Array.isArray(value)) return false;
-          return value.some((horario: any) => rule.value.includes(horario.dia));
+
+          // Mapeia as chaves neutras ("mon") para os valores do arquivo ("Seg.")
+          const rawDaysToMatch = rule.value.map(
+            (key: string) => dayDataMapping[key],
+          );
+
+          // Compara com horario.dia usando os valores mapeados
+          return value.some((horario: any) =>
+            rawDaysToMatch.includes(horario.dia),
+          );
         }
+
         return rule.value.includes(value);
 
       case "timeRange":
@@ -259,22 +282,32 @@ export default function CustomSelector({
   const renderFilterChip = (filter: FilterRule) => {
     let displayValue = "";
     if (filter.type === "chips" && Array.isArray(filter.value)) {
-      displayValue = filter.value.join(", ");
+      // Traduzir as chaves de dias da semana para a exibição no Chip
+      if (
+        filter.fieldKey === "horarios_dias" ||
+        filter.fieldKey === "horarios"
+      ) {
+        displayValue = filter.value
+          .map((key: string) => t(`WeekDays.${key}`)) // Busca "Seg.", "Mon.", etc, conforme o idioma
+          .join(", ");
+      } else {
+        displayValue = filter.value.join(", ");
+      }
     } else if (filter.type === "timeRange") {
       const start = filter.value.start || "";
       const end = filter.value.end || "";
 
       if (!start && !end) {
-        displayValue = "sem horários definidos";
+        displayValue = t("noDefinedSchedules");
       } else if (start && end) {
         displayValue = `${start} - ${end}`;
       } else if (start) {
-        displayValue = `a partir de ${start}`;
+        displayValue = t("fromStart", { start: start });
       } else if (end) {
-        displayValue = `até ${end}`;
+        displayValue = t("toEnd", { start: end });
       }
     } else if (filter.type === "boolean") {
-      displayValue = filter.value ? "Sim" : "Não";
+      displayValue = filter.value ? t("yes") : t("no");
     } else {
       displayValue = filter.value.toString();
     }
@@ -305,7 +338,7 @@ export default function CustomSelector({
             indeterminate={isIndeterminate} // Usar estado calculado dos filtrados
             disabled={filteredItems.length === 0}
             slotProps={{
-              input: { "aria-label": "Todos os itens selecionados." },
+              input: { "aria-label": t("allItemsSelected") },
             }}
           />
         }
@@ -313,7 +346,7 @@ export default function CustomSelector({
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {title}
             {hasActiveFilters && (
-              <Tooltip title="Filtros ativos">
+              <Tooltip title={t("activeFilters")}>
                 <FilterListIcon color="primary" fontSize="small" />
               </Tooltip>
             )}
@@ -322,7 +355,7 @@ export default function CustomSelector({
         subheader={
           // Mostrar contadores baseados nos itens filtrados
           <>
-            {`${filteredCheckedCount}/${filteredItems.length} selecionados`}
+            {`${filteredCheckedCount}/${filteredItems.length} ${t("selected")}`}
             {filteredItems.length !== items.length && (
               <Typography
                 variant="caption"
@@ -331,7 +364,7 @@ export default function CustomSelector({
               >
                 {`(${
                   items.length - filteredItems.length
-                } itens ocultos pelos filtros)`}
+                } ${t("itemsHiddenByFilters")})`}
               </Typography>
             )}
           </>
@@ -343,7 +376,7 @@ export default function CustomSelector({
       <Box sx={{ paddingX: 2, paddingY: 1 }}>
         <TextField
           variant="outlined"
-          placeholder={`Buscar ${isDocenteList ? "docente" : "disciplina"}...`}
+          placeholder={`${t("search")} ${isDocenteList ? t("professor") : t("class")}...`}
           fullWidth
           value={searchFilter}
           onChange={(e) => setSearchFilter(e.target.value)}
@@ -373,14 +406,14 @@ export default function CustomSelector({
               ),
               endAdornment: hasActiveFilters && (
                 <InputAdornment position="end">
-                  <Tooltip title="Limpar todos os filtros">
+                  <Tooltip title={t("clearAllFilters")}>
                     <Button
                       size="small"
                       onClick={clearAllFilters}
                       startIcon={<ClearIcon />}
                       sx={{ minWidth: "auto", px: 1 }}
                     >
-                      Limpar
+                      {t("clear")}
                     </Button>
                   </Tooltip>
                 </InputAdornment>
@@ -399,10 +432,11 @@ export default function CustomSelector({
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography
               variant="body2"
+              component="div"
               sx={{ display: "flex", alignItems: "center", gap: 1 }}
             >
               <FilterListIcon fontSize="small" />
-              Filtros Avançados
+              {t("advancedFilters")}
               {advancedFilters.length > 0 && (
                 <Chip
                   label={advancedFilters.length}
@@ -426,7 +460,7 @@ export default function CustomSelector({
       {advancedFilters.length > 0 && (
         <Box sx={{ px: 2, pb: 1 }}>
           <Typography variant="caption" color="text.secondary" gutterBottom>
-            Filtros Ativos:
+            {t("activeFiltersLabel")}
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap" }}>
             {advancedFilters.map(renderFilterChip)}
@@ -473,7 +507,7 @@ export default function CustomSelector({
                 }
                 secondary={
                   isDisciplina(value) && (value as Disciplina).codigo
-                    ? `Código: ${(value as Disciplina).codigo}`
+                    ? `${t("codeLabel")} ${(value as Disciplina).codigo}`
                     : undefined
                 }
               />
@@ -484,8 +518,8 @@ export default function CustomSelector({
           <Box sx={{ p: 3, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
               {hasActiveFilters
-                ? "Nenhum item corresponde aos filtros aplicados"
-                : "Nenhum item disponível"}
+                ? t("noItemsMatchFilters")
+                : t("noItemsAvailable")}
             </Typography>
           </Box>
         )}
@@ -513,6 +547,8 @@ function AdvancedFilterForm({
   const [timeStart, setTimeStart] = useState("");
   const [timeEnd, setTimeEnd] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const t = useTranslations("Pages.Select.CustomSelector.AdvancedFilterForm");
 
   const selectedFieldConfig = fields.find((f) => f.key === selectedField);
 
@@ -582,7 +618,7 @@ function AdvancedFilterForm({
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <Button variant="outlined" onClick={() => setDialogOpen(true)}>
-        Adicionar Filtro Avançado
+        {t("addAdvancedFilter")}
       </Button>
 
       <Dialog
@@ -591,17 +627,17 @@ function AdvancedFilterForm({
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Adicionar Filtro Avançado</DialogTitle>
+        <DialogTitle>{t("addAdvancedFilter")}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
             <FormControl fullWidth>
-              <InputLabel>Campo</InputLabel>
+              <InputLabel>{t("field")}</InputLabel>
               <Select
                 value={selectedField}
                 onChange={(event: SelectChangeEvent) =>
                   setSelectedField(event.target.value)
                 }
-                label="Campo"
+                label={t("field")}
               >
                 {fields.map((field) => (
                   <MenuItem key={field.key} value={field.key}>
@@ -616,7 +652,7 @@ function AdvancedFilterForm({
                 {selectedFieldConfig.type === "text" && (
                   <TextField
                     fullWidth
-                    label="Valor"
+                    label={t("value")}
                     value={textValue}
                     onChange={(e) => setTextValue(e.target.value)}
                   />
@@ -630,33 +666,41 @@ function AdvancedFilterForm({
                         onChange={(e) => setBooleanValue(e.target.checked)}
                       />
                     }
-                    label={booleanValue ? "Sim" : "Não"}
+                    label={booleanValue ? t("yes") : t("no")}
                   />
                 )}
 
                 {selectedFieldConfig.type === "chips" && (
                   <Box>
                     <Typography variant="body2" gutterBottom>
-                      Selecione uma ou mais opções:
+                      {t("selectOneOrMoreOptions")}
                     </Typography>
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                       {(selectedFieldConfig.options?.length > 0
                         ? selectedFieldConfig.options
                         : getUniqueOptions(selectedFieldConfig.key)
-                      ).map((option: string) => (
-                        <Chip
-                          key={option}
-                          label={option}
-                          clickable
-                          color={
-                            selectedChips.includes(option)
-                              ? "primary"
-                              : "default"
-                          }
-                          onClick={() => handleChipToggle(option)}
-                          size="small"
-                        />
-                      ))}
+                      ).map((option: string) => {
+                        // Verifica se é o campo de dias para buscar a tradução
+                        const displayLabel =
+                          selectedFieldConfig.key === "horarios_dias"
+                            ? t(`WeekDays.${option}`)
+                            : option;
+
+                        return (
+                          <Chip
+                            key={option}
+                            label={displayLabel}
+                            clickable
+                            color={
+                              selectedChips.includes(option)
+                                ? "primary"
+                                : "default"
+                            }
+                            onClick={() => handleChipToggle(option)}
+                            size="small"
+                          />
+                        );
+                      })}
                     </Box>
                   </Box>
                 )}
@@ -664,14 +708,14 @@ function AdvancedFilterForm({
                 {selectedFieldConfig.type === "timeRange" && (
                   <Box>
                     <Typography variant="body2" gutterBottom>
-                      Selecione o intervalo de horário:
+                      {t("selectTimeRange")}
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid size={{ xs: 6 }}>
                         <TextField
                           fullWidth
                           size="small"
-                          label="Início (opcional)"
+                          label={t("startOptional")}
                           type="time"
                           value={timeStart}
                           onChange={(e) => setTimeStart(e.target.value)}
@@ -682,7 +726,7 @@ function AdvancedFilterForm({
                         <TextField
                           fullWidth
                           size="small"
-                          label="Fim (opcional)"
+                          label={t("endOptional")}
                           type="time"
                           value={timeEnd}
                           onChange={(e) => setTimeEnd(e.target.value)}
@@ -695,14 +739,10 @@ function AdvancedFilterForm({
                       color="text.secondary"
                       sx={{ mt: 1, display: "block" }}
                     >
-                      • Deixe ambos vazios para encontrar disciplinas sem
-                      horários definidos
-                      <br />• Apenas início: disciplinas que começam a partir
-                      desse horário
-                      <br />• Apenas fim: disciplinas que terminam até esse
-                      horário
-                      <br />• Ambos: disciplinas que se sobrepõem ao intervalo
-                      especificado
+                      • {t("leaveBothEmptyHelp")}
+                      <br />• {t("onlyStartHelp")}
+                      <br />• {t("onlyEndHelp")}
+                      <br />• {t("bothHelp")}
                     </Typography>
                   </Box>
                 )}
@@ -711,13 +751,13 @@ function AdvancedFilterForm({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={() => setDialogOpen(false)}>{t("cancel")}</Button>
           <Button
             onClick={handleAddFilter}
             variant="contained"
             disabled={isAddDisabled()}
           >
-            Adicionar
+            {t("add")}
           </Button>
         </DialogActions>
       </Dialog>

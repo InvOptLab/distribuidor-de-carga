@@ -11,6 +11,7 @@ import { Disciplina, Docente } from "@/context/Global/utils";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
 import CustomSelector from "./_components/CustomSelector";
 import { Button, Grid } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 function not<T>(a: readonly T[], b: readonly T[]) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -39,7 +40,7 @@ export default function Seletor() {
   const handleToggleEntity = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked([]); // Limpa os itens selecionados ao mudar a entidade
     setSelectedEntity(
-      (event.target as HTMLInputElement).value as "docente" | "disciplina"
+      (event.target as HTMLInputElement).value as "docente" | "disciplina",
     );
   };
 
@@ -115,7 +116,7 @@ export default function Seletor() {
 
   const customList = (
     title: React.ReactNode,
-    items: readonly (Disciplina | Docente)[]
+    items: readonly (Disciplina | Docente)[],
   ) => (
     <CustomSelector
       key={`list_${title}`}
@@ -127,6 +128,8 @@ export default function Seletor() {
       numberOfChecked={numberOfChecked}
     />
   );
+
+  const t = useTranslations("Pages.Select");
 
   return (
     <>
@@ -141,12 +144,12 @@ export default function Seletor() {
             <FormControlLabel
               value="docente"
               control={<Radio />}
-              label="Docentes"
+              label={t("professors")}
             />
             <FormControlLabel
               value="disciplina"
               control={<Radio />}
-              label="Disciplinas"
+              label={t("classes")}
             />
           </RadioGroup>
           <Grid
@@ -154,7 +157,7 @@ export default function Seletor() {
             spacing={2}
             sx={{ justifyContent: "center", alignItems: "center" }}
           >
-            <Grid>{customList("Ativos", left)}</Grid>
+            <Grid>{customList(t("active"), left)}</Grid>
             <Grid>
               <Grid container direction="column" sx={{ alignItems: "center" }}>
                 <Button
@@ -179,7 +182,7 @@ export default function Seletor() {
                 </Button>
               </Grid>
             </Grid>
-            <Grid>{customList("Inativos", right)}</Grid>
+            <Grid>{customList(t("inactive"), right)}</Grid>
           </Grid>
         </div>
       )}

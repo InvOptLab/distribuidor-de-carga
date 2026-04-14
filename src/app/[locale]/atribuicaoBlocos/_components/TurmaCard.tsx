@@ -1,3 +1,4 @@
+"use client";
 import { Horario } from "@/algoritmo/communs/interfaces/interfaces";
 import {
   Box,
@@ -10,6 +11,10 @@ import {
   alpha,
   Avatar,
   AvatarGroup,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import {
   AccessTime as TimeIcon,
@@ -17,11 +22,14 @@ import {
   AddCircleOutline as AddIcon,
   RemoveCircleOutline as RemoveIcon,
   NightsStay as NightIcon,
-  School as SchoolIcon, // Para Nível
-  Language as LangIcon, // Para Inglês
+  Language as LangIcon,
+  Lock as LockIcon,
+  LockOpen as LockOpenIcon,
+  MoreVert as MoreIcon,
 } from "@mui/icons-material";
-
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import { useState, MouseEvent } from "react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   nome: string;
@@ -35,10 +43,13 @@ type Props = {
   noturna: boolean;
   ingles: boolean;
   docentesAtribuidos?: string[];
-
   isAtribuida: boolean;
+  isTravada?: boolean;
   hasConflict?: boolean;
   onAction: () => void;
+  onTravar?: () => void;
+  onClick?: () => void;
+  canNavigate?: boolean;
 };
 
 export default function TurmaCard({
@@ -54,54 +65,88 @@ export default function TurmaCard({
   ingles,
   docentesAtribuidos = [],
   isAtribuida,
+  isTravada = false,
   hasConflict = false,
   onAction,
+  onTravar,
+  onClick,
+  canNavigate = true,
 }: Props) {
-  const bgColor = hasConflict
-    ? alpha("#d32f2f", 0.05)
-    : isAtribuida
-    ? alpha("#1976d2", 0.05)
-    : "#fff";
+  const t = useTranslations("Pages.AllocationBlocks.TurmaCard");
 
-  const borderColor = hasConflict
-    ? "#d32f2f"
-    : isAtribuida
-    ? "#1976d2"
-    : "#e0e0e0";
+  // Estilo invisível visualmente, mas lido por leitores de tela
+  const srOnlyStyle = {
+    position: "absolute",
+    width: "1px",
+    height: "1px",
+    padding: 0,
+    margin: "-1px",
+    overflow: "hidden",
+    clip: "rect(0, 0, 0, 0)",
+    whiteSpace: "nowrap",
+    borderWidth: 0,
+  } as const;
+
+  const bgColor = isTravada
+    ? alpha("#ff9800", 0.1)
+    : hasConflict
+      ? alpha("#d32f2f", 0.05)
+      : isAtribuida
+        ? alpha("#1976d2", 0.05)
+        : "#fff";
+
+  const borderColor = isTravada
+    ? "#ff9800"
+    : hasConflict
+      ? "#d32f2f"
+      : isAtribuida
+        ? "#1976d2"
+        : "#e0e0e0";
 
   return (
     <Paper
       elevation={isAtribuida ? 2 : 1}
+      onClick={(e) => {
+        if (onClick) {
+          e.stopPropagation(); // Impede que o clique vaze para a linha (Row)
+          onClick();
+        }
+      }}
       sx={{
-        width: 280, // Aumentei um pouco para caber as infos
+        width: 280,
         minWidth: 280,
         p: 1.5,
         borderRadius: 2,
         bgcolor: bgColor,
         border: `1px solid ${borderColor}`,
-        borderLeftWidth: hasConflict ? 6 : isAtribuida ? 4 : 1,
+        borderLeftWidth: isTravada ? 6 : hasConflict ? 6 : isAtribuida ? 4 : 1,
         transition: "all 0.2s ease-in-out",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         position: "relative",
+        cursor: onClick ? "pointer" : "default",
         "&:hover": {
           transform: "translateY(-2px)",
           boxShadow: 3,
         },
       }}
     >
-      {/* Indicador de Conflito */}
-      {hasConflict && (
-        <Tooltip title="Choque de horário com outra disciplina">
-          <Box position="absolute" top={8} right={8} color="error.main">
-            <WarningIcon fontSize="small" />
-          </Box>
-        </Tooltip>
-      )}
+      {/* Indicadores no canto superior direito */}
+      <Box position="absolute" top={8} right={8} display="flex" gap={0.5}>
+        {isTravada && (
+          <Tooltip title={t("allocationLocked")}>
+            <LockIcon fontSize="small" sx={{ color: "warning.main" }} />
+          </Tooltip>
+        )}
+        {hasConflict && (
+          <Tooltip title={t("scheduleClash")}>
+            <WarningIcon fontSize="small" sx={{ color: "error.main" }} />
+          </Tooltip>
+        )}
+      </Box>
 
       <Box>
-        {/* Título e Código */}
         <Typography
           variant="subtitle2"
           fontWeight="bold"
@@ -121,10 +166,9 @@ export default function TurmaCard({
             {codigo} — T{turma}
           </Typography>
 
-          {/* Chips de Características */}
           <Stack direction="row" spacing={0.5}>
             {noturna && (
-              <Tooltip title="Curso Noturno">
+              <Tooltip title={t("eveningCourse")}>
                 <NightIcon
                   fontSize="inherit"
                   sx={{ fontSize: 14, color: "indigo" }}
@@ -132,7 +176,7 @@ export default function TurmaCard({
               </Tooltip>
             )}
             {ingles && (
-              <Tooltip title="Ministrada em Inglês">
+              <Tooltip title={t("taughtInEnglish")}>
                 <LangIcon
                   fontSize="inherit"
                   sx={{ fontSize: 14, color: "teal" }}
@@ -140,7 +184,9 @@ export default function TurmaCard({
               </Tooltip>
             )}
             {nivel && (
-              <Tooltip title={nivel === "g" ? "Graduação" : "Pós-graduação"}>
+              <Tooltip
+                title={nivel === "g" ? t("undergraduate") : t("graduate")}
+              >
                 <Chip
                   label={nivel.substring(0, 4)}
                   size="small"
@@ -163,9 +209,10 @@ export default function TurmaCard({
           {curso}
         </Typography>
 
-        {/* Informações de Carga e Prioridade */}
         <Stack direction="row" spacing={1} alignItems="center" my={1}>
-          <Tooltip title={`Carga didática da turma ${codigo}-${turma}.`}>
+          <Tooltip
+            title={t("teachingWorkload", { codigo: codigo, turma: turma })}
+          >
             <Chip
               icon={
                 <FitnessCenterIcon sx={{ fontSize: "0.8rem !important" }} />
@@ -180,7 +227,9 @@ export default function TurmaCard({
             />
           </Tooltip>
           <Chip
-            label={`Prioridade ${prioridade}`}
+            label={t("priorityLevel", {
+              prioridade: prioridade,
+            })}
             size="small"
             color={prioridade > 0 ? "primary" : "default"}
             variant={prioridade > 0 ? "filled" : "outlined"}
@@ -188,7 +237,6 @@ export default function TurmaCard({
           />
         </Stack>
 
-        {/* Horários */}
         <Stack spacing={0.5} mt={1}>
           {horarios.length > 0 ? (
             horarios.map((h, i) => (
@@ -211,13 +259,12 @@ export default function TurmaCard({
               color="text.disabled"
               fontStyle="italic"
             >
-              Sem horário definido
+              {t("noScheduleDefined")}
             </Typography>
           )}
         </Stack>
       </Box>
 
-      {/* Footer: Docentes e Ação */}
       <Box
         mt={2}
         pt={1}
@@ -226,7 +273,6 @@ export default function TurmaCard({
         justifyContent="space-between"
         alignItems="center"
       >
-        {/* Docentes Atribuídos */}
         <Box display="flex" alignItems="center">
           {docentesAtribuidos.length > 0 ? (
             <AvatarGroup
@@ -247,30 +293,83 @@ export default function TurmaCard({
             </AvatarGroup>
           ) : (
             <Typography variant="caption" color="text.disabled">
-              Nenhum docente
+              {t("noProfessor")}
             </Typography>
           )}
         </Box>
 
-        <Tooltip
-          title={isAtribuida ? "Remover atribuição" : "Atribuir ao docente"}
-        >
-          <IconButton
-            size="small"
-            onClick={(e) => {
-              e.stopPropagation();
-              onAction();
-            }}
-            color={isAtribuida ? "error" : "primary"}
-            sx={{ bgcolor: alpha(isAtribuida ? "#d32f2f" : "#1976d2", 0.1) }}
+        {/* Menu de Ações */}
+        <Stack direction="row" spacing={1}>
+          {/* Botão de Adicionar/Remover */}
+          <Tooltip
+            title={
+              !canNavigate
+                ? t("actionDisabled")
+                : isTravada
+                  ? t("actionBlocked")
+                  : isAtribuida
+                    ? t("removeAllocation")
+                    : t("assign")
+            }
           >
-            {isAtribuida ? (
-              <RemoveIcon fontSize="small" />
-            ) : (
-              <AddIcon fontSize="small" />
-            )}
-          </IconButton>
-        </Tooltip>
+            <span onClick={(e) => e.stopPropagation()}>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAction();
+                }}
+                disabled={!canNavigate || isTravada}
+                color={isAtribuida ? "error" : "primary"}
+                sx={{
+                  bgcolor: alpha(isAtribuida ? "#d32f2f" : "#1976d2", 0.05),
+                }}
+              >
+                {isAtribuida ? (
+                  <RemoveIcon fontSize="small" />
+                ) : (
+                  <AddIcon fontSize="small" />
+                )}
+                <span style={srOnlyStyle}>
+                  {isAtribuida ? t("removeAllocation") : t("assign")}
+                </span>
+              </IconButton>
+            </span>
+          </Tooltip>
+
+          {/* Botão de Travar/Destravar */}
+          <Tooltip
+            title={
+              !canNavigate
+                ? t("actionDisabled")
+                : isTravada
+                  ? t("unlock")
+                  : t("lock")
+            }
+          >
+            <span onClick={(e) => e.stopPropagation()}>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTravar?.();
+                }}
+                disabled={!canNavigate}
+                color="warning"
+                sx={{ bgcolor: alpha("#ff9800", 0.05) }}
+              >
+                {isTravada ? (
+                  <LockOpenIcon fontSize="small" />
+                ) : (
+                  <LockIcon fontSize="small" />
+                )}
+                <span style={srOnlyStyle}>
+                  {isTravada ? t("unlockItem") : t("lockItem")}
+                </span>
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Stack>
       </Box>
     </Paper>
   );

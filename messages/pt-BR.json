@@ -410,6 +410,154 @@
       "manageColumns": "Gerenciar Colunas",
       "displayingCount": "Exibindo {visible} de {total} {total, plural, =1 {turma} other {turmas}}",
       "filtered": " (filtrado)"
+    },
+    "AllocationBlocks": {
+      "navigation": "Navegação:",
+      "Alerts": {
+        "noPermissionToUndo": "Você não tem permissão para desfazer uma atribuição.",
+        "allocationLocked": "Esta atribuição está travada e não pode ser removida.",
+        "noPermissionToAssignm": "Você não tem permissão para realizar uma atribuição.",
+        "professorAlreadyLocked": "Já existe um docente travado ({docenteTravado}). O docente {nome_docente} foi adicionado.",
+        "noPermissionToLockUnlock": "Você não tem permissão para travar/destravar."
+      },
+      "TurmasView": {
+        "previousClass": "Turma Anterior",
+        "nextClass": "Próxima Turma"
+      },
+      "TurmaRow": {
+        "eveningCourse": "Curso Noturno",
+        "taughtInEnglish": "Ministrada em Inglês",
+        "undergraduate": "Graduação",
+        "graduate": "Pós-graduação",
+        "workload": "Carga: {carga}h",
+        "noProfessor": "Sem docente",
+        "assignedProfessors": "Docentes Atribuídos",
+        "noProfessorAssigned": "Nenhum docente atribuído",
+        "professorsWithPriority": "Docentes com Prioridade para esta Turma",
+        "noPriorityIndicated": "Nenhum docente indicou prioridade para esta turma"
+      },
+      "TurmaCard": {
+        "allocationLocked": "Esta atribuição está travada",
+        "scheduleClash": "Choque de horário com outra turma",
+        "eveningCourse": "Curso Noturno",
+        "taughtInEnglish": "Ministrada em Inglês",
+        "undergraduate": "Graduação",
+        "graduate": "Pós-graduação",
+        "teachingWorkload": "Carga didática da turma {codigo}-{turma}.",
+        "priorityLevel": "Prioridade {prioridade}",
+        "noScheduleDefined": "Sem horário definido",
+        "noProfessor": "Nenhum docente",
+        "actionDisabled": "Ação desabilitada",
+        "actionBlocked": "Ação bloqueada (Item travado)",
+        "removeAllocation": "Remover atribuição",
+        "assign": "Atribuir",
+        "unlock": "Destravar",
+        "lock": "Travar",
+        "unlockItem": "Destravar item",
+        "lockItem": "Travar item"
+      },
+      "DocentesView": {
+        "previousTeacher": "Docente Anterior",
+        "nextTeacher": "Próximo Docente"
+      },
+      "DocenteRow": {
+        "balance": "Saldo: {saldo}",
+        "assignedClasses": "Turmas Atribuídas",
+        "noAssignedClasses": "Nenhuma turma atribuída",
+        "availableForAllocation": "Disponíveis para atribuição",
+        "noSuggestionsAtTheMoment": "Sem sugestões no momento"
+      },
+      "DocenteCard": {
+        "allocationLocked": "Esta atribuição está travada",
+        "balance": "Saldo: {saldo}",
+        "indicatedPriority": "Prioridade informada para esta turma",
+        "priorityLevel": "Prioridade {prioridade}",
+        "totalFormsFilled": "Total de formulários preenchidos pelo docente",
+        "assignedTeachingWorkload": "Carga didática já atribuída ao docente",
+        "teachingWorkload": "Carga: {carga}h.",
+        "actionDisabled": "Ação desabilitada",
+        "actionBlocked": "Ação bloqueada (Item travado)",
+        "removeAllocation": "Remover atribuição",
+        "assignProfessor": "Atribuir docente",
+        "assign": "Atribuir",
+        "unlock": "Destravar",
+        "lock": "Travar",
+        "unlockItem": "Destravar item",
+        "lockItem": "Travar item"
+      }
+    },
+    "Select": {
+      "professors": "Docentes",
+      "classes": "Turmas",
+      "active": "Ativos",
+      "inactive": "Inativos",
+      "CustomSelector": {
+        "name": "Nome",
+        "active": "Ativo",
+        "comment": "Comentário",
+        "groupPreference": "Agrupar",
+        "indifferent": "Indiferente",
+        "spreadPreference": "Espalhar",
+        "code": "Código",
+        "level": "Nível",
+        "group": "Grupo",
+        "evening": "Noturna",
+        "english": "Inglês",
+        "weekDaysLabel": "Dias da Semana",
+        "WeekDays": {
+          "mon": "Seg.",
+          "tue": "Ter.",
+          "wed": "Qua.",
+          "thu": "Qui.",
+          "fri": "Sex.",
+          "sat": "Sáb."
+        },
+        "schedule": "Horário",
+        "noDefinedSchedules": "sem horários definidos",
+        "fromStart": "a partir de {start}",
+        "toEnd": "até {end}",
+        "yes": "Sim",
+        "no": "Não",
+        "allItemsSelected": "Todos os itens selecionados.",
+        "activeFilters": "Filtros ativos",
+        "selected": "selecionados",
+        "itemsHiddenByFilters": "itens ocultos pelos filtros",
+        "search": "Buscar",
+        "professor": "docente",
+        "class": "turma",
+        "clearAllFilters": "Limpar todos os filtros.",
+        "clear": "Limpar",
+        "advancedFilters": "Filtros Avançados",
+        "activeFiltersLabel": "Filtros Ativos:",
+        "codeLabel": "Código:",
+        "noItemsMatchFilters": "Nenhum item corresponde aos filtros aplicados",
+        "noItemsAvailable": "Nenhum item disponível",
+        "AdvancedFilterForm": {
+          "addAdvancedFilter": "Adicionar Filtro Avançado",
+          "field": "Campo",
+          "value": "Valor",
+          "yes": "Sim",
+          "no": "Não",
+          "selectOneOrMoreOptions": "Selecione uma ou mais opções:",
+          "selectTimeRange": "Selecione o intervalo de horário:",
+          "startOptional": "Início (opcional)",
+          "endOptional": "Fim (opcional)",
+          "leaveBothEmptyHelp": "Deixe ambos vazios para encontrar disciplinas sem horários definidos",
+          "onlyStartHelp": "Apenas início: disciplinas que começam a partir desse horário",
+          "onlyEndHelp": "Apenas fim: disciplinas que terminam até esse horário",
+          "bothHelp": "Ambos: disciplinas que se sobrepõem ao intervalo especificado",
+          "cancel": "Cancelar",
+          "add": "Adicionar",
+          "WeekDays": {
+            "mon": "Seg.",
+            "tue": "Ter.",
+            "wed": "Qua.",
+            "thu": "Qui.",
+            "fri": "Sex.",
+            "sat": "Sáb."
+          }
+        }
+      }
     }
   },
   "Accessibility": {
@@ -577,7 +725,8 @@
     },
     "description": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela clicando no X localizado acima.",
     "stop": "Parar",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "linearProgressLabel": "Atribuições: {current} de {total}"
   },
   "Spreadsheet": {
     "DocenteSelectionDialog": {
@@ -605,7 +754,8 @@
     "error": "Ocorreu um erro. Por favor, tente novamente.",
     "unknownError": "Ocorreu um erro desconhecido. Por favor, tente novamente.",
     "save": "Salvar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "close": "Fechar"
   },
   "Components": {
     "ClearStorageModal": {
@@ -618,6 +768,11 @@
       "closeAriaLabel": "Fechar modal",
       "continueAriaDescription": "Continua com os dados salvos anteriormente sem fazer alterações",
       "clearAriaDescription": "Remove todos os dados salvos e recarrega a página para começar um novo planejamento"
+    },
+    "NoDataFound": {
+      "noDataFound": "Nenhum dado encontrado",
+      "description": "Parece que você ainda não carregou os dados necessários para realizar a atribuição. Importe os docentes e turmas para começar.",
+      "loadData": "Carregar Dados"
     }
   }
 }

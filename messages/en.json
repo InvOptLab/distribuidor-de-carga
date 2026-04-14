@@ -410,6 +410,155 @@
       "manageColumns": "Manage Columns",
       "displayingCount": "Showing {visible} of {total} {total, plural, =1 {class} other {classes}}",
       "filtered": " (filtered)"
+    },
+    "AllocationBlocks": {
+      "navigation": "Navigation:",
+      "blankSpace": "",
+      "Alerts": {
+        "noPermissionToUndo": "You are not allowed to undo an assignment.",
+        "allocationLocked": "This assignment is locked and cannot be removed.",
+        "noPermissionToAssignm": "You do not have permission to make an assignment.",
+        "professorAlreadyLocked": "There is already a locked professor ({docenteTravado}). The professor {nome_docente} has been added.",
+        "noPermissionToLockUnlock": "You do not have permission to lock/unlock."
+      },
+      "TurmasView": {
+        "previousClass": "Previous Class",
+        "nextClass": "Next Class"
+      },
+      "TurmaRow": {
+        "eveningCourse": "Evening Course",
+        "taughtInEnglish": "Taught in English",
+        "undergraduate": "Undergraduate",
+        "graduate": "Graduate",
+        "workload": "Workload: {carga}h",
+        "noProfessor": "No professor",
+        "assignedProfessors": "Assigned Professors",
+        "noProfessorAssigned": "No professor assigned",
+        "professorsWithPriority": "Professors with Priority for this Class",
+        "noPriorityIndicated": "No professor indicated priority for this class"
+      },
+      "TurmaCard": {
+        "allocationLocked": "This allocation is locked",
+        "scheduleClash": "Schedule clash with another class",
+        "eveningCourse": "Evening Course",
+        "taughtInEnglish": "Taught in English",
+        "undergraduate": "Undergraduate",
+        "graduate": "Graduate",
+        "teachingWorkload": "Teaching workload for class {codigo}-{turma}.",
+        "priorityLevel": "Priority {prioridade}",
+        "noScheduleDefined": "No schedule defined",
+        "noProfessor": "No professor",
+        "actionDisabled": "Action disabled",
+        "actionBlocked": "Action blocked (Item locked)",
+        "removeAllocation": "Remove allocation",
+        "assign": "Assign",
+        "unlock": "Unlock",
+        "lock": "Lock",
+        "unlockItem": "Unlock item",
+        "lockItem": "Lock item"
+      },
+      "DocentesView": {
+        "previousTeacher": "Previous Teacher",
+        "nextTeacher": "Next Teacher"
+      },
+      "DocenteRow": {
+        "balance": "Balance: {saldo}",
+        "assignedClasses": "Assigned Classes",
+        "noAssignedClasses": "No classes assigned",
+        "availableForAllocation": "Available for allocation",
+        "noSuggestionsAtTheMoment": "No suggestions at the moment"
+      },
+      "DocenteCard": {
+        "allocationLocked": "This allocation is locked",
+        "balance": "Balance: {saldo}",
+        "indicatedPriority": "Priority indicated for this class",
+        "priorityLevel": "Priority {prioridade}",
+        "totalFormsFilled": "Total forms filled out by the professor",
+        "assignedTeachingWorkload": "Teaching workload already assigned to the professor",
+        "teachingWorkload": "Workload: {carga}h.",
+        "actionDisabled": "Action disabled",
+        "actionBlocked": "Action blocked (Item locked)",
+        "removeAllocation": "Remove allocation",
+        "assignProfessor": "Assign professor",
+        "assign": "Assign",
+        "unlock": "Unlock",
+        "lock": "Lock",
+        "unlockItem": "Unlock item",
+        "lockItem": "Lock item"
+      }
+    },
+    "Select": {
+      "professors": "Professors",
+      "classes": "Classes",
+      "active": "Active",
+      "inactive": "Inactive",
+      "CustomSelector": {
+        "name": "Name",
+        "active": "Active",
+        "comment": "Comment",
+        "groupPreference": "Group",
+        "indifferent": "Indifferent",
+        "spreadPreference": "Spread",
+        "code": "Code",
+        "level": "Level",
+        "group": "Group",
+        "evening": "Evening",
+        "english": "English",
+        "weekDaysLabel": "Days of the Week",
+        "WeekDays": {
+          "mon": "Mon.",
+          "tue": "Tue.",
+          "wed": "Wed.",
+          "thu": "Thu.",
+          "fri": "Fri.",
+          "sat": "Sat."
+        },
+        "schedule": "Schedule",
+        "noDefinedSchedules": "no defined schedules",
+        "fromStart": "from {start}",
+        "toEnd": "to {end}",
+        "yes": "Yes",
+        "no": "No",
+        "allItemsSelected": "All items selected.",
+        "activeFilters": "Active filters",
+        "selected": "selected",
+        "itemsHiddenByFilters": "items hidden by filters",
+        "search": "Search",
+        "professor": "professor",
+        "class": "class",
+        "clearAllFilters": "Clear all filters.",
+        "clear": "Clear",
+        "advancedFilters": "Advanced Filters",
+        "activeFiltersLabel": "Active Filters:",
+        "codeLabel": "Code:",
+        "noItemsMatchFilters": "No items match the applied filters",
+        "noItemsAvailable": "No items available",
+        "AdvancedFilterForm": {
+          "addAdvancedFilter": "Add Advanced Filter",
+          "field": "Field",
+          "value": "Value",
+          "yes": "Yes",
+          "no": "No",
+          "selectOneOrMoreOptions": "Select one or more options:",
+          "selectTimeRange": "Select the time range:",
+          "startOptional": "Start (optional)",
+          "endOptional": "End (optional)",
+          "leaveBothEmptyHelp": "Leave both empty to find classes with no defined schedules",
+          "onlyStartHelp": "Only start: classes starting from this time",
+          "onlyEndHelp": "Only end: classes ending by this time",
+          "bothHelp": "Both: classes that overlap with the specified range",
+          "cancel": "Cancel",
+          "add": "Add",
+          "WeekDays": {
+            "mon": "Mon.",
+            "tue": "Tue.",
+            "wed": "Wed.",
+            "thu": "Thu.",
+            "fri": "Fri.",
+            "sat": "Sat."
+          }
+        }
+      }
     }
   },
   "Accessibility": {
@@ -577,7 +726,8 @@
     },
     "description": "The process is complete! You can now apply the solution or close this screen by clicking the X located above.",
     "stop": "Stop",
-    "apply": "Apply"
+    "apply": "Apply",
+    "linearProgressLabel": "Assignments: {current} de {total}"
   },
   "Spreadsheet": {
     "DocenteSelectionDialog": {
@@ -604,8 +754,9 @@
     "loading": "Loading...",
     "error": "An error occurred. Please try again.",
     "unknownError": "An unknown error occurred. Please try again.",
-    "save": "Salvar",
-    "cancel": "Cancelar"
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "Components": {
     "ClearStorageModal": {
@@ -618,6 +769,11 @@
       "closeAriaLabel": "Close modal",
       "continueAriaDescription": "Continues with the previously saved data without making changes",
       "clearAriaDescription": "Removes all saved data and reloads the page to start a new planning session"
+    },
+    "NoDataFound": {
+      "noDataFound": "No data found",
+      "description": "It appears you haven't yet uploaded the necessary data to complete the assignment. Import the teachers and classes to begin.",
+      "loadData": "Load Data"
     }
   }
 }

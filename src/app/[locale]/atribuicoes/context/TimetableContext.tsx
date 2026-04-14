@@ -522,14 +522,22 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       // Lógica de TRAVAS (Locks)
       let newTravas = [...travas];
       const exists = travas.some(
-        (obj) => JSON.stringify(obj) === JSON.stringify(celula),
+        // (obj) => JSON.stringify(obj) === JSON.stringify(celula),
+        (obj) =>
+          obj.id_disciplina === celula.id_disciplina &&
+          obj.nome_docente === celula.nome_docente &&
+          obj.tipo_trava === celula.tipo_trava,
       );
 
       if (!exists) {
         newTravas.push(celula);
       } else {
         newTravas = newTravas.filter(
-          (obj) => JSON.stringify(obj) !== JSON.stringify(celula),
+          // (obj) => JSON.stringify(obj) !== JSON.stringify(celula),
+          (obj) =>
+            obj.id_disciplina !== celula.id_disciplina &&
+            obj.nome_docente !== celula.nome_docente &&
+            obj.tipo_trava !== celula.tipo_trava,
         );
       }
 
@@ -576,8 +584,6 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     }
 
     cleanSolucaoAtual();
-
-    // REMOVIDO: O broadcast genérico aqui sobrescrevia as mudanças de adicionar/remover
   };
 
   /**
@@ -587,7 +593,11 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     if (event.ctrlKey) {
       let newTravas = [...travas];
       const exists = travas.some(
-        (obj) => JSON.stringify(obj) === JSON.stringify(trava),
+        // (obj) => JSON.stringify(obj) === JSON.stringify(trava),
+        (obj) =>
+          obj.id_disciplina === trava.id_disciplina &&
+          obj.nome_docente === trava.nome_docente &&
+          obj.tipo_trava === trava.tipo_trava,
       );
 
       if (!exists) {
@@ -637,7 +647,11 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     if (event.ctrlKey) {
       let newTravas = [...travas];
       const exists = travas.some(
-        (obj) => JSON.stringify(obj) === JSON.stringify(trava),
+        // (obj) => JSON.stringify(obj) === JSON.stringify(trava),
+        (obj) =>
+          obj.id_disciplina === trava.id_disciplina &&
+          obj.nome_docente === trava.nome_docente &&
+          obj.tipo_trava === trava.tipo_trava,
       );
 
       if (!exists) {

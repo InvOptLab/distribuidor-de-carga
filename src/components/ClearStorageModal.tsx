@@ -69,7 +69,7 @@ export default function ClearStorageModal() {
     itemCount: 0,
   });
 
-  const STORAGE_KEY = "distribuidor_carga_sessao";
+  //const STORAGE_KEY = "distribuidor_carga_sessao";
 
   // Check if any of the keys inside the storage have actual data
   const validateStorageData = useCallback(async (): Promise<SavedDataInfo> => {
@@ -83,16 +83,38 @@ export default function ClearStorageModal() {
 
         const parsedData = JSON.parse(savedData as string, jsonReviver);
 
-        // Conta a quantidade baseada no tipo de estrutura
-        if (Array.isArray(parsedData) && parsedData.length > 0) {
-          validItemCount++;
-        } else if (parsedData instanceof Map || parsedData instanceof Set) {
+        // Tratamento para Arrays puros (ex: docentes, disciplinas)
+        if (Array.isArray(parsedData)) {
+          if (parsedData.length > 0) validItemCount++;
+        }
+        // Tratamento para Maps/Sets que foram devidamente hidratados pelo jsonReviver
+        else if (parsedData instanceof Map || parsedData instanceof Set) {
           if (parsedData.size > 0) validItemCount++;
-        } else if (
-          typeof parsedData === "object" &&
-          Object.keys(parsedData).length > 0
-        ) {
-          validItemCount++;
+        }
+        // Tratamento para Objetos puros (ex: solucaoAtual ou Maps que não passaram no reviver)
+        else if (typeof parsedData === "object" && parsedData !== null) {
+          // Verifica se é a 'solucaoAtual' vazia
+          // Confirma que 'atribuicoes' existe, é um array vazio e não há avaliação
+          const isSolucaoAtualVazia =
+            Array.isArray(parsedData.atribuicoes) &&
+            parsedData.atribuicoes.length === 0 &&
+            parsedData.avaliacao === undefined;
+
+          // Caso o jsonReviver tenha falhado,
+          // verifica se é a string de um Map vazio
+          const isMapVazioNaoHidratado =
+            parsedData._isComplexType === "Map" &&
+            Array.isArray(parsedData.value) &&
+            parsedData.value.length === 0;
+
+          // Se tiver chaves E NÃO FOR uma das estruturas vazias conhecidas, então contabiliza!
+          if (
+            !isSolucaoAtualVazia &&
+            !isMapVazioNaoHidratado &&
+            Object.keys(parsedData).length > 0
+          ) {
+            validItemCount++;
+          }
         }
       });
 
