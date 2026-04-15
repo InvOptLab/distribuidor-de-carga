@@ -684,7 +684,7 @@
         "roomSettingsTitle": "Room Settings",
         "managePermissions": "Manage permissions",
         "guestsCanEdit": "Guests can edit",
-        "guestsCanEditDescription": "Allows guests to change the allocation grid.",
+        "guestsCanEditDescription": "Allows guests to change the assignment grid.",
         "guestsCanFilter": "Guests can filter",
         "guestsCanFilterDescription": "If enabled, guests can apply their own filters and also send them to others. If disabled, they only follow the leader's filters.",
         "noteLabel": "Note:",
@@ -699,11 +699,11 @@
         "apply": "Apply"
       },
       "ActionBar": {
-        "allocationGrid": "Allocation Grid",
+        "allocationGrid": "Assignment Grid",
         "filters": "Filters",
         "runAlgorithm": "Run algorithm",
         "run": "Run",
-        "clearAllocations": "Clear allocations",
+        "clearAllocations": "Clear assignments",
         "clear": "Clear",
         "downloadJson": "Download JSON",
         "download": "Download",
