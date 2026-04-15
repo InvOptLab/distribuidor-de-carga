@@ -14,6 +14,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
+import { useTranslations } from "next-intl";
 
 interface ActionBarProps {
   onExecute: () => void;
@@ -38,15 +39,17 @@ export default function ActionBar({
 }: ActionBarProps) {
   const { solucaoAtual } = useSolutionHistory();
 
+  const t = useTranslations("Pages.Assignment.ActionBar");
+
   return (
     <AppBar position="static" color="default" elevation={1}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Grade de Atribuições
+          {t("allocationGrid")}
         </Typography>
 
         <Box display="flex" gap={1} alignItems="center">
-          <Tooltip title="Filtros" arrow>
+          <Tooltip title={t("filters")} arrow>
             <IconButton
               onClick={onToggleFilters}
               color={hasActiveFilters ? "primary" : "default"}
@@ -55,42 +58,42 @@ export default function ActionBar({
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Executar algoritmo" arrow>
+          <Tooltip title={t("runAlgorithm")} arrow>
             <Button
               variant="contained"
               color="primary"
               startIcon={<PlayArrowIcon />}
               onClick={onExecute}
             >
-              Executar
+              {t("run")}
             </Button>
           </Tooltip>
 
-          <Tooltip title="Limpar atribuições" arrow>
+          <Tooltip title={t("clearAllocations")} arrow>
             <Button
               variant="outlined"
               startIcon={<CleaningServicesIcon />}
               onClick={onClean}
             >
-              Limpar
+              {t("clear")}
             </Button>
           </Tooltip>
 
-          <Tooltip title="Download JSON" arrow>
+          <Tooltip title={t("downloadJson")} arrow>
             <Button
               variant="outlined"
               startIcon={<DownloadIcon />}
               onClick={onDownload}
             >
-              Download
+              {t("download")}
             </Button>
           </Tooltip>
 
           <Tooltip
             title={
               solucaoAtual.idHistorico !== undefined
-                ? "Solução já salva no histórico"
-                : "Salvar no histórico"
+                ? t("solutionAlreadySaved")
+                : t("saveToHistory")
             }
             arrow
           >
@@ -101,7 +104,7 @@ export default function ActionBar({
                 onClick={onSave}
                 disabled={solucaoAtual.idHistorico !== undefined}
               >
-                Salvar
+                {t("save")}
               </Button>
             </span>
           </Tooltip>

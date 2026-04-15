@@ -16,6 +16,7 @@ import {
   type Disciplina,
 } from "@/context/Global/utils";
 import { useCollaboration } from "@/context/Collaboration";
+import { useTranslations } from "next-intl";
 
 interface TimetableDataGridProps {
   setHoveredCourse: React.Dispatch<React.SetStateAction<Disciplina | null>>;
@@ -54,6 +55,8 @@ export default function TimetableDataGrid({
     verificaConflitosDocente,
   } = useHoverEffects();
 
+  const t = useTranslations("Pages.Assignment.DataGrid");
+
   //  Pegar infos da colaboração
   const { isInRoom, isOwner, config } = useCollaboration();
 
@@ -84,7 +87,7 @@ export default function TimetableDataGrid({
     // Coluna fixa do docente
     const docenteColumn: GridColDef = {
       field: "docente",
-      headerName: "Docente",
+      headerName: t("teacher"),
       width: 200,
       pinnable: true,
       renderHeader: () => (
@@ -107,7 +110,9 @@ export default function TimetableDataGrid({
         const temConflito = verificaConflitosDocente(nomeDocente);
 
         return (
-          <Tooltip title={temConflito ? "Docente com conflito de horário" : ""}>
+          <Tooltip
+            title={temConflito ? t("teacherWithSchedulingConflict") : ""}
+          >
             <Box
               onClick={(event) =>
                 handleRowClick(event, {

@@ -37,6 +37,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import SyncIcon from "@mui/icons-material/Sync";
 import { useGlobalContext } from "@/context/Global";
 import { jsonReviver } from "@/context/Global/utils";
+import { useTranslations } from "next-intl";
 
 // Função para gerar cor consistente baseada no nome
 const stringToColor = (string: string) => {
@@ -135,6 +136,8 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
     setTravas,
   } = useGlobalContext();
 
+  const t = useTranslations("Pages.Assignment.CollaborativeGridWrapper");
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(true);
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
@@ -167,7 +170,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
     // Ex: Alguém rodou o algoritmo ou limpou a grade -> envia FULL_DATA
     const unsubscribeData = onDataUpdate((payload) => {
       if (payload.type === "FULL_DATA" && payload.data) {
-        console.log("📥 Recebendo dados sincronizados:", payload.data);
+        console.log("📥", t("receivingSyncedData"), payload.data);
         // Transforma de volta nos Maps e Sets corretos da aplicação
         const hydratedData = JSON.parse(payload.data, jsonReviver);
 
@@ -298,7 +301,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                   fontWeight="bold"
                   color={isOwner ? "primary.main" : "warning.dark"}
                 >
-                  Ao Vivo
+                  {t("live")}
                 </Typography>
               </Box>
             </Tooltip>
@@ -306,7 +309,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             <Divider orientation="vertical" flexItem />
 
             {/* Nome da sala */}
-            <Tooltip title="Nome da sala de colaboração">
+            <Tooltip title={t("collaborationRoomName")}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <GroupsIcon
                   sx={{
@@ -324,11 +327,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
 
             {/* Seu papel na sala */}
             <Tooltip
-              title={
-                isOwner
-                  ? "Você é o líder desta sala - tem controle total sobre a grade e permissões"
-                  : "Você é um convidado - suas permissões são definidas pelo líder"
-              }
+              title={isOwner ? t("leaderDescription") : t("guestDescription")}
             >
               <Chip
                 icon={
@@ -338,7 +337,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                     <VisibilityIcon sx={{ fontSize: 16 }} />
                   )
                 }
-                label={isOwner ? "LÍDER" : "CONVIDADO"}
+                label={isOwner ? t("leaderBadge") : t("guestBadge")}
                 size="small"
                 sx={{
                   fontWeight: "bold",
@@ -357,25 +356,21 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             {/* Indicadores de Permissão */}
             <Box sx={{ display: "flex", gap: 0.5 }}>
               <Tooltip
-                title={canEdit ? "Edição Permitida" : "Edição Bloqueada"}
+                title={canEdit ? t("editingAllowed") : t("editingBlocked")}
               >
                 <Chip
                   icon={<EditIcon sx={{ fontSize: 14 }} />}
-                  label={canEdit ? "Pode Editar" : "Leitura"}
+                  label={canEdit ? t("canEdit") : t("readOnly")}
                   size="small"
                   color={canEdit ? "success" : "default"}
                 />
               </Tooltip>
               <Tooltip
-                title={
-                  canFilter
-                    ? "Filtros Permitidos"
-                    : "Filtros Bloqueados (Sincronizados com Líder)"
-                }
+                title={canFilter ? t("filtersAllowed") : t("filtersBlocked")}
               >
                 <Chip
                   icon={<FilterListIcon sx={{ fontSize: 14 }} />}
-                  label={canFilter ? "Pode Filtrar" : "Filtro Sync"}
+                  label={canFilter ? t("canFilter") : t("filterSync")}
                   size="small"
                   color={canFilter ? "info" : "default"}
                 />
@@ -385,7 +380,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             {/* Contador de usuários */}
-            <Tooltip title="Usuários online nesta sala">
+            <Tooltip title={t("usersOnline")}>
               <Chip
                 icon={<GroupsIcon sx={{ fontSize: 16 }} />}
                 label={`${usersInRoom} online`}
@@ -396,7 +391,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             </Tooltip>
 
             {!isOwner && (
-              <Tooltip title="Solicitar sincronização de dados do líder">
+              <Tooltip title={t("requestSync")}>
                 <IconButton
                   size="small"
                   onClick={handleRequestSync}
@@ -408,7 +403,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             )}
 
             {isOwner && (
-              <Tooltip title="Configurações da sala">
+              <Tooltip title={t("roomSettingsTooltip")}>
                 <IconButton
                   size="small"
                   onClick={handleOpenConfig}
@@ -421,7 +416,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
 
             {/* Botão expandir/recolher detalhes */}
             <Tooltip
-              title={isExpanded ? "Recolher detalhes" : "Expandir detalhes"}
+              title={isExpanded ? t("collapseDetails") : t("expandDetails")}
             >
               <IconButton
                 size="small"
@@ -434,9 +429,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             {/* Botão sair */}
             <Tooltip
               title={
-                isOwner
-                  ? "Sair e encerrar a sala (todos os convidados serão desconectados)"
-                  : "Sair da sala"
+                isOwner ? t("leaveAndEndRoomTooltip") : t("leaveRoomTooltip")
               }
             >
               <Button
@@ -451,7 +444,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                   fontWeight: "bold",
                 }}
               >
-                {isOwner ? "Encerrar Sala" : "Sair"}
+                {isOwner ? t("endRoom") : t("leave")}
               </Button>
             </Tooltip>
           </Box>
@@ -472,7 +465,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <Typography variant="caption" color="text.secondary">
-                Seu nome:
+                {t("yourName")}
               </Typography>
               <Chip
                 avatar={
@@ -496,7 +489,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             {/* Avatares dos usuários online */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Typography variant="caption" color="text.secondary">
-                Participantes:
+                {t("participants")}
               </Typography>
               <AvatarGroup
                 max={5}
@@ -510,7 +503,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                 }}
               >
                 {/* Avatar do usuário atual */}
-                <Tooltip title={`${userName} (Você)`}>
+                <Tooltip title={t("youSuffix", { userName: userName })}>
                   <Badge
                     overlap="circular"
                     anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -544,7 +537,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                   <Tooltip
                     key={cursor.userId}
                     title={`${cursor.name}${
-                      cursor.isOwner ? " (Líder)" : " (Convidado)"
+                      cursor.isOwner ? t("leaderSuffix") : t("guestSuffix")
                     }`}
                   >
                     <Badge
@@ -602,10 +595,10 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             </Avatar>
             <Box>
               <Typography variant="h6" fontWeight="bold">
-                Configurações da Sala
+                {t("roomSettingsTitle")}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Gerencie as permissões
+                {t("managePermissions")}
               </Typography>
             </Box>
           </Box>
@@ -633,10 +626,10 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                 label={
                   <Box>
                     <Typography variant="body1" fontWeight="medium">
-                      Convidados podem editar
+                      {t("guestsCanEdit")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Permite que convidados alterem a grade de atribuições.
+                      {t("guestsCanEditDescription")}
                     </Typography>
                   </Box>
                 }
@@ -665,12 +658,10 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                 label={
                   <Box>
                     <Typography variant="body1" fontWeight="medium">
-                      Convidados podem filtrar
+                      {t("guestsCanFilter")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Se ativado, convidados podem aplicar seus próprios filtros
-                      e também enviá-los para outros. Se desativado, eles apenas
-                      seguem os filtros do líder.
+                      {t("guestsCanFilterDescription")}
                     </Typography>
                   </Box>
                 }
@@ -680,16 +671,18 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
 
             <Box sx={{ p: 2, bgcolor: alpha("#ff9800", 0.1), borderRadius: 2 }}>
               <Typography variant="body2" color="warning.dark">
-                <strong>Nota:</strong> As alterações são aplicadas
-                imediatamente.
+                <strong>{t("noteLabel")}</strong>{" "}
+                {t("changesAppliedImmediately")}
               </Typography>
             </Box>
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={() => setConfigDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={() => setConfigDialogOpen(false)}>
+            {t("cancel")}
+          </Button>
           <Button onClick={handleSaveConfig} variant="contained">
-            Salvar Configurações
+            {t("saveSettings")}
           </Button>
         </DialogActions>
       </Dialog>

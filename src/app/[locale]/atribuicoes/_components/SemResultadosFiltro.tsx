@@ -1,12 +1,14 @@
 import { Box, Typography, Button, alpha } from "@mui/material";
 import { motion } from "framer-motion";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onClearFilters?: () => void; // Prop opcional para já colocar um botão funcional
 }
 
 export default function SemResultadosFiltro({ onClearFilters }: Props) {
+  const t = useTranslations("Pages.Assignment.NoDatNoDataFiltersaFilters");
   return (
     <Box
       display="flex"
@@ -49,7 +51,7 @@ export default function SemResultadosFiltro({ onClearFilters }: Props) {
             fontWeight="bold"
             align="center"
           >
-            Nenhum resultado nos filtros
+            {t("noResultsFound")}
           </Typography>
 
           <Typography
@@ -58,9 +60,7 @@ export default function SemResultadosFiltro({ onClearFilters }: Props) {
             align="center"
             maxWidth={420}
           >
-            Os filtros atuais não retornaram nenhum docente ou turma. Tente
-            ajustar os parâmetros ou limpar os filtros para visualizar as
-            atribuições novamente.
+            {t("description")}
           </Typography>
 
           {/* Botão para limpar os filtros, caso você passe a função via prop */}
@@ -77,7 +77,7 @@ export default function SemResultadosFiltro({ onClearFilters }: Props) {
                 fontWeight: "bold",
               }}
             >
-              Limpar Filtros
+              {t("clearFilters")}
             </Button>
           )}
         </Box>

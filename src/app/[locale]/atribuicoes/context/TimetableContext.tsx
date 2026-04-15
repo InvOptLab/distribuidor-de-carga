@@ -42,6 +42,7 @@ import { calculateManualSolution } from "@/algoritmo/communs/calculateManualSolu
 import Algorithm from "@/algoritmo/abstractions/Algorithm";
 import Constraint from "@/algoritmo/abstractions/Constraint";
 import { RoomConfig, useCollaboration } from "@/context/Collaboration";
+import { useTranslations } from "next-intl";
 
 /**
  * Remover essa classe depois desse local.
@@ -144,6 +145,8 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     config,
     isOwner,
   } = useCollaboration();
+
+  const t = useTranslations("Pages.Assignment.Alerts");
 
   const [docenteFilters, setDocenteFilters] = useState<DocenteFilters>({
     search: "",
@@ -510,10 +513,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     if (params.isInRoom) {
       const canEdit = params.isOwner || params.config.guestsCanEdit;
       if (!canEdit) {
-        addAlerta(
-          "Apenas o líder da sala pode realizar alterações.",
-          "warning",
-        );
+        addAlerta(t("onlyRoomLeaderCanMakeChanges"), "warning");
         return;
       }
     }
@@ -739,7 +739,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     }
 
     setAtribuicoes(atribuicoesLimpa);
-    addAlerta("A solução foi limpa com sucesso!", "success");
+    addAlerta(t("solutionClearedSuccessfully"), "success");
 
     // LÓGICA DE COLABORAÇÃO: Broadcast da limpeza
     if (isInRoom) {
@@ -819,10 +819,10 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         solucaoManual.estatisticas,
       );
 
-      addAlerta("As atribuições foram adicionadas ao histórico!", "success");
+      addAlerta(t("assignmentsAddedToHistory"), "success");
     } catch (error) {
-      console.error("Erro ao salvar alterações:", error);
-      addAlerta("Erro ao salvar as alterações!", "error");
+      console.error(t("errorSavingChanges"), error);
+      addAlerta(t("errorSavingChanges"), "error");
     }
   };
 
@@ -831,7 +831,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    */
   const downalodJson = () => {
     if (!atribuicoes.some((atribuicao) => atribuicao.docentes.length > 0)) {
-      addAlerta("Nenhuma atribuição foi realizada!", "warning");
+      addAlerta(t("noAssignmentMade"), "warning");
       // return;
     }
 

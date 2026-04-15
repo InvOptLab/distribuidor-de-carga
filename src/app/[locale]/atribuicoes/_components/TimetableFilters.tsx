@@ -21,9 +21,10 @@ import {
   FormControlLabel,
   Divider,
 } from "@mui/material";
-import { Clear, Add, Close } from "@mui/icons-material";
+import { Clear, Add, Close, Search } from "@mui/icons-material";
 import type { FilterRule } from "../types/types";
 import { useTimetable } from "../context/TimetableContext";
+import { useTranslations } from "next-intl";
 
 interface TimetableFiltersProps {
   docenteFilters: {
@@ -52,13 +53,23 @@ export default function TimetableFilters({
   const [openDocenteDialog, setOpenDocenteDialog] = useState(false);
   const [openDisciplinaDialog, setOpenDisciplinaDialog] = useState(false);
 
+  const t = useTranslations("Pages.Assignment.Filters");
+
   const uniqueGroups = Array.from(
     new Set(disciplinas.filter((d) => d.ativo && d.grupo).map((d) => d.grupo)),
   ).filter(Boolean);
   const uniqueLevels = Array.from(
     new Set(disciplinas.filter((d) => d.ativo).map((d) => d.nivel)),
   ).filter(Boolean);
-  const diasSemana = ["Seg.", "Ter.", "Qua.", "Qui.", "Sex.", "Sáb."];
+  // TODO: Ajustar depois a exibição e o funcionamento dos filtros para serem iguais aos da página de Seleção.
+  const diasSemana = [
+    t("WeekDays.mon"),
+    t("WeekDays.tue"),
+    t("WeekDays.wed"),
+    t("WeekDays.thu"),
+    t("WeekDays.fri"),
+    t("WeekDays.sat"),
+  ];
 
   const handleDocenteSearchChange = (value: string) => {
     onDocenteFiltersChange({
@@ -126,12 +137,12 @@ export default function TimetableFilters({
       if (rule.value.start && rule.value.end) {
         displayValue = `${start} - ${end}`;
       } else if (rule.value.start) {
-        displayValue = `a partir de ${start}`;
+        displayValue = t("fromStart", { start: start });
       } else if (rule.value.end) {
-        displayValue = `até ${end}`;
+        displayValue = t("toEnd", { end: end });
       }
     } else if (rule.type === "boolean") {
-      displayValue = rule.value ? "Sim" : "Não";
+      displayValue = rule.value ? t("yes") : t("no");
     } else {
       displayValue = rule.value.toString();
     }
@@ -156,7 +167,7 @@ export default function TimetableFilters({
         alignItems="center"
         mb={2}
       >
-        <Typography variant="h6">Filtros da Grade</Typography>
+        <Typography variant="h6">{t("gridFilters")}</Typography>
         <IconButton onClick={onClose}>
           <Close />
         </IconButton>
@@ -173,19 +184,19 @@ export default function TimetableFilters({
           fullWidth
           sx={{ mb: 2 }}
         >
-          Limpar Todos os Filtros
+          {t("clearAllFilters")}
         </Button>
       )}
 
       {hasActiveFilters && (
         <Box mb={2}>
           <Typography variant="subtitle2" gutterBottom>
-            Filtros Ativos:
+            {t("activeFilters")}
           </Typography>
           <Box display="flex" flexWrap="wrap" gap={1}>
             {docenteFilters.search && (
               <Chip
-                label={`Busca Docente: "${docenteFilters.search}"`}
+                label={t("professorSearch", { Search: docenteFilters.search })}
                 size="small"
                 color="secondary"
                 variant="outlined"
@@ -193,7 +204,7 @@ export default function TimetableFilters({
             )}
             {disciplinaFilters.search && (
               <Chip
-                label={`Busca Disciplina: "${disciplinaFilters.search}"`}
+                label={t("classSearch", { Search: disciplinaFilters.search })}
                 size="small"
                 color="secondary"
                 variant="outlined"
@@ -216,13 +227,13 @@ export default function TimetableFilters({
           {/* Filtros de Docentes */}
           <Grid size={{ xs: 12 }}>
             <Typography variant="subtitle1" gutterBottom fontWeight="bold">
-              Filtros de Docentes (Linhas)
+              {t("rowsTeacherFilters")}
             </Typography>
 
             <TextField
               fullWidth
               size="small"
-              label="Buscar docente por nome"
+              label={t("searchProfessorByName")}
               value={docenteFilters.search}
               onChange={(e) => handleDocenteSearchChange(e.target.value)}
               sx={{ mb: 2 }}
@@ -234,14 +245,16 @@ export default function TimetableFilters({
               alignItems="center"
               mb={1}
             >
-              <Typography variant="body2">Filtros Avançados:</Typography>
+              <Typography variant="body2">
+                {t("advancedFiltersLabel")}
+              </Typography>
               <Button
                 size="small"
                 startIcon={<Add />}
                 onClick={() => setOpenDocenteDialog(true)}
                 variant="outlined"
               >
-                Adicionar
+                {t("add")}
               </Button>
             </Box>
 
@@ -259,13 +272,13 @@ export default function TimetableFilters({
           {/* Filtros de Disciplinas */}
           <Grid size={{ xs: 12 }}>
             <Typography variant="subtitle1" gutterBottom fontWeight="bold">
-              Filtros de Disciplinas (Colunas)
+              {t("classFiltersColumns")}
             </Typography>
 
             <TextField
               fullWidth
               size="small"
-              label="Buscar disciplina por nome, código ou ID"
+              label={t("searchClassByNameCodeId")}
               value={disciplinaFilters.search}
               onChange={(e) => handleDisciplinaSearchChange(e.target.value)}
               sx={{ mb: 2 }}
@@ -277,7 +290,9 @@ export default function TimetableFilters({
               alignItems="center"
               mb={2}
             >
-              <Typography variant="body2">Filtros Avançados:</Typography>
+              <Typography variant="body2">
+                {t("advancedFiltersLabel")}
+              </Typography>
               <Button
                 size="small"
                 startIcon={<Add />}
@@ -302,16 +317,20 @@ export default function TimetableFilters({
         open={openDocenteDialog}
         onClose={() => setOpenDocenteDialog(false)}
         onAdd={addDocenteRule}
-        title="Adicionar Filtro de Docente"
+        title={t("addProfessorFilter")}
         fields={[
-          { key: "nome", label: "Nome", type: "text" },
-          { key: "ativo", label: "Ativo", type: "boolean" },
-          { key: "comentario", label: "Comentário", type: "text" },
+          { key: "nome", label: t("name"), type: "text" },
+          { key: "ativo", label: t("active"), type: "boolean" },
+          { key: "comentario", label: t("comment"), type: "text" },
           {
             key: "agrupar",
-            label: "Agrupar",
+            label: t("groupPreference"),
             type: "select",
-            options: ["Agrupar", "Indiferente", "Espalhar"],
+            options: [
+              t("groupPreference"),
+              t("indifferent"),
+              t("spreadPreference"),
+            ],
           },
         ]}
       />
@@ -321,33 +340,33 @@ export default function TimetableFilters({
         open={openDisciplinaDialog}
         onClose={() => setOpenDisciplinaDialog(false)}
         onAdd={addDisciplinaRule}
-        title="Adicionar Filtro de Disciplina"
+        title={t("addClassFilter")}
         fields={[
-          { key: "nome", label: "Nome", type: "text" },
-          { key: "codigo", label: "Código", type: "text" },
+          { key: "nome", label: t("name"), type: "text" },
+          { key: "codigo", label: t("code"), type: "text" },
           {
             key: "nivel",
-            label: "Nível",
+            label: t("level"),
             type: "chips",
             options: uniqueLevels,
           },
           {
             key: "grupo",
-            label: "Grupo",
+            label: t("group"),
             type: "chips",
             options: uniqueGroups,
           },
-          { key: "noturna", label: "Noturna", type: "boolean" },
-          { key: "ingles", label: "Inglês", type: "boolean" },
+          { key: "noturna", label: t("evening"), type: "boolean" },
+          { key: "ingles", label: t("english"), type: "boolean" },
           {
             key: "horarios_dias",
-            label: "Dias da Semana",
+            label: t("weekDays"),
             type: "chips",
             options: diasSemana,
           },
           {
             key: "horarios_tempo",
-            label: "Horário (Range)",
+            label: t("scheduleRange"),
             type: "timeRange",
           },
         ]}
@@ -477,17 +496,19 @@ function FilterDialog({
     return false;
   };
 
+  const t = useTranslations("Pages.Assignment.Filters");
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Box display="flex" flexDirection="column" gap={2} pt={1}>
           <FormControl fullWidth>
-            <InputLabel>Campo</InputLabel>
+            <InputLabel>{t("field")}</InputLabel>
             <Select
               value={selectedField}
               onChange={(e) => setSelectedField(e.target.value)}
-              label="Campo"
+              label={t("field")}
             >
               {fields.map((field) => (
                 <MenuItem key={field.key} value={field.key}>
@@ -502,19 +523,19 @@ function FilterDialog({
               {selectedFieldConfig.type === "text" && (
                 <>
                   <FormControl fullWidth>
-                    <InputLabel>Tipo de Filtro</InputLabel>
+                    <InputLabel>{t("filterType")}</InputLabel>
                     <Select
                       value={filterType}
                       onChange={(e) => setFilterType(e.target.value as any)}
                       label="Tipo de Filtro"
                     >
-                      <MenuItem value="contains">Contém</MenuItem>
-                      <MenuItem value="exact">Exato</MenuItem>
+                      <MenuItem value="contains">{t("contains")}</MenuItem>
+                      <MenuItem value="exact">{t("exact")}</MenuItem>
                     </Select>
                   </FormControl>
                   <TextField
                     fullWidth
-                    label="Valor"
+                    label={t("value")}
                     value={textValue}
                     onChange={(e) => setTextValue(e.target.value)}
                   />
@@ -524,7 +545,7 @@ function FilterDialog({
               {selectedFieldConfig.type === "number" && (
                 <TextField
                   fullWidth
-                  label="Valor"
+                  label={t("value")}
                   type="number"
                   value={numberValue}
                   onChange={(e) => setNumberValue(e.target.value)}
@@ -539,7 +560,7 @@ function FilterDialog({
                       onChange={(e) => setBooleanValue(e.target.checked)}
                     />
                   }
-                  label={booleanValue ? "Sim" : "Não"}
+                  label={booleanValue ? t("yes") : t("no")}
                 />
               )}
 
@@ -547,7 +568,7 @@ function FilterDialog({
                 selectedFieldConfig.options && (
                   <Box>
                     <Typography variant="body2" gutterBottom>
-                      Selecione uma ou mais opções:
+                      {t("selectOneOrMoreOptions")}
                     </Typography>
                     <Box display="flex" flexWrap="wrap" gap={1}>
                       {selectedFieldConfig.options.map((option) => (
@@ -570,7 +591,7 @@ function FilterDialog({
                         color="text.secondary"
                         sx={{ mt: 1 }}
                       >
-                        {selectedChips.length} opção(ões) selecionada(s)
+                        {t("optionsSelected", { count: selectedChips.length })}
                       </Typography>
                     )}
                   </Box>
@@ -597,12 +618,11 @@ function FilterDialog({
               {selectedFieldConfig.type === "timeRange" && (
                 <Box>
                   <Typography variant="body2" gutterBottom>
-                    Selecione o intervalo de horário (opcional preencher apenas
-                    um):
+                    {t("selectTimeRangeOptional")}
                   </Typography>
                   <Box display="flex" gap={2}>
                     <TextField
-                      label="Horário Início (opcional)"
+                      label={t("startTimeOptional")}
                       type="time"
                       value={timeStart}
                       onChange={(e) => setTimeStart(e.target.value)}
@@ -610,7 +630,7 @@ function FilterDialog({
                       fullWidth
                     />
                     <TextField
-                      label="Horário Fim (opcional)"
+                      label={t("endTimeOptional")}
                       type="time"
                       value={timeEnd}
                       onChange={(e) => setTimeEnd(e.target.value)}
@@ -623,12 +643,9 @@ function FilterDialog({
                     color="text.secondary"
                     sx={{ mt: 1 }}
                   >
-                    • Apenas início: disciplinas que começam a partir desse
-                    horário
-                    <br />• Apenas fim: disciplinas que terminam até esse
-                    horário
-                    <br />• Ambos: disciplinas que se sobrepõem ao intervalo
-                    especificado
+                    • {t("onlyStartHelp")}
+                    <br />• {t("onlyEndHelp")}
+                    <br />• {t("bothHelp")}
                   </Typography>
                 </Box>
               )}
@@ -637,13 +654,13 @@ function FilterDialog({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button
           onClick={handleAdd}
           variant="contained"
           disabled={isAddDisabled()}
         >
-          Adicionar
+          {t("add")}
         </Button>
       </DialogActions>
     </Dialog>

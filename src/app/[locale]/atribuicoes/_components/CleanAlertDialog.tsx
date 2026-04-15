@@ -1,5 +1,14 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTranslations } from "next-intl";
 
 export interface CleanAlertDialogInterface {
   openDialog: boolean;
@@ -12,15 +21,20 @@ export default function CleanAlertDialog({
   cleanState,
   onCloseDialog,
 }: CleanAlertDialogInterface) {
+  const t = useTranslations("Pages.Assignment.CleanAlertDialog");
   return (
-    <Dialog open={openDialog} onClose={onCloseDialog} aria-labelledby="alert-dialog-title">
+    <Dialog
+      open={openDialog}
+      onClose={onCloseDialog}
+      aria-labelledby="alert-dialog-title"
+    >
       <DialogTitle id="alert-dialog-title">
-        Limpar as atribuições
+        {t("clearAllocations")}
         <IconButton
           aria-label="close"
           onClick={onCloseDialog}
           sx={(theme) => ({
-            position: 'absolute',
+            position: "absolute",
             right: 8,
             top: 8,
             color: theme.palette.grey[500],
@@ -31,18 +45,15 @@ export default function CleanAlertDialog({
       </DialogTitle>
 
       <DialogContent>
-        <DialogContentText>
-          Você está prestes a limpar todas as atribuições realizadas. Esta ação é irreversível e
-          não poderá ser desfeita. Tem certeza de que deseja continuar?
-        </DialogContentText>
+        <DialogContentText>{t("warningMessage")}</DialogContentText>
       </DialogContent>
 
-      <DialogActions sx={{ justifyContent: 'flex-end', padding: '8px 12px' }}>
+      <DialogActions sx={{ justifyContent: "flex-end", padding: "8px 12px" }}>
         <Button onClick={onCloseDialog} variant="contained" color="error">
-          Cancelar
+          {t("cancel")}
         </Button>
         <Button onClick={cleanState} variant="contained" color="primary">
-          Aplicar
+          {t("apply")}
         </Button>
       </DialogActions>
     </Dialog>
