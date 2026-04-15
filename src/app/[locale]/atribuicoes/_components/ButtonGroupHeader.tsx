@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Grid, Tooltip } from "@mui/material";
+import { Stack, IconButton, Tooltip, Divider, alpha } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -14,7 +14,7 @@ interface ButtonGroupHeaderProps {
 }
 
 /**
- * Componente responsável por gerar os botões referentes aos processos existentes no componente pai.
+ * Componente compactado de ações para o CollapsibleHeader.
  */
 const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
   onExecute,
@@ -25,115 +25,69 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
   const { solucaoAtual } = useSolutionHistory();
 
   return (
-    <Grid
-      container
-      spacing={1}
-      justifyItems="center"
+    <Stack
+      direction="row"
+      spacing={0.5}
       alignItems="center"
-      justifyContent="center"
+      // Remove margens extras que o Grid poderia causar
+      sx={{ m: 0, p: 0 }}
     >
-      <Grid key="Play">
-        <Tooltip
-          title="Executar"
-          slotProps={{
-            popper: {
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, -5],
-                  },
-                },
-              ],
+      {/* Ação Principal: Ganha destaque visual por ser a ação primária da tela */}
+      <Tooltip title="Executar Algoritmo" arrow>
+        <IconButton
+          onClick={onExecute}
+          size="small"
+          sx={{
+            color: "primary.main",
+            backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.1),
+            "&:hover": {
+              backgroundColor: (theme) =>
+                alpha(theme.palette.primary.main, 0.2),
             },
+            borderRadius: 1, // Levemente quadrado para diferenciar dos redondos
           }}
-          arrow
         >
-          <Button
-            about="Botão para executar o processo."
-            variant="outlined"
-            onClick={onExecute}
+          <PlayArrowIcon />
+        </IconButton>
+      </Tooltip>
+
+      <Divider orientation="vertical" flexItem sx={{ mx: 0.5, my: 1 }} />
+
+      {/* Ações Secundárias: Minimalistas */}
+      <Tooltip title="Limpar Atribuições" arrow>
+        <IconButton onClick={onClean} size="small">
+          <CleaningServicesIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip title="Fazer Download" arrow>
+        <IconButton onClick={download} size="small">
+          <DownloadIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip
+        title={
+          solucaoAtual.idHistorico !== undefined
+            ? "Solução já salva"
+            : "Salvar no Histórico"
+        }
+        arrow
+      >
+        <span>
+          <IconButton
+            onClick={saveAlterations}
+            size="small"
+            color={
+              solucaoAtual.idHistorico === undefined ? "primary" : "default"
+            }
+            disabled={solucaoAtual.idHistorico !== undefined}
           >
-            <PlayArrowIcon />
-          </Button>
-        </Tooltip>
-      </Grid>
-
-      <Grid key="Clean">
-        <Tooltip
-          title="Limpar"
-          slotProps={{
-            popper: {
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, -5],
-                  },
-                },
-              ],
-            },
-          }}
-          arrow
-        >
-          <Button variant="outlined" onClick={onClean}>
-            <CleaningServicesIcon />
-          </Button>
-        </Tooltip>
-      </Grid>
-
-      <Grid key="Download">
-        <Tooltip
-          title="Download"
-          slotProps={{
-            popper: {
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, -5],
-                  },
-                },
-              ],
-            },
-          }}
-          arrow
-        >
-          <Button variant="outlined" onClick={download}>
-            <DownloadIcon />
-          </Button>
-        </Tooltip>
-      </Grid>
-
-      <Grid key="Save">
-        <Tooltip
-          title="Salvar"
-          slotProps={{
-            popper: {
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, 5],
-                  },
-                },
-              ],
-            },
-          }}
-          arrow
-        >
-          <span>
-            <Button
-              variant="outlined"
-              onClick={saveAlterations}
-              disabled={solucaoAtual.idHistorico !== undefined}
-            >
-              <SaveAltIcon />
-            </Button>
-          </span>
-        </Tooltip>
-      </Grid>
-    </Grid>
+            <SaveAltIcon fontSize="small" />
+          </IconButton>
+        </span>
+      </Tooltip>
+    </Stack>
   );
 };
 

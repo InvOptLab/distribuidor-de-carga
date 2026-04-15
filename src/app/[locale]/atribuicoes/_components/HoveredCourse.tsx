@@ -25,6 +25,7 @@ import {
 import { useGlobalContext } from "@/context/Global";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import { useTranslations } from "next-intl";
 
 interface HoveredCourseProps {
   disciplina: Disciplina;
@@ -53,6 +54,8 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
   ) => {
     // Acessa o contexto global para buscar as atribuições atualizadas
     const { atribuicoes } = useGlobalContext();
+
+    const t = useTranslations("Pages.Assignment.Hover.Course");
 
     // Busca a atribuição específica desta disciplina
     const atribuicao = atribuicoes.find(
@@ -112,7 +115,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                 letterSpacing: 1,
               }}
             >
-              Disciplina
+              {t("class")}
             </Typography>
           </Stack>
           <Typography
@@ -156,7 +159,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
             },
           }}
         >
-          {/* SEÇÃO 1: Docentes Atribuídos (NOVO) */}
+          {/* Docentes Atribuídos */}
           {listaDocentesAtribuidos.length > 0 && (
             <Box>
               <Stack direction="row" spacing={1} alignItems="center" mb={1}>
@@ -166,7 +169,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                   color="success.main"
                   sx={{ fontWeight: 700, textTransform: "uppercase" }}
                 >
-                  Docente Atribuído
+                  {t("assignedProfessor")}
                 </Typography>
               </Stack>
               <Grid container spacing={1}>
@@ -200,7 +203,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                               color="text.secondary"
                               sx={{ display: "block", lineHeight: 1 }}
                             >
-                              Saldo
+                              {t("balance")}
                             </Typography>
                             <Typography
                               variant="body2"
@@ -230,7 +233,9 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                                   fontWeight: 600,
                                 }}
                               >
-                                Prioridade: {formulario.prioridade}
+                                {t("priorityLevel", {
+                                  prioridade: formulario.prioridade,
+                                })}
                               </Typography>
                             ) : (
                               <Typography
@@ -238,7 +243,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                                 color="text.secondary"
                                 sx={{ fontStyle: "italic" }}
                               >
-                                Sem formulário
+                                {t("noForm")}
                               </Typography>
                             )}
                           </Box>
@@ -262,7 +267,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                 color="text.secondary"
                 sx={{ fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}
               >
-                Curso
+                {t("course")}
               </Typography>
             </Stack>
 
@@ -290,7 +295,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                     color="text.secondary"
                     sx={{ fontWeight: 600, textTransform: "uppercase" }}
                   >
-                    Carga Didática
+                    {t("teachingWorkload")}
                   </Typography>
                   <Typography variant="body1" sx={{ fontWeight: 500 }}>
                     {disciplina.carga.toFixed(2)}
@@ -310,7 +315,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                 color="text.secondary"
                 sx={{ fontWeight: 600, textTransform: "uppercase" }}
               >
-                Horários
+                {t("schedules")}
               </Typography>
             </Stack>
             {disciplina.horarios && disciplina.horarios.length > 0 ? (
@@ -335,7 +340,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                 color="text.secondary"
                 fontStyle="italic"
               >
-                A definir
+                {t("toBeDefined")}
               </Typography>
             )}
           </Box>
@@ -352,7 +357,9 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                     color="text.secondary"
                     sx={{ fontWeight: 600, textTransform: "uppercase" }}
                   >
-                    Docentes Interessados ({formulariosRelacionados.length})
+                    {t("interestedProfessors", {
+                      count: formulariosRelacionados.length,
+                    })}
                   </Typography>
                 </Stack>
                 <Grid
@@ -449,7 +456,9 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                                   fontWeight: 600,
                                 }}
                               >
-                                Prioridade: {formulario.prioridade}
+                                {t("priorityLevel", {
+                                  prioridade: formulario.prioridade,
+                                })}
                               </Typography>
                             </Box>
                           </Stack>

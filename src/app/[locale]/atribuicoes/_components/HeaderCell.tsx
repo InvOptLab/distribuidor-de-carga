@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Typography, Stack, styled } from "@mui/material";
 import { Disciplina } from "@/context/Global/utils";
+import { useTranslations } from "next-intl";
 
 interface HeaderCellProps {
   disciplina: Disciplina;
@@ -24,6 +25,8 @@ const HeaderCell: React.FC<HeaderCellProps> = ({
 
   // Verifica se o hover está habilitado
   const hoverEnabled = !setParentHoveredCourse;
+
+  const t = useTranslations("Pages.Assignment.HeaderCell");
 
   // Funções de hover
   const handleMouseEnter = (id: string) => {
@@ -56,7 +59,7 @@ const HeaderCell: React.FC<HeaderCellProps> = ({
           overflowY: "auto",
         }}
       >
-        Horário:
+        {t("schedule")}
         {horarios.length > 0 ? (
           horarios.map((horario, index) =>
             horario ? (
@@ -64,12 +67,12 @@ const HeaderCell: React.FC<HeaderCellProps> = ({
                 <br />
                 &emsp;{horario.dia} {horario.inicio}/{horario.fim}
               </span>
-            ) : null
+            ) : null,
           )
         ) : (
           <span>
             <br />
-            &emsp;A definir
+            &emsp;{t("toBeDefined")}
           </span>
         )}
       </Typography>

@@ -25,6 +25,7 @@ import type {
   Atribuicao,
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { forwardRef } from "react";
+import { useTranslations } from "next-intl";
 
 interface HoveredDocenteProps {
   docente: Docente;
@@ -91,6 +92,8 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
       return carga;
     };
 
+    const t = useTranslations("Pages.Assignment.Hover.Docente");
+
     return (
       <Paper
         elevation={12}
@@ -126,7 +129,7 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                 letterSpacing: 1,
               }}
             >
-              Docente
+              {t("professor")}
             </Typography>
           </Stack>
           <Typography
@@ -182,7 +185,7 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                 color="text.secondary"
                 sx={{ fontWeight: 600, textTransform: "uppercase" }}
               >
-                Saldo
+                {t("balance")}
               </Typography>
               <Typography
                 variant="body1"
@@ -207,7 +210,7 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                     color="text.secondary"
                     sx={{ fontWeight: 600, textTransform: "uppercase" }}
                   >
-                    Carga Didática Atribuída
+                    {t("assignedTeachingWorkload")}
                   </Typography>
                   <Typography variant="body1" sx={{ fontWeight: 500 }}>
                     {calcularCargaDidatica(atribuicoes).toFixed(2)}
@@ -227,7 +230,7 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                   color="text.secondary"
                   sx={{ fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}
                 >
-                  Tipo de Agrupamento
+                  {t("groupingType")}
                 </Typography>
                 <Chip
                   label={docente.agrupar}
@@ -252,7 +255,7 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                     color="text.secondary"
                     sx={{ fontWeight: 600, textTransform: "uppercase" }}
                   >
-                    Turmas com Formulário
+                    {t("classesWithForm")}
                   </Typography>
                 </Stack>
                 <Grid container spacing={2}>
@@ -274,7 +277,6 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                             ),
                             pl: 1.5,
                             py: 0.75,
-                            // MELHORIA AQUI: Usa tokens do sistema e opacidade
                             backgroundColor: disciplina.ativo
                               ? "action.hover"
                               : "action.disabledBackground",
@@ -300,7 +302,6 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                               </Typography>
                               <Typography
                                 variant="caption"
-                                // MELHORIA AQUI: Ajusta cor do texto para manter contraste correto
                                 color={
                                   disciplina.ativo
                                     ? "success.main" // Sugestão: Verde se ativa
@@ -309,7 +310,7 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                                 sx={{ lineHeight: 1.2, fontWeight: 600 }}
                                 p={1}
                               >
-                                {disciplina.ativo ? "Ativa" : "Inativa"}
+                                {disciplina.ativo ? t("active") : t("inactive")}
                               </Typography>
                             </Box>
                             {disciplina && (
@@ -350,6 +351,9 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                                   }}
                                 >
                                   Prioridade: {formulario.prioridade}
+                                  {t("priorityLevel", {
+                                    prioridade: formulario.prioridade,
+                                  })}
                                 </Typography>
                               </Stack>
                               {disciplina?.carga && (
