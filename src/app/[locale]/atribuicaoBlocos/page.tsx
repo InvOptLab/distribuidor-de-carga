@@ -163,7 +163,8 @@ export default function AtribuicaoEmBlocosPage() {
   const hasData = docentesAtivos.length > 0 && turmasAtivas.length > 0;
 
   const maxCargaDidatica = useMemo(() => {
-    const constraint = constraints.get("Carga Didática Máxima");
+    const constraint = constraints.get(t("maximumTeachingLoad"));
+
     if (constraint instanceof CargaDeTrabalhoMaximaDocente) {
       return constraint.params.maxLimit.value;
     }
