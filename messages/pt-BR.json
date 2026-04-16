@@ -413,6 +413,7 @@
     },
     "AllocationBlocks": {
       "navigation": "Navegação:",
+      "maximumTeachingLoad": "Carga Didática Máxima",
       "Alerts": {
         "noPermissionToUndo": "Você não tem permissão para desfazer uma atribuição.",
         "allocationLocked": "Esta atribuição está travada e não pode ser removida.",

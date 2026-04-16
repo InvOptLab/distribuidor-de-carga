@@ -413,7 +413,7 @@
     },
     "AllocationBlocks": {
       "navigation": "Navigation:",
-      "blankSpace": "",
+      "maximumTeachingLoad": "Maximum Teaching Load",
       "Alerts": {
         "noPermissionToUndo": "You are not allowed to undo an assignment.",
         "allocationLocked": "This assignment is locked and cannot be removed.",
