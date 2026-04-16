@@ -409,7 +409,21 @@
       "clearFilters": "Limpar Filtros",
       "manageColumns": "Gerenciar Colunas",
       "displayingCount": "Exibindo {visible} de {total} {total, plural, =1 {turma} other {turmas}}",
-      "filtered": " (filtrado)"
+      "filtered": " (filtrado)",
+      "Columns": {
+        "code": "Código",
+        "class": "Turma",
+        "name": "Nome",
+        "professors": "Docentes",
+        "courses": "Cursos",
+        "level": "Nível",
+        "evening": "Noturna",
+        "english": "Inglês",
+        "active": "Ativo",
+        "group": "Grupo",
+        "workload": "Carga",
+        "schedule": "Horário {value}"
+      }
     },
     "AllocationBlocks": {
       "navigation": "Navegação:",
