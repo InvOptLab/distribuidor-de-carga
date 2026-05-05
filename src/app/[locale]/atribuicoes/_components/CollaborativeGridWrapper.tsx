@@ -257,7 +257,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
         gap: 1,
         flex: 1,
         width: "100%",
-        // overflowX: "auto",
+        overflowX: "hidden",
         // height: 100,
       }}
     >
@@ -589,6 +589,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
           flexDirection: "column",
           overflow: "hidden",
           minWidth: 0,
+          minHeight: 0,
         }}
       >
         {children}
