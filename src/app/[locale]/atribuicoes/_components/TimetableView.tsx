@@ -161,15 +161,10 @@ export default function TimetableView() {
         sx={{
           display: "flex",
           flexDirection: "column",
-          // Define a altura total do layout da grade.
-          // '100%' funciona se o layout pai (ex: em page.tsx ou layout.tsx)
-          // já tiver uma altura definida.
-          // Uma alternativa comum é 'calc(100vh - 80px)' (se sua navbar tiver 80px)
-          // Vamos usar o valor que você tinha (88vh), mas aplicando-o ao
-          // contêiner inteiro, não apenas à grade.
           height: "90vh",
           width: "100%",
-          gap: 1, // Substitui o 'space-y-4' (gap: 2 = 16px)
+          gap: 1, // Substitui o 'space-y-4' (gap: 2 = 16px)overflow: "hidden"
+          overflow: "hidden",
         }}
       >
         <ActionBar

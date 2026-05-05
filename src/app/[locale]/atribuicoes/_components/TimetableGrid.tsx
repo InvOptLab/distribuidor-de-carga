@@ -87,9 +87,9 @@ export default function TimetableGrid({
   return (
     <TableContainer
       sx={{
-        height: "100%", //height: "calc(100vh - 200px)", // Preenche o <Paper> pai
-        width: "100%", // Preenche o <Paper> pai
-        overflow: "auto", // Adiciona scrolls X e Y
+        height: "100%",
+        width: "100%",
+        overflow: "auto",
         borderTop: "1px solid rgba(224, 224, 224, 1)",
         borderLeft: "1px solid rgba(224, 224, 224, 1)",
       }}
