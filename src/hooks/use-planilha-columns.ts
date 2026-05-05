@@ -7,6 +7,7 @@ import {
   getCellValue,
   SortState,
 } from "@/types/column-config";
+import { useTranslations } from "next-intl";
 import { useState, useMemo, useCallback } from "react";
 
 /**
@@ -17,6 +18,8 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
   const maxHorarios = useMemo(() => {
     return Math.max(...disciplinas.map((d) => d.horarios?.length || 0), 0);
   }, [disciplinas]);
+
+  const t = useTranslations("Pages.Spreadsheet.Columns");
 
   // Configuração inicial das colunas
   const [columns, setColumns] = useState<ColumnConfig[]>(() => {
@@ -33,7 +36,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "codigo",
-        label: "Código",
+        label: t("code"),
         type: "codigo",
         visible: true,
         order: 1,
@@ -43,7 +46,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "turma",
-        label: "Turma",
+        label: t("class"),
         type: "turma",
         visible: true,
         order: 2,
@@ -53,7 +56,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "nome",
-        label: "Nome",
+        label: t("name"),
         type: "nome",
         visible: true,
         order: 3,
@@ -63,7 +66,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "docentes",
-        label: "Docentes",
+        label: t("professors"),
         type: "docentes",
         visible: true,
         order: 4,
@@ -74,7 +77,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "cursos",
-        label: "Cursos",
+        label: t("courses"),
         type: "cursos",
         visible: true,
         order: 5,
@@ -84,7 +87,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "nivel",
-        label: "Nível",
+        label: t("level"),
         type: "nivel",
         visible: true,
         order: 6,
@@ -104,7 +107,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       // },
       {
         id: "noturna",
-        label: "Noturna",
+        label: t("evening"),
         type: "noturna",
         visible: true,
         order: 8,
@@ -114,7 +117,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "ingles",
-        label: "Inglês",
+        label: t("english"),
         type: "ingles",
         visible: true,
         order: 9,
@@ -124,7 +127,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "ativo",
-        label: "Ativo",
+        label: t("active"),
         type: "ativo",
         visible: true,
         order: 10,
@@ -134,7 +137,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "grupo",
-        label: "Grupo",
+        label: t("group"),
         type: "grupo",
         visible: true,
         order: 11,
@@ -144,7 +147,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       },
       {
         id: "carga",
-        label: "Carga",
+        label: t("workload"),
         type: "carga",
         visible: true,
         order: 12,
@@ -159,7 +162,7 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
     for (let i = 0; i < maxHorarios; i++) {
       horarioColumns.push({
         id: `horario-${i}`,
-        label: `Horário ${i + 1}`,
+        label: t("schedule", { value: i + 1 }),
         type: "horarios",
         visible: true,
         order: 13 + i,
@@ -197,8 +200,8 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
   const toggleColumnVisibility = useCallback((columnId: string) => {
     setColumns((prev) =>
       prev.map((col) =>
-        col.id === columnId ? { ...col, visible: !col.visible } : col
-      )
+        col.id === columnId ? { ...col, visible: !col.visible } : col,
+      ),
     );
   }, []);
 

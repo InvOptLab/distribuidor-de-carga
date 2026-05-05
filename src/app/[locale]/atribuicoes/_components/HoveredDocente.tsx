@@ -350,7 +350,6 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                                     fontWeight: 600,
                                   }}
                                 >
-                                  Prioridade: {formulario.prioridade}
                                   {t("priorityLevel", {
                                     prioridade: formulario.prioridade,
                                   })}

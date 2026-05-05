@@ -205,11 +205,11 @@ export default function TimetableView() {
         <CollaborativeGridWrapper>
           <Paper
             sx={{
-              // width: "100%",
-              // overflow: "hidden",
-              flex: 1, // <-- CHAVE: Faz o Paper preencher o espaço restante
-              display: "flex", // Para que o TableContainer possa usar height: 100%
-              justifyContent: "center",
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              overflow: "hidden",
             }}
           >
             {docentes.length > 0 &&

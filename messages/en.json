@@ -409,7 +409,21 @@
       "clearFilters": "Clear Filters",
       "manageColumns": "Manage Columns",
       "displayingCount": "Showing {visible} of {total} {total, plural, =1 {class} other {classes}}",
-      "filtered": " (filtered)"
+      "filtered": " (filtered)",
+      "Columns": {
+        "code": "Code",
+        "class": "Class",
+        "name": "Name",
+        "professors": "Professors",
+        "courses": "Courses",
+        "level": "Level",
+        "evening": "Evening",
+        "english": "English",
+        "active": "Active",
+        "group": "Group",
+        "workload": "Workload",
+        "schedule": "Schedule {value}"
+      }
     },
     "AllocationBlocks": {
       "navigation": "Navigation:",
