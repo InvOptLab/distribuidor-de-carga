@@ -250,7 +250,17 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, flex: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+        flex: 1,
+        width: "100%",
+        // overflowX: "auto",
+        // height: 100,
+      }}
+    >
       {/* BARRA DE STATUS DA SALA */}
       <Paper
         elevation={0}
@@ -572,7 +582,14 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
       <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
-        style={{ position: "relative", flex: 1, display: "flex" }}
+        style={{
+          position: "relative",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          minWidth: 0,
+        }}
       >
         {children}
         {Object.values(cursors).map((c: any) => (
