@@ -660,7 +660,7 @@
           "class": "Turma",
           "assignedProfessor": "Docente Atribuído",
           "balance": "Saldo",
-          "priorityLevel": "Priority: {prioridade}",
+          "priorityLevel": "Prioridade: {prioridade}",
           "noForm": "Sem formulário",
           "course": "Curso",
           "teachingWorkload": "Carga Didática",
