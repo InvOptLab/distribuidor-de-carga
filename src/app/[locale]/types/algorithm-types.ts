@@ -43,7 +43,7 @@ export const AVAILABLE_ALGORITHMS: Algorithm[] = [
       {
         id: "constraints",
         title: "Restrições",
-        description: "Gerencie restrições hard e soft do algoritmo",
+        description: "Gerencie as restrições rígias e flexíveis do algoritmo",
         icon: "⚖️",
       },
       {
@@ -82,7 +82,7 @@ export const AVAILABLE_ALGORITHMS: Algorithm[] = [
       {
         id: "constraints",
         title: "Restrições",
-        description: "Gerencie restrições do modelo de programação inteira",
+        description: "Gerencie as restrições rígias e flexíveis do algoritmo",
         icon: "⚖️",
       },
       {

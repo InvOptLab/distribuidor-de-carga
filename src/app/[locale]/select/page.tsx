@@ -10,8 +10,9 @@ import { useGlobalContext } from "@/context/Global";
 import { Disciplina, Docente } from "@/context/Global/utils";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
 import CustomSelector from "./_components/CustomSelector";
-import { Button, Grid } from "@mui/material";
+import { Button, Container, Grid } from "@mui/material";
 import { useTranslations } from "next-intl";
+import NoDataFound from "@/components/NoDataFound";
 
 function not<T>(a: readonly T[], b: readonly T[]) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -36,6 +37,8 @@ export default function Seletor() {
   >("docente"); // Estado para selecionar a entidade atual
 
   const { cleanSolucaoAtual } = useSolutionHistory();
+
+  const hasData = docentes.length > 0 && disciplinas.length > 0;
 
   const handleToggleEntity = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked([]); // Limpa os itens selecionados ao mudar a entidade
@@ -133,7 +136,7 @@ export default function Seletor() {
 
   return (
     <>
-      {docentes.length > 0 && disciplinas.length > 0 && (
+      {docentes.length > 0 && disciplinas.length > 0 ? (
         <div>
           <RadioGroup
             row
@@ -185,6 +188,10 @@ export default function Seletor() {
             <Grid>{customList(t("inactive"), right)}</Grid>
           </Grid>
         </div>
+      ) : (
+        <Container maxWidth="lg" sx={{ mt: 4 }}>
+          <NoDataFound />
+        </Container>
       )}
     </>
   );

@@ -15,6 +15,7 @@ import { exportToExcel } from "./excel-export";
 import { CollaborativeGridWrapper } from "@/app/[locale]/atribuicoes/_components/CollaborativeGridWrapper";
 import { useCollaboration } from "@/context/Collaboration";
 import { useTranslations } from "next-intl";
+import NoDataFound from "@/components/NoDataFound";
 
 /**
  * Página principal da Planilha
@@ -53,6 +54,8 @@ export default function PlanilhaPage() {
     handleSort,
     handleFilter,
   } = usePlanilhaColumns(disciplinas.filter((disciplina) => disciplina.ativo));
+
+  const hasData = docentes.length > 0 && disciplinas.length > 0;
 
   /**
    * Atualiza os docentes de uma disciplina e transmite a mudança se estiver em uma sala
@@ -176,18 +179,22 @@ export default function PlanilhaPage() {
       {/* Tabela principal com Wrapper Colaborativo */}
       <Box sx={{ flex: 1, overflow: "hidden" }}>
         <CollaborativeGridWrapper>
-          <PlanilhaTable
-            disciplinas={processedDisciplinas}
-            columns={visibleColumns}
-            docentes={docentes}
-            sortState={sortState}
-            filterState={filterState}
-            onSort={handleSort}
-            onFilter={handleFilter}
-            onUpdateDocentes={handleUpdateDocentes}
-            formularios={formularios}
-            atribuicoes={atribuicoes}
-          />
+          {!hasData ? (
+            <NoDataFound />
+          ) : (
+            <PlanilhaTable
+              disciplinas={processedDisciplinas}
+              columns={visibleColumns}
+              docentes={docentes}
+              sortState={sortState}
+              filterState={filterState}
+              onSort={handleSort}
+              onFilter={handleFilter}
+              onUpdateDocentes={handleUpdateDocentes}
+              formularios={formularios}
+              atribuicoes={atribuicoes}
+            />
+          )}
         </CollaborativeGridWrapper>
       </Box>
 

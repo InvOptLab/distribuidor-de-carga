@@ -605,7 +605,7 @@ export default function InputFileUpload() {
               size="large"
               sx={{ mt: 2, mb: 2 }}
             >
-              {loadingTestData ? "Carregando..." : "Carregar Dados Padrões"}
+              {loadingTestData ? "Importando..." : "Importar Dados Padrões"}
             </Button>
 
             <Box sx={{ mt: 3 }}>

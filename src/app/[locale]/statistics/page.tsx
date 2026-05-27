@@ -18,6 +18,7 @@ import { useState } from "react";
 import SolutionHistoryDetails from "./_components/SolutionHistoryDetails";
 import SingleSolutionWorkloadChart from "./_components/SingleSolutionWorkloadChart";
 import { useGlobalContext } from "@/context/Global";
+import NoDataFound from "@/components/NoDataFound";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -46,6 +47,9 @@ export default function Statistics() {
   const [solutionId, setSolutionId] = useState("");
   const [currentTab, setCurrentTab] = useState(0);
 
+  const { docentes, disciplinas } = useGlobalContext();
+  const hasData = docentes.length && disciplinas.length;
+
   const handleChange = (event: SelectChangeEvent) => {
     setSolutionId(event.target.value as string);
   };
@@ -67,42 +71,46 @@ export default function Statistics() {
         alignItems: "center",
       }}
     >
-      <Card
-        elevation={3}
-        sx={{
-          padding: 3,
-          borderRadius: 3,
-          width: "100%",
-          maxWidth: 500,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
-          Escolha uma solução para análise
-        </Typography>
-        <FormControl sx={{ minWidth: "13em", width: "100%" }}>
-          <InputLabel id="solution-select-label">Solução</InputLabel>
-          <Select
-            labelId="solution-select-label"
-            id="solution-select"
-            value={solutionId}
-            label="Solução"
-            onChange={handleChange}
-            disabled={historicoSolucoes.size === 0}
-          >
-            {Array.from(historicoSolucoes.values()).map((value) => (
-              <MenuItem key={`menu-item-${value.id}`} value={value.id}>
-                {value.datetime}
-              </MenuItem>
-            ))}
-          </Select>
-          {historicoSolucoes.size === 0 && (
-            <FormHelperText>Nenhuma solução encontrada!</FormHelperText>
-          )}
-        </FormControl>
-      </Card>
+      {!hasData ? (
+        <NoDataFound />
+      ) : (
+        <Card
+          elevation={3}
+          sx={{
+            padding: 3,
+            borderRadius: 3,
+            width: "100%",
+            maxWidth: 500,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Escolha uma solução para análise
+          </Typography>
+          <FormControl sx={{ minWidth: "13em", width: "100%" }}>
+            <InputLabel id="solution-select-label">Solução</InputLabel>
+            <Select
+              labelId="solution-select-label"
+              id="solution-select"
+              value={solutionId}
+              label="Solução"
+              onChange={handleChange}
+              disabled={historicoSolucoes.size === 0}
+            >
+              {Array.from(historicoSolucoes.values()).map((value) => (
+                <MenuItem key={`menu-item-${value.id}`} value={value.id}>
+                  {value.datetime}
+                </MenuItem>
+              ))}
+            </Select>
+            {historicoSolucoes.size === 0 && (
+              <FormHelperText>Nenhuma solução encontrada!</FormHelperText>
+            )}
+          </FormControl>
+        </Card>
+      )}
 
       {solutionId && selectedSolution && (
         <Box sx={{ width: "100%" }}>
