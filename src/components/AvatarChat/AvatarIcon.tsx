@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, Box, keyframes } from "@mui/material";
 import { useTranslations } from "next-intl";
 
@@ -28,12 +28,19 @@ export const AvatarIcon = ({
   const t = useTranslations("Assistant");
   const [isHovering, setIsHovering] = useState(false);
 
-  // Usando placeholder para simular os avatares
+  const idleSrc = "/chat/avatar-idle.png";
+  const idleSrcSmiling = "/chat/avatar-idle-smiling.png";
+  const talkingSrc = "/chat/avatar-talking.gif";
+  const searchingSrc = "/chat/avatar-searching.gif";
 
-  const idleSrc = "./chat/avatar-idle.png";
-  const idleSrcSmiling = "./chat/avatar-idle-smiling.png";
-  const talkingSrc = "./chat/avatar-talking.gif";
-  const searchingSrc = "./chat/avatar-searching.gif";
+  useEffect(() => {
+    const imagesToPreload = [idleSrc, idleSrcSmiling, talkingSrc, searchingSrc];
+
+    imagesToPreload.forEach((src) => {
+      const img = new window.Image();
+      img.src = src;
+    });
+  }, []);
 
   const src = isSearching
     ? searchingSrc
@@ -68,7 +75,6 @@ export const AvatarIcon = ({
       )}
       <Avatar
         src={src}
-        key={isSearching ? "searching" : isSpeaking ? "speaking" : "idle"}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
         alt={t("virtualAssistant")}
