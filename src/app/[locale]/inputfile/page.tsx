@@ -10,17 +10,13 @@ import {
   Container,
   Grid as Grid,
   Chip,
-  Alert,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Paper,
   Divider,
+  useTheme,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -723,7 +719,7 @@ export default function InputFileUpload() {
                     textAlign: "center",
                   }}
                 >
-                  <PersonIcon color="action" sx={{ mb: 0.5 }} />
+                  <PersonIcon color="info" sx={{ mb: 0.5 }} />
                   <Typography variant="h5" fontWeight="bold">
                     {currentDocentes.length}
                   </Typography>
@@ -741,12 +737,12 @@ export default function InputFileUpload() {
                     textAlign: "center",
                   }}
                 >
-                  <SchoolIcon color="action" sx={{ mb: 0.5 }} />
+                  <SchoolIcon color="secondary" sx={{ mb: 0.5 }} />
                   <Typography variant="h5" fontWeight="bold">
                     {currentDisciplinas.length}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Disciplinas
+                    Turmas
                   </Typography>
                 </Box>
               </Grid>
@@ -759,7 +755,7 @@ export default function InputFileUpload() {
                     textAlign: "center",
                   }}
                 >
-                  <AssignmentIcon color="action" sx={{ mb: 0.5 }} />
+                  <AssignmentIcon color="warning" sx={{ mb: 0.5 }} />
                   <Typography variant="h5" fontWeight="bold">
                     {
                       currentAtribuicoes.filter((a) => a.docentes.length > 0)
