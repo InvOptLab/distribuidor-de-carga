@@ -666,82 +666,163 @@ export default function InputFileUpload() {
         onClose={() => setShowBackupDialog(false)}
         maxWidth="sm"
         fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3, p: 1 } } }}
       >
-        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <WarningIcon color="warning" />
-          Dados Existentes Detectados
-        </DialogTitle>
-        <DialogContent>
-          <Alert
-            severity="warning"
-            color="warning"
-            sx={{ mb: 2, color: "text.primary" }}
-          >
-            Você já possui dados carregados. Carregar novos dados irá substituir
-            todos os dados atuais.
-          </Alert>
-          <Typography variant="body1" gutterBottom>
-            Recomendamos criar um backup dos dados atuais antes de continuar.
-          </Typography>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              Dados atuais:
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box
+              sx={{
+                // backgroundColor: "warning.light",
+                color: "warning.dark",
+                borderRadius: "50%",
+                width: 40,
+                height: 40,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <WarningIcon />
+            </Box>
+            <Typography variant="h6" fontWeight="bold">
+              Substituir dados existentes?
             </Typography>
-            <List dense>
-              <ListItem>
-                <ListItemIcon>
-                  <PersonIcon />
-                </ListItemIcon>
-                <ListItemText primary={`${currentDocentes.length} docentes`} />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <SchoolIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${currentDisciplinas.length} disciplinas`}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <AssignmentIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${
-                    currentAtribuicoes.filter((a) => a.docentes.length > 0)
-                      .length
-                  } atribuições`}
-                />
-              </ListItem>
-            </List>
           </Box>
+        </DialogTitle>
+
+        <DialogContent sx={{ pb: 3 }}>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            Você está prestes a carregar novos dados. Isso irá{" "}
+            <strong>apagar e substituir</strong> todas as informações atuais do
+            sistema. Recomenda-se criar um backup antes de prosseguir.
+          </Typography>
+
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 2.5,
+              borderRadius: 2,
+              backgroundColor: "background.default",
+              borderColor: "divider",
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              color="text.primary"
+              sx={{ mb: 2, fontWeight: 600 }}
+            >
+              Dados atuais que serão perdidos:
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  <PersonIcon color="action" sx={{ mb: 0.5 }} />
+                  <Typography variant="h5" fontWeight="bold">
+                    {currentDocentes.length}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Docentes
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid size={{ xs: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  <SchoolIcon color="action" sx={{ mb: 0.5 }} />
+                  <Typography variant="h5" fontWeight="bold">
+                    {currentDisciplinas.length}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Disciplinas
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid size={{ xs: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  <AssignmentIcon color="action" sx={{ mb: 0.5 }} />
+                  <Typography variant="h5" fontWeight="bold">
+                    {
+                      currentAtribuicoes.filter((a) => a.docentes.length > 0)
+                        .length
+                    }
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Atribuições
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
         </DialogContent>
-        <DialogActions>
+
+        <DialogActions sx={{ px: 3, pb: 2, justifyContent: "space-between" }}>
           <Button
             onClick={() => setShowBackupDialog(false)}
-            variant="contained"
-            color="error"
+            color="inherit"
+            sx={{ textTransform: "none", fontWeight: 500 }}
+            variant="text"
           >
             Cancelar
           </Button>
-          <Button
-            onClick={createBackup}
-            startIcon={<BackupIcon />}
-            color="info"
-            variant="outlined"
-          >
-            Criar Backup
-          </Button>
-          {!safeCOntinue && (
-            <Button onClick={performUpload} variant="contained" color="warning">
-              Continuar sem Backup
-            </Button>
-          )}
-          {safeCOntinue && (
-            <Button onClick={performUpload} variant="contained" color="info">
-              Continuar
-            </Button>
-          )}
+
+          <Box sx={{ display: "flex", gap: 1.5 }}>
+            {!safeCOntinue ? (
+              <>
+                <Button
+                  onClick={performUpload}
+                  color="error"
+                  sx={{ textTransform: "none", fontWeight: 500 }}
+                  variant="text"
+                >
+                  Substituir sem backup
+                </Button>
+                <Button
+                  onClick={createBackup}
+                  variant="contained"
+                  startIcon={<BackupIcon />}
+                  color="primary"
+                  disableElevation
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: 600,
+                    borderRadius: 2,
+                  }}
+                >
+                  Fazer Backup
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={performUpload}
+                variant="contained"
+                color="primary"
+                disableElevation
+                sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
+              >
+                Importar Novos Dados
+              </Button>
+            )}
+          </Box>
         </DialogActions>
       </Dialog>
     </Container>
