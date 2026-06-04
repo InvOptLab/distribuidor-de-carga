@@ -940,6 +940,15 @@
       "noDataFound": "No data found",
       "description": "It appears you haven't yet uploaded the necessary data to complete the assignment. Import the teachers and classes to begin.",
       "loadData": "Load Data"
+    },
+    "OnboardingDialog": {
+      "title": "Welcome to the Workload Distributor!",
+      "description": "We developed this tool to automate and optimize the allocation of courses and faculty.",
+      "question": "How would you like to start?",
+      "startTourBtn": "See the Quick Guide",
+      "loadDataBtn": "Load Data",
+      "skipBtn": "Skip introduction for now",
+      "dontShowAgain": "Do not show this message again"
     }
   }
 }

@@ -948,6 +948,15 @@
       "noDataFound": "Nenhum dado encontrado",
       "description": "Parece que você ainda não carregou os dados necessários para realizar a atribuição. Importe os docentes e turmas para começar.",
       "loadData": "Carregar Dados"
+    },
+    "OnboardingDialog": {
+      "title": "Bem-vindo ao Distribuidor de Carga!",
+      "description": "Desenvolvemos esta ferramenta para automatizar e otimizar a alocação de disciplinas e docentes.",
+      "question": "Como você gostaria de começar?",
+      "startTourBtn": "Ver o Guia Rápido",
+      "loadDataBtn": "Carregar Dados",
+      "skipBtn": "Pular introdução por agora",
+      "dontShowAgain": "Não mostrar este aviso novamente"
     }
   }
 }
