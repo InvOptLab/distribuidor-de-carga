@@ -197,10 +197,10 @@ export const documentationData: Module[] = [
           },
           {
             type: "gif",
-            src: "/placeholder-trava.gif",
-            alt: "[Espaço para GIF: Mostrando o usuário segurando Ctrl e clicando na célula, que muda de cor]",
+            src: "/guia/visualizacoes/visao-tabela/tabela-travas.gif",
+            alt: "[Espaço para GIF: Mostrando o usuário segurando Ctrl e clicando em células, colunas e linhas para aplicar diferentes travas]",
             caption:
-              "Animação: Utilizando o atalho Ctrl + Click para inserir uma trava manual.",
+              "Animação 1: Demonstração do uso de travas manuais (Ctrl + Click) em múltiplos escopos: em uma célula vazia, em uma atribuição existente, em uma coluna inteira (disciplina) e em uma linha (docente).",
           },
         ],
       },
@@ -323,10 +323,10 @@ export const documentationData: Module[] = [
           },
           {
             type: "gif",
-            src: "/placeholder-botoes-bloco.gif",
-            alt: "[Espaço para GIF: Mostrando o mouse a clicar no botão de + e depois no cadeado no rodapé de um cartão]",
+            src: "/guia/visualizacoes/visao-bloco/bloco-atrubuicao-trava.gif",
+            alt: "[Espaço para GIF: Mostrando o mouse a clicar no botão de + e depois no cadeado no rodapé do cartão do Docente 35]",
             caption:
-              "Animação: Realizando uma atribuição e travando-a diretamente pelo rodapé do cartão.",
+              "Animação 2: Realizando uma atribuição seguida de trava manual utilizando os controles de ação rápida no rodapé do cartão do 'Docente 35'.",
           },
         ],
       },
@@ -355,7 +355,7 @@ export const documentationData: Module[] = [
           },
           {
             type: "image",
-            src: "/placeholder-planilha.jpg",
+            src: "/guia/visualizacoes/visao-planilha/planilha-atribuicoes-todos-campos.png",
             alt: "[Espaço para Imagem: Visão geral da tabela em estilo planilha com múltiplas colunas abertas]",
             caption:
               "Figura 4: Interface da Visão em Planilha com dados tabulares detalhados.",
@@ -406,10 +406,10 @@ export const documentationData: Module[] = [
           },
           {
             type: "gif",
-            src: "/placeholder-column-manager.gif",
+            src: "/guia/visualizacoes/visao-planilha/planilha-ocultar-colunas.gif",
             alt: "[Espaço para GIF: Utilizando o Gerenciador de Colunas para ocultar as colunas de Curso e Nível, comprimindo a tabela]",
             caption:
-              "Animação: Utilizando o Gerenciador de Colunas para focar apenas nas métricas desejadas.",
+              "Animação 3: Utilizando o Gerenciador de Colunas para focar apenas ocultar as colunas Curso e Nível.",
           },
           {
             type: "heading",
