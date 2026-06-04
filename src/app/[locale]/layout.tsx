@@ -16,6 +16,7 @@ import { getMessages } from "next-intl/server";
 import { AccessibilityProvider } from "@/context/Accessibility";
 import AccessibilityBar from "@/components/AccessibilityBar";
 import ClearStorageModal from "@/components/ClearStorageModal";
+import OnboardingDialog from "@/components/OnboardingDialog";
 
 export default async function RootLayout({
   children,
@@ -37,10 +38,7 @@ export default async function RootLayout({
 
   // const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
-  // 3. Faça o await para extrair o locale
   const { locale } = await params;
-
-  // 4. Carrega as mensagens do idioma
   const messages = await getMessages();
 
   return (
@@ -87,6 +85,7 @@ export default async function RootLayout({
                             position: "relative", // Evita bugs com modais/tooltips internas
                           }}
                         >
+                          <OnboardingDialog />
                           <ClearStorageModal />
                           {children}
                         </Box>
