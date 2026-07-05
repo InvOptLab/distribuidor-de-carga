@@ -58,9 +58,9 @@ function LinearProgressWithLabel(
   props: LinearProgressProps & {
     value: number;
     progress: IProgressBar;
-    t: _Translator<Record<string, any>, string>;
   },
 ) {
+  const t = useTranslations("AlgorithmDialog");
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <Box sx={{ width: "100%", mr: 1 }}>
@@ -68,7 +68,7 @@ function LinearProgressWithLabel(
       </Box>
       <Box sx={{ minWidth: 35 }}>
         <Tooltip
-          title={props.t("linearProgressLabel", {
+          title={t("linearProgressLabel", {
             current: props.progress.current,
             total: props.progress.total,
           })}
@@ -285,7 +285,6 @@ export default function AlgoritmoDialog({
                 <LinearProgressWithLabel
                   value={progressPercentage()}
                   progress={progress}
-                  t={t}
                 />
               </Box>
 
