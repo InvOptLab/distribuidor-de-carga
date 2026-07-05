@@ -252,11 +252,12 @@ export class MILP extends ExactAlgorithm {
     const lpString = this.model.toCplexLpFormat();
     console.log(lpString);
 
-    // TODO Rebuildar o Highs pois o log não está presente no retorno.
+    // TODO: Rebuildar o Highs pois o log não está presente no retorno.
+    // TODO: mip_report_level está travando a execução
     // prettier-ignore
     const sol = highs.solve(lpString, {
       "log_to_console": true,
-      "mip_report_level": 2,
+      // "mip_report_level": 2, 
     });
 
     console.log(sol);
