@@ -228,6 +228,7 @@ export function processSolucao(
         maxPriority: solucaoImportacao.maxPriority,
         formularios: formularios,
       },
+      algorithm: solucaoImportacao.algorithm ?? "Importação",
     };
 
     /**
