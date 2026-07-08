@@ -522,7 +522,6 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       // Lógica de TRAVAS (Locks)
       let newTravas = [...travas];
       const exists = travas.some(
-        // (obj) => JSON.stringify(obj) === JSON.stringify(celula),
         (obj) =>
           obj.id_disciplina === celula.id_disciplina &&
           obj.nome_docente === celula.nome_docente &&
@@ -533,11 +532,12 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         newTravas.push(celula);
       } else {
         newTravas = newTravas.filter(
-          // (obj) => JSON.stringify(obj) !== JSON.stringify(celula),
           (obj) =>
-            obj.id_disciplina !== celula.id_disciplina &&
-            obj.nome_docente !== celula.nome_docente &&
-            obj.tipo_trava !== celula.tipo_trava,
+            !(
+              obj.id_disciplina === celula.id_disciplina &&
+              obj.nome_docente === celula.nome_docente &&
+              obj.tipo_trava === celula.tipo_trava
+            ),
         );
       }
 

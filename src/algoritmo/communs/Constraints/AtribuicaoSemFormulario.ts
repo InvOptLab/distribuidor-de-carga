@@ -19,7 +19,7 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
     isHard: boolean,
     penalty: number,
     isActive: boolean,
-    parametros: null
+    parametros: null,
   ) {
     super(name, description, isHard, penalty, isActive);
     this.params = parametros;
@@ -27,7 +27,7 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
 
   soft(
     atribuicoes: Atribuicao[],
-    docentes: Docente[]
+    docentes: Docente[],
     //disciplinas?: Disciplina[]
   ): number {
     let avaliacao: number = 0;
@@ -48,7 +48,7 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
   hard(
     atribuicoes: Atribuicao[],
     docentes: Docente[],
-    disciplinas: Disciplina[]
+    disciplinas: Disciplina[],
   ): boolean {
     docentes = docentes.filter((doc) => doc !== null && doc !== undefined);
 
@@ -80,7 +80,7 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
 
   occurrences(
     atribuicoes: Atribuicao[],
-    docentes: Docente[]
+    docentes: Docente[],
   ): { label: string; qtd: number }[] {
     const data: { label: string; qtd: number }[] = [];
 
@@ -117,15 +117,15 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
           `prioridade_definida_${i}_${j}`,
           LpSum([modelData.x[i][j]]),
           "<=",
-          modelData.P[i][j] + modelData.m[i][j]
+          modelData.P[i][j] + modelData.m[i][j] * modelData.a[i][j],
         );
-      })
+      }),
     );
   }
 
   milpSoftFormulation(
     model: OptimizationModel,
-    modelData: modelSCP
+    modelData: modelSCP,
   ): { objectiveTerms: Term[] } {
     /**
      * Restrição
@@ -159,10 +159,10 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
               { variable: modelData.b[i][j], coefficient: -1 },
             ]),
             "==",
-            0
+            0,
           );
         }
-      })
+      }),
     );
 
     /**
@@ -178,7 +178,7 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
             coefficient: this.penalty,
           });
         }
-      })
+      }),
     );
 
     return { objectiveTerms };

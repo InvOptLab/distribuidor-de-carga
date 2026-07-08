@@ -487,16 +487,6 @@ export function useAlgorithm() {
 
       // LÓGICA DE COLABORAÇÃO: Broadcast da solução para todos na sala
       if (isInRoom) {
-        // broadcastDataUpdate(
-        //   {
-        //     atribuicoes: solucaoAtual.atribuicoes,
-        //     disciplinas: disciplinas,
-        //     docentes: docentes,
-        //     formularios: formularios,
-        //     travas: travas,
-        //   },
-        //   "FULL_DATA"
-        // );
         broadcastDataUpdate(
           {
             atribuicoes: solucaoAtual.atribuicoes,

@@ -403,6 +403,20 @@ export default function InputFileUpload() {
     updateProgress(steps[5]);
     // Processa solução e insere no histórico
     if (tempData.jsonData["solucao"]) {
+      // Formata a data e hora atual (ex: 08-07-2026_09h12m30s)
+      const agora = new Date();
+      const dia = String(agora.getDate()).padStart(2, "0");
+      const mes = String(agora.getMonth() + 1).padStart(2, "0");
+      const ano = agora.getFullYear();
+      const horas = String(agora.getHours()).padStart(2, "0");
+      const minutos = String(agora.getMinutes()).padStart(2, "0");
+      const segundos = String(agora.getSeconds()).padStart(2, "0");
+
+      const nomeImportacao = `Importação_${dia}-${mes}-${ano}_${horas}h${minutos}m${segundos}s`;
+
+      tempData.jsonData["solucao"]["id"] = nomeImportacao;
+      tempData.jsonData["solucao"]["datetime"] = agora.toLocaleString();
+
       processSolucao(
         tempData.jsonData["versao"],
         tempData.jsonData["solucao"],
