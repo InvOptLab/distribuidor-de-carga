@@ -175,7 +175,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           false,
           1000000,
           true,
-          null,
+          {limiteDocente: 1},
         ),
       ],
       [
