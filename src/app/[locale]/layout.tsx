@@ -47,7 +47,7 @@ export default async function RootLayout({
         style={{
           margin: 0,
           padding: 0,
-          height: "100vh", // Trava a altura para ser exatamente o tamanho da janela
+          height: "100dvh", // Trava a altura para ser exatamente o tamanho da janela
           display: "flex",
           flexDirection: "column",
           overflow: "hidden", // Proíbe o navegador de ter sua própria barra de rolagem
