@@ -25,6 +25,7 @@ import {
 import { MILP } from "@/algoritmo/metodos/MILP/MILP";
 import { useCollaboration } from "@/context/Collaboration";
 import { AlgorithmStage } from "@/components/AlgorithmDialog";
+import { useTabuWorker } from "@/hooks/useTabuWorker";
 
 /**
  * Converte a saída do solver HiGHS (baseada em índices e objeto 'Primal')
@@ -75,9 +76,27 @@ export function reconstruirAtribuicoes(
   return atribuicoesFinais;
 }
 
-// =========================================================
-// FUNÇÕES AUXILIARES DE CONVERSÃO (Map/Set <-> Array)
-// =========================================================
+/**
+ * Função Auxiliar para "Serializar" classes removendo funções e mantendo as
+ * propriedades configuradas pelo usuário.
+ */
+function serializeComponentMap(map: Map<any, any>) {
+  return Array.from(map.values())
+    .filter((entry) => {
+      if (!entry) return false;
+      // Valida se está ativo (assume true se não houver a propriedade isActive explícita)
+      const isActive = entry.isActive !== undefined ? entry.isActive : true;
+      return isActive;
+    })
+    .map((entry) => {
+      const instance = entry.instance || entry;
+
+      return {
+        name: instance.constructor.name, // Ex: "ChoqueDeHorarios"
+        data: JSON.parse(JSON.stringify(instance)),
+      };
+    });
+}
 
 export function useAlgorithm() {
   const {
@@ -93,7 +112,7 @@ export function useAlgorithm() {
     updateAtribuicoes,
   } = useGlobalContext();
 
-  const { isInRoom, broadcastDataUpdate } = useCollaboration(); // Hooks de Colaboração
+  const { isInRoom, broadcastDataUpdate } = useCollaboration();
 
   const { maxPriority } = useTimetable();
 
@@ -129,7 +148,6 @@ export function useAlgorithm() {
 
   const disciplinasAlocadasRef = useRef(disciplinasAlocadas);
   const interrompeRef = useRef(interrompe);
-  // const estatisticasMonitoradasRef = useRef(estatisticasMonitoradas);
 
   /**
    * Campos a serem monitorados durante a execução do algoritmo.
@@ -189,6 +207,44 @@ export function useAlgorithm() {
     [],
   );
 
+  // Hook do Worker
+  const onProgressAllocation = useCallback((qtd: number) => {
+    setDisciplinasAlocadas(qtd);
+  }, []);
+
+  const onProgressStats = useCallback(
+    (stats: Partial<Estatisticas>) => {
+      handleStatisticsUpdate(stats);
+    },
+    [handleStatisticsUpdate],
+  );
+
+  const onSuccess = useCallback((solucao: Solucao) => {
+    setSolucaoAtual(solucao);
+    setProcessing(false);
+    setInterrompe(false);
+    setDisciplinasAlocadas(0);
+    setExecutionStage("idle");
+  }, []);
+
+  const onError = useCallback(
+    (error: string) => {
+      console.error("Erro na execução do algoritmo pelo Worker:", error);
+      addAlerta("Erro na execução do algoritmo!", "error");
+      setProcessing(false);
+      setInterrompe(false);
+      setExecutionStage("idle");
+    },
+    [addAlerta],
+  );
+
+  const { startWorker, interruptWorker } = useTabuWorker({
+    onProgressAllocation,
+    onProgressStats,
+    onSuccess,
+    onError,
+  });
+
   /**
    * Executa o algoritmo Busca Tabu
    */
@@ -202,23 +258,6 @@ export function useAlgorithm() {
 
     try {
       if (selectedAlgorithm === "tabu-search") {
-        const neighborhood = Array.from(neighborhoodFunctions.values())
-          .filter((entry) => entry.isActive)
-          .map((entry) => entry.instance);
-
-        const stop = Array.from(stopFunctions.values())
-          .filter((entry) => entry.isActive)
-          .map((entry) => entry.instance);
-
-        const aspiration = Array.from(aspirationFunctions.values())
-          .filter((entry) => entry.isActive)
-          .map((entry) => entry.instance);
-
-        const objectives = Array.from(objectiveComponents.values()).filter(
-          (entry) => entry.isActive,
-        );
-
-        // Filter only active items
         const activeDocentes = docentes.filter((d) => d.ativo);
         const activeDisciplinas = disciplinas.filter((d) => d.ativo);
         const activeFormularios = getActiveFormularios(
@@ -227,7 +266,6 @@ export function useAlgorithm() {
           docentes,
         );
 
-        // Filter atribuicoes to only include active items
         const activeAtribuicoes = atribuicoes
           .filter((attr) =>
             activeDisciplinas.some((d) => d.id === attr.id_disciplina),
@@ -239,45 +277,37 @@ export function useAlgorithm() {
             ),
           }));
 
-        const buscaTabu = new TabuSearch(
-          activeAtribuicoes,
-          activeDocentes,
-          activeDisciplinas,
-          travas,
-          activeFormularios,
-          [...hardConstraints.values(), ...softConstraints.values()],
-          { atribuicoes: activeAtribuicoes },
-          neighborhood,
-          tabuListType,
-          tabuListType === "Solução"
-            ? parametros.tabuTenure.size
-            : parametros.tabuTenure.tenures,
-          stop,
-          aspiration,
-          maxPriority + 1,
-          "max",
-          objectives,
-        );
+        // SERIALIZAÇÃO DAS INSTÂNCIAS! (Removemos os métodos e mandamos pro Worker)
+        const activeComponents = {
+          constraints: serializeComponentMap(
+            new Map([...hardConstraints, ...softConstraints]),
+          ),
+          neighborhood: serializeComponentMap(neighborhoodFunctions),
+          stopFunctions: serializeComponentMap(stopFunctions),
+          aspiration: serializeComponentMap(aspirationFunctions),
+          objectives: serializeComponentMap(objectiveComponents),
+        };
 
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        const contextData = {
+          atribuicoes: activeAtribuicoes,
+          docentes: activeDocentes,
+          turmas: activeDisciplinas,
+          travas: travas,
+          prioridades: activeFormularios,
+        };
+
+        const configData = {
+          tabuListType,
+          tabuSize:
+            tabuListType === "Solução"
+              ? parametros.tabuTenure.size
+              : parametros.tabuTenure.tenures,
+          maxPriority: maxPriority + 1,
+          objectiveType: "max",
+        };
 
         setExecutionStage("solving");
-
-        await buscaTabu.execute(
-          () => interrompeRef.current,
-          setDisciplinasAlocadas,
-          { campos: camposMonitorados, onUpdate: handleStatisticsUpdate },
-        );
-
-        const solucao: Solucao = {
-          atribuicoes: buscaTabu.bestSolution.atribuicoes,
-          avaliacao: buscaTabu.bestSolution.avaliacao,
-          estatisticas: buscaTabu.statistics,
-          algorithm: buscaTabu,
-        };
-        setSolucaoAtual(solucao);
-
-        console.log(buscaTabu.statistics);
+        startWorker(contextData, configData, activeComponents);
       } else {
         const activeDocentes = docentes.filter((d) => d.ativo);
         const activeTurmas = disciplinas.filter((d) => d.ativo);
@@ -441,11 +471,18 @@ export function useAlgorithm() {
         };
 
         setSolucaoAtual(solucao);
+
+        //Limpeza de estados
+        setProcessing(false);
+        setInterrompe(false);
+        setDisciplinasAlocadas(0);
+        setExecutionStage("idle");
       }
     } catch (error) {
       console.error("Erro na execução do algoritmo:", error);
       addAlerta("Erro na execução do algoritmo!", "error");
-    } finally {
+
+      //Limpeza de estados
       setProcessing(false);
       setInterrompe(false);
       setDisciplinasAlocadas(0);
@@ -512,6 +549,9 @@ export function useAlgorithm() {
    */
   const interruptExecution = () => {
     setInterrompe(true);
+    if (selectedAlgorithm === "tabu-search") {
+      interruptWorker(); // Sinal para o Worker parar
+    }
     addAlerta("A execução do algoritmo foi interrompida!", "warning");
   };
 

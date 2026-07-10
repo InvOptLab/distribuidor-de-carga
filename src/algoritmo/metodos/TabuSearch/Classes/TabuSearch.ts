@@ -74,7 +74,7 @@ export class TabuSearch extends HeuristicAlgorithm {
     aspirationFunctions: AspirationCriteria[],
     maiorPrioridade: number | undefined,
     objectiveType: "min" | "max",
-    objectiveComponentes: ObjectiveComponent<any>[]
+    objectiveComponentes: ObjectiveComponent<any>[],
   ) {
     /**
      * Inicialização do contexto.
@@ -96,7 +96,7 @@ export class TabuSearch extends HeuristicAlgorithm {
       maiorPrioridade,
       true,
       neighborhoodFunctions,
-      stopFunctions
+      stopFunctions,
     );
 
     /**
@@ -195,7 +195,7 @@ export class TabuSearch extends HeuristicAlgorithm {
         avaliacao += constraint.soft(
           vizinho.atribuicoes,
           this.context.docentes,
-          this.context.turmas
+          this.context.turmas,
         );
       }
 
@@ -207,7 +207,7 @@ export class TabuSearch extends HeuristicAlgorithm {
         vizinho.atribuicoes,
         this.context.prioridades,
         this.context.docentes,
-        this.context.turmas
+        this.context.turmas,
       );
 
       // Atualiza o valor da avaliação do vizinho.
@@ -231,7 +231,7 @@ export class TabuSearch extends HeuristicAlgorithm {
    */
   async verifyTabu(
     vizinhanca: Vizinho[],
-    iteracaoAtual: number
+    iteracaoAtual: number,
   ): Promise<Vizinho[]> {
     for (const vizinho of vizinhanca) {
       vizinho.isTabu = this.tabuList.has(vizinho, iteracaoAtual);
@@ -246,7 +246,7 @@ export class TabuSearch extends HeuristicAlgorithm {
   stop(
     iteracoes: number,
     melhorVizinhoGerado: Vizinho,
-    interrompe?: () => boolean
+    interrompe?: () => boolean,
   ): boolean {
     if (interrompe && interrompe()) return true;
 
@@ -270,7 +270,7 @@ export class TabuSearch extends HeuristicAlgorithm {
    */
   async findBestSolution(
     vizinhanca: Vizinho[],
-    iteracoes: number
+    iteracoes: number,
   ): Promise<{
     vizinho: Vizinho;
     index: number | undefined;
@@ -309,7 +309,7 @@ export class TabuSearch extends HeuristicAlgorithm {
   async execute(
     interrompe?: () => boolean,
     atualizaQuantidadeAlocacoes?: (qtd: number) => void,
-    atualizaEstatisticas?: OpcoesMonitoramento
+    atualizaEstatisticas?: OpcoesMonitoramento,
   ): Promise<Vizinho> {
     let iteracoes = 0;
     let vizinhanca: Vizinho[] = [];
@@ -337,10 +337,21 @@ export class TabuSearch extends HeuristicAlgorithm {
     // Inicia o tempo inicial total
     const tempoInicialTotal = performance.now();
 
-    while (!this.stop(iteracoes, vizinhanca[0], interrompe)) {
+    /**
+     * CORREÇÃO: Utiliza this.bestSolution como fallback para a primeira iteração,
+     * impedindo que "vizinhanca[0]" seja undefined e faça o algoritmo quebrar
+     * ao tentar ler a propriedade de avaliação dentro dos critérios de parada.
+     */
+    while (
+      !this.stop(
+        iteracoes,
+        vizinhanca.length > 0 ? vizinhanca[0] : this.bestSolution,
+        interrompe,
+      )
+    ) {
       // console.log("Iteração: " + iteracoes); // Apenas para o script
 
-      await delay(0);
+      // await delay(0);
 
       /**
        * Atualizar as estatisticas
@@ -375,7 +386,7 @@ export class TabuSearch extends HeuristicAlgorithm {
        */
       const localBestSolution = await this.findBestSolution(
         vizinhanca,
-        iteracoes
+        iteracoes,
       );
 
       /**
@@ -415,7 +426,7 @@ export class TabuSearch extends HeuristicAlgorithm {
       this.statistics.addIteracaoData(
         iteracoes,
         this.bestSolution.avaliacao,
-        performance.now() - tempoInicial
+        performance.now() - tempoInicial,
       );
       /**
        * Captura o tempo final de execução da iteração, como também atualiza o map com as novas informações
@@ -423,7 +434,7 @@ export class TabuSearch extends HeuristicAlgorithm {
       // tempoFinal = performance.now();
       this.statistics.tempoPorIteracaoTabu.set(
         iteracoes,
-        tempoFinalTabu - tempoInicialTabu
+        tempoFinalTabu - tempoInicialTabu,
       );
 
       /**
@@ -432,8 +443,8 @@ export class TabuSearch extends HeuristicAlgorithm {
       if (atualizaQuantidadeAlocacoes) {
         atualizaQuantidadeAlocacoes(
           this.incumbente.atribuicoes.filter(
-            (atribuicao) => atribuicao.docentes.length > 0
-          ).length
+            (atribuicao) => atribuicao.docentes.length > 0,
+          ).length,
         );
       }
 
@@ -479,7 +490,7 @@ export class TabuSearch extends HeuristicAlgorithm {
      */
     this.statistics.avaliacaoPorIteracao.set(
       iteracoes,
-      this.bestSolution.avaliacao
+      this.bestSolution.avaliacao,
     );
 
     /**
@@ -492,7 +503,7 @@ export class TabuSearch extends HeuristicAlgorithm {
     this.statistics.generateFinalStatistics(
       this.incumbente.atribuicoes,
       this.context,
-      this.constraints
+      this.constraints,
     );
     this.bestSolution = this.incumbente;
 
