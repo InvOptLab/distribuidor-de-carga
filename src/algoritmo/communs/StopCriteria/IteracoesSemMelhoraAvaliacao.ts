@@ -12,7 +12,7 @@ export default class IteracoesSemMelhoraAvaliacao extends StopCriteria {
   constructor(
     name: string,
     descripion: string,
-    limiteIteracoesSemModificacao: number
+    limiteIteracoesSemModificacao: number,
   ) {
     super(name, descripion);
     this.limiteIteracoesSemMelhoraAvaliacao = limiteIteracoesSemModificacao;
@@ -58,7 +58,7 @@ export default class IteracoesSemMelhoraAvaliacao extends StopCriteria {
     }
 
     return (
-      this.iteacoesSemModificacao === this.limiteIteracoesSemMelhoraAvaliacao
+      this.iteacoesSemModificacao >= this.limiteIteracoesSemMelhoraAvaliacao
     );
   }
 }

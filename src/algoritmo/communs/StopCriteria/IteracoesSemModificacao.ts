@@ -12,7 +12,7 @@ export class IteracoesSemModificacao extends StopCriteria {
   constructor(
     name: string,
     descripion: string,
-    limiteIteracoesSemModificacao: number
+    limiteIteracoesSemModificacao: number,
   ) {
     super(name, descripion);
     this.limiteIteracoesSemModificacao = limiteIteracoesSemModificacao;
@@ -45,6 +45,6 @@ export class IteracoesSemModificacao extends StopCriteria {
       // return false
     }
 
-    return this.iteacoesSemModificacao === this.limiteIteracoesSemModificacao;
+    return this.iteacoesSemModificacao >= this.limiteIteracoesSemModificacao;
   }
 }
