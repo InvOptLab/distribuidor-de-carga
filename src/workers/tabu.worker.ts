@@ -209,6 +209,8 @@ self.addEventListener("message", async (event) => {
         activeComponents.aspiration,
       );
 
+      console.log(stopFunctions);
+
       // =========================================================
       // EXECUTAR A BUSCA TABU
       // =========================================================
