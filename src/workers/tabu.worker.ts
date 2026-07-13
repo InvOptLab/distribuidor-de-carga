@@ -98,9 +98,9 @@ const ComponentRegistry: Record<
 
 /**
  * Função utilitária para reconstruir instâncias das classes.
- * Utiliza Generics (T) para retornar o tipo correto ao invés de any[].
+ * O uso de Generics <T> remove a necessidade de retornos 'any[]'.
  */
-function reviveInstances<T extends AlgorithmBaseComponent>(
+function reviveInstances<T>(
   serializedItems: SerializedComponent[] | undefined,
 ): T[] {
   if (!serializedItems || !Array.isArray(serializedItems)) return [];
@@ -108,11 +108,7 @@ function reviveInstances<T extends AlgorithmBaseComponent>(
   return (
     serializedItems
       .map((item): T | null => {
-        // Pega o construtor do dicionário
-        const ClassDef = ComponentRegistry[item.name] as
-          | ComponentConstructor<T>
-          | undefined;
-
+        const ClassDef = ComponentRegistry[item.name];
         if (!ClassDef) {
           console.warn(
             `[Worker] Classe '${item.name}' não foi registrada no ComponentRegistry do Worker!`,
@@ -120,28 +116,24 @@ function reviveInstances<T extends AlgorithmBaseComponent>(
           return null;
         }
 
-        const config: Record<string, any> = item.data || {};
-        let instance: T;
+        const config = item.data || {};
+        let instance: any;
 
-        // Tenta instanciar passando os dados no construtor
         try {
           instance = new ClassDef(config.params || config);
         } catch (e) {
           try {
             instance = new ClassDef();
           } catch (err) {
-            // Fallback extremo caso o construtor exija algo muito específico
-            instance = Object.create(ClassDef.prototype) as T;
+            instance = Object.create(ClassDef.prototype);
           }
         }
 
-        // Deep Merge
         const safeAssign = (
           target: Record<string, any>,
           source: Record<string, any>,
         ) => {
           if (!source || typeof source !== "object") return;
-
           Object.keys(source).forEach((key) => {
             const val = source[key];
             if (
@@ -161,8 +153,7 @@ function reviveInstances<T extends AlgorithmBaseComponent>(
 
         safeAssign(instance, config);
 
-        // Sobrescrevendo o 'name' (que é readonly nas abstrações)
-        // Object.defineProperty burla o erro do TS de atribuir valor a um readonly.
+        // Injeta/sobrescreve o 'name' de forma limpa no runtime (burlado para propriedades readonly)
         Object.defineProperty(instance, "name", {
           value: item.name,
           writable: true,
@@ -170,16 +161,14 @@ function reviveInstances<T extends AlgorithmBaseComponent>(
           enumerable: true,
         });
 
-        // Garante que 'params' exista (útil para Constraint e ObjectiveComponent)
-        const typedInstance = instance as Record<string, any>;
-        if (typedInstance.params === undefined) {
-          typedInstance.params = {};
+        // Evita falhas de propriedades dinâmicas indefinidas
+        if (instance.params === undefined) {
+          instance.params = {};
         }
 
-        return instance;
+        return instance as T;
       })
-      // Type Guard crucial: Ensina ao TypeScript que removemos todos os 'null' do array,
-      // garantindo que o retorno seja estritamente T[] e não (T | null)[]
+      // Type Guard para garantir que o array final seja estritamente T[] e livre de nulos
       .filter((item): item is T => item !== null)
   );
 }

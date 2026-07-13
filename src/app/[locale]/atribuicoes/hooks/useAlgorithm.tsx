@@ -77,10 +77,40 @@ export function reconstruirAtribuicoes(
 }
 
 /**
+ * ============================================
+ * AJUSTES
+ * ============================================
+ */
+// Representa a estrutura de um único componente após ser limpo/serializado
+export interface SerializedComponent {
+  name: string;
+  data: Record<string, any>;
+}
+
+// Representa o objeto agrupado contendo todas as listas de componentes prontas para o Worker
+export interface ActiveComponentsSerialized {
+  constraints: SerializedComponent[];
+  neighborhood: SerializedComponent[];
+  stopFunctions: SerializedComponent[];
+  aspiration: SerializedComponent[];
+  objectives: SerializedComponent[];
+}
+
+// Tipo auxiliar para mapear o que pode vir de dentro do Map (instância pura ou wrapper com isActive)
+interface MapEntry {
+  instance?: { name: string; [key: string]: any };
+  name?: string;
+  isActive?: boolean;
+  [key: string]: any;
+}
+
+/**
  * Função Auxiliar para "Serializar" classes removendo funções e mantendo as
  * propriedades configuradas pelo usuário.
  */
-function serializeComponentMap(map: Map<any, any>) {
+export function serializeComponentMap(
+  map: Map<string, MapEntry | any>,
+): SerializedComponent[] {
   return Array.from(map.values())
     .filter((entry) => {
       if (!entry) return false;
@@ -88,15 +118,21 @@ function serializeComponentMap(map: Map<any, any>) {
       const isActive = entry.isActive !== undefined ? entry.isActive : true;
       return isActive;
     })
-    .map((entry) => {
+    .map((entry): SerializedComponent => {
+      // Se for uma estrutura de wrapper, pega a propriedade interna .instance, caso contrário usa o próprio entry
       const instance = entry.instance || entry;
 
       return {
-        name: instance.name, // Ex: "ChoqueDeHorarios"
+        name: instance.name, // String estável que servirá como chave no Worker
         data: JSON.parse(JSON.stringify(instance)),
       };
     });
 }
+/**
+ * ============================================
+ * AJUSTES
+ * ============================================
+ */
 
 export function useAlgorithm() {
   const {
@@ -278,7 +314,7 @@ export function useAlgorithm() {
           }));
 
         // SERIALIZAÇÃO DAS INSTÂNCIAS! (Removemos os métodos e mandamos pro Worker)
-        const activeComponents = {
+        const activeComponents: ActiveComponentsSerialized = {
           constraints: serializeComponentMap(
             new Map([...hardConstraints, ...softConstraints]),
           ),
