@@ -180,6 +180,8 @@ self.addEventListener("message", async (event) => {
     try {
       const { contextData, configData, activeComponents } = payload;
 
+      console.log(activeComponents);
+
       // =========================================================
       // RECONSTRUÇÃO
       // =========================================================
@@ -209,8 +211,6 @@ self.addEventListener("message", async (event) => {
         activeComponents.aspiration,
       );
 
-      console.log(stopFunctions);
-
       // =========================================================
       // EXECUTAR A BUSCA TABU
       // =========================================================
@@ -232,6 +232,8 @@ self.addEventListener("message", async (event) => {
         configData.objectiveType,
         objectives,
       );
+
+      console.log(buscaTabu);
 
       let isInterrompido = false;
 
@@ -258,8 +260,6 @@ self.addEventListener("message", async (event) => {
           },
         },
       );
-
-      console.log(buscaTabu);
 
       self.removeEventListener("message", handleInternalMessage);
 

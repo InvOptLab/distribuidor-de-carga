@@ -324,6 +324,8 @@ export function useAlgorithm() {
           objectives: serializeComponentMap(objectiveComponents),
         };
 
+        console.log(activeComponents);
+
         const contextData = {
           atribuicoes: activeAtribuicoes,
           docentes: activeDocentes,
