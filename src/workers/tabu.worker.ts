@@ -35,11 +35,36 @@ import { Objective } from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/Obj
 import IteracoesSemMelhoraAvaliacao from "@/algoritmo/communs/StopCriteria/IteracoesSemMelhoraAvaliacao";
 import SameObjective from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/SameObjective";
 import { Estatisticas } from "@/algoritmo/communs/interfaces/interfaces";
+import Constraint from "@/algoritmo/abstractions/Constraint";
+import { NeighborhoodFunction } from "@/algoritmo/abstractions/NeighborhoodFunction";
+import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
+import { StopCriteria } from "@/algoritmo/abstractions/StopCriteria";
+import { AspirationCriteria } from "@/algoritmo/metodos/TabuSearch/Classes/Abstract/AspirationCriteria";
+
+// Representação do objeto que vem do postMessage (UI -> Worker)
+export interface SerializedComponent<TData = Record<string, unknown>> {
+  name: string;
+  data: TData;
+}
+
+// Um "Union Type" de todos os componentes
+export type AlgorithmBaseComponent =
+  | Constraint<any>
+  | NeighborhoodFunction
+  | ObjectiveComponent<any>
+  | StopCriteria
+  | any; // O "any" está aqui como fallback temporário para classes como AspirationCriteria
+
+// Tipagem de um Construtor Genérico de Classe
+export type ComponentConstructor<T> = new (...args: any[]) => T;
 
 // =========================================================
-// 2. REGISTRO DE COMPONENTES (O Dicionário do Worker)
+// REGISTRO DE COMPONENTES
 // =========================================================
-const ComponentRegistry: Record<string, any> = {
+const ComponentRegistry: Record<
+  string,
+  ComponentConstructor<AlgorithmBaseComponent>
+> = {
   // Constraints
   AtribuicaoSemFormulario,
   CargaDeTrabalhoMaximaDocente,
@@ -72,64 +97,91 @@ const ComponentRegistry: Record<string, any> = {
 };
 
 /**
- * Função utilitária para reconstruir instâncias das classes
- * usando Object.assign. Mantém as configurações (pesos, active)
- * que vieram da UI de forma exata.
+ * Função utilitária para reconstruir instâncias das classes.
+ * Utiliza Generics (T) para retornar o tipo correto ao invés de any[].
  */
-function reviveInstances(serializedItems: any[]) {
+function reviveInstances<T extends AlgorithmBaseComponent>(
+  serializedItems: SerializedComponent[] | undefined,
+): T[] {
   if (!serializedItems || !Array.isArray(serializedItems)) return [];
 
-  return serializedItems
-    .map((item) => {
-      const ClassDef = ComponentRegistry[item.name];
-      if (!ClassDef) {
-        console.warn(
-          `[Worker] Classe '${item.name}' não foi registrada no ComponentRegistry do Worker!`,
-        );
-        return null;
-      }
+  return (
+    serializedItems
+      .map((item): T | null => {
+        // Pega o construtor do dicionário
+        const ClassDef = ComponentRegistry[item.name] as
+          | ComponentConstructor<T>
+          | undefined;
 
-      const config = item.data || {};
-
-      // 1. Tenta instanciar passando os dados no construtor.
-      // Passamos variações comuns para garantir que a classe receba a configuração se precisar.
-      let instance;
-      try {
-        instance = new ClassDef(config.params || config);
-      } catch (e) {
-        try {
-          instance = new ClassDef();
-        } catch (err) {
-          // Fallback extremo caso o construtor exija algo muito específico
-          instance = Object.create(ClassDef.prototype);
+        if (!ClassDef) {
+          console.warn(
+            `[Worker] Classe '${item.name}' não foi registrada no ComponentRegistry do Worker!`,
+          );
+          return null;
         }
-      }
 
-      // 2. Faz um Deep Merge Seguro (Mescla Profunda).
-      const safeAssign = (target: any, source: any) => {
-        if (!source || typeof source !== "object") return;
-        Object.keys(source).forEach((key) => {
-          const val = source[key];
-          if (val !== null && typeof val === "object" && !Array.isArray(val)) {
-            if (!target[key] || typeof target[key] !== "object") {
-              target[key] = {};
-            }
-            safeAssign(target[key], val);
-          } else {
-            target[key] = val; // Copia direta para primitivos e arrays
+        const config: Record<string, any> = item.data || {};
+        let instance: T;
+
+        // Tenta instanciar passando os dados no construtor
+        try {
+          instance = new ClassDef(config.params || config);
+        } catch (e) {
+          try {
+            instance = new ClassDef();
+          } catch (err) {
+            // Fallback extremo caso o construtor exija algo muito específico
+            instance = Object.create(ClassDef.prototype) as T;
           }
+        }
+
+        // Deep Merge
+        const safeAssign = (
+          target: Record<string, any>,
+          source: Record<string, any>,
+        ) => {
+          if (!source || typeof source !== "object") return;
+
+          Object.keys(source).forEach((key) => {
+            const val = source[key];
+            if (
+              val !== null &&
+              typeof val === "object" &&
+              !Array.isArray(val)
+            ) {
+              if (!target[key] || typeof target[key] !== "object") {
+                target[key] = {};
+              }
+              safeAssign(target[key], val);
+            } else {
+              target[key] = val;
+            }
+          });
+        };
+
+        safeAssign(instance, config);
+
+        // Sobrescrevendo o 'name' (que é readonly nas abstrações)
+        // Object.defineProperty burla o erro do TS de atribuir valor a um readonly.
+        Object.defineProperty(instance, "name", {
+          value: item.name,
+          writable: true,
+          configurable: true,
+          enumerable: true,
         });
-      };
 
-      safeAssign(instance, config);
+        // Garante que 'params' exista (útil para Constraint e ObjectiveComponent)
+        const typedInstance = instance as Record<string, any>;
+        if (typedInstance.params === undefined) {
+          typedInstance.params = {};
+        }
 
-      // Evita que leituras como `this.params.limiteDocente` explodam o worker.
-      // Se não houver configurações, atribui um objeto vazio para retornar `undefined` de forma segura.
-      if (!instance.params) instance.params = {};
-
-      return instance;
-    })
-    .filter(Boolean);
+        return instance;
+      })
+      // Type Guard crucial: Ensina ao TypeScript que removemos todos os 'null' do array,
+      // garantindo que o retorno seja estritamente T[] e não (T | null)[]
+      .filter((item): item is T => item !== null)
+  );
 }
 
 self.addEventListener("message", async (event) => {
@@ -142,11 +194,31 @@ self.addEventListener("message", async (event) => {
       // =========================================================
       // RECONSTRUÇÃO
       // =========================================================
-      const constraints = reviveInstances(activeComponents.constraints);
-      const neighborhood = reviveInstances(activeComponents.neighborhood);
-      const stopFunctions = reviveInstances(activeComponents.stopFunctions);
-      const aspiration = reviveInstances(activeComponents.aspiration);
-      const objectives = reviveInstances(activeComponents.objectives);
+      // Vai retornar um array estrito de Constraint<any>[]
+      const constraints = reviveInstances<Constraint<any>>(
+        activeComponents.constraints,
+      );
+
+      // Vai retornar um array estrito de NeighborhoodFunction[]
+      const neighborhood = reviveInstances<NeighborhoodFunction>(
+        activeComponents.neighborhood,
+      );
+
+      // Vai retornar um array estrito de StopCriteria[]
+      const stopFunctions = reviveInstances<StopCriteria>(
+        activeComponents.stopFunctions,
+      );
+
+      // Vai retornar um array estrito de ObjectiveComponent<any>[]
+      const objectives = reviveInstances<ObjectiveComponent<any>>(
+        activeComponents.objectives,
+      );
+
+      // O Aspiration precisa do tipo exportado (coloquei any como fallback lá em cima,
+      // mas você pode importar e usar AspirationCriteria aqui)
+      const aspiration = reviveInstances<AspirationCriteria>(
+        activeComponents.aspiration,
+      );
 
       // =========================================================
       // EXECUTAR A BUSCA TABU
