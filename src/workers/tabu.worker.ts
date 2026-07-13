@@ -268,6 +268,8 @@ self.addEventListener("message", async (event) => {
         },
       );
 
+      console.log(buscaTabu);
+
       self.removeEventListener("message", handleInternalMessage);
 
       // Envia o sucesso
