@@ -114,17 +114,26 @@ export function serializeComponentMap(
   return Array.from(map.values())
     .filter((entry) => {
       if (!entry) return false;
-      // Valida se está ativo (assume true se não houver a propriedade isActive explícita)
       const isActive = entry.isActive !== undefined ? entry.isActive : true;
       return isActive;
     })
     .map((entry): SerializedComponent => {
-      // Se for uma estrutura de wrapper, pega a propriedade interna .instance, caso contrário usa o próprio entry
       const instance = entry.instance || entry;
 
+      // instance.name é o texto TRADUZIDO (exibido na UI), não serve como chave.
+      // O nome da classe é o identificador estável pro ComponentRegistry.
+      const className = instance.constructor?.name;
+
+      if (!className) {
+        console.warn(
+          "[serializeComponentMap] Não foi possível obter o nome da classe:",
+          instance,
+        );
+      }
+
       return {
-        name: instance.name, // String estável que servirá como chave no Worker
-        data: JSON.parse(JSON.stringify(instance)),
+        name: className,
+        data: JSON.parse(JSON.stringify(instance)), // aqui dentro data.name continua com o texto traduzido, ok
       };
     });
 }

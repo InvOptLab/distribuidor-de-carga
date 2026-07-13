@@ -107,49 +107,29 @@ function reviveInstances<T>(
 
   return serializedItems
     .map((item): T | null => {
+      // item.name agora é o nome da CLASSE (chave do registry)
       const ClassDef = ComponentRegistry[item.name];
       if (!ClassDef) {
         console.warn(
-          `[Worker] Classe '${item.name}' não registrada no ComponentRegistry.`,
+          `[Worker] Classe '${item.name}' não foi registrada no ComponentRegistry do Worker!`,
         );
         return null;
       }
 
-      // Não adivinha o shape do construtor: instancia "vazio" e preenche via safeAssign.
-      let instance: any;
-      try {
-        instance = new ClassDef();
-      } catch (e) {
-        console.error(
-          `[Worker] Falha ao instanciar '${item.name}' sem argumentos:`,
-          e,
-        );
-        instance = Object.create(ClassDef.prototype);
-      }
-
-      // Log defensivo — pega exatamente o bug (d) se ele existir.
-      if (!item.data || Object.keys(item.data).length === 0) {
-        console.warn(
-          `[Worker] '${item.name}' chegou sem 'data' preenchido. Payload bruto:`,
-          item,
-        );
-      }
+      const instance: any = Object.create(ClassDef.prototype);
+      const raw = item.data ?? {};
 
       const safeAssign = (
         target: Record<string, any>,
         source: Record<string, any>,
       ) => {
-        if (!source || typeof source !== "object") return;
         for (const [key, val] of Object.entries(source)) {
-          if (val instanceof Map) {
-            target[key] = new Map(val);
-          } else if (val instanceof Set) {
-            target[key] = new Set(val);
-          } else if (Array.isArray(val)) {
-            target[key] = val.slice();
-          } else if (val !== null && typeof val === "object") {
-            if (!target[key] || typeof target[key] !== "object")
-              target[key] = {};
+          if (val instanceof Map) target[key] = new Map(val);
+          else if (val instanceof Set) target[key] = new Set(val);
+          else if (Array.isArray(val)) target[key] = val.slice();
+          else if (val !== null && typeof val === "object") {
+            target[key] =
+              target[key] && typeof target[key] === "object" ? target[key] : {};
             safeAssign(target[key], val);
           } else {
             target[key] = val;
@@ -157,32 +137,10 @@ function reviveInstances<T>(
         }
       };
 
-      safeAssign(instance, item.data ?? {});
-
-      Object.defineProperty(instance, "name", {
-        value: item.name,
-        writable: true,
-        configurable: true,
-        enumerable: true,
-      });
+      safeAssign(instance, raw); // já traz o name traduzido, description, isHard, penalty, isActive, params...
 
       if (instance.params === undefined) instance.params = {};
-
-      // Sanity check: garante que a instância tem pelo menos um método de comportamento.
-      const hasBehaviour = [
-        "hard",
-        "soft",
-        "generate",
-        "calculate",
-        "stop",
-        "fulfills",
-        "validate",
-      ].some((m) => typeof instance[m] === "function");
-      if (!hasBehaviour) {
-        console.error(
-          `[Worker] '${item.name}' revivido sem nenhum método de comportamento — verifique o registry/protótipo.`,
-        );
-      }
+      if (instance.isActive === undefined) instance.isActive = true;
 
       return instance as T;
     })
