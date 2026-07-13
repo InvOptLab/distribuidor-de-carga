@@ -92,7 +92,7 @@ function serializeComponentMap(map: Map<any, any>) {
       const instance = entry.instance || entry;
 
       return {
-        name: instance.constructor.name, // Ex: "ChoqueDeHorarios"
+        name: instance.name, // Ex: "ChoqueDeHorarios"
         data: JSON.parse(JSON.stringify(instance)),
       };
     });
