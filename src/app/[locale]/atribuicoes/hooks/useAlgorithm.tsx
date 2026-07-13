@@ -119,9 +119,6 @@ export function serializeComponentMap(
     })
     .map((entry): SerializedComponent => {
       const instance = entry.instance || entry;
-
-      // instance.name é o texto TRADUZIDO (exibido na UI), não serve como chave.
-      // O nome da classe é o identificador estável pro ComponentRegistry.
       const className = instance.constructor?.name;
 
       if (!className) {
@@ -131,9 +128,16 @@ export function serializeComponentMap(
         );
       }
 
+      const serializedData = JSON.parse(JSON.stringify(instance)) as Record<
+        string,
+        unknown
+      >;
+      serializedData.displayName = instance.name; // guarda o rótulo traduzido
+      serializedData.name = className; // sobrescreve com o nome real da classe
+
       return {
         name: className,
-        data: JSON.parse(JSON.stringify(instance)), // aqui dentro data.name continua com o texto traduzido, ok
+        data: serializedData,
       };
     });
 }

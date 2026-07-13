@@ -42,9 +42,15 @@ import { StopCriteria } from "@/algoritmo/abstractions/StopCriteria";
 import { AspirationCriteria } from "@/algoritmo/metodos/TabuSearch/Classes/Abstract/AspirationCriteria";
 
 // Representação do objeto que vem do postMessage (UI -> Worker)
-export interface SerializedComponent<TData = Record<string, unknown>> {
+export interface SerializedComponent<TData = RevivedComponentData> {
   name: string;
   data: TData;
+}
+
+interface RevivedComponentData {
+  name: string;
+  displayName?: string;
+  [key: string]: unknown;
 }
 
 // Um "Union Type" de todos os componentes
@@ -107,17 +113,20 @@ function reviveInstances<T>(
 
   return serializedItems
     .map((item): T | null => {
-      // item.name agora é o nome da CLASSE (chave do registry)
-      const ClassDef = ComponentRegistry[item.data.name];
+      const raw = (item.data ?? {}) as Record<string, unknown>;
+
+      // Estreita o tipo de 'unknown' pra 'string' antes de usar como índice
+      const className = typeof raw.name === "string" ? raw.name : item.name;
+
+      const ClassDef = ComponentRegistry[className];
       if (!ClassDef) {
         console.warn(
-          `[Worker] Classe '${item.data.name}' não foi registrada no ComponentRegistry do Worker!`,
+          `[Worker] Classe '${className}' não foi registrada no ComponentRegistry do Worker!`,
         );
         return null;
       }
 
       const instance: any = Object.create(ClassDef.prototype);
-      const raw = item.data ?? {};
 
       const safeAssign = (
         target: Record<string, any>,
@@ -137,7 +146,11 @@ function reviveInstances<T>(
         }
       };
 
-      safeAssign(instance, raw); // já traz o name traduzido, description, isHard, penalty, isActive, params...
+      safeAssign(instance, raw);
+
+      // Restaura o rótulo traduzido como o `name` "de exibição" da instância revivida
+      instance.name =
+        typeof raw.displayName === "string" ? raw.displayName : className;
 
       if (instance.params === undefined) instance.params = {};
       if (instance.isActive === undefined) instance.isActive = true;
