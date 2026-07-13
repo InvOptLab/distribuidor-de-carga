@@ -108,10 +108,10 @@ function reviveInstances<T>(
   return serializedItems
     .map((item): T | null => {
       // item.name agora é o nome da CLASSE (chave do registry)
-      const ClassDef = ComponentRegistry[item.name];
+      const ClassDef = ComponentRegistry[item.data.name];
       if (!ClassDef) {
         console.warn(
-          `[Worker] Classe '${item.name}' não foi registrada no ComponentRegistry do Worker!`,
+          `[Worker] Classe '${item.data.name}' não foi registrada no ComponentRegistry do Worker!`,
         );
         return null;
       }
