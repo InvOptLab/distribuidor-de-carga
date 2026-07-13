@@ -25,9 +25,6 @@ export class IteracoesMaximas extends StopCriteria {
    */
 
   stop(iteracoes: number): boolean {
-    console.log(
-      "Iterações em Iteração Máxima: " + iteracoes + " de " + this.maxIteracoes,
-    );
     return iteracoes >= this.maxIteracoes;
   }
 }

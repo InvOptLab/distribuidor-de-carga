@@ -79,7 +79,6 @@ export class TabuSearch extends HeuristicAlgorithm {
     /**
      * Inicialização do contexto.
      */
-
     super(
       "tabu-search",
       {
@@ -351,7 +350,7 @@ export class TabuSearch extends HeuristicAlgorithm {
     ) {
       // console.log("Iteração: " + iteracoes); // Apenas para o script
 
-      // await delay(0);
+      await delay(0);
 
       /**
        * Atualizar as estatisticas

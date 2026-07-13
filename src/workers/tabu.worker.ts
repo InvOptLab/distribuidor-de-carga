@@ -123,7 +123,7 @@ function reviveInstances(serializedItems: any[]) {
 
       safeAssign(instance, config);
 
-      // GARANTIA: Evita que leituras como `this.params.limiteDocente` explodam o worker.
+      // Evita que leituras como `this.params.limiteDocente` explodam o worker.
       // Se não houver configurações, atribui um objeto vazio para retornar `undefined` de forma segura.
       if (!instance.params) instance.params = {};
 
@@ -140,17 +140,16 @@ self.addEventListener("message", async (event) => {
       const { contextData, configData, activeComponents } = payload;
 
       // =========================================================
-      // 3. RECONSTRUÇÃO (Ressurreição das classes instanciadas na UI)
+      // RECONSTRUÇÃO
       // =========================================================
       const constraints = reviveInstances(activeComponents.constraints);
-      console.log(constraints);
       const neighborhood = reviveInstances(activeComponents.neighborhood);
       const stopFunctions = reviveInstances(activeComponents.stopFunctions);
       const aspiration = reviveInstances(activeComponents.aspiration);
       const objectives = reviveInstances(activeComponents.objectives);
 
       // =========================================================
-      // 4. EXECUTAR A BUSCA TABU
+      // EXECUTAR A BUSCA TABU
       // =========================================================
 
       const buscaTabu = new TabuSearch(
