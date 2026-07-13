@@ -105,72 +105,88 @@ function reviveInstances<T>(
 ): T[] {
   if (!serializedItems || !Array.isArray(serializedItems)) return [];
 
-  return (
-    serializedItems
-      .map((item): T | null => {
-        const ClassDef = ComponentRegistry[item.name];
-        if (!ClassDef) {
-          console.warn(
-            `[Worker] Classe '${item.name}' não foi registrada no ComponentRegistry do Worker!`,
-          );
-          return null;
-        }
+  return serializedItems
+    .map((item): T | null => {
+      const ClassDef = ComponentRegistry[item.name];
+      if (!ClassDef) {
+        console.warn(
+          `[Worker] Classe '${item.name}' não registrada no ComponentRegistry.`,
+        );
+        return null;
+      }
 
-        const config = item.data || {};
-        let instance: any;
+      // Não adivinha o shape do construtor: instancia "vazio" e preenche via safeAssign.
+      let instance: any;
+      try {
+        instance = new ClassDef();
+      } catch (e) {
+        console.error(
+          `[Worker] Falha ao instanciar '${item.name}' sem argumentos:`,
+          e,
+        );
+        instance = Object.create(ClassDef.prototype);
+      }
 
-        try {
-          instance = new ClassDef(config.params || config);
-        } catch (e) {
-          try {
-            instance = new ClassDef();
-          } catch (err) {
-            instance = Object.create(ClassDef.prototype);
+      // Log defensivo — pega exatamente o bug (d) se ele existir.
+      if (!item.data || Object.keys(item.data).length === 0) {
+        console.warn(
+          `[Worker] '${item.name}' chegou sem 'data' preenchido. Payload bruto:`,
+          item,
+        );
+      }
+
+      const safeAssign = (
+        target: Record<string, any>,
+        source: Record<string, any>,
+      ) => {
+        if (!source || typeof source !== "object") return;
+        for (const [key, val] of Object.entries(source)) {
+          if (val instanceof Map) {
+            target[key] = new Map(val);
+          } else if (val instanceof Set) {
+            target[key] = new Set(val);
+          } else if (Array.isArray(val)) {
+            target[key] = val.slice();
+          } else if (val !== null && typeof val === "object") {
+            if (!target[key] || typeof target[key] !== "object")
+              target[key] = {};
+            safeAssign(target[key], val);
+          } else {
+            target[key] = val;
           }
         }
+      };
 
-        const safeAssign = (
-          target: Record<string, any>,
-          source: Record<string, any>,
-        ) => {
-          if (!source || typeof source !== "object") return;
-          Object.keys(source).forEach((key) => {
-            const val = source[key];
-            if (
-              val !== null &&
-              typeof val === "object" &&
-              !Array.isArray(val)
-            ) {
-              if (!target[key] || typeof target[key] !== "object") {
-                target[key] = {};
-              }
-              safeAssign(target[key], val);
-            } else {
-              target[key] = val;
-            }
-          });
-        };
+      safeAssign(instance, item.data ?? {});
 
-        safeAssign(instance, config);
+      Object.defineProperty(instance, "name", {
+        value: item.name,
+        writable: true,
+        configurable: true,
+        enumerable: true,
+      });
 
-        // Injeta/sobrescreve o 'name' de forma limpa no runtime (burlado para propriedades readonly)
-        Object.defineProperty(instance, "name", {
-          value: item.name,
-          writable: true,
-          configurable: true,
-          enumerable: true,
-        });
+      if (instance.params === undefined) instance.params = {};
 
-        // Evita falhas de propriedades dinâmicas indefinidas
-        if (instance.params === undefined) {
-          instance.params = {};
-        }
+      // Sanity check: garante que a instância tem pelo menos um método de comportamento.
+      const hasBehaviour = [
+        "hard",
+        "soft",
+        "generate",
+        "calculate",
+        "stop",
+        "fulfills",
+        "validate",
+      ].some((m) => typeof instance[m] === "function");
+      if (!hasBehaviour) {
+        console.error(
+          `[Worker] '${item.name}' revivido sem nenhum método de comportamento — verifique o registry/protótipo.`,
+        );
+      }
 
-        return instance as T;
-      })
-      // Type Guard para garantir que o array final seja estritamente T[] e livre de nulos
-      .filter((item): item is T => item !== null)
-  );
+      return instance as T;
+    })
+    .filter((item): item is T => item !== null);
 }
 
 self.addEventListener("message", async (event) => {
