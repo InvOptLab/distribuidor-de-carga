@@ -9,6 +9,8 @@ export class IteracoesSemModificacao extends StopCriteria {
 
   private prevMelhorVizinho: Vizinho = undefined;
 
+  readonly _name = "IteracoesSemModificacao";
+
   constructor(
     name: string,
     descripion: string,

@@ -13,6 +13,8 @@ import {
 import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
 export class AtribuicaoSemFormulario extends Constraint<null> {
+  readonly _name = "AtribuicaoSemFormulario";
+
   constructor(
     name: string,
     description: string,

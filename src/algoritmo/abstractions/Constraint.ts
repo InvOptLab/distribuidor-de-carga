@@ -32,6 +32,9 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
    */
   readonly name: string;
 
+  // Identificador da classe (ComponentRegistr)
+  abstract readonly _name: string;
+
   /**
    * Detalhes sobre a restrição
    */
@@ -62,7 +65,7 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
     description: string,
     isHard: boolean,
     penalty: number,
-    isActive: boolean = true
+    isActive: boolean = true,
   ) {
     this.name = name;
     this.description = description;
@@ -79,14 +82,14 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
     atribuicoes?: Atribuicao[],
     docentes?: Docente[],
     disciplinas?: Disciplina[],
-    travas?: Celula[]
+    travas?: Celula[],
   ): number;
   hard?(
     atribuicoes?: Atribuicao[],
     docentes?: Docente[],
     disciplinasAtribuidas?: Disciplina[],
     travas?: Celula[],
-    disciplinas?: Disciplina[]
+    disciplinas?: Disciplina[],
   ): boolean;
 
   abstract toObject(): ConstraintInterface;
@@ -109,7 +112,7 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
     atribuicoes: Atribuicao[],
     docentes?: Docente[],
     disciplinas?: Disciplina[],
-    travas?: Celula[]
+    travas?: Celula[],
   ): { label: string; qtd: number }[];
 
   /**
@@ -125,7 +128,7 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
    */
   milpSoftFormulation?(
     model: OptimizationModel,
-    modelData: modelSCP
+    modelData: modelSCP,
   ): {
     objectiveTerms: Term[];
   };

@@ -113,20 +113,16 @@ function reviveInstances<T>(
 
   return serializedItems
     .map((item): T | null => {
-      const raw = (item.data ?? {}) as Record<string, unknown>;
-
-      // Estreita o tipo de 'unknown' pra 'string' antes de usar como índice
-      const className = typeof raw.name === "string" ? raw.name : item.name;
-
-      const ClassDef = ComponentRegistry[className];
+      const ClassDef = ComponentRegistry[item.name]; // item.name: string, sem erro de TS
       if (!ClassDef) {
         console.warn(
-          `[Worker] Classe '${className}' não foi registrada no ComponentRegistry do Worker!`,
+          `[Worker] Classe '${item.name}' não foi registrada no ComponentRegistry do Worker!`,
         );
         return null;
       }
 
       const instance: any = Object.create(ClassDef.prototype);
+      const raw = item.data ?? {};
 
       const safeAssign = (
         target: Record<string, any>,
@@ -146,11 +142,7 @@ function reviveInstances<T>(
         }
       };
 
-      safeAssign(instance, raw);
-
-      // Restaura o rótulo traduzido como o `name` "de exibição" da instância revivida
-      instance.name =
-        typeof raw.displayName === "string" ? raw.displayName : className;
+      safeAssign(instance, raw); // já restaura name (traduzido), description, isHard, penalty, isActive, params, type...
 
       if (instance.params === undefined) instance.params = {};
       if (instance.isActive === undefined) instance.isActive = true;

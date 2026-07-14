@@ -27,13 +27,15 @@ type constructorLimiteDocente = {
  * TODO: Observar se manteremos o parâmetro sem causar nenhum tipo de penalidade.
  */
 export class DisciplinaSemDocente extends Constraint<LimiteDocente> {
+  readonly _name = "DisciplinaSemDocente";
+
   constructor(
     name: string,
     description: string,
     isHard: boolean,
     penalty: number,
     isActive: boolean,
-    parametros: constructorLimiteDocente
+    parametros: constructorLimiteDocente,
   ) {
     super(name, description, isHard, penalty, isActive);
 
@@ -109,13 +111,18 @@ export class DisciplinaSemDocente extends Constraint<LimiteDocente> {
   milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
     modelData.T.forEach((j) => {
       const lhs = modelData.D.map((i) => modelData.x[i][j]);
-      model.addConstraint(`cobertura_turma_hard_${j}`, LpSum(lhs), "==", this.params.limiteDocente.value);
+      model.addConstraint(
+        `cobertura_turma_hard_${j}`,
+        LpSum(lhs),
+        "==",
+        this.params.limiteDocente.value,
+      );
     });
   }
 
   milpSoftFormulation(
     model: OptimizationModel,
-    modelData: modelSCP
+    modelData: modelSCP,
   ): { objectiveTerms: Term[] } {
     /**
      * Restrições
@@ -123,7 +130,12 @@ export class DisciplinaSemDocente extends Constraint<LimiteDocente> {
     modelData.T.forEach((j) => {
       const lhs = modelData.D.map((i) => modelData.x[i][j]);
       lhs.push(modelData.u[j]);
-      model.addConstraint(`cobertura_turma_soft_${j}`, LpSum(lhs), "==", this.params.limiteDocente.value);
+      model.addConstraint(
+        `cobertura_turma_soft_${j}`,
+        LpSum(lhs),
+        "==",
+        this.params.limiteDocente.value,
+      );
     });
 
     /**

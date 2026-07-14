@@ -6,6 +6,8 @@ import { podeAtribuir } from "../utils";
  * O processo `Add` é responsável por adicionar um docente a uma turma (ou caso tenha alguma alocação, subistituir).
  */
 export class Add extends NeighborhoodFunction {
+  readonly _name = "Add";
+
   constructor(name: string, description: string | undefined) {
     super(name, description);
   }
@@ -13,7 +15,7 @@ export class Add extends NeighborhoodFunction {
   async generate(
     context: Context,
     hardConstraints: Map<string, Constraint<any>>,
-    baseSolution: Vizinho
+    baseSolution: Vizinho,
   ): Promise<Vizinho[]> {
     const vizinhos: Vizinho[] = [];
     for (const turma of context.turmas) {
@@ -28,7 +30,7 @@ export class Add extends NeighborhoodFunction {
             context.travas,
             hardConstraints,
             baseSolution,
-            context.turmas
+            context.turmas,
           )
         ) {
           continue;
@@ -39,7 +41,7 @@ export class Add extends NeighborhoodFunction {
          */
         const solucaoAtual = structuredClone(baseSolution.atribuicoes);
         const atribuicao = solucaoAtual.find(
-          (atribuicao) => atribuicao.id_disciplina === turma.id
+          (atribuicao) => atribuicao.id_disciplina === turma.id,
         );
 
         /**

@@ -30,6 +30,8 @@ export class Moviment extends TabuList<{
    */
   //public dropList: Map<string, number>;
 
+  readonly _name = "Moviment";
+
   constructor(addTenure: number, dropTenure: number) {
     super({
       addList: new Map<string, number>(),
@@ -43,7 +45,7 @@ export class Moviment extends TabuList<{
 
   add(
     vizinho: Vizinho,
-    iteracaoAtual: number
+    iteracaoAtual: number,
   ): {
     addList: Map<string, number>;
     dropList: Map<string, number>;

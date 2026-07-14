@@ -7,6 +7,9 @@ export abstract class NeighborhoodFunction {
    */
   readonly name: string;
 
+  // Identificador da classe (ComponentRegistr)
+  abstract readonly _name: string;
+
   /**
    * Detalhes sobre o processo.
    */
@@ -24,6 +27,6 @@ export abstract class NeighborhoodFunction {
   abstract generate(
     context: Context,
     hardConstraints: Map<string, Constraint<any>>,
-    baseSolution: Vizinho
+    baseSolution: Vizinho,
   ): Promise<Vizinho[]>;
 }

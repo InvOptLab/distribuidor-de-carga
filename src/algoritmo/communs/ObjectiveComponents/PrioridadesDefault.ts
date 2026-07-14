@@ -18,6 +18,9 @@ export class PrioridadesDefault extends ObjectiveComponent<null> {
    * Utilizada para "inverter" os valores das prioridades.
    */
   maiorPrioridade: number = undefined;
+
+  readonly _name = "PrioridadesDefault";
+
   constructor(
     name: string,
     isActive: boolean,
@@ -25,7 +28,7 @@ export class PrioridadesDefault extends ObjectiveComponent<null> {
     description: string | undefined,
     multiplier: number | undefined,
     maiorPrioridade: number | undefined,
-    parametros: null
+    parametros: null,
   ) {
     super(name, isActive, type, description, multiplier);
 
@@ -50,7 +53,7 @@ export class PrioridadesDefault extends ObjectiveComponent<null> {
   calculate(
     atribuicoes: Atribuicao[],
     formularios: Formulario[],
-    docentes: Docente[]
+    docentes: Docente[],
   ): number {
     /**
      * Verifica se `this.maiorPrioridade` já foi calculada. Caso negativo deverá calculalá.
@@ -64,7 +67,7 @@ export class PrioridadesDefault extends ObjectiveComponent<null> {
     for (const atribuicao of atribuicoes) {
       for (const docenteAtribuido of atribuicao.docentes) {
         const docente: Docente = docentes.find(
-          (d) => d.nome === docenteAtribuido
+          (d) => d.nome === docenteAtribuido,
         );
 
         /**
@@ -103,7 +106,7 @@ export class PrioridadesDefault extends ObjectiveComponent<null> {
             this.multiplier *
             (modelData.p[i][j] > 0 ? modelData.Pmax - modelData.p[i][j] : 0),
         });
-      })
+      }),
     );
 
     return objectiveTerms;

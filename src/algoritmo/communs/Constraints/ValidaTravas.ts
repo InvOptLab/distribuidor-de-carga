@@ -15,13 +15,15 @@ import { LpSum } from "@/algoritmo/metodos/MILP/utils";
  * Restrição para não permitir a geração de movimentos em turmsa ou docentes com travas
  */
 export class ValidaTravas extends Constraint<any> {
+  readonly _name = "ValidaTravas";
+
   constructor(
     name: string,
     description: string,
     isHard: boolean,
     penalty: number,
     isActive: boolean,
-    parametros: any
+    parametros: any,
   ) {
     super(name, description, isHard, penalty, isActive);
 
@@ -32,7 +34,7 @@ export class ValidaTravas extends Constraint<any> {
     atribuicoes: Atribuicao[],
     docentes: Docente[],
     disciplinas: Disciplina[],
-    travas: Celula[]
+    travas: Celula[],
   ): boolean {
     /**
      * Trava no Docente
@@ -42,7 +44,7 @@ export class ValidaTravas extends Constraint<any> {
         travas.some(
           (trava) =>
             trava.nome_docente === docente.nome &&
-            trava.tipo_trava === TipoTrava.Row
+            trava.tipo_trava === TipoTrava.Row,
         )
       ) {
         return false;
@@ -57,7 +59,7 @@ export class ValidaTravas extends Constraint<any> {
         travas.some(
           (trava) =>
             trava.id_disciplina === turma.id &&
-            trava.tipo_trava === TipoTrava.Column
+            trava.tipo_trava === TipoTrava.Column,
         )
       ) {
         return false;
@@ -77,7 +79,7 @@ export class ValidaTravas extends Constraint<any> {
             (trava) =>
               trava.id_disciplina === turma.id &&
               trava.nome_docente !== docente.nome &&
-              trava.tipo_trava === TipoTrava.Cell
+              trava.tipo_trava === TipoTrava.Cell,
           )
         ) {
           return false;
@@ -87,7 +89,7 @@ export class ValidaTravas extends Constraint<any> {
               trava.id_disciplina === turma.id &&
               atribuicoes.find((atrib) => atrib.id_disciplina === turma.id)
                 ?.docentes.length === 0 &&
-              trava.tipo_trava === TipoTrava.Cell
+              trava.tipo_trava === TipoTrava.Cell,
           )
         ) {
           return false;
@@ -112,7 +114,7 @@ export class ValidaTravas extends Constraint<any> {
     atribuicoes: Atribuicao[],
     docentes?: Docente[],
     disciplinas?: Disciplina[],
-    travas?: Celula[]
+    travas?: Celula[],
   ): { label: string; qtd: number }[] {
     const data: { label: string; qtd: number }[] = [];
     let qtdTravasTurma: number = 0;
@@ -126,7 +128,7 @@ export class ValidaTravas extends Constraint<any> {
         travas.some(
           (trava) =>
             trava.nome_docente === docente.nome &&
-            trava.tipo_trava === TipoTrava.Row
+            trava.tipo_trava === TipoTrava.Row,
         )
       ) {
         qtdTravasDocente += 1;
@@ -141,7 +143,7 @@ export class ValidaTravas extends Constraint<any> {
         travas.some(
           (trava) =>
             trava.id_disciplina === turma.id &&
-            trava.tipo_trava === TipoTrava.Column
+            trava.tipo_trava === TipoTrava.Column,
         )
       ) {
         qtdTravasTurma += 1;
@@ -157,7 +159,7 @@ export class ValidaTravas extends Constraint<any> {
           travas.some(
             (trava) =>
               trava.id_disciplina === turma.id &&
-              trava.nome_docente === docente.nome
+              trava.nome_docente === docente.nome,
           )
         ) {
           qtdTravasCelula += 1;
@@ -168,7 +170,7 @@ export class ValidaTravas extends Constraint<any> {
     data.push(
       { label: "Travas Docentes", qtd: qtdTravasDocente },
       { label: "Travas Turmas", qtd: qtdTravasTurma },
-      { label: "Travas Células", qtd: qtdTravasCelula }
+      { label: "Travas Células", qtd: qtdTravasCelula },
     );
     return data;
   }
@@ -181,10 +183,10 @@ export class ValidaTravas extends Constraint<any> {
             `trava_${i}_${j}`,
             LpSum([modelData.x[i][j]]),
             "==",
-            modelData.a[i][j]
+            modelData.a[i][j],
           );
         }
-      })
+      }),
     );
   }
 }

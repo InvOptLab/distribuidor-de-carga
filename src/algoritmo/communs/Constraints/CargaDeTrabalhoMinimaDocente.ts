@@ -29,13 +29,15 @@ type constructorLimiteMinimo = {
  * Penaliza caso docentes não atinjam a carga de trabalho mínima.
  */
 export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
+  readonly _name = "CargaDeTrabalhoMinimaDocente";
+
   constructor(
     name: string,
     description: string,
     isHard: boolean,
     penalty: number,
     isActive: boolean,
-    parametros: constructorLimiteMinimo
+    parametros: constructorLimiteMinimo,
   ) {
     super(name, description, isHard, penalty, isActive);
 
@@ -52,7 +54,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
   soft(
     atribuicoes: Atribuicao[],
     docentes: Docente[],
-    turmas: Disciplina[]
+    turmas: Disciplina[],
   ): number {
     let avaliacao: number = 0;
     /**
@@ -61,7 +63,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
     const qtdAtribDocente = new Map<string, number>();
     for (const docente of docentes) {
       const qtd = atribuicoes.filter((atribuicao) =>
-        atribuicao.docentes.includes(docente.nome)
+        atribuicao.docentes.includes(docente.nome),
       ).length;
       qtdAtribDocente.set(docente.nome, qtd);
     }
@@ -74,7 +76,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
     for (const docente of docentes) {
       let carga = 0;
       const atribuicoesDocente = atribuicoes.filter((atribuicao) =>
-        atribuicao.docentes.includes(docente.nome)
+        atribuicao.docentes.includes(docente.nome),
       );
 
       for (const atribuicao of atribuicoesDocente) {
@@ -108,7 +110,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
     docentes?: Docente[],
     disciplinasAtribuidas?: Disciplina[],
     travas?: Celula[],
-    disciplinas?: Disciplina[]
+    disciplinas?: Disciplina[],
   ): boolean {
     // for (const docente of docentes) {
     //   /**
@@ -144,17 +146,17 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
 
       for (const disciplina of disciplinasAtribuidas) {
         const docentesAtribuidos = atribuicoes.find(
-          (atribuicao) => atribuicao.id_disciplina === disciplina.id
+          (atribuicao) => atribuicao.id_disciplina === disciplina.id,
         ).docentes;
 
         for (const _docente of docentesAtribuidos) {
           const atribuicoesClone = structuredClone(atribuicoes);
 
           const novaAtribuicao = atribuicoesClone.find(
-            (atribuicao) => atribuicao.id_disciplina === disciplina.id
+            (atribuicao) => atribuicao.id_disciplina === disciplina.id,
           );
           novaAtribuicao.docentes = novaAtribuicao.docentes.filter(
-            (nome) => nome !== _docente
+            (nome) => nome !== _docente,
           );
 
           const docente = docentes.find((docente) => docente.nome === _docente);
@@ -175,17 +177,17 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
   private calculaCargaDidatica(
     docente: Docente,
     atribuicoes: Atribuicao[],
-    disciplinas: Disciplina[]
+    disciplinas: Disciplina[],
   ) {
     const atribuicoesDocente = atribuicoes.filter((atribuicao) =>
-      atribuicao.docentes.includes(docente.nome)
+      atribuicao.docentes.includes(docente.nome),
     );
 
     let cargaDocente = 0;
 
     for (const atribuicao of atribuicoesDocente) {
       cargaDocente += disciplinas.find(
-        (disciplina) => disciplina.id === atribuicao.id_disciplina
+        (disciplina) => disciplina.id === atribuicao.id_disciplina,
       ).carga;
     }
     return cargaDocente;
@@ -204,7 +206,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
   occurrences(
     atribuicoes: Atribuicao[],
     docentes?: Docente[],
-    turmas?: Disciplina[]
+    turmas?: Disciplina[],
   ): { label: string; qtd: number }[] {
     const data: { label: string; qtd: number }[] = [];
     let qtdMenosUm: number = 0;
@@ -213,7 +215,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
     for (const docente of docentes) {
       let carga = 0;
       const atribuicoesDocente = atribuicoes.filter((atribuicao) =>
-        atribuicao.docentes.includes(docente.nome)
+        atribuicao.docentes.includes(docente.nome),
       );
 
       for (const atribuicao of atribuicoesDocente) {
@@ -263,7 +265,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
       {
         label: `Carga Menor que ${this.params.minLimit.value}.`,
         qtd: qtdMenosUm,
-      }
+      },
       // { label: "0 atribuições.", qtd: zeroAtribuicoes },
       // {
       //   label: "Saldo Negativo Carga Menor que -1",
@@ -285,14 +287,14 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
         `carga_minima_hard_${i}`,
         LpSum(terms),
         ">=",
-        this.params.minLimit.value
+        this.params.minLimit.value,
       );
     });
   }
 
   milpSoftFormulation(
     model: OptimizationModel,
-    modelData: modelSCP
+    modelData: modelSCP,
   ): { objectiveTerms: Term[] } {
     /**
      * Restrição
@@ -307,7 +309,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
         `carga_minima_soft_${i}`,
         LpSum(terms),
         ">=",
-        this.params.minLimit.value
+        this.params.minLimit.value,
       );
     });
 
@@ -320,7 +322,7 @@ export class CargaDeTrabalhoMinimaDocente extends Constraint<LimiteMinimo> {
       objectiveTerms.push({
         variable: modelData.z[i],
         coefficient: this.penalty * modelData.omega[i],
-      })
+      }),
     );
 
     return { objectiveTerms };

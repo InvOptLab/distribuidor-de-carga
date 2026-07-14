@@ -37,6 +37,8 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
   private delta_minus: Variable[] = [];
   private delta_abs: Variable[] = []; // Variável auxiliar para o desvio absoluto
 
+  readonly _name = "MinimizarDiferencaCargaDidatica";
+
   constructor(
     name: string,
     isActive: boolean,

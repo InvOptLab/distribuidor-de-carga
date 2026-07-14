@@ -9,6 +9,9 @@ export abstract class AspirationCriteria {
    */
   readonly name: string;
 
+  // Identificador da classe (ComponentRegistr)
+  abstract readonly _name: string;
+
   /**
    * Detalhes sobre o critério de aspiração.
    */
@@ -22,6 +25,6 @@ export abstract class AspirationCriteria {
   abstract fulfills(
     vizinho: Vizinho,
     melhorVizinho: Vizinho,
-    iteracao?: number
+    iteracao?: number,
   ): boolean;
 }

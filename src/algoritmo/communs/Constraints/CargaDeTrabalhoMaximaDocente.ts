@@ -29,13 +29,15 @@ type constructorLimiteMaximo = {
  * Penaliza a quantidade de carga de trabalho baseada nos saldos dos docentes.
  */
 export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
+  readonly _name = "CargaDeTrabalhoMaximaDocente";
+
   constructor(
     name: string,
     description: string,
     isHard: boolean,
     penalty: number,
     isActive: boolean,
-    parametros: constructorLimiteMaximo
+    parametros: constructorLimiteMaximo,
   ) {
     super(name, description, isHard, penalty, isActive);
 
@@ -52,7 +54,7 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
   soft(
     atribuicoes: Atribuicao[],
     docentes: Docente[],
-    turmas: Disciplina[]
+    turmas: Disciplina[],
   ): number {
     let avaliacao: number = 0;
     /**
@@ -63,7 +65,7 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
     for (const docente of docentes) {
       let carga = 0;
       const atribuicoesDocente = atribuicoes.filter((atribuicao) =>
-        atribuicao.docentes.includes(docente.nome)
+        atribuicao.docentes.includes(docente.nome),
       );
 
       for (const atribuicao of atribuicoesDocente) {
@@ -95,7 +97,7 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
     docentes?: Docente[],
     disciplinasAtribuidas?: Disciplina[],
     travas?: Celula[],
-    disciplinas?: Disciplina[]
+    disciplinas?: Disciplina[],
   ): boolean {
     if (docentes === undefined) {
       return true;
@@ -106,7 +108,7 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
        * Atribuições já existentes
        */
       const atribuicoesDocente = atribuicoes.filter((atribuicao) =>
-        atribuicao.docentes.includes(docente.nome)
+        atribuicao.docentes.includes(docente.nome),
       );
 
       /**
@@ -123,7 +125,7 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
 
       for (const atribuicao of atribuicoesDocente) {
         cargaDocente += disciplinas.find(
-          (disciplina) => disciplina.id === atribuicao.id_disciplina
+          (disciplina) => disciplina.id === atribuicao.id_disciplina,
         ).carga;
       }
 
@@ -147,7 +149,7 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
   occurrences(
     atribuicoes: Atribuicao[],
     docentes?: Docente[],
-    turmas?: Disciplina[]
+    turmas?: Disciplina[],
   ): { label: string; qtd: number }[] {
     const data: { label: string; qtd: number }[] = [];
 
@@ -155,7 +157,7 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
     for (const docente of docentes) {
       let carga = 0;
       const atribuicoesDocente = atribuicoes.filter((atribuicao) =>
-        atribuicao.docentes.includes(docente.nome)
+        atribuicao.docentes.includes(docente.nome),
       );
 
       for (const atribuicao of atribuicoesDocente) {
@@ -203,14 +205,14 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
         `carga_maxima_${i}`,
         LpSum(terms),
         "<=",
-        this.params.maxLimit.value
+        this.params.maxLimit.value,
       );
     });
   }
 
   milpSoftFormulation(
     model: OptimizationModel,
-    modelData: modelSCP
+    modelData: modelSCP,
   ): { objectiveTerms: Term[] } {
     /**
      * Restrição
@@ -230,7 +232,7 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
         `carga_maxima_${i}`,
         LpSum(terms),
         "<=",
-        this.params.maxLimit.value
+        this.params.maxLimit.value,
       );
     });
 
@@ -243,7 +245,7 @@ export class CargaDeTrabalhoMaximaDocente extends Constraint<LimiteMaximo> {
       objectiveTerms.push({
         variable: modelData.w[i],
         coefficient: this.penalty * modelData.eta[i],
-      })
+      }),
     );
 
     return { objectiveTerms };

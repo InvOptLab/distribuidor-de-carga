@@ -13,6 +13,8 @@ import {
 import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
 export class ChoqueDeHorarios extends Constraint<any> {
+  readonly _name = "ChoqueDeHorarios";
+
   constructor(
     name: string,
     description: string,

@@ -4,6 +4,9 @@ export abstract class TabuValidationFunction<T extends any[]> {
    */
   readonly name: string;
 
+  // Identificador da classe (ComponentRegistr)
+  abstract readonly _name: string;
+
   /**
    * Detalhes sobre o processo.
    */

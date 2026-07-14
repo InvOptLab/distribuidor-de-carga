@@ -7,6 +7,8 @@ export class IteracoesMaximas extends StopCriteria {
    */
   public maxIteracoes: number;
 
+  readonly _name = "IteracoesMaximas";
+
   constructor(
     name: string,
     description: string | undefined,

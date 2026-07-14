@@ -119,25 +119,17 @@ export function serializeComponentMap(
     })
     .map((entry): SerializedComponent => {
       const instance = entry.instance || entry;
-      const className = instance.constructor?.name;
 
-      if (!className) {
+      if (!instance._name) {
         console.warn(
-          "[serializeComponentMap] Não foi possível obter o nome da classe:",
+          `[serializeComponentMap] Instância sem '_name' definido:`,
           instance,
         );
       }
 
-      const serializedData = JSON.parse(JSON.stringify(instance)) as Record<
-        string,
-        unknown
-      >;
-      serializedData.displayName = instance.name; // guarda o rótulo traduzido
-      serializedData.name = className; // sobrescreve com o nome real da classe
-
       return {
-        name: className,
-        data: serializedData,
+        name: instance._name, // chave estável, imune a tradução e a minificação
+        data: JSON.parse(JSON.stringify(instance)), // aqui dentro data.name segue sendo o rótulo traduzido
       };
     });
 }
@@ -326,6 +318,7 @@ export function useAlgorithm() {
             ),
           }));
 
+        console.log([...hardConstraints, ...softConstraints]);
         // SERIALIZAÇÃO DAS INSTÂNCIAS! (Removemos os métodos e mandamos pro Worker)
         const activeComponents: ActiveComponentsSerialized = {
           constraints: serializeComponentMap(
@@ -337,7 +330,7 @@ export function useAlgorithm() {
           objectives: serializeComponentMap(objectiveComponents),
         };
 
-        console.log(activeComponents);
+        console.log(activeComponents.constraints);
 
         const contextData = {
           atribuicoes: activeAtribuicoes,
