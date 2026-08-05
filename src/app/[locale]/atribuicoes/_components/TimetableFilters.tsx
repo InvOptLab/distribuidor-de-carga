@@ -63,12 +63,12 @@ export default function TimetableFilters({
   ).filter(Boolean);
   // TODO: Ajustar depois a exibição e o funcionamento dos filtros para serem iguais aos da página de Seleção.
   const diasSemana = [
-    t("WeekDays.mon"),
-    t("WeekDays.tue"),
-    t("WeekDays.wed"),
-    t("WeekDays.thu"),
-    t("WeekDays.fri"),
-    t("WeekDays.sat"),
+    { label: t("WeekDays.mon"), value: "Seg." },
+    { label: t("WeekDays.tue"), value: "Ter." },
+    { label: t("WeekDays.wed"), value: "Qua." },
+    { label: t("WeekDays.thu"), value: "Qui." },
+    { label: t("WeekDays.fri"), value: "Sex." },
+    { label: t("WeekDays.sat"), value: "Sáb." },
   ];
 
   const handleDocenteSearchChange = (value: string) => {
@@ -130,7 +130,13 @@ export default function TimetableFilters({
   ) => {
     let displayValue = "";
     if (rule.type === "chips" && Array.isArray(rule.value)) {
-      displayValue = rule.value.join(", ");
+      if (rule.fieldKey === "horarios_dias") {
+        displayValue = rule.value
+          .map((v) => diasSemana.find((d) => d.value === v)?.label || v)
+          .join(", ");
+      } else {
+        displayValue = rule.value.join(", ");
+      }
     } else if (rule.type === "timeRange") {
       const start = rule.value.start || "00:00";
       const end = rule.value.end || "23:59";
@@ -160,7 +166,14 @@ export default function TimetableFilters({
   };
 
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column", pt: { xs: 8, sm: 10 } }}>
+    <Box
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        pt: { xs: 8, sm: 10 },
+      }}
+    >
       <Box
         display="flex"
         justifyContent="space-between"
@@ -299,7 +312,7 @@ export default function TimetableFilters({
                 onClick={() => setOpenDisciplinaDialog(true)}
                 variant="outlined"
               >
-                Adicionar
+                {t("add")}
               </Button>
             </Box>
 
@@ -322,7 +335,11 @@ export default function TimetableFilters({
           { key: "nome", label: t("name"), type: "text" },
           { key: "ativo", label: t("active"), type: "boolean" },
           { key: "comentario", label: t("comment"), type: "text" },
-          { key: "semAtribuicao", label: t("withoutAssignment"), type: "boolean" },
+          {
+            key: "semAtribuicao",
+            label: t("withoutAssignment"),
+            type: "boolean",
+          },
           {
             key: "agrupar",
             label: t("groupPreference"),
@@ -386,7 +403,7 @@ interface FilterDialogProps {
     key: string;
     label: string;
     type: "text" | "number" | "boolean" | "chips" | "timeRange" | "select";
-    options?: string[];
+    options?: (string | { label: string; value: string })[];
   }>;
 }
 
@@ -529,7 +546,7 @@ function FilterDialog({
                     <Select
                       value={filterType}
                       onChange={(e) => setFilterType(e.target.value as any)}
-                      label="Tipo de Filtro"
+                      label={t("filterType")}
                     >
                       <MenuItem value="contains">{t("contains")}</MenuItem>
                       <MenuItem value="exact">{t("exact")}</MenuItem>
@@ -573,19 +590,25 @@ function FilterDialog({
                       {t("selectOneOrMoreOptions")}
                     </Typography>
                     <Box display="flex" flexWrap="wrap" gap={1}>
-                      {selectedFieldConfig.options.map((option) => (
-                        <Chip
-                          key={option}
-                          label={option}
-                          clickable
-                          color={
-                            selectedChips.includes(option)
-                              ? "primary"
-                              : "default"
-                          }
-                          onClick={() => handleChipToggle(option)}
-                        />
-                      ))}
+                      {selectedFieldConfig.options.map((option) => {
+                        const optLabel =
+                          typeof option === "string" ? option : option.label;
+                        const optValue =
+                          typeof option === "string" ? option : option.value;
+                        return (
+                          <Chip
+                            key={optValue}
+                            label={optLabel}
+                            clickable
+                            color={
+                              selectedChips.includes(optValue)
+                                ? "primary"
+                                : "default"
+                            }
+                            onClick={() => handleChipToggle(optValue)}
+                          />
+                        );
+                      })}
                     </Box>
                     {selectedChips.length > 0 && (
                       <Typography
@@ -608,11 +631,17 @@ function FilterDialog({
                       onChange={(e) => setSelectValue(e.target.value)}
                       label={selectedFieldConfig.label}
                     >
-                      {selectedFieldConfig.options.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
+                      {selectedFieldConfig.options.map((option) => {
+                        const optLabel =
+                          typeof option === "string" ? option : option.label;
+                        const optValue =
+                          typeof option === "string" ? option : option.value;
+                        return (
+                          <MenuItem key={optValue} value={optValue}>
+                            {optLabel}
+                          </MenuItem>
+                        );
+                      })}
                     </Select>
                   </FormControl>
                 )}

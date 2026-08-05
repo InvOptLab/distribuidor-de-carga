@@ -19,15 +19,18 @@ import {
   ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material";
 
-// Importações internas
 import { Module, Chapter } from "./_types/docs";
-import { documentationData } from "./_data/documentation";
+import { getDocumentationData } from "./_data/documentation";
 import { ContentRenderer } from "./_components/ContentRenderer";
 import { LeftSidebar } from "./_components/LeftSidebar";
 import { RightSidebar } from "./_components/RightSidebar";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function HelpCenterPage() {
   const theme = useTheme();
+  const t = useTranslations("Pages.Guia");
+  const locale = useLocale();
+  const documentationData = useMemo(() => getDocumentationData(locale), [locale]);
 
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [expandedModules, setExpandedModules] = useState<string[]>([
@@ -168,7 +171,7 @@ export default function HelpCenterPage() {
         return null;
       })
       .filter(Boolean) as Module[]; // Remove os nulls
-  }, [searchQuery]);
+  }, [searchQuery, documentationData]);
 
   // Expande automaticamente os módulos quando houver uma busca
   useEffect(() => {
@@ -200,7 +203,7 @@ export default function HelpCenterPage() {
           }}
         >
           <Typography variant="h6" fontWeight={700}>
-            Documentação
+            {t("title")}
           </Typography>
           <IconButton onClick={() => setMobileDrawerOpen(false)}>
             <CloseIcon />
@@ -312,7 +315,7 @@ export default function HelpCenterPage() {
             >
               <Chip
                 icon={<ArticleIcon />}
-                label={`${selectedChapter.content.length} seções`}
+                label={t("sectionsCount", { count: selectedChapter.content.length })}
                 size="small"
                 variant="outlined"
               />

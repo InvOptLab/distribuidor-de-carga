@@ -14,6 +14,7 @@ import {
   Divider,
   Paper,
   Alert,
+  Grid,
 } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -23,6 +24,7 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import { useState } from "react";
 import { HistoricoSolucao } from "@/context/Global/utils";
+import { useTranslations } from "next-intl";
 
 interface SingleSolutionWorkloadChartProps {
   solution: HistoricoSolucao;
@@ -45,6 +47,7 @@ interface WorkloadGroup {
 export default function SingleSolutionWorkloadChart({
   solution,
 }: SingleSolutionWorkloadChartProps) {
+  const t = useTranslations("Pages.Statistics.SingleSolutionWorkloadChart");
   const [expanded, setExpanded] = useState<string | false>(false);
 
   const calculateDocenteWorkloads = (): DocenteWorkload[] => {
@@ -182,7 +185,7 @@ export default function SingleSolutionWorkloadChart({
               {totalDocentes}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Total de Docentes
+              {t("totalProfessors")}
             </Typography>
           </Paper>
 
@@ -200,7 +203,7 @@ export default function SingleSolutionWorkloadChart({
               {docentesComCarga}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Com Atribuições
+              {t("withAssignments")}
             </Typography>
           </Paper>
 
@@ -220,7 +223,7 @@ export default function SingleSolutionWorkloadChart({
               {avgWorkload.toFixed(2)}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Carga Média
+              {t("avgWorkload")}
             </Typography>
           </Paper>
 
@@ -240,18 +243,29 @@ export default function SingleSolutionWorkloadChart({
               {docentesSemCarga}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Sem Atribuições
+              {t("withoutAssignments")}
             </Typography>
           </Paper>
         </Box>
 
         <Alert severity="info" sx={{ mb: 3 }}>
-          <Typography variant="body2">
-            <strong>Carga Máxima:</strong> {maxWorkload.toFixed(2)} •{" "}
-            <strong>Carga Mínima (com atribuições):</strong>{" "}
-            {minWorkload.toFixed(2)} • <strong>Desvio Padrão:</strong>{" "}
-            {stdDeviation.toFixed(2)}
-          </Typography>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <Typography variant="body2">
+                {t("maxWorkload")} <strong>{maxWorkload.toFixed(2)}</strong>
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <Typography variant="body2">
+                {t("minWorkload")} <strong>{minWorkload.toFixed(2)}</strong>
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <Typography variant="body2">
+                {t("stdDeviation")} <strong>{stdDeviation.toFixed(2)}</strong>
+              </Typography>
+            </Grid>
+          </Grid>
         </Alert>
 
         <Box sx={{ width: "100%", height: 400, mb: 3 }}>
@@ -301,52 +315,50 @@ export default function SingleSolutionWorkloadChart({
               }}
             >
               <Typography variant="body1" color="text.secondary">
-                Nenhum dado de carga didática encontrado
+                {t("noDataFound")}
               </Typography>
             </Box>
           )}
         </Box>
 
-        <Box
-          sx={{
-            mb: 3,
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 1,
-            justifyContent: "center",
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{ width: "100%", textAlign: "center", mb: 1 }}
-          >
-            Legenda de Cores por Faixa de Carga:
+        <Box sx={{ mt: 3, mb: 2 }}>
+          <Typography variant="subtitle1" gutterBottom>
+            {t("colorLegend")}
           </Typography>
-          <Chip
-            label="Carga 0"
-            size="small"
-            sx={{ bgcolor: "#FFC107", color: "black" }}
-          />
-          <Chip
-            label="Carga 0.1-2.0"
-            size="small"
-            sx={{ bgcolor: "#81C784", color: "white" }}
-          />
-          <Chip
-            label="Carga 2.1-4.0"
-            size="small"
-            sx={{ bgcolor: "#1976D2", color: "white" }}
-          />
-          <Chip
-            label="Carga 4.1-6.0"
-            size="small"
-            sx={{ bgcolor: "#FF9800", color: "white" }}
-          />
-          <Chip
-            label="Carga 6.1+"
-            size="small"
-            sx={{ bgcolor: "#D32F2F", color: "white" }}
-          />
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 1,
+              justifyContent: "center",
+            }}
+          >
+            <Chip
+              label="Carga 0"
+              size="small"
+              sx={{ bgcolor: "#FFC107", color: "black" }}
+            />
+            <Chip
+              label="Carga 0.1-2.0"
+              size="small"
+              sx={{ bgcolor: "#81C784", color: "white" }}
+            />
+            <Chip
+              label="Carga 2.1-4.0"
+              size="small"
+              sx={{ bgcolor: "#1976D2", color: "white" }}
+            />
+            <Chip
+              label="Carga 4.1-6.0"
+              size="small"
+              sx={{ bgcolor: "#FF9800", color: "white" }}
+            />
+            <Chip
+              label="Carga 6.1+"
+              size="small"
+              sx={{ bgcolor: "#D32F2F", color: "white" }}
+            />
+          </Box>
         </Box>
 
         <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
@@ -408,11 +420,6 @@ export default function SingleSolutionWorkloadChart({
                 {group.docentes.map((docente, index) => (
                   <Box
                     key={docente.nome}
-                    // display="flex"
-                    // alignItems="flex-start"
-                    // flexDirection="row"
-                    // flexWrap="wrap"
-                    // justifyContent="flex-start"
                   >
                     <ListItem
                       sx={{
@@ -493,8 +500,8 @@ export default function SingleSolutionWorkloadChart({
           elevation={1}
           sx={{ mt: 3, p: 2, bgcolor: "grey.50", borderRadius: 2 }}
         >
-          <Typography variant="subtitle2" gutterBottom fontWeight="bold">
-            Análise de Distribuição de Carga:
+          <Typography variant="h6" gutterBottom>
+            {t("distributionAnalysis")}
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
             <Chip

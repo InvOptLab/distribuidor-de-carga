@@ -5,6 +5,7 @@ import {
   IconButton,
   TableCell,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { Fragment, useCallback } from "react";
@@ -14,6 +15,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import SolutionHistoryButtonGroup from "./SolutionHistoryButtonGroup";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
 import { useAlertsContext } from "@/context/Alerts";
+import { useTranslations } from "next-intl";
 import SolutionHistoryStatistics, {
   TreeDisciplina,
 } from "./SolutionHistoryStatistics";
@@ -35,6 +37,7 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
   solucao,
   setHoveredCourese,
 }) => {
+  const t = useTranslations("Pages.History");
   //const [open, setOpen] = useState(false);
 
   const { idSolutionRowOpen, toggleIdSolutionRowState } =
@@ -54,7 +57,7 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
    */
   const handleRemoveSolutionFromHistory = (id: string) => {
     removeSolutionFromHistory(id);
-    addAlerta("A solução foi removida do histórico!", "warning");
+    addAlerta(t("Alerts.removed"), "warning");
   };
 
   /**
@@ -63,7 +66,7 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
    */
   const handleRestoreHistoryToSolution = (id: string) => {
     restoreHistoryToSolution(id);
-    addAlerta(`A solução ${solucao.datetime} foi aplicada!`, "success");
+    addAlerta(t("Alerts.applied", { datetime: solucao.datetime }), "success");
   };
 
   const handleDownloadSolutionFromHistory = useCallback(
@@ -78,7 +81,7 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
         historicoSolucoes.get(id),
       );
 
-      addAlerta(`A solução ${solucao.datetime} foi baixada!`, "success");
+      addAlerta(t("Alerts.downloaded", { datetime: solucao.datetime }), "success");
     },
     [
       addAlerta,
@@ -150,17 +153,19 @@ const SolutionHistoryRow: React.FC<SolutionHistoryRowProps> = ({
         }}
       >
         <TableCell key={`icon_${id}`}>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => toggleIdSolutionRowState(id)}
-          >
-            {idSolutionRowOpen.get(id) ? (
-              <KeyboardArrowUpIcon key={`arrowUp_${id}`} />
-            ) : (
-              <KeyboardArrowDownIcon key={`arrowDown_${id}`} />
-            )}
-          </IconButton>
+          <Tooltip title={t("SolutionHistoryRow.details")}>
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => toggleIdSolutionRowState(id)}
+            >
+              {idSolutionRowOpen.get(id) ? (
+                <KeyboardArrowUpIcon key={`arrowUp_${id}`} />
+              ) : (
+                <KeyboardArrowDownIcon key={`arrowDown_${id}`} />
+              )}
+            </IconButton>
+          </Tooltip>
         </TableCell>
         <TableCell
           component="th"

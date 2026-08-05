@@ -11,6 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Chapter } from "../_types/docs";
+import { useTranslations } from "next-intl";
 
 interface RightSidebarProps {
   selectedChapter: Chapter;
@@ -24,6 +25,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   scrollToSection,
 }) => {
   const theme = useTheme();
+  const t = useTranslations("Pages.Guia.RightSidebar");
 
   return (
     <Box
@@ -49,7 +51,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           display: "block",
         }}
       >
-        Nesta página
+        {t("onThisPage")}
       </Typography>
       <List disablePadding>
         {selectedChapter.sections.map((section) => (

@@ -18,6 +18,7 @@ import {
   TipoTrava,
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { useCollaboration } from "@/context/Collaboration";
+import { useTranslations } from "next-intl";
 
 interface TimetableGridProps {
   setHoveredCourse: (disciplina: Disciplina | null) => void;
@@ -66,6 +67,8 @@ export default function TimetableGrid({
   //  Pegar infos da colaboração
   const { isInRoom, isOwner, config } = useCollaboration();
 
+  const t = useTranslations("Pages.Assignment.TimetableGrid");
+
   const handleMouseEnterDocente = (
     atribuicao: {
       nome: string;
@@ -109,7 +112,7 @@ export default function TimetableGrid({
                 fontSize: "0.875rem",
               }}
             >
-              Docentes
+              {t("professors")}
             </TableCell>
 
             {/* CÉLULAS HEADER DISCIPLINAS */}

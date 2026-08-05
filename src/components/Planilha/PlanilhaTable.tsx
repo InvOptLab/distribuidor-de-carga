@@ -28,6 +28,7 @@ import {
   getCellValue,
 } from "@/types/column-config";
 import { DocenteCell } from "./DocenteCell";
+import { useTranslations } from "next-intl";
 
 interface PlanilhaTableProps {
   /**
@@ -103,6 +104,7 @@ export function PlanilhaTable({
   const [showFilters, setShowFilters] = useState<{
     [columnId: string]: boolean;
   }>({});
+  const t = useTranslations("Components.PlanilhaTable");
 
   // /**
   //  * Calcula o número máximo de horários para determinar células vazias
@@ -201,7 +203,7 @@ export function PlanilhaTable({
 
           {/* Botão de filtro */}
           {column.filterable && (
-            <Tooltip title="Filtrar">
+            <Tooltip title={t("filter")}>
               <IconButton
                 size="small"
                 onClick={() =>
@@ -222,7 +224,7 @@ export function PlanilhaTable({
         {isFiltering && column.filterable && (
           <TextField
             size="small"
-            placeholder={`Filtrar ${column.label.toLowerCase()}...`}
+            placeholder={`${t("filter")} ${column.label.toLowerCase()}...`}
             value={filterState[column.id] || ""}
             onChange={(e) => onFilter(column.id, e.target.value)}
             fullWidth

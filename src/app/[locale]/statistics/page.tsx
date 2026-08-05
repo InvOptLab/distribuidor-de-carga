@@ -19,6 +19,7 @@ import SolutionHistoryDetails from "./_components/SolutionHistoryDetails";
 import SingleSolutionWorkloadChart from "./_components/SingleSolutionWorkloadChart";
 import { useGlobalContext } from "@/context/Global";
 import NoDataFound from "@/components/NoDataFound";
+import { useTranslations } from "next-intl";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,6 +44,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export default function Statistics() {
+  const t = useTranslations("Pages.Statistics");
   const { historicoSolucoes } = useGlobalContext();
   const [solutionId, setSolutionId] = useState("");
   const [currentTab, setCurrentTab] = useState(0);
@@ -87,15 +89,15 @@ export default function Statistics() {
           }}
         >
           <Typography variant="h6" gutterBottom>
-            Escolha uma solução para análise
+            {t("chooseSolution")}
           </Typography>
           <FormControl sx={{ minWidth: "13em", width: "100%" }}>
-            <InputLabel id="solution-select-label">Solução</InputLabel>
+            <InputLabel id="solution-select-label">{t("solution")}</InputLabel>
             <Select
               labelId="solution-select-label"
               id="solution-select"
               value={solutionId}
-              label="Solução"
+              label={t("solution")}
               onChange={handleChange}
               disabled={historicoSolucoes.size === 0}
             >
@@ -106,7 +108,7 @@ export default function Statistics() {
               ))}
             </Select>
             {historicoSolucoes.size === 0 && (
-              <FormHelperText>Nenhuma solução encontrada!</FormHelperText>
+              <FormHelperText>{t("noSolutionFound")}</FormHelperText>
             )}
           </FormControl>
         </Card>
@@ -125,8 +127,8 @@ export default function Statistics() {
                 borderColor: "divider",
               }}
             >
-              <Tab label="Detalhes da Solução" id="statistics-tab-0" />
-              <Tab label="Análise de Carga Didática" id="statistics-tab-1" />
+              <Tab label={t("tabs.solutionDetails")} id="statistics-tab-0" />
+              <Tab label={t("tabs.workloadAnalysis")} id="statistics-tab-1" />
             </Tabs>
           </Card>
 

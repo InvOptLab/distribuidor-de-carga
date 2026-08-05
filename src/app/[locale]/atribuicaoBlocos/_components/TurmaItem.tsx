@@ -1,5 +1,6 @@
 import { Horario } from "@/algoritmo/communs/interfaces/interfaces";
 import { Box, Typography, Chip, Stack } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 type Props = {
   nome: string;
@@ -18,6 +19,8 @@ export default function TurmaItem({
   destaque,
 }: //prioridade,
 Props) {
+  const t = useTranslations("Pages.AllocationBlocks.TurmaItem");
+
   return (
     <Box
       sx={{
@@ -74,7 +77,7 @@ Props) {
               />
             ))
           ) : (
-            <Chip label="Sem horário" size="small" color="default" />
+            <Chip label={t("noSchedule")} size="small" color="default" />
           )}
         </Stack>
       </Box>

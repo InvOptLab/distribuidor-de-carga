@@ -21,7 +21,8 @@ export function exportToExcel(
   columns: ColumnConfig[],
   docentes: Docente[],
   atribuicoes: Atribuicao[],
-  filename = "planilha-disciplinas.xlsx"
+  filename = "planilha-disciplinas.xlsx",
+  t?: any
 ) {
   // Cria um mapa de docentes para busca rápida
   const docentesMap = new Map(docentes.map((d) => [d.nome, d]));
@@ -42,12 +43,12 @@ export function exportToExcel(
         // Cria uma coluna para cada horário
         for (let i = 0; i < maxHorarios; i++) {
           const horario = horarios[i];
-          const columnName = `Horário ${i + 1}`;
+          const columnName = t ? t("schedule", { value: i + 1 }) : `Horário ${i + 1}`;
 
           if (horario) {
             row[
               columnName
-            ] = `${horario.dia}: ${horario.inicio} - ${horario.fim}`;
+            ] = `${t ? t("day_" + horario.dia) || horario.dia : horario.dia}: ${horario.inicio} - ${horario.fim}`;
           } else {
             row[columnName] = ""; // Célula vazia para horários não existentes
           }
@@ -77,7 +78,11 @@ export function exportToExcel(
 
       // Tratamento especial para booleanos
       if (typeof value === "boolean") {
-        value = value ? "Sim" : "Não";
+        if (t) {
+          value = value ? t("yes") : t("no");
+        } else {
+          value = value ? "Sim" : "Não";
+        }
       }
 
       row[column.label] = value ?? "";

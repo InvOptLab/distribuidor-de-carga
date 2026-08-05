@@ -29,6 +29,7 @@ import {
   ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material";
 import { ContentBlock } from "../_types/docs";
+import { useTranslations } from "next-intl";
 
 interface ContentRendererProps {
   block: ContentBlock;
@@ -37,6 +38,7 @@ interface ContentRendererProps {
 export const ContentRenderer: React.FC<ContentRendererProps> = ({ block }) => {
   const [activeStep, setActiveStep] = useState(0);
   const theme = useTheme();
+  const t = useTranslations("Pages.Guia.ContentRenderer");
 
   switch (block.type) {
     case "heading":
@@ -291,7 +293,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ block }) => {
                         onClick={() => setActiveStep(index + 1)}
                         endIcon={<ArrowForwardIcon />}
                       >
-                        Próximo
+                        {t("next")}
                       </Button>
                     )}
                     {index > 0 && (
@@ -299,7 +301,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ block }) => {
                         size="small"
                         onClick={() => setActiveStep(index - 1)}
                       >
-                        Voltar
+                        {t("back")}
                       </Button>
                     )}
                   </Box>

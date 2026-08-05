@@ -19,6 +19,7 @@ import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
 import type Constraint from "@/algoritmo/abstractions/Constraint";
 import ConfigConstraintCard from "@/components/Constraints/ConfigConstraintCard";
+import { useTranslations } from "next-intl";
 
 export default function ConstraintsConfig() {
   const {
@@ -30,6 +31,7 @@ export default function ConstraintsConfig() {
   } = useAlgorithmContext();
 
   const { addAlerta } = useAlertsContext();
+  const t = useTranslations("Config.Constraints");
 
   // Estado contendo as instâncias ativas das constraints
   const [activeConstraints, setActiveConstraints] = useState<Constraint<any>[]>(
@@ -104,7 +106,7 @@ export default function ConstraintsConfig() {
       setSoftConstraints(newSoftConstraints);
     }
 
-    addAlerta(`Restrição "${name}" removida com sucesso!`, "info");
+    addAlerta(t("removedSuccess", { name }), "info");
   };
 
   const addConstraint = (name: string) => {
@@ -126,7 +128,7 @@ export default function ConstraintsConfig() {
       return updated;
     });
 
-    addAlerta(`Restrição "${name}" adicionada com sucesso!`, "success");
+    addAlerta(t("addedSuccess", { name }), "success");
   };
 
   const saveConstraints = () => {
@@ -145,7 +147,7 @@ export default function ConstraintsConfig() {
     setSoftConstraints(newSoftConstraints);
     setHardConstraints(newHardConstraints);
 
-    addAlerta("Configurações de restrições salvas com sucesso!", "success");
+    addAlerta(t("savedSuccess"), "success");
   };
 
   const activeCount = activeConstraints.length;
@@ -175,21 +177,21 @@ export default function ConstraintsConfig() {
         >
           <Stack direction="row" spacing={2} alignItems="center">
             <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-              📊 Estatísticas:
+              {t("statsLabel")}
             </Typography>
             <Chip
-              label={`${activeCount}/${totalCount} ativas`}
+              label={t("activeStats", { active: activeCount, total: totalCount })}
               color="primary"
               sx={{ fontWeight: 700 }}
             />
             <Chip
-              label={`${hardCount} rígidas`}
+              label={t("hardStats", { hard: hardCount })}
               color="error"
               variant="outlined"
               sx={{ fontWeight: 700 }}
             />
             <Chip
-              label={`${softCount} flexíveis`}
+              label={t("softStats", { soft: softCount })}
               color="warning"
               variant="outlined"
               sx={{ fontWeight: 700 }}
@@ -201,15 +203,16 @@ export default function ConstraintsConfig() {
       {/* Alert informativo */}
       <Alert severity="info" sx={{ mb: 3 }}>
         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-          💡 Configuração de Restrições
+          {t("configInfoTitle")}
         </Typography>
-        <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
-          <strong>Rígidas:</strong> Devem ser sempre satisfeitas (violações são
-          críticas)
-          <br />
-          <strong>Flexíveis:</strong> Preferíveis mas não obrigatórias
-          (violações têm penalidade configurável)
-        </Typography>
+        <Typography
+          variant="caption"
+          display="block"
+          sx={{ mt: 0.5 }}
+          dangerouslySetInnerHTML={{
+            __html: `${t("configInfoHard")}<br />${t("configInfoSoft")}`,
+          }}
+        />
       </Alert>
 
       {/* Restrições Disponíveis */}
@@ -219,7 +222,7 @@ export default function ConstraintsConfig() {
             variant="h6"
             sx={{ mb: 2, fontWeight: 700, color: "primary.main" }}
           >
-            📋 Restrições Disponíveis para Adicionar
+            {t("availableTitle")}
           </Typography>
 
           <Paper
@@ -282,7 +285,7 @@ export default function ConstraintsConfig() {
           variant="h6"
           sx={{ mb: 2, fontWeight: 700, color: "success.main" }}
         >
-          ✅ Restrições Ativas
+          {t("activeTitle")}
         </Typography>
 
         {activeConstraints.length === 0 ? (
@@ -302,10 +305,10 @@ export default function ConstraintsConfig() {
               color="text.secondary"
               sx={{ fontStyle: "italic", mb: 1 }}
             >
-              🚫 Nenhuma restrição ativa
+              {t("noActiveTitle")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Adicione restrições acima para configurar o algoritmo
+              {t("noActiveDesc")}
             </Typography>
           </Paper>
         ) : (
@@ -363,7 +366,7 @@ export default function ConstraintsConfig() {
             fontSize: "1rem",
           }}
         >
-          Salvar Todas as Configurações
+          {t("saveAll")}
         </Button>
       </Box>
     </Box>

@@ -33,12 +33,16 @@ import { AVAILABLE_ALGORITHMS } from "@/app/[locale]/types/algorithm-types";
 import { isHeuristicAlgorithm, isTabuSearch } from "@/algoritmo/communs/utils";
 import { Solution } from "@/algoritmo/metodos/TabuSearch/TabuList/Solution";
 import { Moviment } from "@/algoritmo/metodos/TabuSearch/TabuList/Moviment";
+import { isMILP } from "@/algoritmo/communs/utils";
+import { useTranslations } from "next-intl";
 
 export default function SolutionHistoryDetails({
   solucao,
 }: {
   solucao: HistoricoSolucao;
 }) {
+  const t = useTranslations("Pages.Statistics.SolutionHistoryDetails");
+
   const algorithmType = solucao.algorithm?.name || "tabu-search";
   const algorithmConfig = AVAILABLE_ALGORITHMS.find(
     (alg) => alg.id === algorithmType,
@@ -54,7 +58,7 @@ export default function SolutionHistoryDetails({
   // };
 
   if (!solucao) {
-    return <Typography variant="h6">Solução não encontrada!</Typography>;
+    return <Typography variant="h6">{t("notFound")}</Typography>;
   }
 
   // // Adiciona uma verificação de 'algoritmo' nulo.
@@ -109,12 +113,12 @@ export default function SolutionHistoryDetails({
       <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
         <Box>
           <Typography variant="h4" gutterBottom align="center">
-            Detalhes da Solução
+            {t("details")}
           </Typography>
 
           <Alert severity="info" sx={{ mb: 2 }}>
             <Typography variant="body1">
-              <strong>Algoritmo Utilizado:</strong> {algorithmName}
+              <strong>{t("algorithm")}</strong> {algorithmName}
             </Typography>
           </Alert>
 
@@ -125,12 +129,12 @@ export default function SolutionHistoryDetails({
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="body1">
-                  <b>Data e Hora:</b> {solucao.datetime}
+                  <b>{t("datetime")}</b> {solucao.datetime}
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="body1">
-                  <b>Inserção:</b> {solucao.tipoInsercao}
+                  <b>{t("insertion")}</b> {solucao.tipoInsercao}
                 </Typography>
               </Grid>
               <Grid
@@ -143,7 +147,7 @@ export default function SolutionHistoryDetails({
                 justifyContent="flex-start"
               >
                 <Typography variant="body1">
-                  <b>Interrompido:</b>{" "}
+                  <b>{t("interrupted")}</b>{" "}
                 </Typography>
                 {solucao.solucao.estatisticas &&
                 solucao.solucao.estatisticas.interrupcao ? (
@@ -154,7 +158,7 @@ export default function SolutionHistoryDetails({
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="body1">
-                  <b>Avaliação:</b> {solucao.solucao.avaliacao}
+                  <b>{t("evaluation")}</b> {solucao.solucao.avaliacao}
                 </Typography>
               </Grid>
               {solucao.solucao.estatisticas &&
@@ -170,7 +174,7 @@ export default function SolutionHistoryDetails({
                       arrow
                     >
                       <Typography variant="body1" sx={{ cursor: "help" }}>
-                        <b>Tempo de Execução:</b>{" "}
+                        <b>{t("executionTime")}</b>{" "}
                         {solucao.solucao.estatisticas.tempoExecucao} ms
                       </Typography>
                     </Tooltip>
@@ -178,7 +182,7 @@ export default function SolutionHistoryDetails({
                 )}
               <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="body1">
-                  <b>Iterações:</b>{" "}
+                  <b>{t("iterations")}</b>{" "}
                   {solucao.solucao.estatisticas &&
                   solucao.solucao.estatisticas.iteracoes
                     ? solucao.solucao.estatisticas.iteracoes
@@ -192,13 +196,13 @@ export default function SolutionHistoryDetails({
         <Divider sx={{ my: 3 }} />
 
         <Typography variant="h4" gutterBottom>
-          Configurações
+          {t("configurations")}
         </Typography>
 
         {algoritmo && isTabuSearch(algoritmo) && (
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6">Parâmetros Globais</Typography>
+              <Typography variant="h6">{t("globalParameters")}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2}>
@@ -225,7 +229,7 @@ export default function SolutionHistoryDetails({
                     </Tooltip>
                     <Box>
                       <Typography variant="body1" fontWeight="bold">
-                        Tamanho da Lista Tabu
+                        {t("tabuListSize")}
                       </Typography>
                       <Typography variant="h5" color="primary">
                         {algoritmo.tabuList instanceof Solution
@@ -245,7 +249,7 @@ export default function SolutionHistoryDetails({
         {algoritmo && algoritmo.constraints && (
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6">Restrições</Typography>
+              <Typography variant="h6">{t("constraints")}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2}>
@@ -319,7 +323,7 @@ export default function SolutionHistoryDetails({
           algoritmo.neighborhoodPipe && (
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6">Geração da Vizinhança</Typography>
+                <Typography variant="h6">{t("neighborhoodGeneration")}</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Grid container spacing={2}>
@@ -363,7 +367,7 @@ export default function SolutionHistoryDetails({
         {isHeuristicAlgorithm(algoritmo) && algoritmo?.stopPipe && (
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6">Interrupção</Typography>
+              <Typography variant="h6">{t("interruption")}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2}>
@@ -456,7 +460,7 @@ export default function SolutionHistoryDetails({
         {isTabuSearch(algoritmo) && algoritmo?.aspirationPipe && (
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6">Critérios de Aspiração</Typography>
+              <Typography variant="h6">{t("aspirationCriteria")}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2}>
@@ -513,7 +517,7 @@ export default function SolutionHistoryDetails({
         <Divider sx={{ my: 3 }} />
 
         <Typography variant="h4" gutterBottom>
-          Gráficos
+          {t("charts")}
         </Typography>
 
         <Grid container spacing={3}>
@@ -524,7 +528,7 @@ export default function SolutionHistoryDetails({
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
-                    Histograma Quantidade de Atribuições por Prioridade
+                    {t("histogramPriorityTitle")}
                   </Typography>
                   <ChartContainer
                     chartData={{
@@ -584,10 +588,10 @@ export default function SolutionHistoryDetails({
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
-                    Histograma Quantidade de Atribuições por Prioridade
+                    {t("histogramPriorityTitle")}
                   </Typography>
                   <Alert severity="warning">
-                    Dados de prioridade não disponíveis para esta solução.
+                    {t("noPriorityData")}
                   </Alert>
                 </CardContent>
               </Card>
@@ -601,7 +605,7 @@ export default function SolutionHistoryDetails({
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
-                    Gráfico Avaliação por Iteração
+                    {t("evaluationChartTitle")}
                   </Typography>
                   {/* <ChartContainer> */}
                   <LineChart
@@ -635,11 +639,10 @@ export default function SolutionHistoryDetails({
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
-                    Gráfico Avaliação por Iteração
+                    {t("evaluationChartTitle")}
                   </Typography>
                   <Alert severity="warning">
-                    Dados de avaliação por iteração não disponíveis para esta
-                    solução.
+                    {t("noEvaluationData")}
                   </Alert>
                 </CardContent>
               </Card>
@@ -653,7 +656,7 @@ export default function SolutionHistoryDetails({
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
-                    Gráfico Tempo (ms) por Iteração
+                    {t("timeChartTitle")}
                   </Typography>
                   {/* <ChartContainer> */}
                   <LineChart
@@ -692,11 +695,10 @@ export default function SolutionHistoryDetails({
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
-                    Gráfico Tempo (ms) por Iteração
+                    {t("timeChartTitle")}
                   </Typography>
                   <Alert severity="warning">
-                    Dados de tempo por iteração não disponíveis para esta
-                    solução.
+                    {t("noTimeData")}
                   </Alert>
                 </CardContent>
               </Card>
@@ -710,7 +712,7 @@ export default function SolutionHistoryDetails({
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
-                    Histograma Ocorrências de Restrições
+                    {t("histogramConstraintsTitle")}
                   </Typography>
                   {/* <ChartContainer> */}
                   <ConstraintsBarCharts
@@ -728,11 +730,10 @@ export default function SolutionHistoryDetails({
               <Card elevation={3}>
                 <CardContent>
                   <Typography variant="h6" align="center" gutterBottom>
-                    Histograma Ocorrências de Restrições
+                    {t("histogramConstraintsTitle")}
                   </Typography>
                   <Alert severity="warning">
-                    Dados de ocorrências de restrições não disponíveis para esta
-                    solução.
+                    {t("noConstraintsData")}
                   </Alert>
                 </CardContent>
               </Card>

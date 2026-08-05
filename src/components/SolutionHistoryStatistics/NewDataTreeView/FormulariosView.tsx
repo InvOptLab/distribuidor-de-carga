@@ -6,6 +6,7 @@ import {
 } from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 import { HistoricoSolucao, isDisciplina } from "@/context/Global/utils";
 import { Box, Grid, Stack, styled, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 export interface FormulariosViewProps {
   tipo: "docente" | "disciplina";
@@ -42,6 +43,8 @@ export function FormulariosView({
   docentes,
   setHoveredCourese,
 }: FormulariosViewProps) {
+  const t = useTranslations("Components.TreeView");
+
   const renderFormularios = () => {
     const render = [];
 
@@ -107,13 +110,10 @@ export function FormulariosView({
                   {key}
                 </Typography>
                 <Typography align="left" style={{ fontSize: "14px" }}>
-                  Saldo:{" "}
-                  {(docentes.get(key).saldo < 0 ? "" : "+") +
-                    docentes
-                      .get(key)
-                      .saldo.toFixed(1)
-                      .toString()
-                      .replace(".", ",")}
+                  {t("balance", {
+                    saldo: (docentes.get(key).saldo < 0 ? "" : "+") +
+                      docentes.get(key).saldo.toFixed(1).toString().replace(".", ",")
+                  })}
                 </Typography>
               </StyledStack>
               <Box
