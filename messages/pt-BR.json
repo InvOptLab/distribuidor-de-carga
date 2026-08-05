@@ -369,6 +369,8 @@
         "guestsCanEditBadge": "Edição liberada",
         "guestsCanFilterTooltip": "Convidados podem editar os filtros",
         "guestsCanFilterBadge": "Filtros liberada",
+        "privateBadge": "Privada",
+        "privateTooltip": "Esta sala requer uma senha",
         "joinTooltip": "Entrar nesta sala como convidado",
         "joinButton": "Entrar na Sala"
       },
@@ -386,6 +388,11 @@
         "guestsCanEditDesc": "Permite que convidados façam alterações na grade. Você pode alterar isso depois.",
         "guestsCanFilterLabel": "Convidados podem filtrar",
         "guestsCanFilterDesc": "Permite que convidados façam alterações nos filtros grade. Você pode alterar isso depois.",
+        "privateRoomLabel": "Sala Privada",
+        "privateRoomDesc": "Exigir uma senha para entrar.",
+        "passwordLabel": "Senha da Sala",
+        "passwordPlaceholder": "Crie uma senha",
+        "autoDeleteWarning": "Aviso: Salas vazias ou com mais de 12 horas são automaticamente excluídas.",
         "cancelButton": "Cancelar",
         "submitButton": "Criar Sala"
       },
@@ -399,6 +406,8 @@
         "userNameTooltip": "Como você será identificado na sala",
         "userNameLabel": "Seu Nome",
         "userNamePlaceholder": "Ex: Maria Santos",
+        "passwordLabel": "Senha",
+        "passwordPlaceholder": "Digite a senha da sala",
         "cancelButton": "Cancelar",
         "submitButton": "Entrar"
       }
@@ -1373,9 +1382,11 @@
     "navigationMenu": "Menu de navegação"
   },
   "Collaboration": {
-    "roomNotFound": "Sala não encontrada.",
-    "nameAlreadyExistis": "Nome de usuário já existe nesta sala.",
-    "ownerEndedRoom": "O dono encerrou a sala."
+    "roomNotFound": "Sala não encontrada ou indisponível.",
+    "nameAlreadyExistis": "Este nome já está em uso na sala.",
+    "passwordRequired": "É necessário informar a senha para entrar.",
+    "incorrectPassword": "Senha incorreta.",
+    "ownerEndedRoom": "O criador da sala encerrou a sessão. Você foi desconectado."
   },
   "AlgorithmContext": {
     "Constraints": {
