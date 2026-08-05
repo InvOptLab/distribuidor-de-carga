@@ -370,6 +370,17 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
 
       // Apply rule filters
       for (const rule of docenteFilters.rules) {
+        if (rule.fieldKey === "semAtribuicao") {
+          const hasAtribuicao = atribuicoes.some((atribuicao) =>
+            atribuicao.docentes.includes(docente.nome),
+          );
+          const isSemAtribuicao = !hasAtribuicao;
+          if (isSemAtribuicao !== rule.value) {
+            return false;
+          }
+          continue;
+        }
+
         const value = (docente as any)[rule.fieldKey];
         if (!matchesRule(value, rule)) {
           return false;
@@ -399,6 +410,19 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
 
       // Apply rule filters
       for (const rule of disciplinaFilters.rules) {
+        if (rule.fieldKey === "semDocente") {
+          const hasDocente = atribuicoes.some(
+            (atribuicao) =>
+              atribuicao.id_disciplina === disciplina.id &&
+              atribuicao.docentes.length > 0
+          );
+          const isSemDocente = !hasDocente;
+          if (isSemDocente !== rule.value) {
+            return false;
+          }
+          continue;
+        }
+
         let fieldKey = rule.fieldKey;
 
         if (

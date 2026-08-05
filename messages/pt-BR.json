@@ -598,6 +598,8 @@
         "name": "Nome",
         "active": "Ativo",
         "comment": "Comentário",
+        "withoutAssignment": "Sem atribuição",
+        "withoutTeacher": "Sem docente",
         "groupPreference": "Agrupar",
         "indifferent": "Indiferente",
         "spreadPreference": "Espalhar",

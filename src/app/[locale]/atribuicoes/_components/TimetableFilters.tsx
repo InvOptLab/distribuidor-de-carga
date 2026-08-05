@@ -160,7 +160,7 @@ export default function TimetableFilters({
   };
 
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column", pt: { xs: 8, sm: 10 } }}>
       <Box
         display="flex"
         justifyContent="space-between"
@@ -322,6 +322,7 @@ export default function TimetableFilters({
           { key: "nome", label: t("name"), type: "text" },
           { key: "ativo", label: t("active"), type: "boolean" },
           { key: "comentario", label: t("comment"), type: "text" },
+          { key: "semAtribuicao", label: t("withoutAssignment"), type: "boolean" },
           {
             key: "agrupar",
             label: t("groupPreference"),
@@ -344,6 +345,7 @@ export default function TimetableFilters({
         fields={[
           { key: "nome", label: t("name"), type: "text" },
           { key: "codigo", label: t("code"), type: "text" },
+          { key: "semDocente", label: t("withoutTeacher"), type: "boolean" },
           {
             key: "nivel",
             label: t("level"),
