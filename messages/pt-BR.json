@@ -1537,7 +1537,11 @@
       "professorsWithFormsCount": "Docentes com Formulário: {count}",
       "selectProfessorsTitle": "Selecionar Docentes - {codigo} (Turma {turma})",
       "balance": "Saldo: {saldo}",
-      "priority": "Prioridade: {prioridade}"
+      "priority": "Prioridade: {prioridade}",
+      "searchProfessor": "Buscar docente...",
+      "sortBy": "Ordenar por",
+      "sortByPriority": "Prioridade",
+      "sortByName": "Nome"
     },
     "DocenteCell": {
       "addTeacher": "Adicionar docente",

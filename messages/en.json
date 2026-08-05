@@ -1533,7 +1533,11 @@
       "professorsWithFormsCount": "Professors with Forms: {count}",
       "selectProfessorsTitle": "Select Professors - {codigo} (Class {turma})",
       "balance": "Balance: {saldo}",
-      "priority": "Priority: {prioridade}"
+      "priority": "Priority: {prioridade}",
+      "searchProfessor": "Search professor...",
+      "sortBy": "Sort by",
+      "sortByPriority": "Priority",
+      "sortByName": "Name"
     },
     "DocenteCell": {
       "addTeacher": "Add teacher",
