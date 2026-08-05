@@ -24,9 +24,10 @@ import {
   Info as InfoIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { useGlobalContext } from "@/context/Global";
 import { useAlertsContext } from "@/context/Alerts";
+import { useGlobalContext } from "@/context/Global";
 import { Disciplina, Docente } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 import DocenteForm from "./_components/DocenteForm";
 import TurmaForm from "./_components/TurmaForm";
 import DocenteCard from "./_components/DocenteCard";
@@ -48,6 +49,7 @@ export default function CadastroPage() {
     setAtribuicoes,
   } = useGlobalContext();
   const { addAlerta } = useAlertsContext();
+  const t = useTranslations("Pages.Cadastro");
 
   const [showForm, setShowForm] = useState(false);
   const [docenteParaEditar, setDocenteParaEditar] = useState<Docente | null>(
@@ -84,13 +86,13 @@ export default function CadastroPage() {
   const handleEditDocente = (docente: Docente) => {
     setDocenteParaEditar(docente);
     setShowForm(true);
-    addAlerta(`Editando docente: ${docente.nome}`, "info");
+    addAlerta(t("editingProfessor", { name: docente.nome }), "info");
   };
 
   const handleEditTurma = (turma: Disciplina) => {
     setTurmaParaEditar(turma);
     setShowForm(true);
-    addAlerta(`Editando turma: ${turma.nome}`, "info");
+    addAlerta(t("editingClass", { name: turma.nome }), "info");
   };
 
   const handleDeleteDocente = (docente: Docente) => {
@@ -112,7 +114,7 @@ export default function CadastroPage() {
       setFormularios(
         formularios.filter((f) => f.nome_docente !== docente.nome),
       );
-      addAlerta(`Docente "${docente.nome}" excluído com sucesso!`, "success");
+      addAlerta(t("professorDeleted", { name: docente.nome }), "success");
     } else {
       const turma = itemParaExcluir.item as Disciplina;
       const novasDisciplinas = disciplinas
@@ -126,7 +128,7 @@ export default function CadastroPage() {
       // Remove formulários e atribuições relacionadas
       setFormularios(formularios.filter((f) => f.id_disciplina !== turma.id));
       setAtribuicoes(atribuicoes.filter((a) => a.id_disciplina !== turma.id));
-      addAlerta(`Turma "${turma.nome}" excluída com sucesso!`, "success");
+      addAlerta(t("classDeleted", { name: turma.nome }), "success");
     }
 
     setDeleteDialogOpen(false);
@@ -159,14 +161,14 @@ export default function CadastroPage() {
           }}
           color="black"
         >
-          Gestão de Cadastros
+          {t("title")}
         </Typography>
         <Typography
           variant="h6"
           color="text.secondary"
           sx={{ fontWeight: 400 }}
         >
-          Administre docentes e turmas/disciplinas de forma intuitiva
+          {t("subtitle")}
         </Typography>
       </Box>
 
@@ -194,24 +196,24 @@ export default function CadastroPage() {
         >
           <Box>
             <Typography variant="h6" fontWeight={600} gutterBottom>
-              Selecione o Tipo de Gestão
+              {t("selectType")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Escolha entre gerenciar docentes ou turmas/disciplinas
+              {t("selectTypeDesc")}
             </Typography>
           </Box>
 
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
             <Chip
               icon={<SchoolIcon />}
-              label={`${docentes.length} docente${docentes.length !== 1 ? "s" : ""}`}
+              label={docentes.length === 1 ? t("professorCount", { count: 1 }) : t("professorsCount", { count: docentes.length })}
               variant="outlined"
               size="medium"
               sx={{ fontWeight: 500, minWidth: 140 }}
             />
             <Chip
               icon={<ClassIcon />}
-              label={`${disciplinas.length} turma${disciplinas.length !== 1 ? "s" : ""}`}
+              label={disciplinas.length === 1 ? t("classCount", { count: 1 }) : t("classesCount", { count: disciplinas.length })}
               variant="outlined"
               size="medium"
               sx={{ fontWeight: 500, minWidth: 140 }}
@@ -220,7 +222,7 @@ export default function CadastroPage() {
         </Box>
 
         <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-          <Tooltip title="Visualizar e gerenciar docentes" placement="bottom">
+          <Tooltip title={t("professorsTabTooltip")} placement="bottom">
             <ToggleButton
               value="docente"
               selected={tipoCadastro === "docente"}
@@ -247,12 +249,12 @@ export default function CadastroPage() {
               }}
             >
               <SchoolIcon sx={{ mr: 1.5, fontSize: 24 }} />
-              <Typography fontWeight={600}>Docentes</Typography>
+              <Typography fontWeight={600}>{t("professorsTab")}</Typography>
             </ToggleButton>
           </Tooltip>
 
           <Tooltip
-            title="Visualizar e gerenciar turmas/disciplinas"
+            title={t("classesTabTooltip")}
             placement="bottom"
           >
             <ToggleButton
@@ -281,7 +283,7 @@ export default function CadastroPage() {
               }}
             >
               <ClassIcon sx={{ mr: 1.5, fontSize: 24 }} />
-              <Typography fontWeight={600}>Turmas</Typography>
+              <Typography fontWeight={600}>{t("classesTab")}</Typography>
             </ToggleButton>
           </Tooltip>
         </Box>
@@ -318,13 +320,13 @@ export default function CadastroPage() {
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" fontWeight={600} gutterBottom>
               {tipoCadastro === "docente"
-                ? `Docentes (${docentes.length})`
-                : `Turmas/Disciplinas (${disciplinas.length})`}
+                ? t("professorsHeader", { count: docentes.length })
+                : t("classesHeader", { count: disciplinas.length })}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {tipoCadastro === "docente"
-                ? "Clique em uma turma para editar ou adicione um novo docente"
-                : "Clique em uma turma para editar ou adicione uma nova turma"}
+                ? t("professorsSubheader")
+                : t("classesSubheader")}
             </Typography>
           </Box>
 
@@ -353,7 +355,7 @@ export default function CadastroPage() {
                     />
                   ))}
                 <AddCard
-                  tooltip="Criar novo docente"
+                  tooltip={t("Components.AddCard.newProfessor")}
                   onClick={handleAddClick}
                 />
                 {docentes.length === 0 && (
@@ -366,10 +368,10 @@ export default function CadastroPage() {
                     }}
                   >
                     <Typography color="text.secondary" gutterBottom>
-                      Nenhum docente cadastrado
+                      {t("noProfessors")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Clique no botão abaixo para criar um novo
+                      {t("noProfessorsDesc")}
                     </Typography>
                   </Box>
                 )}
@@ -385,7 +387,7 @@ export default function CadastroPage() {
                       onDelete={handleDeleteTurma}
                     />
                   ))}
-                <AddCard tooltip="Criar nova turma" onClick={handleAddClick} />
+                <AddCard tooltip={t("Components.AddCard.newClass")} onClick={handleAddClick} />
                 {disciplinas.length === 0 && (
                   <Box
                     sx={{
@@ -396,10 +398,10 @@ export default function CadastroPage() {
                     }}
                   >
                     <Typography color="text.secondary" gutterBottom>
-                      Nenhuma turma cadastrada
+                      {t("noClasses")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Clique no botão abaixo para criar uma nova
+                      {t("noClassesDesc")}
                     </Typography>
                   </Box>
                 )}
@@ -436,7 +438,7 @@ export default function CadastroPage() {
               <DeleteIcon fontSize="small" />
             </Box>
             <Typography variant="h6" fontWeight={600}>
-              Confirmar Exclusão
+              {t("confirmDelete")}
             </Typography>
           </Box>
         </DialogTitle>
@@ -445,8 +447,8 @@ export default function CadastroPage() {
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Typography variant="body2" fontWeight={500}>
               {itemParaExcluir?.type === "docente"
-                ? `Você está prestes a excluir o docente:`
-                : `Você está prestes a excluir a turma:`}
+                ? t("confirmDeleteProfessor")
+                : t("confirmDeleteClass")}
             </Typography>
 
             <Box
@@ -467,14 +469,14 @@ export default function CadastroPage() {
 
             <Typography variant="caption" color="text.secondary">
               {itemParaExcluir?.type === "docente"
-                ? "Esta ação é irreversível. Todos os formulários associados serão removidos."
-                : "Esta ação é irreversível. Todas as atribuições e referências serão removidas."}
+                ? t("irreversibleProfessor")
+                : t("irreversibleClass")}
             </Typography>
           </Box>
         </DialogContent>
         <Divider />
         <DialogActions sx={{ p: 2.5, gap: 1 }}>
-          <Button
+            <Button
             onClick={() => setDeleteDialogOpen(false)}
             variant="outlined"
             color="inherit"
@@ -485,7 +487,7 @@ export default function CadastroPage() {
               },
             }}
           >
-            Cancelar
+            {t("cancel")}
           </Button>
           <Button
             onClick={confirmDelete}
@@ -499,7 +501,7 @@ export default function CadastroPage() {
               },
             }}
           >
-            Excluir Permanentemente
+            {t("deletePermanently")}
           </Button>
         </DialogActions>
       </Dialog>

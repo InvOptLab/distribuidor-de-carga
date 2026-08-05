@@ -20,12 +20,14 @@ import {
   Grid as Grid,
 } from "@mui/material";
 import { useAlgorithmContext } from "@/context/Algorithm";
+import { useTranslations } from "next-intl";
 
 type TabuType = "Solução" | "Movimento";
 
 export default function TabuListConfig() {
   const { parametros, setParametros, tabuListType, setTabuListType } =
     useAlgorithmContext();
+  const t = useTranslations("Config.TabuList");
 
   // Estados locais para controlar os valores
   const [tabuSize, setTabuSize] = useState(parametros.tabuTenure?.size);
@@ -117,7 +119,7 @@ export default function TabuListConfig() {
                 }}
               >
                 <Typography variant="h6" component="h3">
-                  Configuração da Lista Tabu
+                  {t("title")}
                 </Typography>
                 <FormGroup>
                   <FormControlLabel
@@ -127,20 +129,19 @@ export default function TabuListConfig() {
                         onChange={handleActiveChange}
                       />
                     }
-                    label="Ativo"
+                    label={t("active")}
                   />
                 </FormGroup>
               </Box>
 
               <Alert severity="info" sx={{ mb: 3 }}>
-                A lista tabu mantém um histórico de soluções ou movimentos
-                recentes para evitar ciclos no algoritmo de busca.
+                {t("info")}
               </Alert>
 
               <FormControl component="fieldset" disabled={!isActive}>
                 <FormLabel component="legend" sx={{ mb: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold">
-                    Tipo da Lista Tabu
+                    {t("typeLabel")}
                   </Typography>
                 </FormLabel>
                 <RadioGroup
@@ -153,9 +154,9 @@ export default function TabuListConfig() {
                     control={<Radio />}
                     label={
                       <Box>
-                        <Typography variant="body1">Soluções</Typography>
+                        <Typography variant="body1">{t("typeSolution")}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Armazena soluções completas visitadas recentemente
+                          {t("typeSolutionDesc")}
                         </Typography>
                       </Box>
                     }
@@ -166,9 +167,9 @@ export default function TabuListConfig() {
                     control={<Radio />}
                     label={
                       <Box>
-                        <Typography variant="body1">Movimentos</Typography>
+                        <Typography variant="body1">{t("typeMovement")}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Armazena movimentos específicos (add/drop) realizados
+                          {t("typeMovementDesc")}
                         </Typography>
                       </Box>
                     }
@@ -186,24 +187,22 @@ export default function TabuListConfig() {
                     fontWeight="bold"
                     gutterBottom
                   >
-                    Parâmetros para Lista de Soluções
+                    {t("paramsSolution")}
                   </Typography>
                   <TextField
-                    label="Tamanho da Lista Tabu"
+                    label={t("sizeLabel")}
                     type="number"
                     value={tabuSize}
                     onChange={handleTabuSizeChange}
                     disabled={!isActive}
                     fullWidth
                     slotProps={{ htmlInput: { min: 0 } }}
-                    helperText="Número máximo de soluções mantidas na lista tabu."
+                    helperText={t("sizeHelper")}
                     sx={{ mt: 2 }}
                   />
                   <Alert severity="warning" sx={{ mt: 2 }}>
                     <Typography variant="body2">
-                      <strong>Tipo Solução:</strong> Utiliza o valor de{" "}
-                      <code>parametros.tabuTenure.size = {tabuSize}</code> para
-                      controlar quantas soluções completas ficam na lista tabu.
+                      <strong>{t("solutionAlertTitle")}</strong> {t("solutionAlertDesc", { code: `parametros.tabuTenure.size = ${tabuSize}` })}
                     </Typography>
                   </Alert>
                 </Box>
@@ -214,46 +213,37 @@ export default function TabuListConfig() {
                     fontWeight="bold"
                     gutterBottom
                   >
-                    Parâmetros para Lista de Movimentos
+                    {t("paramsMovement")}
                   </Typography>
                   <Grid container spacing={2} sx={{ mt: 1 }}>
                     <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
-                        label="Add Tenure"
+                        label={t("addTenureLabel")}
                         type="number"
                         value={addTenure}
                         onChange={handleAddTenureChange}
                         disabled={!isActive}
                         fullWidth
                         slotProps={{ htmlInput: { min: 0 } }}
-                        helperText="Iterações que um movimento de adição fica tabu."
+                        helperText={t("addTenureHelper")}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
-                        label="Drop Tenure"
+                        label={t("dropTenureLabel")}
                         type="number"
                         value={dropTenure}
                         onChange={handleDropTenureChange}
                         disabled={!isActive}
                         fullWidth
                         slotProps={{ htmlInput: { min: 0 } }}
-                        helperText="Iterações que um movimento de remoção fica tabu."
+                        helperText={t("dropTenureHelper")}
                       />
                     </Grid>
                   </Grid>
                   <Alert severity="info" sx={{ mt: 2 }}>
                     <Typography variant="body2">
-                      <strong>Tipo Movimento:</strong> Utiliza{" "}
-                      <code>
-                        parametros.tabuTenure.tenures.add = {addTenure}
-                      </code>{" "}
-                      e{" "}
-                      <code>
-                        parametros.tabuTenure.tenures.drop = {dropTenure}
-                      </code>{" "}
-                      para controlar por quantas iterações cada tipo de
-                      movimento permanece tabu.
+                      <strong>{t("movementAlertTitle")}</strong> {t("movementAlertDesc", { codeAdd: `parametros.tabuTenure.tenures.add = ${addTenure}`, codeDrop: `parametros.tabuTenure.tenures.drop = ${dropTenure}` })}
                     </Typography>
                   </Alert>
                 </Box>
@@ -263,13 +253,13 @@ export default function TabuListConfig() {
 
               <Box sx={{ mt: 2 }}>
                 <Typography variant="subtitle2" color="text.secondary">
-                  <strong>Configuração Atual:</strong>
+                  <strong>{t("currentConfig")}</strong>
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Tipo: {tabuListType} |
+                  {t("typeConfig", { type: tabuListType })}
                   {tabuListType === "Solução"
-                    ? ` Tamanho: ${tabuSize}`
-                    : ` Add: ${addTenure}, Drop: ${dropTenure}`}{" "}
+                    ? t("sizeConfig", { size: tabuSize })
+                    : t("tenureConfig", { add: addTenure, drop: dropTenure })}
                 </Typography>
               </Box>
             </CardContent>

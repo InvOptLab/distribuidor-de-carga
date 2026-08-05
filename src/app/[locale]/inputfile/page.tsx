@@ -53,6 +53,7 @@ import {
 } from "@/context/Global/utils";
 import { exportJson } from "../atribuicoes";
 import { useAlgorithmContext } from "@/context/Algorithm";
+import { useTranslations } from "next-intl";
 
 interface FileAnalysis {
   docentes: { total: number; ativos: number; inativos: number };
@@ -103,8 +104,8 @@ export default function InputFileUpload() {
   } = useGlobalContext();
 
   const { cleanSolucaoAtual } = useSolutionHistory();
-
   const { setMaiorPrioridade } = useAlgorithmContext();
+  const t = useTranslations("Pages.InputFile");
 
   // Função para processar e analisar o arquivo usando suas funções existentes
   const processAndAnalyzeFile = useCallback(
@@ -301,13 +302,10 @@ export default function InputFileUpload() {
       setTempData(temp);
       setSelectedFile(null); // Limpar arquivo selecionado
 
-      addAlerta("Dados de teste importados com sucesso!", "success");
+      addAlerta(t("Alerts.testDataSuccess"), "success");
     } catch (error) {
       console.error("Erro ao carregar dados de teste:", error);
-      addAlerta(
-        "Erro ao carregar dados de teste. Verifique se o arquivo existe.",
-        "error",
-      );
+      addAlerta(t("Alerts.testDataError"), "error");
     } finally {
       setLoadingTestData(false);
     }
@@ -330,7 +328,7 @@ export default function InputFileUpload() {
               setFileAnalysis(analysis);
               setTempData(temp);
             } catch (error) {
-              addAlerta("Erro ao analisar o arquivo JSON.", "error");
+              addAlerta(t("Alerts.jsonParseError"), "error");
               console.log(error);
               setFileAnalysis(null);
               setTempData(null);
@@ -338,7 +336,7 @@ export default function InputFileUpload() {
           };
           reader.readAsText(file);
         } else {
-          addAlerta("Por favor, selecione um arquivo JSON.", "warning");
+          addAlerta(t("Alerts.selectJsonWarning"), "warning");
         }
       }
     },
@@ -358,7 +356,7 @@ export default function InputFileUpload() {
       currentTravas,
     );
     setSafeContinue(true);
-    addAlerta("Backup criado com sucesso!", "success");
+    addAlerta(t("Alerts.backupSuccess"), "success");
   }, [
     currentDocentes,
     currentDisciplinas,
@@ -372,13 +370,13 @@ export default function InputFileUpload() {
     if (!tempData) return;
 
     const steps = [
-      "Aplicando docentes...",
-      "Aplicando disciplinas...",
-      "Aplicando atribuições...",
-      "Aplicando formulários...",
-      "Aplicando travas...",
-      "Processando solução...",
-      "Finalizando...",
+      t("Progress.stepDocentes"),
+      t("Progress.stepDisciplinas"),
+      t("Progress.stepAtribuicoes"),
+      t("Progress.stepFormularios"),
+      t("Progress.stepTravas"),
+      t("Progress.stepSolucao"),
+      t("Progress.stepFinalizando"),
     ];
 
     const updateProgress = (step: string) => {
@@ -495,13 +493,11 @@ export default function InputFileUpload() {
       setTempData(null);
       const fileName = selectedFile ? selectedFile.name : "dados de teste";
       addAlerta(
-        `${fileName} carregado${
-          fileName === "dados de teste" ? "s" : ""
-        } com sucesso.`,
+        t("Alerts.uploadSuccess", { fileName: fileName }),
         "success",
       );
     } catch (error) {
-      addAlerta("Erro ao processar os dados.\n" + error, "error");
+      addAlerta(t("Alerts.uploadError", { error: String(error) }), "error");
     }
 
     setUploading(false);
@@ -550,10 +546,10 @@ export default function InputFileUpload() {
             }}
           >
             <Typography variant="h5" gutterBottom>
-              Upload de Arquivo
+              {t("UploadBox.title")}
             </Typography>
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              Arraste e solte um arquivo JSON aqui ou clique para selecionar
+              {t("UploadBox.subtitle")}
             </Typography>
 
             <input
@@ -573,7 +569,7 @@ export default function InputFileUpload() {
                 size="large"
                 sx={{ mt: 2, mb: 2 }}
               >
-                Escolher Arquivo
+                {t("UploadBox.chooseFile")}
               </Button>
             </label>
 
@@ -592,13 +588,13 @@ export default function InputFileUpload() {
 
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                ou
+                {t("UploadBox.or")}
               </Typography>
             </Divider>
 
             {/* Botão para carregar dados de teste */}
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              Use dados de teste para experimentar a plataforma
+              {t("UploadBox.testDataSubtitle")}
             </Typography>
             <Button
               variant="contained"
@@ -615,7 +611,7 @@ export default function InputFileUpload() {
               size="large"
               sx={{ mt: 2, mb: 2 }}
             >
-              {loadingTestData ? "Importando..." : "Importar Dados Padrões"}
+              {loadingTestData ? t("UploadBox.importing") : t("UploadBox.importTestData")}
             </Button>
 
             <Box sx={{ mt: 3 }}>
@@ -633,7 +629,7 @@ export default function InputFileUpload() {
                 disabled={(!selectedFile && !tempData) || uploading}
                 size="large"
               >
-                {uploading ? "Carregando..." : "Carregar Dados"}
+                {uploading ? t("UploadBox.loading") : t("UploadBox.loadData")}
               </Button>
             </Box>
           </Paper>
@@ -695,17 +691,18 @@ export default function InputFileUpload() {
               <WarningIcon />
             </Box>
             <Typography variant="h6" fontWeight="bold">
-              Substituir dados existentes?
+              {t("BackupDialog.title")}
             </Typography>
           </Box>
         </DialogTitle>
 
         <DialogContent sx={{ pb: 3 }}>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            Você está prestes a carregar novos dados. Isso irá{" "}
-            <strong>apagar e substituir</strong> todas as informações atuais do
-            sistema. Recomenda-se criar um backup antes de prosseguir.
-          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mb: 3 }}
+            dangerouslySetInnerHTML={{ __html: t.raw("BackupDialog.description") }}
+          />
 
           <Paper
             variant="outlined"
@@ -721,7 +718,7 @@ export default function InputFileUpload() {
               color="text.primary"
               sx={{ mb: 2, fontWeight: 600 }}
             >
-              Dados atuais que serão perdidos:
+              {t("BackupDialog.lostDataTitle")}
             </Typography>
             <Grid container spacing={2}>
               <Grid size={{ xs: 4 }}>
@@ -738,7 +735,7 @@ export default function InputFileUpload() {
                     {currentDocentes.length}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Docentes
+                    {t("BackupDialog.professors")}
                   </Typography>
                 </Box>
               </Grid>
@@ -756,7 +753,7 @@ export default function InputFileUpload() {
                     {currentDisciplinas.length}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Turmas
+                    {t("BackupDialog.classes")}
                   </Typography>
                 </Box>
               </Grid>
@@ -777,7 +774,7 @@ export default function InputFileUpload() {
                     }
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Atribuições
+                    {t("BackupDialog.assignments")}
                   </Typography>
                 </Box>
               </Grid>
@@ -792,7 +789,7 @@ export default function InputFileUpload() {
             sx={{ textTransform: "none", fontWeight: 500 }}
             variant="text"
           >
-            Cancelar
+            {t("BackupDialog.cancel")}
           </Button>
 
           <Box sx={{ display: "flex", gap: 1.5 }}>
@@ -802,9 +799,8 @@ export default function InputFileUpload() {
                   onClick={performUpload}
                   color="error"
                   sx={{ textTransform: "none", fontWeight: 500 }}
-                  variant="text"
                 >
-                  Substituir sem backup
+                  {t("BackupDialog.continueWithoutBackup")}
                 </Button>
                 <Button
                   onClick={createBackup}
@@ -818,7 +814,7 @@ export default function InputFileUpload() {
                     borderRadius: 2,
                   }}
                 >
-                  Fazer Backup
+                  {t("BackupDialog.backup")}
                 </Button>
               </>
             ) : (

@@ -124,6 +124,7 @@ export default function PlanilhaPage() {
       docentes,
       atribuicoes,
       filename,
+      t
     );
   };
 

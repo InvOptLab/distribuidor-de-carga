@@ -9,6 +9,7 @@ import {
   Stack,
   Link,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 interface SelectedTurmaProps {
   id: string;
@@ -57,6 +58,8 @@ const SelectedTurma = ({
     onAdd(id);
   };
 
+  const t = useTranslations("Pages.AllocationBlocks.SelectedTurma");
+
   return (
     <Card
       sx={{
@@ -103,18 +106,18 @@ const SelectedTurma = ({
             sx={{ width: "30%", textAlign: "center", justifyContent: "center" }}
           /> */}
           <Typography variant="body1" fontWeight="bold">
-            Prioridade: {prioridade}
+            {t("priority")}: {prioridade}
           </Typography>
         </Box>
 
         <Typography variant="h6">{nome}</Typography>
-        <Typography variant="h6">(Turma {turma})</Typography>
+        <Typography variant="h6">({t("class")} {turma})</Typography>
         <Typography variant="body2" color="text.secondary">
-          Curso: {curso}
+          {t("course")}: {curso}
         </Typography>
 
         <Box mt={1}>
-          <Typography variant="subtitle2">Horários:</Typography>
+          <Typography variant="subtitle2">{t("schedules")}:</Typography>
           <Stack spacing={0.5}>
             {horarios.map((horario, idx) => (
               <Chip
@@ -127,7 +130,7 @@ const SelectedTurma = ({
             {horarios.length === 0 && (
               <Chip
                 key={id}
-                label={`A definir.`}
+                label={`${t("toBeDefined")}.`}
                 size="small"
                 color="default"
               />
@@ -137,9 +140,9 @@ const SelectedTurma = ({
 
         <Box mt={1}>
           <Typography variant="body2">
-            Ementa:{" "}
+            {t("syllabus")}{" "}
             <Link href={ementa} target="_blank" rel="noopener">
-              Visualizar
+              {t("view")}
             </Link>
           </Typography>
         </Box>
@@ -153,15 +156,15 @@ const SelectedTurma = ({
         >
           {noturna && (
             <Chip
-              label="Noturna"
+              label={t("evening")}
               sx={{ backgroundColor: "#131862", color: "#ffffff" }}
               size="small"
             />
           )}
           {nivel === "g" ? (
-            <Chip label="Graduação" color="primary" size="small" />
+            <Chip label={t("undergraduate")} color="primary" size="small" />
           ) : (
-            <Chip label="Pós-graduação" color="secondary" size="small" />
+            <Chip label={t("postgraduate")} color="secondary" size="small" />
           )}
 
           {grupo && (
@@ -182,14 +185,14 @@ const SelectedTurma = ({
             gap={2}
           >
             <Button variant="contained" onClick={handleRemove} color="error">
-              Remover
+              {t("remove")}
             </Button>
           </Box>
         )}
         {!atribuida && (
           <Box mt={2}>
             <Typography variant="subtitle2" color="textPrimary" gutterBottom>
-              Docente atual:
+              {t("currentProfessor")}:
             </Typography>
             <Box
               display="flex"
@@ -221,7 +224,7 @@ const SelectedTurma = ({
             gap={2}
           >
             <Button variant="contained" onClick={handleAdd} color="info">
-              Adicionar
+              {t("add")}
             </Button>
           </Box>
         )}

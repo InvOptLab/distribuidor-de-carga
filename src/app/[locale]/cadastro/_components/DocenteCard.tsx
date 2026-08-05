@@ -21,6 +21,7 @@ import {
   CheckCircle as CheckIcon,
 } from "@mui/icons-material";
 import { Docente } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 
 interface DocenteCardProps {
   docente: Docente;
@@ -33,6 +34,7 @@ export default function DocenteCard({
   onEdit,
   onDelete,
 }: DocenteCardProps) {
+  const t = useTranslations("Pages.Cadastro.Components.DocenteCard");
   const totalFormularios = docente.formularios.size;
 
   return (
@@ -97,7 +99,7 @@ export default function DocenteCard({
                 color={docente.ativo ? "success.main" : "text.secondary"}
                 sx={{ fontWeight: 500 }}
               >
-                {docente.ativo ? "Ativo" : "Inativo"}
+                {docente.ativo ? t("active") : t("inactive")}
               </Typography>
             </Box>
           </Box>
@@ -118,7 +120,7 @@ export default function DocenteCard({
                 }}
               >
                 <Typography variant="caption" color="text.secondary">
-                  Saldo de Carga Didática
+                  {t("balance")}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -154,7 +156,7 @@ export default function DocenteCard({
             >
               <DescriptionIcon sx={{ fontSize: 16, color: "text.secondary" }} />
               <Typography variant="caption" color="text.secondary">
-                Formulários Preenchidos
+                {t("formsFilled")}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
@@ -162,7 +164,7 @@ export default function DocenteCard({
                 {totalFormularios}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {totalFormularios === 1 ? "turma" : "turmas"}
+                {totalFormularios === 1 ? t("class") : t("classes")}
               </Typography>
             </Box>
           </Box>
@@ -178,7 +180,7 @@ export default function DocenteCard({
                     color="text.secondary"
                     sx={{ display: "block", mb: 0.25 }}
                   >
-                    Preferência de Agrupamento
+                    {t("groupPreference")}
                   </Typography>
                   <Chip
                     label={docente.agrupar}
@@ -202,7 +204,7 @@ export default function DocenteCard({
           pt: 1,
         }}
       >
-        <Tooltip title="Editar docente">
+        <Tooltip title={t("editTooltip")}>
           <IconButton
             size="small"
             onClick={() => onEdit(docente)}
@@ -217,7 +219,7 @@ export default function DocenteCard({
             <EditIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Excluir docente">
+        <Tooltip title={t("deleteTooltip")}>
           <IconButton
             size="small"
             onClick={() => onDelete(docente)}

@@ -15,6 +15,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { motion } from "framer-motion";
 import { useAlertsContext } from "@/context/Alerts";
 import Constraint from "@/algoritmo/abstractions/Constraint";
+import { useTranslations } from "next-intl";
 
 export interface ConstraintInterface {
   name: string;
@@ -34,6 +35,7 @@ export default function Restricoes() {
   } = useAlgorithmContext();
 
   const { addAlerta } = useAlertsContext();
+  const t = useTranslations("ConstraintsPage");
 
   const [constraints, setConstraints] = useState<ConstraintInterface[]>(() => {
     const stateConstraints: ConstraintInterface[] = [];
@@ -150,7 +152,7 @@ export default function Restricoes() {
           {/* Condicional para exibir título somente se houver restrições */}
           {Array.from(availableConstraints.keys()).length > 0 && (
             <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-              Restrições Disponíveis
+              {t("availableConstraints")}
             </Typography>
           )}
 
@@ -179,7 +181,7 @@ export default function Restricoes() {
                     color="text.secondary"
                     sx={{ fontStyle: "italic" }}
                   >
-                    Não há restrições disponíveis para adicionar
+                    {t("noConstraintsAvailable")}
                   </Typography>
                 </Paper>
               </motion.div>
@@ -241,7 +243,7 @@ export default function Restricoes() {
           textAlign="right"
         >
           <Button variant="contained" onClick={() => saveConstraints()}>
-            Salvar
+            {t("save")}
           </Button>
         </Grid>
       </Grid>

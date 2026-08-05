@@ -5,6 +5,7 @@ import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import DownloadIcon from "@mui/icons-material/Download";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
+import { useTranslations } from "next-intl";
 
 interface ButtonGroupHeaderProps {
   onExecute: () => void;
@@ -23,6 +24,7 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
   saveAlterations,
 }) => {
   const { solucaoAtual } = useSolutionHistory();
+  const t = useTranslations("Pages.Assignment.ActionBar");
 
   return (
     <Stack
@@ -33,7 +35,7 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
       sx={{ m: 0, p: 0 }}
     >
       {/* Ação Principal: Ganha destaque visual por ser a ação primária da tela */}
-      <Tooltip title="Executar Algoritmo" arrow>
+      <Tooltip title={t("runAlgorithm")} arrow>
         <IconButton
           onClick={onExecute}
           size="small"
@@ -54,13 +56,13 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5, my: 1 }} />
 
       {/* Ações Secundárias: Minimalistas */}
-      <Tooltip title="Limpar Atribuições" arrow>
+      <Tooltip title={t("clearAllocations")} arrow>
         <IconButton onClick={onClean} size="small">
           <CleaningServicesIcon fontSize="small" />
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Fazer Download" arrow>
+      <Tooltip title={t("downloadJson")} arrow>
         <IconButton onClick={download} size="small">
           <DownloadIcon fontSize="small" />
         </IconButton>
@@ -69,8 +71,8 @@ const ButtonGroupHeader: React.FC<ButtonGroupHeaderProps> = ({
       <Tooltip
         title={
           solucaoAtual.idHistorico !== undefined
-            ? "Solução já salva"
-            : "Salvar no Histórico"
+            ? t("solutionAlreadySaved")
+            : t("saveToHistory")
         }
         arrow
       >

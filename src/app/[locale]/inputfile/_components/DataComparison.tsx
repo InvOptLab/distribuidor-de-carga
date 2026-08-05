@@ -12,12 +12,15 @@ import {
   ListItemText,
   Chip,
   Alert,
+  Paper,
+  Grid,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import SchoolIcon from "@mui/icons-material/School";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import BackupIcon from "@mui/icons-material/Backup";
+import SaveIcon from "@mui/icons-material/Save";
 import WarningIcon from "@mui/icons-material/Warning";
+import { useTranslations } from "next-intl";
 
 interface DataComparisonProps {
   currentData: {
@@ -32,80 +35,64 @@ export default function DataComparison({
   currentData,
   onCreateBackup,
 }: DataComparisonProps) {
+  const t = useTranslations("Pages.InputFile.DataComparison");
+
   return (
-    <Card elevation={3}>
+    <Paper elevation={3}>
       <CardContent>
-        <Typography
-          variant="h6"
-          gutterBottom
-          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-        >
+        <Box sx={{ display: "flex", alignItems: "center", mb: 3, gap: 1 }}>
           <WarningIcon color="warning" />
-          Dados Atuais
-        </Typography>
+          <Typography variant="h6" fontWeight="bold">
+            {t("title")}
+          </Typography>
+        </Box>
 
         <Alert severity="warning" sx={{ mb: 2, color: "text.primary" }}>
-          Você já possui dados carregados. Carregar um novo arquivo irá
-          substituí-los.
+          {t("warning")}
         </Alert>
 
-        <Typography variant="subtitle2" gutterBottom>
-          Dados atualmente carregados:
-        </Typography>
-
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <PersonIcon color="primary" />
-            </ListItemIcon>
-            <Box style={{ display: "flex", flexDirection: "column" }}>
-              <ListItemText primary="Docentes" sx={{ marginBottom: 0 }} />
-              <Chip
-                label={`${currentData.docentes} carregados`}
-                size="small"
-                color="primary"
-                variant="outlined"
-              />
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid size={{ xs: 4 }}>
+            <Box textAlign="center">
+              <Typography variant="h4" fontWeight="bold">
+                {currentData.docentes}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {t("professors")}
+              </Typography>
             </Box>
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <SchoolIcon color="secondary" />
-            </ListItemIcon>
-            <Box style={{ display: "flex", flexDirection: "column" }}>
-              <ListItemText primary="Disciplinas" sx={{ marginBottom: 0 }} />
-              <Chip
-                label={`${currentData.disciplinas} carregadas`}
-                size="small"
-                color="secondary"
-                variant="outlined"
-              />
+          </Grid>
+          <Grid size={{ xs: 4 }}>
+            <Box textAlign="center">
+              <Typography variant="h4" fontWeight="bold">
+                {currentData.disciplinas}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {t("classes")}
+              </Typography>
             </Box>
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <AssignmentIcon color="success" />
-            </ListItemIcon>
-            <Box style={{ display: "flex", flexDirection: "column" }}>
-              <ListItemText primary="Atribuições" sx={{ marginBottom: 0 }} />
-              <Chip
-                label={`${currentData.atribuicoes} realizadas`}
-                size="small"
-                color="success"
-                variant="outlined"
-              />
+          </Grid>
+          <Grid size={{ xs: 4 }}>
+            <Box textAlign="center">
+              <Typography variant="h4" fontWeight="bold">
+                {currentData.atribuicoes}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {t("assignments")}
+              </Typography>
             </Box>
-          </ListItem>
-        </List>
+          </Grid>
+        </Grid>
 
         <Box sx={{ mt: 3 }}>
           <Button
             variant="outlined"
-            startIcon={<BackupIcon />}
+            color="primary"
+            startIcon={<SaveIcon />}
             onClick={onCreateBackup}
             fullWidth
           >
-            Criar Backup dos Dados Atuais
+            {t("backup")}
           </Button>
         </Box>
 
@@ -114,10 +101,9 @@ export default function DataComparison({
           color="text.secondary"
           sx={{ mt: 2, display: "block" }}
         >
-          Recomendamos criar um backup antes de carregar novos dados para evitar
-          perda de informações.
+          {t("recommendation")}
         </Typography>
       </CardContent>
-    </Card>
+    </Paper>
   );
 }

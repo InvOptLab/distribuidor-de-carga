@@ -19,10 +19,12 @@ import { useAlertsContext } from "@/context/Alerts";
 import { IteracoesMaximas } from "@/algoritmo/communs/StopCriteria/IteracoesMaximas";
 import { IteracoesSemModificacao } from "@/algoritmo/communs/StopCriteria/IteracoesSemModificacao";
 import IteracoesSemMelhoraAvaliacao from "@/algoritmo/communs/StopCriteria/IteracoesSemMelhoraAvaliacao";
+import { useTranslations } from "next-intl";
 
 export default function StopCriteriaConfig() {
   const { stopFunctions, setStopFunctions } = useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
+  const t = useTranslations("Config.StopCriteria");
 
   const handleToggle = (key: string, currentState: boolean) => {
     setStopFunctions((prev) => {
@@ -66,13 +68,13 @@ export default function StopCriteriaConfig() {
 
   const getFieldLabel = (func: any) => {
     if (func.instance instanceof IteracoesMaximas) {
-      return "Máximo de Iterações";
+      return t("maxIterations");
     } else if (func.instance instanceof IteracoesSemModificacao) {
-      return "Iterações sem Modificação";
+      return t("iterationsNoMod");
     } else if (func.instance instanceof IteracoesSemMelhoraAvaliacao) {
-      return "Iterações sem Melhora";
+      return t("iterationsNoImp");
     }
-    return "Valor";
+    return t("value");
   };
 
   const activeCount = Array.from(stopFunctions.values()).filter(
@@ -83,20 +85,19 @@ export default function StopCriteriaConfig() {
     <Box>
       <Alert severity="info" sx={{ mb: 1 }}>
         <Typography variant="body2">
-          Os critérios de parada determinam quando o algoritmo deve encerrar a
-          busca.
+          {t("info")}
         </Typography>
       </Alert>
       <Alert severity="warning" sx={{ mb: 1 }}>
         <Typography variant="body2">
-          Pelo menos um critério deve estar ativo para evitar execução infinita.
+          {t("warning")}
         </Typography>
       </Alert>
 
       <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
-        <Typography variant="h6">Critérios Ativos:</Typography>
+        <Typography variant="h6">{t("activeCriteria")}</Typography>
         <Chip
-          label={`${activeCount} de ${stopFunctions.size}`}
+          label={t("activeCount", { active: activeCount, total: stopFunctions.size })}
           color={activeCount > 0 ? "success" : "error"}
           variant="outlined"
         />
@@ -129,7 +130,7 @@ export default function StopCriteriaConfig() {
                   </Typography>
                   <Tooltip
                     title={
-                      func.instance.description || "Sem descrição disponível"
+                      func.instance.description || t("noDescription")
                     }
                   >
                     <IconButton
@@ -137,7 +138,7 @@ export default function StopCriteriaConfig() {
                       onClick={() =>
                         addAlerta(
                           func.instance.description ||
-                            "Sem descrição disponível",
+                            t("noDescription"),
                           "info",
                           8
                         )
@@ -153,7 +154,7 @@ export default function StopCriteriaConfig() {
                   color="text.secondary"
                   sx={{ mb: 2, minHeight: 40 }}
                 >
-                  {func.instance.description || "Descrição não disponível"}
+                  {func.instance.description || t("noDescription")}
                 </Typography>
 
                 <TextField
@@ -177,7 +178,7 @@ export default function StopCriteriaConfig() {
                       disabled={func.isActive && activeCount === 1}
                     />
                   }
-                  label={func.isActive ? "Ativo" : "Inativo"}
+                  label={func.isActive ? t("active") : t("inactive")}
                 />
 
                 {func.isActive && activeCount === 1 && (
@@ -187,7 +188,7 @@ export default function StopCriteriaConfig() {
                     display="block"
                     sx={{ mt: 1 }}
                   >
-                    Pelo menos um critério deve permanecer ativo
+                    {t("minActiveWarning")}
                   </Typography>
                 )}
               </CardContent>

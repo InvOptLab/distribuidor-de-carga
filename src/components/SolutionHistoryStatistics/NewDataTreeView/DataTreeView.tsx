@@ -9,6 +9,7 @@ import { useState } from "react";
 import { FormulariosView } from "./FormulariosView";
 import { HistoricoSolucao } from "@/context/Global/utils";
 import { ArtribuicoesView } from "./ArtribuicoesView";
+import { useTranslations } from "next-intl";
 
 export interface DataTreeViewProps {
   docentes: Map<string, TreeDocente>;
@@ -25,6 +26,8 @@ export default function NewDataTreeView({
   solucao,
   setHoveredCourese,
 }: DataTreeViewProps) {
+  const t = useTranslations("Components.TreeView");
+
   const [lastClickedItem, setLastClickedItem] = useState<{
     tipo: "docente" | "disciplina" | null;
     id: string;
@@ -70,19 +73,19 @@ export default function NewDataTreeView({
   ) => {
     if (view === "formularios") {
       if (tipo === "docente") {
-        return "Escolhidas pelo docente";
+        return t("chosenByProfessor");
       } else if (tipo === "disciplina") {
-        return "Escolhida pelos docentes";
+        return t("chosenByProfessors");
       } else {
-        return "Formulários";
+        return t("forms");
       }
     } else {
       if (tipo === "docente") {
-        return "Atribuídas ao docente";
+        return t("assignedToProfessor");
       } else if (tipo === "disciplina") {
-        return "Atribuída aos docentes";
+        return t("assignedToProfessors");
       } else {
-        return "Atribuições";
+        return t("assignments");
       }
     }
   };

@@ -28,6 +28,7 @@ import {
   SearchOff as SearchOffIcon,
 } from "@mui/icons-material";
 import { Module, Chapter } from "../_types/docs";
+import { useTranslations } from "next-intl";
 
 const iconMap: Record<string, React.ReactNode> = {
   article: <ArticleIcon />,
@@ -61,6 +62,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
   handleChapterSelect,
 }) => {
   const theme = useTheme();
+  const t = useTranslations("Pages.Guia.LeftSidebar");
 
   return (
     <Box
@@ -78,7 +80,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
         <TextField
           fullWidth
           size="small"
-          placeholder="Buscar na documentação..."
+          placeholder={t("searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           slotProps={{
@@ -101,10 +103,10 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
           >
             <SearchOffIcon sx={{ fontSize: 40, mb: 1, opacity: 0.5 }} />
             <Typography variant="body2" fontWeight={500}>
-              Nenhum resultado encontrado.
+              {t("noResults")}
             </Typography>
             <Typography variant="caption">
-              Tente usar outros termos de busca.
+              {t("tryOtherTerms")}
             </Typography>
           </Box>
         )}

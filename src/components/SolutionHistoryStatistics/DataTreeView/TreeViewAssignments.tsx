@@ -4,6 +4,7 @@ import { TreeDisciplina } from "@/app/[locale]/history/_components/SolutionHisto
 import { Disciplina, HistoricoSolucao } from "@/context/Global/utils";
 import { Box, Grid, Paper, Stack, styled, Typography } from "@mui/material";
 import React from "react";
+import { useTranslations } from "next-intl";
 
 // Props do DataTreeView
 interface TreeViewAssignmentsProps {
@@ -33,6 +34,8 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
   setHoveredCourese,
   disciplinas,
 }) => {
+  const t = useTranslations("Components.TreeView");
+
   const renderAssignments = () => {
     const render = [];
 
@@ -107,9 +110,10 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
                 {docente.nome}
               </Typography>
               <Typography align="left" style={{ fontSize: "14px" }}>
-                Saldo:{" "}
-                {(docente.saldo < 0 ? "" : "+") +
-                  docente.saldo.toFixed(1).toString().replace(".", ",")}
+                {t("balance", {
+                  saldo: (docente.saldo < 0 ? "" : "+") +
+                    docente.saldo.toFixed(1).toString().replace(".", ",")
+                })}
               </Typography>
             </StyledStack>
             <Box
@@ -159,7 +163,7 @@ const TreeViewAssignments: React.FC<TreeViewAssignmentsProps> = ({
             key={"TreeViewAssignments_no_info_grid"}
           >
             <Typography variant="h6" color="error" align="center">
-              Nenhuma informação selecionada!
+              {t("noInfoSelected")}
             </Typography>
           </Grid>
         )}

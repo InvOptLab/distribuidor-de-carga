@@ -498,7 +498,29 @@
         "unlock": "Unlock",
         "lock": "Lock",
         "unlockItem": "Unlock item",
-        "lockItem": "Lock item"
+        "lockItem": "Lock item",
+        "totalForms": "Total Forms: {total}",
+        "locked": "Locked",
+        "remove": "Remove",
+        "add": "Add"
+      },
+      "SelectedTurma": {
+        "priority": "Priority",
+        "class": "Class",
+        "course": "Course",
+        "schedules": "Schedules",
+        "toBeDefined": "To be defined",
+        "syllabus": "Syllabus",
+        "view": "View",
+        "evening": "Evening",
+        "undergraduate": "Undergraduate",
+        "postgraduate": "Postgraduate",
+        "remove": "Remove",
+        "currentProfessor": "Current professor",
+        "add": "Add"
+      },
+      "TurmaItem": {
+        "noSchedule": "No schedule"
       }
     },
     "Select": {
@@ -596,6 +618,14 @@
         "searchClassByNameCodeId": "Search class by name, code, or ID",
         "addProfessorFilter": "Add Professor Filter",
         "name": "Name",
+        "WeekDays": {
+          "mon": "Mon.",
+          "tue": "Tue.",
+          "wed": "Wed.",
+          "thu": "Thu.",
+          "fri": "Fri.",
+          "sat": "Sat."
+        },
         "active": "Active",
         "comment": "Comment",
         "withoutAssignment": "Without assignment",
@@ -714,6 +744,9 @@
         "cancel": "Cancel",
         "apply": "Apply"
       },
+      "TimetableGrid": {
+        "professors": "Professors"
+      },
       "ActionBar": {
         "allocationGrid": "Assignment Grid",
         "filters": "Filters",
@@ -726,6 +759,581 @@
         "solutionAlreadySaved": "Solution already saved in history",
         "saveToHistory": "Save to history",
         "save": "Save"
+      }
+    },
+    "Cadastro": {
+      "title": "Registration Management",
+      "subtitle": "Intuitively manage professors and classes/subjects",
+      "selectType": "Select Management Type",
+      "selectTypeDesc": "Choose between managing professors or classes/subjects",
+      "professorCount": "{count} professor",
+      "professorsCount": "{count} professors",
+      "classCount": "{count} class",
+      "classesCount": "{count} classes",
+      "professorsTab": "Professors",
+      "professorsTabTooltip": "View and manage professors",
+      "classesTab": "Classes",
+      "classesTabTooltip": "View and manage classes/subjects",
+      "professorsHeader": "Professors ({count})",
+      "professorsSubheader": "Click on a professor to edit or add a new one",
+      "classesHeader": "Classes/Subjects ({count})",
+      "classesSubheader": "Click on a class to edit or add a new one",
+      "noProfessors": "No professors registered",
+      "noProfessorsDesc": "Click the button below to create a new one",
+      "noClasses": "No classes registered",
+      "noClassesDesc": "Click the button below to create a new one",
+      "confirmDelete": "Confirm Deletion",
+      "confirmDeleteProfessor": "You are about to delete the professor:",
+      "confirmDeleteClass": "You are about to delete the class:",
+      "irreversibleProfessor": "This action is irreversible. All associated forms will be removed.",
+      "irreversibleClass": "This action is irreversible. All assignments and references will be removed.",
+      "cancel": "Cancel",
+      "deletePermanently": "Delete Permanently",
+      "editingProfessor": "Editing professor: {name}",
+      "editingClass": "Editing class: {name}",
+      "professorDeleted": "Professor \\\"{name}\\\" deleted successfully!",
+      "classDeleted": "Class \\\"{name}\\\" deleted successfully!",
+      "Components": {
+        "AddCard": {
+          "addNew": "Add New",
+          "newProfessor": "Create new professor",
+          "newClass": "Create new class"
+        },
+        "DocenteCard": {
+          "active": "Active",
+          "inactive": "Inactive",
+          "balance": "Teaching Load Balance",
+          "formsFilled": "Forms Filled",
+          "class": "class",
+          "classes": "classes",
+          "groupPreference": "Grouping Preference",
+          "editTooltip": "Edit professor",
+          "deleteTooltip": "Delete professor"
+        },
+        "TurmaCard": {
+          "class": "Class {number}",
+          "courses": "Courses",
+          "level": "Level",
+          "workload": "Workload",
+          "hoursPerWeek": "{hours}h/week",
+          "schedules": "Schedules",
+          "active": "Active",
+          "inactive": "Inactive",
+          "nightClass": "Night Class",
+          "english": "English",
+          "more": "+{count} more",
+          "editTooltip": "Edit class",
+          "deleteTooltip": "Delete class"
+        },
+        "IdentifierChangeDialog": {
+          "title": "Identifier Changed",
+          "name": "name",
+          "id": "ID",
+          "description": "The unique identifier ({label}) was changed:",
+          "from": "From:",
+          "to": "To:",
+          "warningText": "This will result in the creation of a new record. Choose one of the options below:",
+          "cancel": "Cancel",
+          "createNew": "Create New",
+          "deleteOld": "Delete Old"
+        },
+        "DocenteForm": {
+          "alerts": {
+            "selectClass": "Select a class",
+            "positiveIntegerPriority": "Priority must be a positive integer",
+            "integerPriority": "Priority must be an integer",
+            "uniquePriority": "Priority {priority} has already been assigned. Each priority must be unique.",
+            "classAlreadyAdded": "This class has already been added to the forms",
+            "classNotFound": "Class not found",
+            "formAdded": "Form added: {name} with priority {priority}",
+            "formRemoved": "Form removed: {name}",
+            "nameRequired": "Professor name is required",
+            "nameExists": "A professor with this name already exists",
+            "professorUpdated": "Professor \\\"{name}\\\" updated successfully!",
+            "professorReplaced": "Professor \\\"{oldName}\\\" deleted and \\\"{newName}\\\" created successfully!",
+            "professorCreated": "Professor \\\"{name}\\\" created successfully!",
+            "formCleared": "Form cleared"
+          },
+          "header": {
+            "editProfessor": "Edit Professor",
+            "newProfessor": "New Professor",
+            "subtitle": "Fill in the details and configure class preferences",
+            "closeForm": "Close form"
+          },
+          "personalData": {
+            "title": "Personal Data",
+            "nameTooltip": "Professor's full name (unique identifier)",
+            "nameLabel": "Name",
+            "namePlaceholder": "Ex: John Doe",
+            "balanceTooltip": "Available hours/credits balance (optional)",
+            "balanceLabel": "Balance",
+            "balancePlaceholder": "Ex: 40",
+            "commentTooltip": "Comments or observations about the professor (optional)",
+            "commentLabel": "Comment",
+            "commentPlaceholder": "Ex: Preference for morning classes",
+            "groupingTooltip": "Class grouping preference (optional)",
+            "groupingLabel": "Grouping",
+            "groupingOptions": {
+              "indifferent": "Indifferent",
+              "group": "Group",
+              "spread": "Spread"
+            },
+            "activeTooltip": "Inactive professors will not be considered in allocations",
+            "activeLabel": "Active Professor"
+          },
+          "classAllocation": {
+            "title": "Class Allocation",
+            "subtitle": "Set the professor's preference priorities",
+            "infoTooltip": "The lower the number, the higher the priority. Each priority must be unique.",
+            "selectClassTooltip": "Select the class/subject of interest",
+            "classLabel": "Class/Subject",
+            "noClassAvailable": "No class available",
+            "priorityTooltip": "Professor's priority (positive integer, unique). Already used: {used}",
+            "none": "none",
+            "priorityLabel": "Priority",
+            "priorityPlaceholder": "Ex: 1",
+            "priorityUsed": "Priority already used",
+            "addTooltip": "Add class to the priority list",
+            "addButton": "Add",
+            "noClassesWarning": "No classes registered. Register classes first to be able to add forms.",
+            "addedClasses": "Added classes ({count}):",
+            "noClassesAdded": "No classes added yet",
+            "removeTooltip": "Remove this class"
+          },
+          "actions": {
+            "clear": "Clear",
+            "updateTooltip": "Save professor changes",
+            "createTooltip": "Save professor with all filled information",
+            "updateButton": "Update Professor",
+            "createButton": "Create Professor"
+          }
+        },
+        "TurmaForm": {
+          "alerts": {
+            "invalidTime": "Start time must be before end time",
+            "scheduleExists": "This schedule has already been added",
+            "scheduleAdded": "Schedule added: {day} {start}-{end}",
+            "scheduleRemoved": "Schedule removed: {day} {start}-{end}",
+            "codeRequired": "Class code is required",
+            "nameRequired": "Class name is required",
+            "scheduleRequired": "Add at least one schedule for the class",
+            "classExists": "Class {number} already exists for subject {code}",
+            "updatedWithConflicts": "Class updated with {count} schedule conflict(s): {conflicts}",
+            "createdWithConflicts": "Class created with {count} schedule conflict(s): {conflicts}",
+            "classReplaced": "Class \\\"{id}\\\" deleted and new class \\\"{name} - Class {number}\\\" created successfully!",
+            "classUpdated": "Class \\\"{name} - Class {number}\\\" updated successfully!",
+            "classCreated": "Class \\\"{name} - Class {number}\\\" created successfully!",
+            "formCleared": "Form cleared"
+          },
+          "header": {
+            "editClass": "Edit Class",
+            "newClass": "New Class",
+            "subtitle": "Fill in the details and configure the schedules",
+            "closeForm": "Close form"
+          },
+          "classInfo": {
+            "title": "Subject Information",
+            "idTooltip": "Unique identifier for the class. Changing it will create a new record.",
+            "idLabel": "ID",
+            "codeTooltip": "Unique code for the subject (ex: MAT101)",
+            "codeLabel": "Code",
+            "codePlaceholder": "Ex: MAT101",
+            "numberTooltip": "Class number for this subject",
+            "numberLabel": "Class",
+            "nameTooltip": "Full subject name",
+            "nameLabel": "Subject Name",
+            "namePlaceholder": "Ex: Calculus I",
+            "coursesTooltip": "Courses offering this subject",
+            "coursesLabel": "Courses",
+            "coursesPlaceholder": "Ex: Engineering, Computer Science",
+            "levelTooltip": "Subject level (Undergraduate, Graduate, etc.)",
+            "levelLabel": "Level",
+            "levelPlaceholder": "Ex: Undergraduate",
+            "workloadTooltip": "Weekly workload for the subject",
+            "workloadLabel": "Workload",
+            "workloadPlaceholder": "Ex: 4",
+            "groupTooltip": "Group for related subjects",
+            "groupLabel": "Group",
+            "groupPlaceholder": "Ex: Basic Math",
+            "syllabusTooltip": "Syllabus or description (optional)",
+            "syllabusLabel": "Syllabus",
+            "syllabusPlaceholder": "Content description...",
+            "nightTooltip": "Check if the subject is offered at night",
+            "nightLabel": "Night Class",
+            "englishTooltip": "Check if the subject is taught in English",
+            "englishLabel": "In English",
+            "activeTooltip": "Inactive subjects will not be considered in allocations",
+            "activeLabel": "Active"
+          },
+          "schedules": {
+            "title": "Class Schedules",
+            "subtitle": "Conflicts will be automatically detected",
+            "infoTooltip": "Add all days and times when classes will be held.",
+            "dayLabel": "Day",
+            "startTooltip": "Class start time",
+            "startLabel": "Start",
+            "endTooltip": "Class end time",
+            "endLabel": "End",
+            "addTooltip": "Add schedule to list",
+            "addButton": "Add",
+            "addedCount": "Added schedules ({count}):",
+            "noSchedules": "No schedules added yet"
+          },
+          "conflicts": {
+            "title": "Conflicts Preview",
+            "tempName": "New Class",
+            "noConflicts": "No schedule conflicts detected with existing classes.",
+            "detected": "{count} conflict(s) detected: {conflicts}"
+          },
+          "actions": {
+            "clear": "Clear",
+            "updateTooltip": "Save class changes",
+            "createTooltip": "Save class with all filled information",
+            "updateButton": "Update Class",
+            "createButton": "Create Class"
+          }
+        }
+      }
+    },
+    "Guia": {
+      "title": "Documentation",
+      "sectionsCount": "{count} sections",
+      "LeftSidebar": {
+        "searchPlaceholder": "Search documentation...",
+        "noResults": "No results found.",
+        "tryOtherTerms": "Try using other search terms."
+      },
+      "RightSidebar": {
+        "onThisPage": "On this page"
+      },
+      "ContentRenderer": {
+        "next": "Next",
+        "back": "Back"
+      }
+    },
+    "InputFile": {
+      "Alerts": {
+        "testDataSuccess": "Test data imported successfully!",
+        "testDataError": "Error loading test data. Check if the file exists.",
+        "jsonParseError": "Error parsing JSON file.",
+        "selectJsonWarning": "Please select a JSON file.",
+        "backupSuccess": "Backup created successfully!",
+        "uploadSuccess": "{fileName} loaded successfully.",
+        "uploadError": "Error processing data.\\n{error}"
+      },
+      "Progress": {
+        "stepDocentes": "Applying professors...",
+        "stepDisciplinas": "Applying classes...",
+        "stepAtribuicoes": "Applying assignments...",
+        "stepFormularios": "Applying forms...",
+        "stepTravas": "Applying locks...",
+        "stepSolucao": "Processing solution...",
+        "stepFinalizando": "Finishing..."
+      },
+      "UploadBox": {
+        "title": "File Upload",
+        "subtitle": "Drag and drop a JSON file here or click to select",
+        "chooseFile": "Choose File",
+        "or": "or",
+        "testDataSubtitle": "Use test data to try out the platform",
+        "importing": "Importing...",
+        "importTestData": "Import Test Data",
+        "loading": "Loading...",
+        "loadData": "Load Data"
+      },
+      "BackupDialog": {
+        "title": "Replace existing data?",
+        "description": "You are about to load new data. This will <strong>delete and replace</strong> all current system information. It is recommended to create a backup before proceeding.",
+        "lostDataTitle": "Current data that will be lost:",
+        "professors": "Professors",
+        "classes": "Classes",
+        "assignments": "Assignments",
+        "cancel": "Cancel",
+        "backup": "Backup",
+        "continueWithoutBackup": "Continue without Backup"
+      },
+      "FilePreview": {
+        "title": "Data Preview",
+        "version": "Version: {version}",
+        "professors": "Professors",
+        "activeProfessors": "{active} active, {inactive} inactive",
+        "classes": "Classes",
+        "activeClasses": "{active} active, {inactive} inactive",
+        "assignments": "Assignments",
+        "withProfessors": "{with} with professors, {without} without",
+        "quality": "Quality Metrics",
+        "professorsNoForm": "{count} professors without form",
+        "classesNoInterested": "{count} classes without interested",
+        "scheduleConflicts": "{count} schedule conflicts",
+        "solutionFound": "Pre-calculated Solution Included"
+      },
+      "DataComparison": {
+        "title": "Current Session Data",
+        "professors": "Professors",
+        "classes": "Classes",
+        "assignments": "Assignments",
+        "backup": "Save Backup",
+        "warning": "You already have data loaded. Loading a new file will overwrite it.",
+        "recommendation": "We recommend creating a backup before loading new data to avoid information loss."
+      },
+      "UploadProgress": {
+        "title": "Loading Data..."
+      }
+    },
+    "Config": {
+      "page": {
+        "title": "Algorithm Settings",
+        "description": "Select the algorithm and adjust its parameters to optimize results",
+        "selectAlgorithm": "Select Algorithm",
+        "configSections": "Configuration sections:"
+      },
+      "Algorithms": {
+        "tabu-search": {
+          "name": "Tabu Search",
+          "description": "Local search algorithm with adaptive memory"
+        },
+        "integer-solver": {
+          "name": "Integer Solver",
+          "description": "Integer linear programming solver"
+        }
+      },
+      "Sections": {
+        "tabu-list": {
+          "title": "Tabu List",
+          "description": "Configure the type and size of the tabu list"
+        },
+        "constraints": {
+          "title": "Constraints",
+          "description": "Manage hard and soft constraints of the algorithm"
+        },
+        "objectiveCost": {
+          "title": "Objective Function Costs",
+          "description": "Configure the costs considered in the objective function"
+        },
+        "neighborhood": {
+          "title": "Neighborhood Generation",
+          "description": "Configure neighborhood generation functions"
+        },
+        "stop-criteria": {
+          "title": "Stop Criteria",
+          "description": "Define when the algorithm should stop"
+        },
+        "aspiration": {
+          "title": "Aspiration Criteria",
+          "description": "Configure criteria to accept tabu solutions"
+        }
+      },
+      "TabuList": {
+        "title": "Tabu List Configuration",
+        "active": "Active",
+        "info": "The tabu list maintains a history of recent solutions or movements to avoid cycles in the search algorithm.",
+        "typeLabel": "Tabu List Type",
+        "typeSolution": "Solutions",
+        "typeSolutionDesc": "Stores recent complete solutions",
+        "typeMovement": "Movements",
+        "typeMovementDesc": "Stores recent specific movements (add/drop)",
+        "paramsSolution": "Parameters for Solutions List",
+        "sizeLabel": "Tabu List Size",
+        "sizeHelper": "Maximum number of solutions kept in the tabu list.",
+        "solutionAlertTitle": "Solution Type:",
+        "solutionAlertDesc": "Uses the value of {code} to control how many complete solutions stay in the tabu list.",
+        "paramsMovement": "Parameters for Movements List",
+        "addTenureLabel": "Add Tenure",
+        "addTenureHelper": "Iterations an addition movement remains tabu.",
+        "dropTenureLabel": "Drop Tenure",
+        "dropTenureHelper": "Iterations a drop movement remains tabu.",
+        "movementAlertTitle": "Movement Type:",
+        "movementAlertDesc": "Uses {codeAdd} and {codeDrop} to control for how many iterations each movement type remains tabu.",
+        "currentConfig": "Current Configuration:",
+        "typeConfig": "Type: {type} |",
+        "sizeConfig": " Size: {size}",
+        "tenureConfig": " Add: {add}, Drop: {drop}"
+      },
+      "Constraints": {
+        "activeStats": "{active}/{total} active",
+        "hardStats": "{hard} hard",
+        "softStats": "{soft} soft",
+        "statsLabel": "📊 Statistics:",
+        "configInfoTitle": "💡 Constraints Configuration",
+        "configInfoHard": "<strong>Hard:</strong> Must always be satisfied (violations are critical)",
+        "configInfoSoft": "<strong>Soft:</strong> Preferable but not mandatory (violations have configurable penalty)",
+        "availableTitle": "📋 Available Constraints to Add",
+        "activeTitle": "✅ Active Constraints",
+        "noActiveTitle": "🚫 No active constraints",
+        "noActiveDesc": "Add constraints above to configure the algorithm",
+        "saveAll": "Save All Configurations",
+        "removedSuccess": "Constraint \"{name}\" removed successfully!",
+        "addedSuccess": "Constraint \"{name}\" added successfully!",
+        "savedSuccess": "Constraints configuration saved successfully!"
+      },
+      "Neighborhood": {
+        "info": "Neighborhood functions define how new solutions are generated from the current solution.",
+        "warning": "At least one function must be active.",
+        "activeFunctions": "Active Functions:",
+        "activeCount": "{active} of {total}",
+        "noDescription": "No description available",
+        "active": "Active",
+        "inactive": "Inactive",
+        "minActiveWarning": "At least one function must remain active"
+      },
+      "StopCriteria": {
+        "info": "Stop criteria determine when the algorithm should end the search.",
+        "warning": "At least one criterion must be active to prevent infinite execution.",
+        "activeCriteria": "Active Criteria:",
+        "activeCount": "{active} of {total}",
+        "maxIterations": "Maximum Iterations",
+        "iterationsNoMod": "Iterations without Modification",
+        "iterationsNoImp": "Iterations without Improvement",
+        "value": "Value",
+        "minActiveWarning": "At least one criterion must remain active",
+        "noDescription": "No description available",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "Aspiration": {
+        "info": "Aspiration criteria allow accepting tabu solutions in special situations, such as when they represent a significant improvement or meet specific conditions.",
+        "activeCriteria": "Active Criteria:",
+        "activeCount": "{active} of {total}",
+        "iterationsAccept": "Iterations for Acceptance",
+        "iterationsAcceptHelper": "Number of iterations required with the same objective",
+        "noDescription": "No description available",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "Objective": {
+        "info": "Objective function components determine how the quality of solutions will be evaluated.",
+        "warning": "At least one component must be active for the algorithm to work correctly.",
+        "activeComponents": "Active Components:",
+        "activeCount": "{active} of {total}",
+        "noDescription": "No description available",
+        "active": "Active",
+        "inactive": "Inactive",
+        "default": "Default",
+        "custom": "Custom",
+        "multiplier": "Multiplier",
+        "multiplierHelper": "Weight of the component in the objective function",
+        "configTableBtn": "Configure Table",
+        "configTableTooltip": "Configure multipliers table by priority",
+        "useDefaultBtn": "Use Default",
+        "useDefaultTooltip": "Use default calculation: 2^({maior} - p)",
+        "minActiveWarning": "At least one component must remain active",
+        "usingExpCalc": "Using exponential calculation: 2^({maior} - priority)",
+        "dialogTitle": "Configure Multipliers by Priority",
+        "dialogInfo": "Configure multipliers for each priority level (1 to {maior}). Higher values give more weight to that priority in the objective function.",
+        "dialogWarningTitle": "Default Calculation:",
+        "dialogWarningExp": "2^({maior} - priority)",
+        "dialogWarningExample": "Example: For priority 1 = 2^({maior} - 1) = {valor}",
+        "colPriority": "Priority",
+        "colRange": "Range",
+        "colMultiplier": "Multiplier",
+        "colDefault": "Default",
+        "btnCancel": "Cancel",
+        "btnSave": "Save Configuration",
+        "snackbarSuccess": "Multipliers table saved successfully!",
+        "defaultApplied": "Default configuration applied for {name}. Exponential calculation 2^({maior} - p) will be used",
+        "minActiveAlert": "At least one objective function component must remain active",
+        "priorityHigh": "High",
+        "priorityMedium": "Medium",
+        "priorityLow": "Low"
+      }
+    },
+    "Spreadsheet": {
+      "classesSpreadsheet": "Classes Spreadsheet",
+      "exportExcel": "Export to Excel",
+      "clearFilters": "Clear Filters",
+      "manageColumns": "Manage Columns",
+      "displayingCount": "Displaying {visible} of {total} classes",
+      "filtrado": " (filtered)",
+      "schedule": "Schedule {value}",
+      "day_SEG": "Mon",
+      "day_TER": "Tue",
+      "day_QUA": "Wed",
+      "day_QUI": "Thu",
+      "day_SEX": "Fri",
+      "day_SAB": "Sat",
+      "day_DOM": "Sun",
+      "yes": "Yes",
+      "no": "No",
+      "Columns": {
+        "code": "Code",
+        "class": "Class",
+        "name": "Name",
+        "professors": "Professors",
+        "courses": "Courses",
+        "level": "Level",
+        "evening": "Evening",
+        "english": "English",
+        "active": "Active",
+        "group": "Group",
+        "workload": "Workload",
+        "schedule": "Schedule {value}"
+      }
+    },
+    "Statistics": {
+      "chooseSolution": "Choose a solution for analysis",
+      "solution": "Solution",
+      "noSolutionFound": "No solution found!",
+      "tabs": {
+        "solutionDetails": "Solution Details",
+        "workloadAnalysis": "Workload Analysis"
+      },
+      "SingleSolutionWorkloadChart": {
+        "totalProfessors": "Total Professors",
+        "withAssignments": "With Assignments",
+        "avgWorkload": "Avg Workload",
+        "withoutAssignments": "Without Assignments",
+        "maxWorkload": "Max Workload:",
+        "minWorkload": "Min Workload (with assignments):",
+        "stdDeviation": "Standard Deviation:",
+        "noDataFound": "No workload data found",
+        "colorLegend": "Color Legend by Workload Range:",
+        "professorDetails": "Professor Details by Workload Range",
+        "distributionAnalysis": "Workload Distribution Analysis:"
+      },
+      "SolutionHistoryDetails": {
+        "notFound": "Solution not found!",
+        "details": "Solution Details",
+        "algorithm": "Algorithm Used:",
+        "datetime": "Date and Time:",
+        "insertion": "Insertion:",
+        "interrupted": "Interrupted:",
+        "evaluation": "Evaluation:",
+        "executionTime": "Execution Time:",
+        "iterations": "Iterations:",
+        "configurations": "Configurations",
+        "globalParameters": "Global Parameters",
+        "tabuListSize": "Tabu List Size",
+        "constraints": "Constraints",
+        "neighborhoodGeneration": "Neighborhood Generation",
+        "interruption": "Interruption",
+        "aspirationCriteria": "Aspiration Criteria",
+        "charts": "Charts",
+        "histogramPriorityTitle": "Histogram: Number of Assignments by Priority",
+        "noPriorityData": "Priority data not available for this solution.",
+        "evaluationChartTitle": "Chart: Evaluation by Iteration",
+        "noEvaluationData": "Evaluation by iteration data not available for this solution.",
+        "timeChartTitle": "Chart: Time (ms) by Iteration",
+        "noTimeData": "Time by iteration data not available for this solution.",
+        "histogramConstraintsTitle": "Histogram: Constraint Occurrences",
+        "noConstraintsData": "Constraint occurrence data not available for this solution."
+      }
+    },
+    "History": {
+      "columns": {
+        "identifier": "Identifier",
+        "evaluation": "Evaluation",
+        "insertion": "Insertion",
+        "actions": "Actions"
+      },
+      "SolutionHistoryRow": {
+        "details": "Details",
+        "restore": "Restore this solution",
+        "delete": "Delete this solution"
+      },
+      "Alerts": {
+        "removed": "The solution was removed from history!",
+        "applied": "Solution {datetime} has been applied!",
+        "downloaded": "Solution {datetime} has been downloaded!"
       }
     }
   },
@@ -855,6 +1463,7 @@
     "notSupported": "This constraint does not implement any type.",
     "onlySoftAvailable": "Only soft mode available.",
     "onlyHardAvailable": "Only hard mode available.",
+    "penalty": "Penalty",
     "bothAvailable": "Both modes available.",
     "penaltyHelperText": "Penalty weight when violated.",
     "enterPenalty": "Enter penalty",
@@ -897,6 +1506,11 @@
     "apply": "Apply",
     "linearProgressLabel": "Assignments: {current} de {total}"
   },
+  "ConstraintsPage": {
+    "availableConstraints": "Available Constraints",
+    "noConstraintsAvailable": "No constraints available to add",
+    "save": "Save"
+  },
   "Spreadsheet": {
     "DocenteSelectionDialog": {
       "selectedCount": "Selected professors: {count}",
@@ -927,30 +1541,65 @@
     "close": "Close"
   },
   "Components": {
+    "TreeView": {
+      "professorsCount": "Professors ({count})",
+      "classesCount": "Classes ({count})",
+      "professors": "Professors",
+      "classes": "Classes",
+      "balance": "Balance: ",
+      "noInfoSelected": "No information selected!",
+      "chosenByProfessor": "Chosen by the professor",
+      "chosenByProfessors": "Chosen by the professors",
+      "forms": "Forms",
+      "assignedToProfessor": "Assigned to the professor",
+      "assignedToProfessors": "Assigned to the professors",
+      "assignments": "Assignments"
+    },
+    "PlanilhaTable": {
+      "filter": "Filter"
+    },
+    "LineChartsSelector": {
+      "evaluation": "Evaluation",
+      "time": "Time",
+      "noInfoSelected": "No information selected!",
+      "iterations": "Iterations",
+      "timeMs": "Time (ms)"
+    },
+    "ConstraintsBarCharts": {
+      "quantity": "Quantity"
+    },
+    "StatusPieChart": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "locked": "Locked"
+    },
+    "AnimatedLogo": {
+      "alt": "Workload Distributor Logo."
+    },
     "ClearStorageModal": {
-      "title": "Previous Session Found",
-      "description": "We detected that you have data from a previous planning session saved in your browser. Would you like to continue where you left off or clear everything to start a new project from scratch?",
-      "savedDataInfo": "{count, plural, =1 {1 data category found} other {# data categories found}}",
-      "continueButton": "Continue Planning",
-      "clearButton": "Start Fresh",
-      "clearingButton": "Clearing data...",
-      "closeAriaLabel": "Close modal",
-      "continueAriaDescription": "Continues with the previously saved data without making changes",
-      "clearAriaDescription": "Removes all saved data and reloads the page to start a new planning session"
+      "title": "Clear Storage",
+      "closeAriaLabel": "Close",
+      "description": "Are you sure you want to clear your current session data? All assignments will be lost.",
+      "savedDataInfo": "{count} solutions are saved in your history and will not be deleted.",
+      "continueButton": "Continue without clearing",
+      "continueAriaDescription": "Close this modal and keep the current data",
+      "clearButton": "Clear Data",
+      "clearingButton": "Clearing...",
+      "clearAriaDescription": "Clear all current session data permanently"
     },
     "NoDataFound": {
       "noDataFound": "No data found",
-      "description": "It appears you haven't yet uploaded the necessary data to complete the assignment. Import the teachers and classes to begin.",
+      "description": "It looks like you haven't loaded any data into the system yet.",
       "loadData": "Load Data"
     },
     "OnboardingDialog": {
-      "title": "Welcome to the Workload Distributor!",
-      "description": "We developed this tool to automate and optimize the allocation of courses and faculty.",
-      "question": "How would you like to start?",
-      "startTourBtn": "See the Quick Guide",
-      "loadDataBtn": "Load Data",
-      "skipBtn": "Skip introduction for now",
-      "dontShowAgain": "Do not show this message again"
+      "title": "Welcome to Workload Distributor!",
+      "description": "We noticed this is your first time here. Would you like to take a quick tour to understand how the system works?",
+      "question": "What would you like to do?",
+      "startTourBtn": "Start Tour",
+      "loadDataBtn": "Load my Data",
+      "skipBtn": "Skip",
+      "dontShowAgain": "Don't show this again"
     }
   }
 }

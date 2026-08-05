@@ -3,6 +3,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import RestoreIcon from "@mui/icons-material/Restore";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
+import { useTranslations } from "next-intl";
 
 interface SolutionHistoryButtonGroupProps {
   id: string;
@@ -15,11 +16,12 @@ const SolutionHistoryButtonGroup: React.FC<SolutionHistoryButtonGroupProps> = ({
   id, remove, restore, download
 }) => {
   const {solucaoAtual} = useSolutionHistory()
+  const t = useTranslations("Pages.History.SolutionHistoryRow");
 
   return (
     <ButtonGroup key={`buttonGroup_${id}`}>
             <Tooltip
-        title="Restaurar"
+        title={t("restore")}
         slotProps={{
           popper: {
             modifiers: [
@@ -42,7 +44,7 @@ const SolutionHistoryButtonGroup: React.FC<SolutionHistoryButtonGroupProps> = ({
       </Tooltip>
       
       <Tooltip
-        title="Remover"
+        title={t("delete")}
         slotProps={{
           popper: {
             modifiers: [

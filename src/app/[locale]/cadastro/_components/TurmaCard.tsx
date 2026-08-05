@@ -19,6 +19,7 @@ import {
   AccessTime as TimeIcon,
 } from "@mui/icons-material";
 import { Disciplina } from "@/algoritmo/communs/interfaces/interfaces";
+import { useTranslations } from "next-intl";
 
 interface TurmaCardProps {
   turma: Disciplina;
@@ -27,6 +28,7 @@ interface TurmaCardProps {
 }
 
 export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
+  const t = useTranslations("Pages.Cadastro.Components.TurmaCard");
   return (
     <Card
       sx={{
@@ -72,7 +74,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
               {turma.nome}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {turma.codigo} - Turma {turma.turma}
+              {turma.codigo} - {t("class", { number: turma.turma })}
             </Typography>
           </Box>
         </Box>
@@ -88,7 +90,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
                 color="text.secondary"
                 sx={{ display: "block", mb: 0.25 }}
               >
-                Cursos
+                {t("courses")}
               </Typography>
               <Typography variant="body2" fontWeight={500}>
                 {turma.cursos}
@@ -103,7 +105,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
                 color="text.secondary"
                 sx={{ display: "block", mb: 0.25 }}
               >
-                Nível
+                {t("level")}
               </Typography>
               <Typography variant="body2" fontWeight={500}>
                 {turma.nivel}
@@ -118,10 +120,10 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
                 color="text.secondary"
                 sx={{ display: "block", mb: 0.25 }}
               >
-                Carga Horária
+                {t("workload")}
               </Typography>
               <Typography variant="body2" fontWeight={500}>
-                {turma.carga}h/semana
+                {t("hoursPerWeek", { hours: turma.carga })}
               </Typography>
             </Box>
           )}
@@ -139,7 +141,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
               >
                 <TimeIcon sx={{ fontSize: 14, color: "text.secondary" }} />
                 <Typography variant="caption" color="text.secondary">
-                  Horários
+                  {t("schedules")}
                 </Typography>
               </Box>
               <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
@@ -154,7 +156,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
                 ))}
                 {turma.horarios.length > 2 && (
                   <Chip
-                    label={`+${turma.horarios.length - 2} mais`}
+                    label={t("more", { count: turma.horarios.length - 2 })}
                     size="small"
                     variant="filled"
                     sx={{ fontSize: "0.7rem" }}
@@ -167,7 +169,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
           {/* Status */}
           <Box sx={{ display: "flex", gap: 1, alignItems: "center", mt: 1 }}>
             <Chip
-              label={turma.ativo ? "Ativa" : "Inativa"}
+              label={turma.ativo ? t("active") : t("inactive")}
               size="small"
               variant={turma.ativo ? "filled" : "outlined"}
               color={turma.ativo ? "success" : "default"}
@@ -175,7 +177,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
             />
             {turma.noturna && (
               <Chip
-                label="Noturna"
+                label={t("nightClass")}
                 size="small"
                 variant="outlined"
                 sx={{ fontWeight: 500 }}
@@ -183,7 +185,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
             )}
             {turma.ingles && (
               <Chip
-                label="English"
+                label={t("english")}
                 size="small"
                 variant="outlined"
                 sx={{ fontWeight: 500 }}
@@ -202,7 +204,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
           pt: 1,
         }}
       >
-        <Tooltip title="Editar turma">
+        <Tooltip title={t("editTooltip")}>
           <IconButton
             size="small"
             onClick={() => onEdit(turma)}
@@ -217,7 +219,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
             <EditIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Excluir turma">
+        <Tooltip title={t("deleteTooltip")}>
           <IconButton
             size="small"
             onClick={() => onDelete(turma)}

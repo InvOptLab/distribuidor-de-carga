@@ -30,6 +30,7 @@ import { useGlobalContext } from "@/context/Global";
 import { useAlertsContext } from "@/context/Alerts";
 import { disciplinasConflitam } from "@/context/Global/utils";
 import IdentifierChangeDialog from "./IdentifierChangeDialog";
+import { useTranslations } from "next-intl";
 
 const DIAS_SEMANA: Horario["dia"][] = [
   "Seg.",
@@ -54,6 +55,7 @@ export default function TurmaForm({
   const { disciplinas, setDisciplinas, atribuicoes, setAtribuicoes } =
     useGlobalContext();
   const { addAlerta } = useAlertsContext();
+  const t = useTranslations("Pages.Cadastro.Components.TurmaForm");
 
   const [id, setId] = useState("");
   const [codigo, setCodigo] = useState("");
@@ -119,10 +121,7 @@ export default function TurmaForm({
 
   const handleAddHorario = () => {
     if (novoInicio >= novoFim) {
-      addAlerta(
-        "O horário de início deve ser anterior ao horário de fim",
-        "error",
-      );
+      addAlerta(t("alerts.invalidTime"), "error");
       return;
     }
 
@@ -130,7 +129,7 @@ export default function TurmaForm({
       (h) => h.dia === novoDia && h.inicio === novoInicio && h.fim === novoFim,
     );
     if (horarioExiste) {
-      addAlerta("Este horário já foi adicionado", "warning");
+      addAlerta(t("alerts.scheduleExists"), "warning");
       return;
     }
 
@@ -142,7 +141,7 @@ export default function TurmaForm({
 
     setHorarios([...horarios, novoHorario]);
     addAlerta(
-      `Horário adicionado: ${novoDia} ${novoInicio}-${novoFim}`,
+      t("alerts.scheduleAdded", { day: novoDia, start: novoInicio, end: novoFim }),
       "info",
     );
   };
@@ -151,24 +150,24 @@ export default function TurmaForm({
     const removed = horarios[index];
     setHorarios(horarios.filter((_, i) => i !== index));
     addAlerta(
-      `Horário removido: ${removed.dia} ${removed.inicio}-${removed.fim}`,
+      t("alerts.scheduleRemoved", { day: removed.dia, start: removed.inicio, end: removed.fim }),
       "info",
     );
   };
 
   const handleSubmit = () => {
     if (!codigo.trim()) {
-      addAlerta("O código da disciplina é obrigatório", "error");
+      addAlerta(t("alerts.codeRequired"), "error");
       return;
     }
 
     if (!nome.trim()) {
-      addAlerta("O nome da disciplina é obrigatório", "error");
+      addAlerta(t("alerts.nameRequired"), "error");
       return;
     }
 
     if (horarios.length === 0) {
-      addAlerta("Adicione pelo menos um horário para a turma", "error");
+      addAlerta(t("alerts.scheduleRequired"), "error");
       return;
     }
 
@@ -197,7 +196,7 @@ export default function TurmaForm({
     );
     if (turmaExiste && !excluirAntigo) {
       addAlerta(
-        `Já existe a turma ${turma} para a disciplina ${codigo}`,
+        t("alerts.classExists", { number: turma, code: codigo }),
         "error",
       );
       return;
@@ -285,33 +284,29 @@ export default function TurmaForm({
       });
       if (turmaParaEditar) {
         addAlerta(
-          `Turma atualizada com ${
-            conflitosEncontrados.length
-          } conflito(s) de horário: ${nomesConflitantes.join(", ")}`,
+          t("alerts.updatedWithConflicts", { count: conflitosEncontrados.length, conflicts: nomesConflitantes.join(", ") }),
           "warning",
         );
       } else {
         addAlerta(
-          `Turma criada com ${
-            conflitosEncontrados.length
-          } conflito(s) de horário: ${nomesConflitantes.join(", ")}`,
+          t("alerts.createdWithConflicts", { count: conflitosEncontrados.length, conflicts: nomesConflitantes.join(", ") }),
           "warning",
         );
       }
     } else {
       if (excluirAntigo) {
         addAlerta(
-          `Turma "${originalId}" excluída e nova turma "${nome} - Turma ${turma}" criada com sucesso!`,
+          t("alerts.classReplaced", { id: originalId, name: nome, number: turma }),
           "success",
         );
       } else if (turmaParaEditar) {
         addAlerta(
-          `Turma "${nome} - Turma ${turma}" atualizada com sucesso!`,
+          t("alerts.classUpdated", { name: nome, number: turma }),
           "success",
         );
       } else {
         addAlerta(
-          `Turma "${nome} - Turma ${turma}" criada com sucesso!`,
+          t("alerts.classCreated", { name: nome, number: turma }),
           "success",
         );
       }
@@ -350,15 +345,15 @@ export default function TurmaForm({
           </Box>
           <Box>
             <Typography variant="h6" fontWeight={600}>
-              {turmaParaEditar ? "Editar Turma" : "Nova Turma"}
+              {turmaParaEditar ? t("header.editClass") : t("header.newClass")}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Preencha os dados e configure os horários
+              {t("header.subtitle")}
             </Typography>
           </Box>
         </Box>
         {onClose && (
-          <Tooltip title="Fechar formulário">
+          <Tooltip title={t("header.closeForm")}>
             <IconButton onClick={onClose} sx={{ color: "text.secondary" }}>
               <CloseIcon />
             </IconButton>
@@ -387,7 +382,7 @@ export default function TurmaForm({
             }}
           />
           <Typography variant="subtitle1" fontWeight={600}>
-            Informações da Disciplina
+            {t("classInfo.title")}
           </Typography>
         </Box>
 
@@ -400,12 +395,12 @@ export default function TurmaForm({
         >
           {turmaParaEditar && (
             <Tooltip
-              title="Identificador único da turma. Alterá-lo criará um novo registro."
+              title={t("classInfo.idTooltip")}
               placement="top"
               arrow
             >
               <TextField
-                label="ID"
+                label={t("classInfo.idLabel")}
                 value={id}
                 onChange={(e) => setId(e.target.value)}
                 sx={{ gridColumn: { md: "span 2" } }}
@@ -414,26 +409,26 @@ export default function TurmaForm({
           )}
 
           <Tooltip
-            title="Código único da disciplina (ex: MAT101)"
+            title={t("classInfo.codeTooltip")}
             placement="top"
             arrow
           >
             <TextField
-              label="Código"
+              label={t("classInfo.codeLabel")}
               value={codigo}
               onChange={(e) => setCodigo(e.target.value)}
               required
-              placeholder="Ex: MAT101"
+              placeholder={t("classInfo.codePlaceholder")}
             />
           </Tooltip>
 
           <Tooltip
-            title="Número da turma para esta disciplina"
+            title={t("classInfo.numberTooltip")}
             placement="top"
             arrow
           >
             <TextField
-              label="Turma"
+              label={t("classInfo.numberLabel")}
               type="number"
               value={turma}
               onChange={(e) => setTurma(Number(e.target.value))}
@@ -442,84 +437,84 @@ export default function TurmaForm({
             />
           </Tooltip>
 
-          <Tooltip title="Nome completo da disciplina" placement="top" arrow>
+          <Tooltip title={t("classInfo.nameTooltip")} placement="top" arrow>
             <TextField
-              label="Nome da Disciplina"
+              label={t("classInfo.nameLabel")}
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               required
-              placeholder="Ex: Cálculo I"
+              placeholder={t("classInfo.namePlaceholder")}
               sx={{ gridColumn: { md: "span 2" } }}
             />
           </Tooltip>
 
           <Tooltip
-            title="Cursos que oferecem esta disciplina"
+            title={t("classInfo.coursesTooltip")}
             placement="top"
             arrow
           >
             <TextField
-              label="Cursos"
+              label={t("classInfo.coursesLabel")}
               value={cursos}
               onChange={(e) => setCursos(e.target.value)}
-              placeholder="Ex: Engenharia, Ciência da Computação"
+              placeholder={t("classInfo.coursesPlaceholder")}
             />
           </Tooltip>
 
           <Tooltip
-            title="Nível da disciplina (Graduação, Pós-graduação, etc.)"
+            title={t("classInfo.levelTooltip")}
             placement="top"
             arrow
           >
             <TextField
-              label="Nível"
+              label={t("classInfo.levelLabel")}
               value={nivel}
               onChange={(e) => setNivel(e.target.value)}
-              placeholder="Ex: Graduação"
+              placeholder={t("classInfo.levelPlaceholder")}
             />
           </Tooltip>
 
           <Tooltip
-            title="Carga horária semanal da disciplina"
+            title={t("classInfo.workloadTooltip")}
             placement="top"
             arrow
           >
             <TextField
-              label="Carga Horária"
+              label={t("classInfo.workloadLabel")}
               type="number"
               value={carga ?? ""}
               onChange={(e) =>
                 setCarga(e.target.value ? Number(e.target.value) : undefined)
               }
-              placeholder="Ex: 4"
+              placeholder={t("classInfo.workloadPlaceholder")}
             />
           </Tooltip>
 
           <Tooltip
-            title="Grupo para agrupar disciplinas relacionadas"
+            title={t("classInfo.groupTooltip")}
             placement="top"
             arrow
           >
             <TextField
-              label="Grupo"
+              label={t("classInfo.groupLabel")}
               value={grupo}
               onChange={(e) => setGrupo(e.target.value)}
-              placeholder="Ex: Matemática Básica"
+              placeholder={t("classInfo.groupPlaceholder")}
             />
           </Tooltip>
 
           <Tooltip
-            title="Ementa ou descrição da disciplina (opcional)"
+            title={t("classInfo.syllabusTooltip")}
             placement="top"
             arrow
           >
             <TextField
-              label="Ementa"
+              label={t("classInfo.syllabusLabel")}
               value={ementa}
               onChange={(e) => setEmenta(e.target.value)}
               multiline
               rows={2}
-              placeholder="Descrição do conteúdo..."
+              placeholder={t("classInfo.syllabusPlaceholder")}
               sx={{ gridColumn: { md: "span 2" } }}
             />
           </Tooltip>
@@ -534,8 +529,8 @@ export default function TurmaForm({
               />
             }
             label={
-              <Tooltip title="Marque se a disciplina é oferecida no período noturno">
-                <span>Noturna</span>
+              <Tooltip title={t("classInfo.nightTooltip")}>
+                <span>{t("classInfo.nightLabel")}</span>
               </Tooltip>
             }
           />
@@ -548,8 +543,8 @@ export default function TurmaForm({
               />
             }
             label={
-              <Tooltip title="Marque se a disciplina é ministrada em inglês">
-                <span>Em Inglês</span>
+              <Tooltip title={t("classInfo.englishTooltip")}>
+                <span>{t("classInfo.englishLabel")}</span>
               </Tooltip>
             }
           />
@@ -562,8 +557,8 @@ export default function TurmaForm({
               />
             }
             label={
-              <Tooltip title="Disciplinas inativas não serão consideradas nas alocações">
-                <span>Ativa</span>
+              <Tooltip title={t("classInfo.activeTooltip")}>
+                <span>{t("classInfo.activeLabel")}</span>
               </Tooltip>
             }
           />
@@ -600,14 +595,14 @@ export default function TurmaForm({
             />
             <Box>
               <Typography variant="subtitle1" fontWeight={600}>
-                Horários de Aula
+                {t("schedules.title")}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Conflitos serão detectados automaticamente
+                {t("schedules.subtitle")}
               </Typography>
             </Box>
           </Box>
-          <Tooltip title="Adicione todos os dias e horários em que as aulas serão ministradas.">
+          <Tooltip title={t("schedules.infoTooltip")}>
             <IconButton size="small">
               <InfoIcon fontSize="small" />
             </IconButton>
@@ -624,10 +619,10 @@ export default function TurmaForm({
           }}
         >
           <FormControl size="small" sx={{ minWidth: 100 }}>
-            <InputLabel>Dia</InputLabel>
+            <InputLabel>{t("schedules.dayLabel")}</InputLabel>
             <Select
               value={novoDia}
-              label="Dia"
+              label={t("schedules.dayLabel")}
               onChange={(e) => setNovoDia(e.target.value as Horario["dia"])}
             >
               {DIAS_SEMANA.map((dia) => (
@@ -638,9 +633,9 @@ export default function TurmaForm({
             </Select>
           </FormControl>
 
-          <Tooltip title="Horário de início da aula" placement="top" arrow>
+          <Tooltip title={t("schedules.startTooltip")} placement="top" arrow>
             <TextField
-              label="Início"
+              label={t("schedules.startLabel")}
               type="time"
               size="small"
               value={novoInicio}
@@ -649,9 +644,9 @@ export default function TurmaForm({
             />
           </Tooltip>
 
-          <Tooltip title="Horário de término da aula" placement="top" arrow>
+          <Tooltip title={t("schedules.endTooltip")} placement="top" arrow>
             <TextField
-              label="Fim"
+              label={t("schedules.endLabel")}
               type="time"
               size="small"
               value={novoFim}
@@ -660,13 +655,13 @@ export default function TurmaForm({
             />
           </Tooltip>
 
-          <Tooltip title="Adicionar horário à lista">
+          <Tooltip title={t("schedules.addTooltip")}>
             <Button
               variant="contained"
               onClick={handleAddHorario}
               startIcon={<AddIcon />}
             >
-              Adicionar
+              {t("schedules.addButton")}
             </Button>
           </Tooltip>
         </Box>
@@ -674,7 +669,7 @@ export default function TurmaForm({
         <Divider sx={{ my: 2 }} />
 
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          Horários adicionados ({horarios.length}):
+          {t("schedules.addedCount", { count: horarios.length })}
         </Typography>
 
         {horarios.length === 0 ? (
@@ -683,7 +678,7 @@ export default function TurmaForm({
             color="text.secondary"
             sx={{ fontStyle: "italic", textAlign: "center", py: 2 }}
           >
-            Nenhum horário adicionado ainda
+            {t("schedules.noSchedules")}
           </Typography>
         ) : (
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
@@ -706,7 +701,7 @@ export default function TurmaForm({
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
               <WarningIcon color="warning" />
               <Typography variant="subtitle1" fontWeight="bold">
-                Prévia de Conflitos
+                {t("conflicts.title")}
               </Typography>
             </Box>
             <Typography variant="body2">
@@ -715,7 +710,7 @@ export default function TurmaForm({
                   id: "temp",
                   codigo: codigo || "temp",
                   turma,
-                  nome: nome || "Nova Turma",
+                  nome: nome || t("conflicts.tempName"),
                   horario: "",
                   horarios,
                   cursos: "",
@@ -737,14 +732,13 @@ export default function TurmaForm({
                 );
 
                 if (conflitos.length === 0) {
-                  return "Nenhum conflito de horário detectado com as turmas existentes.";
+                  return t("conflicts.noConflicts");
                 }
 
-                return `${
-                  conflitos.length
-                } conflito(s) detectado(s): ${conflitos
-                  .map((c) => `${c.nome} (T${c.turma})`)
-                  .join(", ")}`;
+                return t("conflicts.detected", {
+                  count: conflitos.length,
+                  conflicts: conflitos.map((c) => `${c.nome} (T${c.turma})`).join(", ")
+                });
               })()}
             </Typography>
           </Paper>
@@ -755,7 +749,7 @@ export default function TurmaForm({
           variant="outlined"
           onClick={() => {
             limparFormulario();
-            addAlerta("Formulário limpo", "info");
+            addAlerta(t("alerts.formCleared"), "info");
           }}
           sx={{
             px: 3,
@@ -766,13 +760,13 @@ export default function TurmaForm({
             },
           }}
         >
-          Limpar
+          {t("actions.clear")}
         </Button>
         <Tooltip
           title={
             turmaParaEditar
-              ? "Salvar alterações da turma"
-              : "Salvar a turma com todas as informações preenchidas"
+              ? t("actions.updateTooltip")
+              : t("actions.createTooltip")
           }
         >
           <span>
@@ -792,7 +786,7 @@ export default function TurmaForm({
                 },
               }}
             >
-              {turmaParaEditar ? "Atualizar Turma" : "Criar Turma"}
+              {turmaParaEditar ? t("actions.updateButton") : t("actions.createButton")}
             </Button>
           </span>
         </Tooltip>
