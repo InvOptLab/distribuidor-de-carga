@@ -365,6 +365,8 @@
         "activeTooltip": "Active room - users can join",
         "liveBadge": "Live",
         "creationDateTooltip": "Room creation date",
+        "privateBadge": "Private",
+        "privateTooltip": "This room requires a password",
         "guestsCanEditTooltip": "Guests can edit the grid",
         "guestsCanEditBadge": "Editing enabled",
         "guestsCanFilterTooltip": "Guests can edit filters",
@@ -386,6 +388,11 @@
         "guestsCanEditDesc": "Allows guests to make changes to the grid. You can change this later.",
         "guestsCanFilterLabel": "Guests can filter",
         "guestsCanFilterDesc": "Allows guests to make changes to the grid filters. You can change this later.",
+        "privateRoomLabel": "Private Room",
+        "privateRoomDesc": "Require a password to join.",
+        "passwordLabel": "Room Password",
+        "passwordPlaceholder": "Create a password",
+        "autoDeleteWarning": "Note: Empty rooms or rooms older than 12 hours are automatically deleted.",
         "cancelButton": "Cancel",
         "submitButton": "Create Room"
       },
@@ -399,6 +406,8 @@
         "userNameTooltip": "How you will be identified in the room",
         "userNameLabel": "Your Name",
         "userNamePlaceholder": "Ex: Jane Doe",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter the room password",
         "cancelButton": "Cancel",
         "submitButton": "Join"
       }
@@ -1369,9 +1378,11 @@
     "navigationMenu": "Navigation Menu"
   },
   "Collaboration": {
-    "roomNotFound": "Room not found.",
-    "nameAlreadyExistis": "Username already exists in this room.",
-    "ownerEndedRoom": "The owner closed the room."
+    "roomNotFound": "Room not found or no longer available.",
+    "nameAlreadyExistis": "This name is already in use in the room.",
+    "passwordRequired": "Password is required to enter this room.",
+    "incorrectPassword": "Incorrect password.",
+    "ownerEndedRoom": "The room creator has ended the session. You have been disconnected."
   },
   "AlgorithmContext": {
     "Constraints": {

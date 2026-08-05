@@ -30,10 +30,22 @@ const stringToColor = (string: string | null) => {
   return color;
 };
 
+export const hashPassword = async (password: string) => {
+  const msgUint8 = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+};
+
 // Tipos
 export type RoomConfig = {
   guestsCanEdit: boolean;
   guestsCanFilter: boolean;
+  isPrivate?: boolean;
+  passwordHash?: string;
 };
 
 type UserCursor = {
@@ -79,7 +91,7 @@ type CollaborationContextType = {
     userName: string,
     initialConfig?: RoomConfig,
   ) => Promise<void>;
-  joinRoom: (roomName: string, userName: string) => Promise<void>;
+  joinRoom: (roomName: string, userName: string, password?: string) => Promise<void>;
   leaveRoom: () => Promise<void>;
   updateConfig: (newConfig: RoomConfig) => Promise<void>;
   broadcastMouse: (x: number, y: number) => void;
@@ -181,7 +193,7 @@ export const CollaborationProvider = ({
   // =========================================================
   // LÓGICA DE ENTRAR NA SALA
   // =========================================================
-  const joinRoom = async (rName: string, uName: string) => {
+  const joinRoom = async (rName: string, uName: string, password?: string) => {
     const { data: room, error: roomError } = await supabase
       .from("rooms")
       .select("*")
@@ -189,6 +201,16 @@ export const CollaborationProvider = ({
       .single();
 
     if (roomError || !room) throw new Error(t("roomNotFound"));
+
+    if (room.config?.isPrivate) {
+      if (!password) {
+        throw new Error(t("passwordRequired"));
+      }
+      const hash = await hashPassword(password);
+      if (hash !== room.config.passwordHash) {
+        throw new Error(t("incorrectPassword"));
+      }
+    }
 
     const { error: partError } = await supabase
       .from("participants")

@@ -26,6 +26,7 @@ import {
   alpha,
   FormControlLabel,
   Switch,
+  Alert,
 } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import AddIcon from "@mui/icons-material/Add";
@@ -37,8 +38,15 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import CrownIcon from "@mui/icons-material/EmojiEvents";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SettingsIcon from "@mui/icons-material/Settings";
+import LockIcon from "@mui/icons-material/Lock";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { supabase } from "@/lib/supabaseClient";
-import { useCollaboration, type RoomConfig } from "@/context/Collaboration";
+import {
+  useCollaboration,
+  hashPassword,
+  type RoomConfig,
+} from "@/context/Collaboration";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -72,6 +80,12 @@ export default function LobbyPage() {
   const [selectedRoom, setSelectedRoom] = useState<any | null>(null);
   const [createError, setCreateError] = useState("");
   const [joinError, setJoinError] = useState("");
+
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [inputRoomPassword, setInputRoomPassword] = useState("");
+  const [inputJoinPassword, setInputJoinPassword] = useState("");
+  const [showRoomPassword, setShowRoomPassword] = useState(false);
+  const [showJoinPassword, setShowJoinPassword] = useState(false);
 
   const [initialConfig, setInitialConfig] = useState<RoomConfig>({
     guestsCanEdit: false,
@@ -124,20 +138,31 @@ export default function LobbyPage() {
   }, []);
 
   const handleCreate = async () => {
-    if (!inputRoomName.trim() || !inputUserName.trim()) {
+    if (
+      !inputRoomName.trim() ||
+      !inputUserName.trim() ||
+      (isPrivate && !inputRoomPassword.trim())
+    ) {
       setCreateError(t("errors.fillAllFields"));
       return;
     }
     try {
       setCreateError("");
-      await createRoom(
-        inputRoomName.trim(),
-        inputUserName.trim(),
-        initialConfig,
-      );
+      let passwordHash = undefined;
+      if (isPrivate) {
+        passwordHash = await hashPassword(inputRoomPassword);
+      }
+      await createRoom(inputRoomName.trim(), inputUserName.trim(), {
+        ...initialConfig,
+        isPrivate,
+        passwordHash,
+      });
       setCreateOpen(false);
       setInputRoomName("");
       setInputUserName("");
+      setInputRoomPassword("");
+      setIsPrivate(false);
+      setShowRoomPassword(false);
       setInitialConfig({ guestsCanEdit: false, guestsCanFilter: false });
     } catch (e: any) {
       setCreateError(e.message || t("errors.createRoom"));
@@ -145,15 +170,25 @@ export default function LobbyPage() {
   };
 
   const handleJoin = async () => {
-    if (!selectedRoom || !inputUserName.trim()) {
-      setJoinError(t("errors.enterName"));
+    if (
+      !selectedRoom ||
+      !inputUserName.trim() ||
+      (selectedRoom.config?.isPrivate && !inputJoinPassword.trim())
+    ) {
+      setJoinError(t("errors.enterName")); // Or specific error
       return;
     }
     try {
       setJoinError("");
-      await joinRoom(selectedRoom.name, inputUserName.trim());
+      await joinRoom(
+        selectedRoom.name,
+        inputUserName.trim(),
+        inputJoinPassword.trim(),
+      );
       setJoinOpen(false);
       setInputUserName("");
+      setInputJoinPassword("");
+      setShowJoinPassword(false);
     } catch (e: any) {
       setJoinError(e.message || t("errors.joinRoom"));
     }
@@ -162,6 +197,8 @@ export default function LobbyPage() {
   const openJoin = (room: any) => {
     setSelectedRoom(room);
     setJoinError("");
+    setInputJoinPassword("");
+    setShowJoinPassword(false);
     setJoinOpen(true);
   };
 
@@ -234,6 +271,9 @@ export default function LobbyPage() {
                       guestsCanEdit: false,
                       guestsCanFilter: false,
                     });
+                    setIsPrivate(false);
+                    setInputRoomPassword("");
+                    setShowRoomPassword(false);
                     setCreateOpen(true);
                   }}
                   sx={{
@@ -478,6 +518,18 @@ export default function LobbyPage() {
                             />
                           </Tooltip>
                         )}
+                        {room.config?.isPrivate && (
+                          <Tooltip title={t("card.privateTooltip")}>
+                            <Chip
+                              size="small"
+                              icon={<LockIcon fontSize="small" />}
+                              label={t("card.privateBadge")}
+                              color="error"
+                              variant="outlined"
+                              sx={{ fontSize: "0.65rem", height: 20 }}
+                            />
+                          </Tooltip>
+                        )}
                       </Box>
                     </CardContent>
                     <CardActions sx={{ px: 2, pb: 2 }}>
@@ -649,6 +701,83 @@ export default function LobbyPage() {
               />
             </Paper>
 
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                bgcolor: alpha("#1976d2", 0.03),
+              }}
+            >
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isPrivate}
+                    onChange={(e) => setIsPrivate(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2" fontWeight="medium">
+                      {t("createDialog.privateRoomLabel")}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {t("createDialog.privateRoomDesc")}
+                    </Typography>
+                  </Box>
+                }
+                sx={{ alignItems: "flex-start", m: 0 }}
+              />
+              {isPrivate && (
+                <Box sx={{ mt: 2 }}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label={t("createDialog.passwordLabel")}
+                    placeholder={t("createDialog.passwordPlaceholder")}
+                    type={showRoomPassword ? "text" : "password"}
+                    value={inputRoomPassword}
+                    onChange={(e) => setInputRoomPassword(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockIcon color="action" fontSize="small" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() =>
+                              setShowRoomPassword(!showRoomPassword)
+                            }
+                            edge="end"
+                            size="small"
+                          >
+                            {showRoomPassword ? (
+                              <VisibilityOff fontSize="small" />
+                            ) : (
+                              <Visibility fontSize="small" />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+              )}
+            </Paper>
+
+            <Alert
+              severity="warning"
+              sx={{
+                borderRadius: 2,
+                "& .MuiAlert-message": { fontSize: "0.85rem" },
+              }}
+            >
+              {t("createDialog.autoDeleteWarning")}
+            </Alert>
+
             {createError && (
               <Typography color="error" variant="body2">
                 {createError}
@@ -747,6 +876,48 @@ export default function LobbyPage() {
                 }}
               />
             </Tooltip>
+
+            {selectedRoom?.config?.isPrivate && (
+              <Box sx={{ mt: 2 }}>
+                <Tooltip
+                  title={t("joinDialog.passwordLabel")}
+                  placement="top-start"
+                >
+                  <TextField
+                    label={t("joinDialog.passwordLabel")}
+                    placeholder={t("joinDialog.passwordPlaceholder")}
+                    type={showJoinPassword ? "text" : "password"}
+                    fullWidth
+                    value={inputJoinPassword}
+                    onChange={(e) => setInputJoinPassword(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockIcon color="action" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() =>
+                              setShowJoinPassword(!showJoinPassword)
+                            }
+                            edge="end"
+                          >
+                            {showJoinPassword ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Tooltip>
+              </Box>
+            )}
+
             {joinError && (
               <Typography color="error" variant="body2" sx={{ mt: 1 }}>
                 {joinError}
