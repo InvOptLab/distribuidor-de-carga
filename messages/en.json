@@ -540,6 +540,8 @@
         "group": "Group",
         "evening": "Evening",
         "english": "English",
+        "noAssignments": "No assignments",
+        "noForms": "No forms",
         "weekDaysLabel": "Days of the Week",
         "WeekDays": {
           "mon": "Mon.",

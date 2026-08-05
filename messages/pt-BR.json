@@ -536,6 +536,8 @@
         "group": "Grupo",
         "evening": "Noturna",
         "english": "Inglês",
+        "noAssignments": "Sem atribuição",
+        "noForms": "Sem formulários",
         "weekDaysLabel": "Dias da Semana",
         "WeekDays": {
           "mon": "Seg.",
