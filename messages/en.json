@@ -1336,6 +1336,11 @@
         "insertion": "Insertion",
         "actions": "Actions"
       },
+      "details": "Course Details",
+      "tabs": {
+        "assignments": "Assignments",
+        "mathModel": "Mathematical Model"
+      },
       "SolutionHistoryRow": {
         "details": "Details",
         "restore": "Restore this solution",
@@ -1344,7 +1349,8 @@
       "Alerts": {
         "removed": "The solution was removed from history!",
         "applied": "Solution {datetime} has been applied!",
-        "downloaded": "Solution {datetime} has been downloaded!"
+        "downloaded": "Solution {datetime} has been downloaded!",
+        "currentSolution": "Current Solution"
       }
     }
   },

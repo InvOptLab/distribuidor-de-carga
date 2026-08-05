@@ -1340,6 +1340,11 @@
         "insertion": "Inserção",
         "actions": "Ações"
       },
+      "details": "Detalhes da Disciplina",
+      "tabs": {
+        "assignments": "Atribuições",
+        "mathModel": "Modelo Matemático"
+      },
       "SolutionHistoryRow": {
         "details": "Detalhes",
         "restore": "Restaurar essa solução",
@@ -1348,7 +1353,8 @@
       "Alerts": {
         "removed": "A solução foi removida do histórico!",
         "applied": "A solução {datetime} foi aplicada!",
-        "downloaded": "A solução {datetime} foi baixada!"
+        "downloaded": "A solução {datetime} foi baixada!",
+        "currentSolution": "Solução Atual"
       }
     }
   },

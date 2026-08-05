@@ -21,7 +21,7 @@ import { useAccessibility } from "@/context/Accessibility";
 interface TimetableGridProps {
   setHoveredCourse: (disciplina: Disciplina | null) => void;
   setHoveredDocente: (docente: string | null) => void;
-  onMouseLeaveGrid: () => void;
+  onMouseLeaveGrid?: () => void;
 }
 
 // Estilos reutilizáveis para a coluna sticky
@@ -79,10 +79,8 @@ export default function TimetableGrid({
   ) => {
     if (atribuicao) {
       handleOnMouseEnterDocente(atribuicao.nome);
-      setHoveredDocente(atribuicao.nome);
     } else {
       handleOnMouseEnterDocente(null);
-      onMouseLeaveGrid();
     }
   };
 
@@ -95,7 +93,6 @@ export default function TimetableGrid({
         borderTop: "1px solid rgba(224, 224, 224, 1)",
         borderLeft: "1px solid rgba(224, 224, 224, 1)",
       }}
-      onMouseLeave={onMouseLeaveGrid}
     >
       <Table aria-label="sticky table" stickyHeader>
         <TableHead>
@@ -126,6 +123,7 @@ export default function TimetableGrid({
                         tipo_trava: TipoTrava.Column,
                       })
                     }
+                    onMouseLeave={() => onMouseLeaveGrid?.()}
                     sx={{
                       // 'style' com 'setBorder' foi removido
                       backgroundColor: "white",
@@ -136,7 +134,6 @@ export default function TimetableGrid({
                       borderRight: "1px solid rgba(224, 224, 224, 1)",
                       verticalAlign: "top",
                     }}
-                    onMouseLeave={onMouseLeaveGrid}
                   >
                     <HeaderCell
                       key={disciplina.id}
@@ -163,12 +160,13 @@ export default function TimetableGrid({
                 component="th"
                 scope="row"
                 sx={stickyBodyCellSx}
-                onClick={(e) =>
+                onClick={(e) => {
                   handleRowClick(e, {
                     nome_docente: atribuicao.nome,
                     tipo_trava: TipoTrava.Row,
-                  })
-                }
+                  });
+                  setHoveredDocente(atribuicao.nome);
+                }}
                 onMouseEnter={() => handleMouseEnterDocente(atribuicao)}
                 onMouseLeave={() => handleMouseEnterDocente(null)}
               >
@@ -183,7 +181,7 @@ export default function TimetableGrid({
                     width: "100%",
                     height: "100%",
                     transition: "background-color 0.2s ease",
-                    // '...setBorder' foi removido
+                    cursor: "pointer",
                   }}
                   onMouseLeave={() => handleMouseEnterDocente(null)}
                 >
@@ -256,7 +254,7 @@ export default function TimetableGrid({
                       }
                       onMouseLeave={() => {
                         setHover({ docente: "", id_disciplina: "" });
-                        onMouseLeaveGrid();
+                        onMouseLeaveGrid?.();
                       }}
                     >
                       {prioridade.prioridade}

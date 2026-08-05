@@ -10,6 +10,7 @@ import {
   Chip,
   Box,
   Grid,
+  Dialog,
 } from "@mui/material";
 import {
   Person as PersonIcon,
@@ -33,28 +34,25 @@ interface HoveredDocenteProps {
   formularios?: Formulario[]; // Lista de formulários para mostrar turmas interessadas
   atribuicoes?: Atribuicao[];
   children?: React.ReactNode;
-  // setHoveredDocente: Dispatch<SetStateAction<Docente | null>>;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
+  open?: boolean;
+  onClose?: () => void;
 }
 
 /**
  * Componente desenvolvido para exibir detalhes de um docente ao passar o mouse sobre ele.
  * Exibe informações como nome, saldo, tipo de agrupamento e turmas com formulários.
  */
-const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
-  (
-    {
-      docente,
-      disciplinas = [],
-      formularios = [],
-      atribuicoes = [],
-      children,
-      onMouseEnter,
-      onMouseLeave,
-    },
-    ref, // <-- ref vindo do forwardRef
-  ) => {
+const HoveredDocente = (
+  {
+    docente,
+    disciplinas = [],
+    formularios = [],
+    atribuicoes = [],
+    children,
+    open = false,
+    onClose,
+  }: HoveredDocenteProps
+) => {
     // Filtra formulários relacionados a este docente
     const formulariosRelacionados = formularios.filter(
       (f) => f.nome_docente === docente.nome,
@@ -84,9 +82,12 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
       let carga = 0;
 
       for (const atribuicao of atribuicoes) {
-        carga += disciplinas.find(
-          (disciplina) => disciplina.id === atribuicao.id_disciplina,
-        ).carga;
+        const disciplina = disciplinas.find(
+          (d) => d.id === atribuicao.id_disciplina,
+        );
+        if (disciplina) {
+          carga += disciplina.carga;
+        }
       }
 
       return carga;
@@ -95,21 +96,14 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
     const t = useTranslations("Pages.Assignment.Hover.Docente");
 
     return (
-      <Paper
-        elevation={12}
-        sx={{
-          // position: "fixed",
-          // zIndex: 99,
-          // bottom: "6vh",
-          // right: "2vw",
-          maxWidth: 700,
-          borderRadius: 3,
-          // overflow: "hidden",
-          border: "1px solid",
-          borderColor: "divider",
+      <Dialog 
+        open={open} 
+        onClose={onClose} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3, maxWidth: 700 }
         }}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
       >
         {/* Cabeçalho com gradiente */}
         <Box
@@ -157,7 +151,6 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
 
         {/* Conteúdo principal */}
         <Stack
-          ref={ref}
           spacing={2}
           sx={{
             p: 2.5,
@@ -277,10 +270,10 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                             ),
                             pl: 1.5,
                             py: 0.75,
-                            backgroundColor: disciplina.ativo
+                            backgroundColor: disciplina?.ativo
                               ? "action.hover"
                               : "action.disabledBackground",
-                            opacity: disciplina.ativo ? 1 : 0.75, // Deixa visualmente "apagado"
+                            opacity: disciplina?.ativo ? 1 : 0.75, // Deixa visualmente "apagado"
                             borderRadius: 1,
                             height: "100%",
                           }}
@@ -303,14 +296,14 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                               <Typography
                                 variant="caption"
                                 color={
-                                  disciplina.ativo
+                                  disciplina?.ativo
                                     ? "success.main" // Sugestão: Verde se ativa
                                     : "text.disabled" // Cinza desabilitado se inativa
                                 }
                                 sx={{ lineHeight: 1.2, fontWeight: 600 }}
                                 p={1}
                               >
-                                {disciplina.ativo ? t("active") : t("inactive")}
+                                {disciplina?.ativo ? t("active") : t("inactive")}
                               </Typography>
                             </Box>
                             {disciplina && (
@@ -390,10 +383,10 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
           {/* Conteúdo adicional */}
           {children}
         </Stack>
-      </Paper>
+      </Dialog>
     );
-  },
-);
+  }
+;
 
 HoveredDocente.displayName = "HoveredDocente"; // Necessário para o React DevTools
 export default HoveredDocente;

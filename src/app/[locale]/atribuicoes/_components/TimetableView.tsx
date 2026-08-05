@@ -70,54 +70,19 @@ export default function TimetableView() {
   const [hoveredDocente, setHoveredDocente] = useState<Docente | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const enterTimer = useRef<NodeJS.Timeout | null>(null);
-  const leaveTimer = useRef<NodeJS.Timeout | null>(null);
-
-  const ENTER_DELAY_MS = 100;
-  const LEAVE_DELAY_MS = 100;
-
-  const courseCardContentRef = useRef<HTMLDivElement>(null);
-  const docenteCardContentRef = useRef<HTMLDivElement>(null);
-
-  const clearTimers = () => {
-    if (enterTimer.current) {
-      clearTimeout(enterTimer.current);
-      enterTimer.current = null;
-    }
-    if (leaveTimer.current) {
-      clearTimeout(leaveTimer.current);
-      leaveTimer.current = null;
-    }
+  const handleCourseClick = (disciplina: Disciplina | null) => {
+    setHoveredCourse(disciplina);
   };
 
-  const handleCourseEnter = (disciplina: Disciplina | null) => {
-    if (!disciplina) return;
-    clearTimers();
-    enterTimer.current = setTimeout(() => {
-      setHoveredCourse(disciplina);
+  const handleDocenteClick = (nome: string | null) => {
+    if (!nome) {
       setHoveredDocente(null);
-    }, ENTER_DELAY_MS);
-  };
-
-  const handleDocenteEnter = (nome: string | null) => {
-    clearTimers();
-    if (!nome) return;
-
+      return;
+    }
     const docente = docentes.find((d) => d.nome === nome);
-    if (!docente) return;
-
-    enterTimer.current = setTimeout(() => {
+    if (docente) {
       setHoveredDocente(docente);
-      setHoveredCourse(null);
-    }, ENTER_DELAY_MS);
-  };
-
-  const handleMouseLeave = () => {
-    clearTimers();
-    leaveTimer.current = setTimeout(() => {
-      setHoveredCourse(null);
-      setHoveredDocente(null);
-    }, LEAVE_DELAY_MS);
+    }
   };
 
   const handleCleanDialogClose = () => {
@@ -134,26 +99,6 @@ export default function TimetableView() {
     docenteFilters.rules.length > 0 ||
     disciplinaFilters.search ||
     disciplinaFilters.rules.length > 0;
-
-  useEffect(() => {
-    const handleWheel = (event: WheelEvent) => {
-      if (hoveredDocente && docenteCardContentRef.current) {
-        event.preventDefault();
-        docenteCardContentRef.current.scrollTop += event.deltaY;
-      } else if (hoveredCourse && courseCardContentRef.current) {
-        event.preventDefault();
-        courseCardContentRef.current.scrollTop += event.deltaY;
-      }
-    };
-
-    if (hoveredDocente || hoveredCourse) {
-      window.addEventListener("wheel", handleWheel, { passive: false });
-    }
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-    };
-  }, [hoveredDocente, hoveredCourse]);
 
   return (
     <ThemeProvider theme={customTheme}>
@@ -212,9 +157,8 @@ export default function TimetableView() {
             formularios.length > 0 ? (
               filteredDocentes.length > 0 && filteredDisciplinas.length > 0 ? (
                 <TimetableGrid
-                  setHoveredCourse={handleCourseEnter}
-                  setHoveredDocente={handleDocenteEnter}
-                  onMouseLeaveGrid={handleMouseLeave}
+                  setHoveredCourse={handleCourseClick}
+                  setHoveredDocente={handleDocenteClick}
                 />
               ) : (
                 <SemResultadosFiltro />
@@ -241,42 +185,29 @@ export default function TimetableView() {
         estatisticasMonitoradas={estatisticasMonitoradas}
       />
 
-      <Fade in={!!hoveredCourse} timeout={150}>
-        <div
-          style={{ position: "fixed", zIndex: 99, bottom: "6vh", right: "2vw" }}
-        >
-          {hoveredCourse && (
-            <HoveredCourse
-              ref={courseCardContentRef}
-              disciplina={hoveredCourse}
-              formularios={formularios}
-              docentes={docentes}
-              onMouseEnter={clearTimers}
-              onMouseLeave={handleMouseLeave}
-            />
-          )}
-        </div>
-      </Fade>
+      {/* Modal de Detalhes */}
+      {hoveredCourse && (
+        <HoveredCourse
+          open={!!hoveredCourse}
+          onClose={() => setHoveredCourse(null)}
+          disciplina={hoveredCourse}
+          docentes={docentes}
+          formularios={formularios}
+        />
+      )}
 
-      <Fade in={!!hoveredDocente} timeout={150}>
-        <div
-          style={{ position: "fixed", zIndex: 99, bottom: "6vh", right: "2vw" }}
-        >
-          {hoveredDocente && (
-            <HoveredDocente
-              ref={docenteCardContentRef}
-              docente={hoveredDocente}
-              disciplinas={disciplinas}
-              formularios={formularios}
-              atribuicoes={atribuicoes.filter((atribuicao) =>
-                atribuicao.docentes.includes(hoveredDocente.nome),
-              )}
-              onMouseEnter={clearTimers}
-              onMouseLeave={handleMouseLeave}
-            />
+      {hoveredDocente && (
+        <HoveredDocente
+          open={!!hoveredDocente}
+          onClose={() => setHoveredDocente(null)}
+          docente={hoveredDocente}
+          disciplinas={disciplinas}
+          formularios={formularios}
+          atribuicoes={atribuicoes.filter((atribuicao) =>
+            atribuicao.docentes.includes(hoveredDocente.nome),
           )}
-        </div>
-      </Fade>
+        />
+      )}
 
       <CleanAlertDialog
         openDialog={openCleanDialog}

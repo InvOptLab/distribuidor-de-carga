@@ -28,21 +28,9 @@ const HeaderCell: React.FC<HeaderCellProps> = ({
 
   const t = useTranslations("Pages.Assignment.HeaderCell");
 
-  // Funções de hover
-  const handleMouseEnter = (id: string) => {
-    if (hoverEnabled) {
-      setHoveredCellId(id);
-    }
-    setParentHoveredCourse?.(disciplina); // Se `setParentHoveredCourse` estiver definido, executa
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverEnabled) {
-      setHoveredCellId(null);
-    }
-    // NÃO chamamos setParentHoveredCourse?.(null) aqui.
-    // O onMouseLeave do <TableCell> no TimetableGrid vai cuidar disso. (30/10/2025)
-    // setParentHoveredCourse?.(null); // Reseta o estado no componente pai, se aplicável
+  // Funções de clique
+  const handleClick = (id: string) => {
+    setParentHoveredCourse?.(disciplina);
   };
 
   // Criação do bloco de horários da disciplina
@@ -104,6 +92,7 @@ const HeaderCell: React.FC<HeaderCellProps> = ({
     padding: 0,
     margin: 0,
 
+    cursor: !hoverEnabled ? "pointer" : "default",
     ...(hoverEnabled && {
       "&:hover": {
         overflow: "visible",
@@ -118,8 +107,13 @@ const HeaderCell: React.FC<HeaderCellProps> = ({
       id={disciplina.id}
       spacing={1}
       className="stack-style"
-      onMouseEnter={() => handleMouseEnter(disciplina.id)} // Ativa o hover
-      onMouseLeave={handleMouseLeave} // Desativa o hover
+      onClick={() => handleClick(disciplina.id)} // Aciona o clique
+      onMouseEnter={() => {
+        if (hoverEnabled) setHoveredCellId(disciplina.id);
+      }}
+      onMouseLeave={() => {
+        if (hoverEnabled) setHoveredCellId(null);
+      }}
     >
       <Typography
         align="left"

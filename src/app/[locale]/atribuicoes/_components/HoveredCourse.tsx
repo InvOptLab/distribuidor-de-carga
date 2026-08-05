@@ -10,12 +10,16 @@ import {
   Chip,
   Box,
   Grid,
+  Dialog,
+  DialogContent,
+  IconButton,
 } from "@mui/material";
 import {
   Person as PersonIcon,
   School as SchoolIcon,
   AccessTime as AccessTimeIcon,
   CheckCircle as CheckCircleIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
 import {
   Disciplina,
@@ -32,26 +36,24 @@ interface HoveredCourseProps {
   formularios?: Formulario[];
   docentes?: Docente[];
   children?: React.ReactNode;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
+  open?: boolean;
+  onClose?: () => void;
 }
 
 /**
  * Componente desenvolvido para exibir detalhes de uma disciplina ao passar o mouse sobre ela.
  * Exibe informações como código, nome, horários, carga horária, docentes atribuídos e interessados.
  */
-const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
-  (
-    {
-      disciplina,
-      formularios = [],
-      docentes = [],
-      children,
-      onMouseEnter,
-      onMouseLeave,
-    },
-    ref,
-  ) => {
+const HoveredCourse = (
+  {
+    disciplina,
+    formularios = [],
+    docentes = [],
+    children,
+    open = false,
+    onClose,
+  }: HoveredCourseProps
+) => {
     // Acessa o contexto global para buscar as atribuições atualizadas
     const { atribuicoes } = useGlobalContext();
 
@@ -86,16 +88,14 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
     };
 
     return (
-      <Paper
-        elevation={12}
-        sx={{
-          maxWidth: 700,
-          borderRadius: 3,
-          border: "1px solid",
-          borderColor: "divider",
+      <Dialog 
+        open={open} 
+        onClose={onClose} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3, maxWidth: 700 }
         }}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
       >
         {/* Cabeçalho com gradiente */}
         <Box
@@ -141,7 +141,6 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
 
         {/* Conteúdo principal */}
         <Stack
-          ref={ref}
           spacing={2}
           sx={{
             p: 2.5,
@@ -474,10 +473,10 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
           {/* Conteúdo adicional */}
           {children}
         </Stack>
-      </Paper>
+      </Dialog>
     );
-  },
-);
+  }
+;
 
 HoveredCourse.displayName = "HoveredCourse"; // Necessário para o React DevTools
 export default HoveredCourse;

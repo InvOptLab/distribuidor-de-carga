@@ -11,7 +11,6 @@ import {
   getDocentesAtribuicoes,
   processAtribuicoesToTree,
 } from "../utils";
-//import StatusPieChart from "@/components/SolutionHistoryStatistics/StatusPieChart";
 import NewDataTreeView from "@/components/SolutionHistoryStatistics/NewDataTreeView/DataTreeView";
 
 /**
@@ -59,7 +58,6 @@ const SolutionHistoryStatistics: React.FC<SolutionHistoryStatisticsProps> = ({
   /**
    * Processa as informações
    */
-
   const atribuicoesProcessadas = processAtribuicoesToTree(
     disciplinasAtribuicoes,
     docentesAtribuicoes,
@@ -85,44 +83,7 @@ const SolutionHistoryStatistics: React.FC<SolutionHistoryStatisticsProps> = ({
           setHoveredCourese={setHoveredCourese}
         />
       </Grid>
-      {/* Gráficos lado a lado dentro do Paper */}
-      {/* <Grid container size={{ xs: 12 }} spacing={2}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper elevation={2} sx={{ padding: 2 }}>
-            <StatusPieChart
-              key="docentes_ativos_inativos"
-              title="Relação Docentes"
-              activeCount={docentesAtribuicoes.size}
-              inactiveCount={
-                solucao.contexto.docentes.length - docentesAtribuicoes.size
-              }
-              lockedCount={qtdDocentesTravados}
-            />
-          </Paper>
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper elevation={2} sx={{ padding: 2 }}>
-            <StatusPieChart
-              key="disciplinas_ativos_inativos"
-              title="Relação Disciplinas"
-              activeCount={disciplinasAtribuicoes.size}
-              inactiveCount={
-                solucao.contexto.disciplinas.length -
-                disciplinasAtribuicoes.size
-              }
-              lockedCount={qtdDisciplinasTravadas}
-            />
-          </Paper>
-        </Grid>
-      </Grid> */}
-
-      {/* Renderizar o LineChartsSelector se as estatísticas estiverem disponíveis */}
-      {/* {solucao.solucao.estatisticas !== undefined && (
-        <Grid size={{ xs: 12 }}>
-          <LineChartsSelector solucao={solucao} />
-        </Grid>
-      )} */}
+      {/* Gráficos lado a lado dentro do Paper poderiam vir aqui futuramente */}
     </Grid>
   );
 };

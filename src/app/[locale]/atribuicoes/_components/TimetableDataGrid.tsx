@@ -116,19 +116,18 @@ export default function TimetableDataGrid({
             title={temConflito ? t("teacherWithSchedulingConflict") : ""}
           >
             <Box
-              onClick={(event) =>
+              onClick={(event) => {
                 handleRowClick(event, {
                   nome_docente: nomeDocente,
                   id_disciplina: null,
                   tipo_trava: TipoTrava.Row,
-                })
-              }
+                });
+                setHoveredDocente(nomeDocente);
+              }}
               onMouseEnter={() => {
                 handleOnMouseEnterDocente(nomeDocente);
                 handleOnMouseEnter(nomeDocente, null);
-                setHoveredDocente(nomeDocente);
               }}
-              onMouseLeave={() => setHoveredDocente(null)}
               sx={{
                 width: "100%",
                 height: "100%",
@@ -167,11 +166,12 @@ export default function TimetableDataGrid({
                 tipo_trava: TipoTrava.Column,
               })
             }
-            onMouseEnter={() => {
-              handleOnMouseEnter(null, disciplina.id);
+            onDoubleClick={() => {
               setHoveredCourse(disciplina);
             }}
-            onMouseLeave={() => setHoveredCourse(null)}
+            onMouseEnter={() => {
+              handleOnMouseEnter(null, disciplina.id);
+            }}
             sx={{
               width: "100%",
               height: "100%",
