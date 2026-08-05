@@ -21,7 +21,7 @@ export default function NeighborhoodConfig() {
   const { neighborhoodFunctions, setNeighborhoodFunctions } =
     useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
-  const t = useTranslations("Config.Neighborhood");
+  const t = useTranslations("Pages.Config.Neighborhood");
 
   const handleToggle = (key: string, currentState: boolean) => {
     setNeighborhoodFunctions((prev) => {

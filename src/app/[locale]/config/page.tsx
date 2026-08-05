@@ -31,9 +31,9 @@ import { useTranslations } from "next-intl";
 
 export default function Configuracoes() {
   const { selectedAlgorithm, setSelectedAlgorithm } = useAlgorithmContext();
-  const t = useTranslations("Config.page");
-  const tAlg = useTranslations("Config.Algorithms");
-  const tSec = useTranslations("Config.Sections");
+  const t = useTranslations("Pages.Config.page");
+  const tAlg = useTranslations("Pages.Config.Algorithms");
+  const tSec = useTranslations("Pages.Config.Sections");
   const [expandedPanels, setExpandedPanels] = useState<string[]>([
     "constraints",
     "objectiveCost",

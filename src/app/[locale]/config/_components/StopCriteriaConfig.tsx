@@ -24,7 +24,7 @@ import { useTranslations } from "next-intl";
 export default function StopCriteriaConfig() {
   const { stopFunctions, setStopFunctions } = useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
-  const t = useTranslations("Config.StopCriteria");
+  const t = useTranslations("Pages.Config.StopCriteria");
 
   const handleToggle = (key: string, currentState: boolean) => {
     setStopFunctions((prev) => {

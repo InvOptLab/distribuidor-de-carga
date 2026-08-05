@@ -22,7 +22,7 @@ import { useTranslations } from "next-intl";
 export default function AspirationConfig() {
   const { aspirationFunctions, setAspirationFunctions } = useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
-  const t = useTranslations("Config.Aspiration");
+  const t = useTranslations("Pages.Config.Aspiration");
 
   const handleToggle = (key: string, currentState: boolean) => {
     setAspirationFunctions((prev) => {

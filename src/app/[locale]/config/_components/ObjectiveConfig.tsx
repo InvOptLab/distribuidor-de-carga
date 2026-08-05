@@ -44,7 +44,7 @@ export default function ObjectiveConfig() {
   const { objectiveComponents, setObjectiveComponents, maiorPrioridade } =
     useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
-  const t = useTranslations("Config.Objective");
+  const t = useTranslations("Pages.Config.Objective");
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState<string | null>(

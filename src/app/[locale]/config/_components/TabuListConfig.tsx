@@ -27,7 +27,7 @@ type TabuType = "Solução" | "Movimento";
 export default function TabuListConfig() {
   const { parametros, setParametros, tabuListType, setTabuListType } =
     useAlgorithmContext();
-  const t = useTranslations("Config.TabuList");
+  const t = useTranslations("Pages.Config.TabuList");
 
   // Estados locais para controlar os valores
   const [tabuSize, setTabuSize] = useState(parametros.tabuTenure?.size);

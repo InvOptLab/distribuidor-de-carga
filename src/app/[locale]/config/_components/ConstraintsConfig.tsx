@@ -31,7 +31,7 @@ export default function ConstraintsConfig() {
   } = useAlgorithmContext();
 
   const { addAlerta } = useAlertsContext();
-  const t = useTranslations("Config.Constraints");
+  const t = useTranslations("Pages.Config.Constraints");
 
   // Estado contendo as instâncias ativas das constraints
   const [activeConstraints, setActiveConstraints] = useState<Constraint<any>[]>(
@@ -209,10 +209,11 @@ export default function ConstraintsConfig() {
           variant="caption"
           display="block"
           sx={{ mt: 0.5 }}
-          dangerouslySetInnerHTML={{
-            __html: `${t("configInfoHard")}<br />${t("configInfoSoft")}`,
-          }}
-        />
+        >
+          {t.rich("configInfoHard", { strong: (chunks) => <strong>{chunks}</strong> })}
+          <br />
+          {t.rich("configInfoSoft", { strong: (chunks) => <strong>{chunks}</strong> })}
+        </Typography>
       </Alert>
 
       {/* Restrições Disponíveis */}
