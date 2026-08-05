@@ -17,6 +17,7 @@ import {
 } from "@/context/Global/utils";
 import { useCollaboration } from "@/context/Collaboration";
 import { useTranslations } from "next-intl";
+import { useAccessibility } from "@/context/Accessibility";
 
 interface TimetableDataGridProps {
   setHoveredCourse: React.Dispatch<React.SetStateAction<Disciplina | null>>;
@@ -56,6 +57,7 @@ export default function TimetableDataGrid({
   } = useHoverEffects();
 
   const t = useTranslations("Pages.Assignment.DataGrid");
+  const { isHighContrast } = useAccessibility();
 
   //  Pegar infos da colaboração
   const { isInRoom, isOwner, config } = useCollaboration();
@@ -266,7 +268,7 @@ export default function TimetableDataGrid({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: setCellColor(prioridade, celula),
+                ...(setCellColor(prioridade, celula, isHighContrast) as any),
                 cursor: "pointer",
                 fontWeight: isAtribuido ? "bold" : "normal",
                 position: "relative",

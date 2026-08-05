@@ -184,14 +184,13 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         {isHighContrast && (
           <GlobalStyles
             styles={{
-              'div[class*="MuiBox-root"], section, article, main': {
+              "section, article, main": {
                 backgroundColor: "#000000 !important",
                 color: "#FFFFFF !important",
               },
               // Força bordas a aparecerem em elementos não tratados pelo Theme
               "*": {
                 borderColor: "#FFFFFF !important",
-                boxShadow: "none !important", // Sombras atrapalham contraste
               },
               "a, a *": {
                 color: "#FFFF00 !important",

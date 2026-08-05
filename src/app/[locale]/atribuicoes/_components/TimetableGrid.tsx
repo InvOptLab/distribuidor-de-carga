@@ -13,12 +13,10 @@ import { useTimetableRows } from "../hooks/useTimetableRows";
 import { useHoverEffects } from "../hooks/useHoverEffects";
 import HeaderCell from "./HeaderCell";
 import { useTimetable } from "../context/TimetableContext";
-import {
-  Disciplina,
-  TipoTrava,
-} from "@/algoritmo/communs/interfaces/interfaces";
+import { TipoTrava, Disciplina } from "@/algoritmo/communs/interfaces/interfaces";
 import { useCollaboration } from "@/context/Collaboration";
 import { useTranslations } from "next-intl";
+import { useAccessibility } from "@/context/Accessibility";
 
 interface TimetableGridProps {
   setHoveredCourse: (disciplina: Disciplina | null) => void;
@@ -66,8 +64,9 @@ export default function TimetableGrid({
 
   //  Pegar infos da colaboração
   const { isInRoom, isOwner, config } = useCollaboration();
-
+  const { cursors } = useCollaboration();
   const t = useTranslations("Pages.Assignment.TimetableGrid");
+  const { isHighContrast } = useAccessibility();
 
   const handleMouseEnterDocente = (
     atribuicao: {
@@ -210,16 +209,15 @@ export default function TimetableGrid({
                       }
                       align="center"
                       sx={{
-                        // 'style' com 'setBorder' foi removido
-                        backgroundColor: setCellColor(prioridade.prioridade, {
-                          nome_docente: atribuicao.nome,
-                          id_disciplina: prioridade.id_disciplina,
-                          tipo_trava: TipoTrava.Cell,
-                        }),
                         padding: "2px",
                         borderBottom: "1px solid",
                         borderColor: "divider",
                         borderRight: "1px solid rgba(224, 224, 224, 1)",
+                        ...(setCellColor(prioridade.prioridade, {
+                          nome_docente: atribuicao.nome,
+                          id_disciplina: prioridade.id_disciplina,
+                          tipo_trava: TipoTrava.Cell,
+                        }, isHighContrast) as any),
                         transition: "background-color 0.2s ease",
                         // Highlight sutil para linha/coluna hover
                         ...(hover.docente === atribuicao.nome && {
