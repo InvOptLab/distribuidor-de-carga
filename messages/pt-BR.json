@@ -1495,17 +1495,21 @@
     "StatusMessages": {
       "preprocessing": "Processando variáveis e construindo o modelo matemático...",
       "solving": "O otimizador está buscando a melhor solução...",
-      "completed": "Processo concluído!"
+      "completed": "Uma solução foi encontrada",
+      "infeasible": "Não foi possível encontrar uma solução viável"
     },
     "SubMessages": {
       "preprocessing": "Isso pode levar alguns segundos dependendo da quantidade de docentes e restrições.",
       "solving": "Aguarde enquanto o algoritmo explora o espaço de soluções.",
-      "completed": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela."
+      "completed": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela.",
+      "infeasible": "Não foi possível encontrar uma solução viável para o conjunto de restrições definidas no sistema para os dados apresentados."
     },
     "Stage": {
       "preprocessing": "Preparando Otimização",
       "preprocessingDescription": "Gerando matrizes e restrições...",
-      "solving": "Execução do Algoritmo"
+      "solving": "Execução do Algoritmo",
+      "completed": "Otimização Finalizada",
+      "infeasible": "Falha na Otimização"
     },
     "Metrics": {
       "iterations": "Iterações",
