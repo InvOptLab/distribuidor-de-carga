@@ -394,31 +394,19 @@ export function useAlgorithm() {
         // Prioridades p_ij do docente i para a turma j
         const p: number[][] = [];
 
-        const m: number[][] = [];
-        const a: number[][] = [];
-
-        for (const docente of activeDocentes) {
-          const dados = [];
-          for (const turma of activeTurmas) {
-            dados.push(0);
-
-            const trava = travas.find(
-              (trava) =>
-                trava.nome_docente === docente.nome &&
-                trava.id_disciplina === turma.id,
-            );
-
-            if (trava) {
-            }
-          }
-          m.push(dados);
-          a.push(dados);
-        }
+        const m: number[][] = Array(activeDocentes.length)
+          .fill(0)
+          .map(() => Array(activeTurmas.length).fill(0));
+        const a: number[][] = Array(activeDocentes.length)
+          .fill(0)
+          .map(() => Array(activeTurmas.length).fill(0));
 
         // Crie um Set para busca O(1)
         const travasSet = new Set(
           travas.map((trava) => `${trava.nome_docente}|${trava.id_disciplina}`),
         );
+
+        console.log(travasSet);
 
         for (let i = 0; i < activeDocentes.length; i++) {
           const docente = activeDocentes[i];
@@ -478,6 +466,8 @@ export function useAlgorithm() {
           p.push(prioridadesDocente);
         }
 
+        console.log(p);
+
         const solver = new MILP(
           "integer-solver",
           {
@@ -507,6 +497,19 @@ export function useAlgorithm() {
 
         const solution = await solver.execute();
 
+        if (solution.Status === "Infeasible") {
+          addAlerta(
+            "Não foi possível encontrar uma solução viável para o conjunto de restrições definidas no sistema para os dados apresentados.",
+            "warning",
+          );
+          // Limpeza de estados, não define solucaoAtual
+          setProcessing(false);
+          setInterrompe(false);
+          setDisciplinasAlocadas(0);
+          setExecutionStage("infeasible");
+          return;
+        }
+
         const solucao: Solucao = {
           atribuicoes: solver.solution.atribuicoes,
           avaliacao: solution.ObjectiveValue,
@@ -520,7 +523,7 @@ export function useAlgorithm() {
         setProcessing(false);
         setInterrompe(false);
         setDisciplinasAlocadas(0);
-        setExecutionStage("idle");
+        setExecutionStage("completed");
       }
     } catch (error) {
       console.error("Erro na execução do algoritmo:", error);
@@ -530,7 +533,7 @@ export function useAlgorithm() {
       setProcessing(false);
       setInterrompe(false);
       setDisciplinasAlocadas(0);
-      setExecutionStage("idle");
+      setExecutionStage("infeasible"); // Or error stage
     }
   };
 

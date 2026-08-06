@@ -112,10 +112,7 @@ export class MILP extends ExactAlgorithm {
     this.modelConsts.Pmax = Math.max(...this.modelSets.p.flat()) + 1;
 
     this.modelConsts.P = this.modelSets.D.map((i) =>
-      this.modelSets.T.map(
-        (j) => (this.modelSets.p[i][j] > 0 ? 1 : 0),
-        // this.modelSets.p[i][j] !== this.modelConsts.Pmax - 1 ? 1 : 0
-      ),
+      this.modelSets.T.map((j) => (this.modelSets.p[i][j] > 0 ? 1 : 0)),
     );
 
     // --- Criação das Variáveis de Decisão ---
