@@ -32,13 +32,16 @@ import { Estatisticas } from "@/algoritmo/communs/interfaces/interfaces";
 import { LineChart } from "@mui/x-charts";
 import { _Translator, useTranslations } from "next-intl";
 
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+
 export interface IProgressBar {
   total: number;
   current: number;
 }
 
 // Adicione o tipo para os estágios
-export type AlgorithmStage = "idle" | "preprocessing" | "solving";
+export type AlgorithmStage = "idle" | "preprocessing" | "solving" | "completed" | "infeasible";
 
 interface AlgoritmoDialogProps {
   open: boolean;
@@ -217,13 +220,15 @@ export default function AlgoritmoDialog({
   // Helper para textos dinâmicos
   const getStatusMessage = () => {
     if (stage === "preprocessing") return t("StatusMessages.preprocessing");
-    if (processing) return t("StatusMessages.solving");
+    if (stage === "solving") return t("StatusMessages.solving");
+    if (stage === "infeasible") return t("StatusMessages.infeasible");
     return t("StatusMessages.completed");
   };
 
   const getSubMessage = () => {
     if (stage === "preprocessing") return t("SubMessages.preprocessing");
-    if (processing) return t("SubMessages.solving");
+    if (stage === "solving") return t("SubMessages.solving");
+    if (stage === "infeasible") return t("SubMessages.infeasible");
     return t("SubMessages.completed");
   };
 
@@ -239,6 +244,10 @@ export default function AlgoritmoDialog({
       <DialogTitle id="alert-dialog-title">
         {stage === "preprocessing"
           ? t("Stage.preprocessing")
+          : stage === "infeasible"
+          ? t("Stage.infeasible")
+          : stage === "completed"
+          ? t("Stage.completed")
           : t("Stage.solving")}
       </DialogTitle>
       <IconButton
@@ -258,9 +267,11 @@ export default function AlgoritmoDialog({
           {getStatusMessage()}
         </DialogContentText>
 
-        <Typography variant="caption" color="text.secondary" component="p">
-          {getSubMessage()}
-        </Typography>
+        {stage === "preprocessing" || stage === "solving" ? (
+          <Typography variant="caption" color="text.secondary" component="p">
+            {getSubMessage()}
+          </Typography>
+        ) : null}
         {/* Exibição condicional baseada no estágio */}
         {stage === "preprocessing" ? (
           <Box
@@ -386,10 +397,27 @@ export default function AlgoritmoDialog({
                 </Box>
               )}
 
-              {!processing && (
-                <DialogContentText id="alert-dialog-description">
-                  {t("description")}
-                </DialogContentText>
+              {!processing && stage && stage !== "idle" && (
+                <Box
+                  sx={{
+                    mt: 4,
+                    p: 2,
+                    bgcolor: stage === "infeasible" ? "error.main" : "success.main",
+                    borderRadius: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    color: "white",
+                  }}
+                >
+                  {stage === "infeasible" ? (
+                    <ErrorOutlineIcon sx={{ mr: 2, fontSize: 40 }} />
+                  ) : (
+                    <CheckCircleIcon sx={{ mr: 2, fontSize: 40 }} />
+                  )}
+                  <Typography variant="body1">
+                    {getSubMessage()}
+                  </Typography>
+                </Box>
               )}
             </Box>
           </Fade>
@@ -405,9 +433,10 @@ export default function AlgoritmoDialog({
           {t("stop")}
         </Button>
         <Button
-          variant={processing ? "outlined" : "contained"}
+          variant={processing || stage === "infeasible" ? "outlined" : "contained"}
           loading={processing}
           onClick={onApply}
+          disabled={stage === "infeasible"}
         >
           {t("apply")}
         </Button>

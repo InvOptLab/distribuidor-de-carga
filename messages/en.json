@@ -1487,21 +1487,32 @@
     "unsupportedParameter": "Unsupported parameter type: {valueType}",
     "constraintParameter": "Constraint Parameter"
   },
+  "AlgorithmAlerts": {
+    "errorWorkerExecution": "Error executing the algorithm by Worker:",
+    "errorExecution": "Error executing the algorithm!",
+    "solutionAppliedSuccess": "The solution was successfully applied!",
+    "errorApplyingSolution": "Error applying the solution!",
+    "executionInterrupted": "The algorithm execution was interrupted!"
+  },
   "AlgorithmDialog": {
     "StatusMessages": {
       "preprocessing": "Processing variables and building the mathematical model...",
       "solving": "The optimizer is searching for the best solution...",
-      "completed": "Process completed!"
+      "completed": "A solution was found",
+      "infeasible": "It was not possible to find a viable solution"
     },
     "SubMessages": {
       "preprocessing": "This may take a few seconds depending on the number of professors and constraints.",
       "solving": "Please wait while the algorithm explores the search space.",
-      "completed": "The process is complete! You can now apply the solution or close this screen."
+      "completed": "The process is complete! You can now apply the solution or close this screen.",
+      "infeasible": "It was not possible to find a viable solution for the set of constraints defined in the system for the presented data."
     },
     "Stage": {
       "preprocessing": "Preparing Optimization",
       "preprocessingDescription": "Generating matrices and constraints...",
-      "solving": "Algorithm Execution"
+      "solving": "Algorithm Execution",
+      "completed": "Optimization Finished",
+      "infeasible": "Optimization Failed"
     },
     "Metrics": {
       "iterations": "Iterations",

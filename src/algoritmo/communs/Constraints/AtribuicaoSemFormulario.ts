@@ -119,7 +119,7 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
           `prioridade_definida_${i}_${j}`,
           LpSum([modelData.x[i][j]]),
           "<=",
-          modelData.P[i][j] + modelData.m[i][j] * modelData.a[i][j],
+          modelData.P[i][j] + modelData.m[i][j], //* modelData.a[i][j],
         );
       }),
     );
