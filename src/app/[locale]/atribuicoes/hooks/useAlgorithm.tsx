@@ -26,6 +26,7 @@ import { MILP } from "@/algoritmo/metodos/MILP/MILP";
 import { useCollaboration } from "@/context/Collaboration";
 import { AlgorithmStage } from "@/components/AlgorithmDialog";
 import { useTabuWorker } from "@/hooks/useTabuWorker";
+import { useTranslations } from "next-intl";
 
 /**
  * Converte a saída do solver HiGHS (baseada em índices e objeto 'Primal')
@@ -169,6 +170,8 @@ export function useAlgorithm() {
     selectedAlgorithm,
   } = useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
+  const tAlerts = useTranslations("AlgorithmAlerts");
+  const tDialog = useTranslations("AlgorithmDialog");
 
   const [openDialog, setOpenDialog] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -270,13 +273,13 @@ export function useAlgorithm() {
 
   const onError = useCallback(
     (error: string) => {
-      console.error("Erro na execução do algoritmo pelo Worker:", error);
-      addAlerta("Erro na execução do algoritmo!", "error");
+      console.error(tAlerts("errorWorkerExecution"), error);
+      addAlerta(tAlerts("errorExecution"), "error");
       setProcessing(false);
       setInterrompe(false);
       setExecutionStage("idle");
     },
-    [addAlerta],
+    [addAlerta, tAlerts],
   );
 
   const { startWorker, interruptWorker } = useTabuWorker({
@@ -499,7 +502,7 @@ export function useAlgorithm() {
 
         if (solution.Status === "Infeasible") {
           addAlerta(
-            "Não foi possível encontrar uma solução viável para o conjunto de restrições definidas no sistema para os dados apresentados.",
+            tDialog("SubMessages.infeasible"),
             "warning",
           );
           // Limpeza de estados, não define solucaoAtual
@@ -527,7 +530,7 @@ export function useAlgorithm() {
       }
     } catch (error) {
       console.error("Erro na execução do algoritmo:", error);
-      addAlerta("Erro na execução do algoritmo!", "error");
+      addAlerta(tAlerts("errorExecution"), "error");
 
       //Limpeza de estados
       setProcessing(false);
@@ -583,11 +586,11 @@ export function useAlgorithm() {
         );
       }
 
-      addAlerta("A solução foi aplicada com sucesso!", "success");
+      addAlerta(tAlerts("solutionAppliedSuccess"), "success");
       handleCloseDialog();
     } catch (error) {
       console.error("Erro ao aplicar solução:", error);
-      addAlerta("Erro ao aplicar a solução!", "error");
+      addAlerta(tAlerts("errorApplyingSolution"), "error");
     }
   };
 
@@ -599,7 +602,7 @@ export function useAlgorithm() {
     if (selectedAlgorithm === "tabu-search") {
       interruptWorker(); // Sinal para o Worker parar
     }
-    addAlerta("A execução do algoritmo foi interrompida!", "warning");
+    addAlerta(tAlerts("executionInterrupted"), "warning");
   };
 
   return {

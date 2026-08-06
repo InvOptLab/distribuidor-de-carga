@@ -1487,6 +1487,13 @@
     "unsupportedParameter": "Unsupported parameter type: {valueType}",
     "constraintParameter": "Constraint Parameter"
   },
+  "AlgorithmAlerts": {
+    "errorWorkerExecution": "Error executing the algorithm by Worker:",
+    "errorExecution": "Error executing the algorithm!",
+    "solutionAppliedSuccess": "The solution was successfully applied!",
+    "errorApplyingSolution": "Error applying the solution!",
+    "executionInterrupted": "The algorithm execution was interrupted!"
+  },
   "AlgorithmDialog": {
     "StatusMessages": {
       "preprocessing": "Processing variables and building the mathematical model...",
