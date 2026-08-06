@@ -773,7 +773,9 @@
         "download": "Download",
         "solutionAlreadySaved": "Solução já salva no histórico",
         "saveToHistory": "Salvar no histórico",
-        "save": "Salvar"
+        "save": "Salvar",
+        "toggleLockMode": "Alternar Modo de Travas",
+        "lockMode": "Modo Trava"
       }
     },
     "Cadastro": {

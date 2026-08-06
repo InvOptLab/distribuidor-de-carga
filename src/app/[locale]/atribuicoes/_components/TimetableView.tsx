@@ -48,6 +48,8 @@ export default function TimetableView() {
     setDocenteFilters,
     setDisciplinaFilters,
     clearFilters,
+    isLockMode,
+    setIsLockMode,
   } = useTimetable();
 
   const {
@@ -174,6 +176,8 @@ export default function TimetableView() {
           onSave={saveAlterations}
           onToggleFilters={() => setFiltersOpen(!filtersOpen)}
           hasActiveFilters={!!hasActiveFilters}
+          isLockMode={isLockMode}
+          onToggleLockMode={() => setIsLockMode(!isLockMode)}
         />
 
         <Drawer
