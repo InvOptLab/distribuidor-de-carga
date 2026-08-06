@@ -109,6 +109,8 @@ interface TimetableContextType {
   cleanStateAtribuicoes: () => void;
   saveAlterations: () => void;
   downalodJson: () => void;
+  isLockMode: boolean;
+  setIsLockMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TimetableContext = createContext<TimetableContextType | undefined>(
@@ -159,6 +161,8 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       rules: [],
     },
   );
+
+  const [isLockMode, setIsLockMode] = useState(false);
 
   // =======================================================
   // SINCRONIZAÇÃO DE FILTROS E DADOS
@@ -542,7 +546,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    if (event.ctrlKey) {
+    if (isLockMode || event.ctrlKey) {
       // Lógica de TRAVAS (Locks)
       let newTravas = [...travas];
       const exists = travas.some(
@@ -614,7 +618,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    * Gerencia os comportamentos das colunas ao serem clicadas
    */
   const handleColumnClick = (event: React.MouseEvent, trava: Celula) => {
-    if (event.ctrlKey) {
+    if (isLockMode || event.ctrlKey) {
       let newTravas = [...travas];
       const exists = travas.some(
         // (obj) => JSON.stringify(obj) === JSON.stringify(trava),
@@ -668,7 +672,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    * Gerencia os comportamentos das linhas ao serem clicadas
    */
   const handleRowClick = (event: React.MouseEvent, trava: Celula) => {
-    if (event.ctrlKey) {
+    if (isLockMode || event.ctrlKey) {
       let newTravas = [...travas];
       const exists = travas.some(
         // (obj) => JSON.stringify(obj) === JSON.stringify(trava),
@@ -901,6 +905,8 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     cleanStateAtribuicoes,
     saveAlterations,
     downalodJson,
+    isLockMode,
+    setIsLockMode,
   };
 
   return (

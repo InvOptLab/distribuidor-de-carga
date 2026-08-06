@@ -769,7 +769,9 @@
         "download": "Download",
         "solutionAlreadySaved": "Solution already saved in history",
         "saveToHistory": "Save to history",
-        "save": "Save"
+        "save": "Save",
+        "toggleLockMode": "Toggle Lock Mode",
+        "lockMode": "Lock Mode"
       }
     },
     "Cadastro": {

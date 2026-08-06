@@ -8,7 +8,10 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Box,
 } from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import { useTimetableRows } from "../hooks/useTimetableRows";
 import { useHoverEffects } from "../hooks/useHoverEffects";
 import HeaderCell from "./HeaderCell";
@@ -47,7 +50,7 @@ export default function TimetableGrid({
   setHoveredDocente,
   onMouseLeaveGrid,
 }: TimetableGridProps) {
-  const { filteredDisciplinas } = useTimetable();
+  const { filteredDisciplinas, isLockMode, travas } = useTimetable();
   const { rows } = useTimetableRows();
 
   const {
@@ -144,6 +147,9 @@ export default function TimetableGrid({
                       setHeaderCollor={setHeaderCollor}
                       setParentHoveredCourse={setHoveredCourse}
                     />
+                    {isLockMode && travas.some(t => t.id_disciplina === disciplina.id && t.tipo_trava === TipoTrava.Column) && (
+                      <LockOutlinedIcon sx={{ position: "absolute", top: 2, right: 2, fontSize: "1rem", color: "text.secondary" }} />
+                    )}
                   </TableCell>
                 ),
             )}
@@ -188,6 +194,9 @@ export default function TimetableGrid({
                   onMouseLeave={() => handleMouseEnterDocente(null)}
                 >
                   {atribuicao.nome}
+                  {isLockMode && travas.some(t => t.nome_docente === atribuicao.nome && t.tipo_trava === TipoTrava.Row) && (
+                    <LockOutlinedIcon sx={{ position: "absolute", top: 2, right: 2, fontSize: "1rem", color: "text.secondary" }} />
+                  )}
                 </Typography>
               </TableCell>
 
@@ -231,6 +240,7 @@ export default function TimetableGrid({
                         "&:hover": {
                           boxShadow: "inset 0 0 0 5px rgba(25, 118, 210, 0.9)",
                           zIndex: 2,
+                          cursor: isLockMode ? "pointer" : "default",
                         },
                       }}
                       onClick={(event) =>
@@ -259,7 +269,12 @@ export default function TimetableGrid({
                         onMouseLeaveGrid();
                       }}
                     >
-                      {prioridade.prioridade}
+                      <Box sx={{ position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {prioridade.prioridade}
+                        {isLockMode && travas.some(t => t.id_disciplina === prioridade.id_disciplina && t.nome_docente === atribuicao.nome) && (
+                          <LockOutlinedIcon sx={{ position: "absolute", opacity: 0.6, fontSize: "1.2rem" }} />
+                        )}
+                      </Box>
                     </TableCell>
                   ),
               )}
