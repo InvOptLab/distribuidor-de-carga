@@ -321,7 +321,6 @@ export function useAlgorithm() {
             ),
           }));
 
-        console.log([...hardConstraints, ...softConstraints]);
         // SERIALIZAÇÃO DAS INSTÂNCIAS! (Removemos os métodos e mandamos pro Worker)
         const activeComponents: ActiveComponentsSerialized = {
           constraints: serializeComponentMap(
@@ -332,8 +331,6 @@ export function useAlgorithm() {
           aspiration: serializeComponentMap(aspirationFunctions),
           objectives: serializeComponentMap(objectiveComponents),
         };
-
-        console.log(activeComponents.constraints);
 
         const contextData = {
           atribuicoes: activeAtribuicoes,
@@ -409,8 +406,6 @@ export function useAlgorithm() {
           travas.map((trava) => `${trava.nome_docente}|${trava.id_disciplina}`),
         );
 
-        console.log(travasSet);
-
         for (let i = 0; i < activeDocentes.length; i++) {
           const docente = activeDocentes[i];
           for (let j = 0; j < activeTurmas.length; j++) {
@@ -469,8 +464,6 @@ export function useAlgorithm() {
           p.push(prioridadesDocente);
         }
 
-        console.log(p);
-
         const solver = new MILP(
           "integer-solver",
           {
@@ -501,10 +494,7 @@ export function useAlgorithm() {
         const solution = await solver.execute();
 
         if (solution.Status === "Infeasible") {
-          addAlerta(
-            tDialog("SubMessages.infeasible"),
-            "warning",
-          );
+          addAlerta(tDialog("SubMessages.infeasible"), "warning");
           // Limpeza de estados, não define solucaoAtual
           setProcessing(false);
           setInterrompe(false);

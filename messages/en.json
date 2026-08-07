@@ -1145,6 +1145,8 @@
         "typeSolutionDesc": "Stores recent complete solutions",
         "typeMovement": "Movements",
         "typeMovementDesc": "Stores recent specific movements (add/drop)",
+        "typeHash": "Hashed Solutions",
+        "typeHashDesc": "Stores the hash of visited solutions for optimized and faster verification",
         "paramsSolution": "Parameters for Solutions List",
         "sizeLabel": "Tabu List Size",
         "sizeHelper": "Maximum number of solutions kept in the tabu list.",

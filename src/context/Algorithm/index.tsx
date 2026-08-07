@@ -90,8 +90,8 @@ export interface AlgorithmInterface {
   setAspirationFunctions: React.Dispatch<
     React.SetStateAction<Map<string, AspirationCriteriaEntry>>
   >;
-  tabuListType: "Solução" | "Movimento";
-  setTabuListType: React.Dispatch<"Solução" | "Movimento">;
+  tabuListType: "Solução" | "Movimento" | "Hash";
+  setTabuListType: React.Dispatch<"Solução" | "Movimento" | "Hash">;
   objectiveComponents: Map<string, ObjectiveComponent<any>>;
   setObjectiveComponents: React.Dispatch<
     React.SetStateAction<Map<string, ObjectiveComponent<any>>>
@@ -347,9 +347,9 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   );
 
   // TODO: Os textos devem ser modificados para um ENEM de forma a podermos utilizar as traduções de forma correta e não através de ajustes.
-  // FIX: Removi a tipagem pois os tipos estavam fixados em texto < "Solução" | "Movimento">
+  // FIX: Removi a tipagem pois os tipos estavam fixados em texto < "Solução" | "Movimento" | "Hash">
   const [tabuListType, setTabuListType] = useState(
-    t("TabuType.solution") as "Solução" | "Movimento",
+    t("TabuType.solution") as "Solução" | "Movimento" | "Hash",
   );
 
   const [objectiveComponents, setObjectiveComponents] = useState(

@@ -31,6 +31,7 @@ export interface Vizinho {
   movimentos?: Movimentos;
   isTabu?: boolean;
   avaliacao?: number;
+  hash?: string;
 }
 
 export interface ConstraintInterface {

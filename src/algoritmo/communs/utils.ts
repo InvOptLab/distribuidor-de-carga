@@ -188,7 +188,7 @@ export function isTabuSearch(
   alg: Algorithm<any> | AnyAlgorithm
 ): alg is TabuSearch {
   // Use o nome que você definiu no construtor da classe TabuSearch
-  return alg.name === "tabu-search"; //
+  return alg?.name === "tabu-search"; //
 }
 
 /**
@@ -196,7 +196,7 @@ export function isTabuSearch(
  */
 export function isMILP(alg: Algorithm<any> | AnyAlgorithm): alg is MILP {
   // Use o nome que você definiu no construtor da classe MILP
-  return alg.name === "integer-solver"; //
+  return alg?.name === "integer-solver"; //
 }
 
 /**
