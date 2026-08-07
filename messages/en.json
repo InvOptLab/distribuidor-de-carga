@@ -1185,6 +1185,7 @@
         "info": "Neighborhood functions define how new solutions are generated from the current solution.",
         "warning": "At least one function must be active.",
         "activeFunctions": "Active Functions:",
+        "sampleSizeLabel": "Neighborhood Size",
         "activeCount": "{active} of {total}",
         "noDescription": "No description available",
         "active": "Active",
@@ -1409,7 +1410,9 @@
       "remove": "Remove",
       "removeDescription": "Removing a professor from a class",
       "swap": "Swap",
-      "swapDescription": "Swaps assignments between two classes."
+      "swapDescription": "Swaps assignments between two classes.",
+      "stochasticMove": "Stochastic Random Move",
+      "stochasticMoveDescription": "Executes multiple random additions and removals at once to jump to distant regions of the neighborhood."
     },
     "StopCriteria": {
       "iterationLimit": "Iteration Limit",

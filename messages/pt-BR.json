@@ -1189,7 +1189,8 @@
         "info": "As funções de vizinhança definem como novas soluções são geradas a partir da solução atual.",
         "warning": "Pelo menos uma função deve estar ativa.",
         "activeFunctions": "Funções Ativas:",
-        "activeCount": "{active} de {total}",
+        "sampleSizeLabel": "Tamanho da Vizinhança",
+        "activeCount": "{active} de {total} ativas",
         "noDescription": "Sem descrição disponível",
         "active": "Ativo",
         "inactive": "Inativo",
@@ -1413,7 +1414,9 @@
       "remove": "Remover",
       "removeDescription": "Remover um docente de uma turma",
       "swap": "Trocar",
-      "swapDescription": "Troca as atribuições entre duas turmas."
+      "swapDescription": "Troca as atribuições entre duas turmas.",
+      "stochasticMove": "Movimento Estocástico",
+      "stochasticMoveDescription": "Executa múltiplas alterações aleatórias de uma vez para saltar para regiões distantes da vizinhança."
     },
     "StopCriteria": {
       "iterationLimit": "Limite de Iterações",

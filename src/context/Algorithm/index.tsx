@@ -12,6 +12,7 @@ import { ValidaTravas } from "@/algoritmo/communs/Constraints/ValidaTravas";
 import { Add } from "@/algoritmo/communs/NeighborhoodGeneration/Add";
 import { Remove } from "@/algoritmo/communs/NeighborhoodGeneration/Remove";
 import { Swap } from "@/algoritmo/communs/NeighborhoodGeneration/Swap";
+import { StochasticMove } from "@/algoritmo/communs/NeighborhoodGeneration/StochasticMove";
 import { MinimizarDiferencaCargaDidatica } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaCargaDidatica";
 import { MinimizarDiferencaSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaSaldos";
 import { MinimizarUtilizacaoSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarUtilizacaoSaldos";
@@ -268,6 +269,17 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
             t("Movements.swapDescription"),
           ),
           isActive: true,
+        },
+      ],
+      [
+        "StochasticMove",
+        {
+          instance: new StochasticMove(
+            t("Movements.stochasticMove"),
+            t("Movements.stochasticMoveDescription"),
+            1
+          ),
+          isActive: false,
         },
       ],
     ]),
