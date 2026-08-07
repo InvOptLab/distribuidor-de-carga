@@ -11,6 +11,7 @@ import {
   Chip,
   Tooltip,
   IconButton,
+  TextField,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useAlgorithmContext } from "@/context/Algorithm";
@@ -124,6 +125,38 @@ export default function NeighborhoodConfig() {
                   }
                   label={func.isActive ? t("active") : t("inactive")}
                 />
+
+                {func.instance._name === "StochasticMove" && (
+                   <Box sx={{ mt: 2 }}>
+                     <Typography variant="body2" gutterBottom>
+                        {t("sampleSizeLabel")}
+                     </Typography>
+                     <TextField 
+                       type="number"
+                       size="small"
+                       disabled={!func.isActive}
+                       value={(func.instance as any).sampleSize}
+                       onChange={(e) => {
+                          const val = Math.max(1, parseInt(e.target.value) || 1);
+                          setNeighborhoodFunctions((prev) => {
+                            const newMap = new Map(prev);
+                            const current = newMap.get(key);
+                            if (current) {
+                              // Clona para engatilhar render do contexto
+                              const newInstance = Object.assign(
+                                Object.create(Object.getPrototypeOf(current.instance)),
+                                current.instance
+                              );
+                              (newInstance as any).sampleSize = val;
+                              newMap.set(key, { ...current, instance: newInstance });
+                            }
+                            return newMap;
+                          });
+                       }}
+                       fullWidth
+                     />
+                   </Box>
+                )}
 
                 {func.isActive && activeCount === 1 && (
                   <Typography

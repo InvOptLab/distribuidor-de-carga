@@ -16,6 +16,7 @@ import { ValidaTravas } from "@/algoritmo/communs/Constraints/ValidaTravas";
 import { Add } from "@/algoritmo/communs/NeighborhoodGeneration/Add";
 import { Remove } from "@/algoritmo/communs/NeighborhoodGeneration/Remove";
 import { Swap } from "@/algoritmo/communs/NeighborhoodGeneration/Swap";
+import { StochasticMove } from "@/algoritmo/communs/NeighborhoodGeneration/StochasticMove";
 
 // Componentes da Função Objetivo (Objectives)
 import { MinimizarDiferencaCargaDidatica } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaCargaDidatica";
@@ -83,6 +84,7 @@ const ComponentRegistry: Record<
   Add,
   Remove,
   Swap,
+  StochasticMove,
 
   // Objectives
   MinimizarDiferencaCargaDidatica,
