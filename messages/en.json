@@ -24,6 +24,15 @@
           "f7": "Analysis of teachers' teaching workload balance"
         }
       },
+      "howItWorks": {
+        "title": "How it Works?",
+        "step1Title": "Input Your Data",
+        "step1Desc": "Upload your standard spreadsheet with teachers, classes, and priorities, or register them manually in the system.",
+        "step2Title": "Configure Optimization",
+        "step2Desc": "Adjust the optimization method parameters and the desired constraints for your academic environment.",
+        "step3Title": "Analyze the Results",
+        "step3Desc": "Explore the interactive spreadsheet generated with the best possible distribution, ensuring a fair and conflict-free allocation."
+      },
       "technologies": {
         "title": "Technologies"
       },
