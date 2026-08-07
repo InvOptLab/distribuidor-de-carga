@@ -24,6 +24,15 @@
           "f7": "Análise de saldo de carga didática dos docentes"
         }
       },
+      "howItWorks": {
+        "title": "Como Funciona?",
+        "step1Title": "Insira seus Dados",
+        "step1Desc": "Faça o upload da sua planilha padrão de docentes, turmas e prioridades ou cadastre manualmente no sistema.",
+        "step2Title": "Configure a Otimização",
+        "step2Desc": "Ajuste os parâmetros dos métodos de otimização e as restrições desejadas para o seu ambiente acadêmico.",
+        "step3Title": "Analise os Resultados",
+        "step3Desc": "Explore a planilha interativa gerada com a melhor distribuição possível, garantindo uma distirbuição justa e sem conflitos."
+      },
       "technologies": {
         "title": "Tecnologias"
       },
