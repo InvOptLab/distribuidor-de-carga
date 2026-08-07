@@ -117,17 +117,4 @@
   transform: translateY(0);
 }
 
-/* CSS Scroll-driven animations native API */
-@supports (animation-timeline: view()) and (animation-range: entry) {
-  .scrollAnim {
-    opacity: 0;
-    animation: fade-in-up auto forwards;
-    animation-timeline: view();
-    animation-range: entry 5% cover 25%;
-  }
 
-  @keyframes fade-in-up {
-    0% { opacity: 0; transform: translateY(50px) scale(0.95); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-}
