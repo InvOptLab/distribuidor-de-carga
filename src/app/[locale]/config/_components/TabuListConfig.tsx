@@ -22,7 +22,7 @@ import {
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useTranslations } from "next-intl";
 
-type TabuType = "Solução" | "Movimento";
+type TabuType = "Solução" | "Movimento" | "Hash";
 
 export default function TabuListConfig() {
   const { parametros, setParametros, tabuListType, setTabuListType } =
@@ -175,12 +175,25 @@ export default function TabuListConfig() {
                     }
                     sx={{ my: 1 }}
                   />
+                  <FormControlLabel
+                    value="Hash"
+                    control={<Radio />}
+                    label={
+                      <Box>
+                        <Typography variant="body1">{t("typeHash")}</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {t("typeHashDesc")}
+                        </Typography>
+                      </Box>
+                    }
+                    sx={{ my: 1 }}
+                  />
                 </RadioGroup>
               </FormControl>
 
               <Divider sx={{ my: 1 }} />
 
-              {tabuListType === "Solução" ? (
+              {tabuListType === "Solução" || tabuListType === "Hash" ? (
                 <Box>
                   <Typography
                     variant="subtitle1"
@@ -257,7 +270,7 @@ export default function TabuListConfig() {
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {t("typeConfig", { type: tabuListType })}
-                  {tabuListType === "Solução"
+                  {tabuListType === "Solução" || tabuListType === "Hash"
                     ? t("sizeConfig", { size: tabuSize })
                     : t("tenureConfig", { add: addTenure, drop: dropTenure })}
                 </Typography>

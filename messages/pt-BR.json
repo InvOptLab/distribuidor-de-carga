@@ -1149,6 +1149,8 @@
         "typeSolutionDesc": "Armazena soluções completas visitadas recentemente",
         "typeMovement": "Movimentos",
         "typeMovementDesc": "Armazena movimentos específicos (add/drop) realizados",
+        "typeHash": "Soluções com Hash",
+        "typeHashDesc": "Armazena o hash das soluções visitadas para uma verificação otimizada e mais rápida",
         "paramsSolution": "Parâmetros para Lista de Soluções",
         "sizeLabel": "Tamanho da Lista Tabu",
         "sizeHelper": "Número máximo de soluções mantidas na lista tabu.",
