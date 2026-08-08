@@ -1117,6 +1117,10 @@
         "integer-solver": {
           "name": "Integer Solver",
           "description": "Integer linear programming solver"
+        },
+        "simulated-annealing": {
+          "name": "Simulated Annealing",
+          "description": "Simulated Annealing: Stochastic search algorithm inspired by metal annealing"
         }
       },
       "Sections": {
@@ -1143,6 +1147,10 @@
         "aspiration": {
           "title": "Aspiration Criteria",
           "description": "Configure criteria to accept tabu solutions"
+        },
+        "sa-config": {
+          "title": "Cooling Parameters",
+          "description": "Configure Initial Temperature, Cooling Rate and Iterations"
         }
       },
       "TabuList": {
@@ -1172,6 +1180,18 @@
         "typeConfig": "Type: {type} |",
         "sizeConfig": " Size: {size}",
         "tenureConfig": " Add: {add}, Drop: {drop}"
+      },
+      "SimulatedAnnealing": {
+        "title": "Simulated Annealing Parameters",
+        "info": "Simulated Annealing accepts worse solutions early on to escape local optima. Initial Temperature defines initial flexibility, Cooling Rate controls how fast the algorithm becomes greedy, and Iterations define how many neighbors to evaluate at each temperature level.",
+        "paramsTitle": "Global Configurations",
+        "initialTemperatureLabel": "Initial Temperature (T0)",
+        "initialTemperatureHelper": "Ex: 10000",
+        "coolingRateLabel": "Cooling Rate (α)",
+        "coolingRateHelper": "Ex: 0.95 (0 to 1)",
+        "iterationsLabel": "Iterations per Temperature (L)",
+        "iterationsHelper": "Ex: 100",
+        "currentConfig": "Current Configuration:"
       },
       "Constraints": {
         "activeStats": "{active}/{total} active",

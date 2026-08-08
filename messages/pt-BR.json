@@ -1121,6 +1121,10 @@
         "integer-solver": {
           "name": "Solver Inteiro",
           "description": "Solver de programação linear inteira"
+        },
+        "simulated-annealing": {
+          "name": "Simulated Annealing",
+          "description": "Têmpera Simulada: Algoritmo de busca estocástica inspirado no resfriamento de metais"
         }
       },
       "Sections": {
@@ -1147,6 +1151,10 @@
         "aspiration": {
           "title": "Critérios de Aspiração",
           "description": "Configure critérios para aceitar soluções tabu"
+        },
+        "sa-config": {
+          "title": "Parâmetros do Resfriamento",
+          "description": "Configure Temperatura Inicial, Taxa de Resfriamento e Iterações"
         }
       },
       "TabuList": {
@@ -1176,6 +1184,18 @@
         "typeConfig": "Tipo: {type} |",
         "sizeConfig": " Tamanho: {size}",
         "tenureConfig": " Add: {add}, Drop: {drop}"
+      },
+      "SimulatedAnnealing": {
+        "title": "Parâmetros do Simulated Annealing",
+        "info": "O Simulated Annealing aceita soluções piores no início para escapar de ótimos locais. A Temperatura Inicial define a flexibilidade inicial, a Taxa de Resfriamento controla o quão rápido o algoritmo se torna guloso, e as Iterações definem quantos vizinhos avaliar em cada nível de temperatura.",
+        "paramsTitle": "Configurações Globais",
+        "initialTemperatureLabel": "Temperatura Inicial (T0)",
+        "initialTemperatureHelper": "Ex: 10000",
+        "coolingRateLabel": "Taxa de Resfriamento (α)",
+        "coolingRateHelper": "Ex: 0.95 (0 a 1)",
+        "iterationsLabel": "Iterações por Temperatura (L)",
+        "iterationsHelper": "Ex: 100",
+        "currentConfig": "Configuração Atual:"
       },
       "Constraints": {
         "activeStats": "{active}/{total} ativas",

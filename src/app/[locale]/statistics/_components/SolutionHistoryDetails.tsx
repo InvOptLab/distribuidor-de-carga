@@ -30,7 +30,7 @@ import LinearScaleIcon from "@mui/icons-material/LinearScale";
 import ChartContainer from "./ChartContainer";
 import { HistoricoSolucao } from "@/context/Global/utils";
 import { AVAILABLE_ALGORITHMS } from "@/app/[locale]/types/algorithm-types";
-import { isHeuristicAlgorithm, isTabuSearch } from "@/algoritmo/communs/utils";
+import { isHeuristicAlgorithm, isTabuSearch, isSimulatedAnnealing } from "@/algoritmo/communs/utils";
 import { Solution } from "@/algoritmo/metodos/TabuSearch/TabuList/Solution";
 import { Moviment } from "@/algoritmo/metodos/TabuSearch/TabuList/Moviment";
 import { isMILP } from "@/algoritmo/communs/utils";
@@ -232,11 +232,105 @@ export default function SolutionHistoryDetails({
                         {t("tabuListSize")}
                       </Typography>
                       <Typography variant="h5" color="primary">
-                        {algoritmo.tabuList instanceof Solution
-                          ? algoritmo.tabuList.tabuSize
-                          : algoritmo.tabuList instanceof Moviment
-                            ? `${algoritmo.tabuList.tenures.add} - ${algoritmo.tabuList.tenures.drop}`
-                            : "N/A"}
+                        {(algoritmo as any).tabuList?.tabuSize || "N/A"}
+                      </Typography>
+                    </Box>
+                  </Card>
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
+        )}
+
+        {algoritmo && isSimulatedAnnealing(algoritmo) && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">{t("globalParameters")}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key="initialTemperature">
+                  <Card
+                    elevation={3}
+                    sx={{
+                      padding: 2,
+                      borderRadius: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      minHeight: 100,
+                      textAlign: "center",
+                      backgroundColor: "#e3f2fd",
+                      border: "2px solid #1976d2",
+                    }}
+                  >
+                    <Tooltip title="Temperatura Inicial (T0)">
+                      <InfoOutlinedIcon color="primary" sx={{ fontSize: 40, marginRight: 2 }} />
+                    </Tooltip>
+                    <Box>
+                      <Typography variant="body1" fontWeight="bold">
+                        Temperatura Inicial
+                      </Typography>
+                      <Typography variant="h5" color="primary">
+                        {(algoritmo as any).initialTemperature || "N/A"}
+                      </Typography>
+                    </Box>
+                  </Card>
+                </Grid>
+                
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key="coolingRate">
+                  <Card
+                    elevation={3}
+                    sx={{
+                      padding: 2,
+                      borderRadius: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      minHeight: 100,
+                      textAlign: "center",
+                      backgroundColor: "#e3f2fd",
+                      border: "2px solid #1976d2",
+                    }}
+                  >
+                    <Tooltip title="Taxa de Resfriamento (Alpha)">
+                      <InfoOutlinedIcon color="primary" sx={{ fontSize: 40, marginRight: 2 }} />
+                    </Tooltip>
+                    <Box>
+                      <Typography variant="body1" fontWeight="bold">
+                        Taxa de Resfriamento
+                      </Typography>
+                      <Typography variant="h5" color="primary">
+                        {(algoritmo as any).coolingRate || "N/A"}
+                      </Typography>
+                    </Box>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key="iterationsPerTemperature">
+                  <Card
+                    elevation={3}
+                    sx={{
+                      padding: 2,
+                      borderRadius: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      minHeight: 100,
+                      textAlign: "center",
+                      backgroundColor: "#e3f2fd",
+                      border: "2px solid #1976d2",
+                    }}
+                  >
+                    <Tooltip title="Iterações por Temperatura (L)">
+                      <InfoOutlinedIcon color="primary" sx={{ fontSize: 40, marginRight: 2 }} />
+                    </Tooltip>
+                    <Box>
+                      <Typography variant="body1" fontWeight="bold">
+                        Iter. por Temperatura
+                      </Typography>
+                      <Typography variant="h5" color="primary">
+                        {(algoritmo as any).iterationsPerTemperature || "N/A"}
                       </Typography>
                     </Box>
                   </Card>
