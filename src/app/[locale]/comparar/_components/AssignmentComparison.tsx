@@ -110,6 +110,7 @@ export default function AssignmentComparison({
   ) => {
     return (
       <Chip
+        key={docenteNome}
         label={docenteNome}
         size="small"
         icon={<PersonIcon />}
