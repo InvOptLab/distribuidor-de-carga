@@ -25,6 +25,7 @@ import NeighborhoodConfig from "./_components/NeighborhoodConfig";
 import StopCriteriaConfig from "./_components/StopCriteriaConfig";
 import AspirationConfig from "./_components/AspirationConfig";
 import ObjectiveConfig from "./_components/ObjectiveConfig";
+import SimulatedAnnealingConfig from "./_components/SimulatedAnnealingConfig";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { AlgorithmType, AVAILABLE_ALGORITHMS } from "../types/algorithm-types";
 import { useTranslations } from "next-intl";
@@ -66,6 +67,7 @@ export default function Configuracoes() {
     neighborhood: <NeighborhoodConfig />,
     "stop-criteria": <StopCriteriaConfig />,
     aspiration: <AspirationConfig />,
+    "sa-config": <SimulatedAnnealingConfig />,
   };
 
   return (

@@ -65,6 +65,11 @@ export interface AlgorithmInterface {
         drop: number;
       };
     };
+    saConfig: {
+      initialTemperature: number;
+      coolingRate: number;
+      iterationsPerTemperature: number;
+    };
     maxIterations: { value?: number; isActive: boolean };
   };
   setParametros: React.Dispatch<
@@ -75,6 +80,11 @@ export interface AlgorithmInterface {
           add: number;
           drop: number;
         };
+      };
+      saConfig: {
+        initialTemperature: number;
+        coolingRate: number;
+        iterationsPerTemperature: number;
       };
       maxIterations: { value?: number; isActive: boolean };
     }>
@@ -118,6 +128,11 @@ const AlgorithmContext = createContext<AlgorithmInterface>({
         add: 5,
         drop: 5,
       },
+    },
+    saConfig: {
+      initialTemperature: 10000,
+      coolingRate: 0.95,
+      iterationsPerTemperature: 100,
     },
     maxIterations: { value: undefined, isActive: false },
   },
@@ -227,6 +242,11 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         drop: number;
       };
     };
+    saConfig: {
+      initialTemperature: number;
+      coolingRate: number;
+      iterationsPerTemperature: number;
+    };
     maxIterations: { value?: number; isActive: boolean };
   }>({
     tabuTenure: {
@@ -235,6 +255,11 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         add: 5,
         drop: 5,
       },
+    },
+    saConfig: {
+      initialTemperature: 10000,
+      coolingRate: 0.95,
+      iterationsPerTemperature: 100,
     },
     maxIterations: { value: undefined, isActive: false },
   });

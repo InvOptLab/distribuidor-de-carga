@@ -26,6 +26,7 @@ import { MILP } from "@/algoritmo/metodos/MILP/MILP";
 import { useCollaboration } from "@/context/Collaboration";
 import { AlgorithmStage } from "@/components/AlgorithmDialog";
 import { useTabuWorker } from "@/hooks/useTabuWorker";
+import { useSAWorker } from "@/hooks/useSAWorker";
 import { useTranslations } from "next-intl";
 
 /**
@@ -192,6 +193,7 @@ export function useAlgorithm() {
 
   const disciplinasAlocadasRef = useRef(disciplinasAlocadas);
   const interrompeRef = useRef(interrompe);
+  const algorithmParamsRef = useRef<any>(null);
 
   /**
    * Campos a serem monitorados durante a execução do algoritmo.
@@ -264,12 +266,16 @@ export function useAlgorithm() {
   );
 
   const onSuccess = useCallback((solucao: Solucao) => {
+    if (algorithmParamsRef.current) {
+      solucao.algorithm = algorithmParamsRef.current;
+      algorithmParamsRef.current = null;
+    }
     setSolucaoAtual(solucao);
     setProcessing(false);
     setInterrompe(false);
     setDisciplinasAlocadas(0);
     setExecutionStage("idle");
-  }, []);
+  }, [setSolucaoAtual]);
 
   const onError = useCallback(
     (error: string) => {
@@ -283,6 +289,13 @@ export function useAlgorithm() {
   );
 
   const { startWorker, interruptWorker } = useTabuWorker({
+    onProgressAllocation,
+    onProgressStats,
+    onSuccess,
+    onError,
+  });
+
+  const saWorker = useSAWorker({
     onProgressAllocation,
     onProgressStats,
     onSuccess,
@@ -350,8 +363,74 @@ export function useAlgorithm() {
           objectiveType: "max",
         };
 
+        algorithmParamsRef.current = {
+          name: "tabu-search",
+          tabuList: { 
+            tabuSize: tabuListType === "Solução" ? parametros.tabuTenure.size : parametros.tabuTenure.tenures 
+          },
+          constraints: { hard: new Map(hardConstraints), soft: new Map(softConstraints) },
+          neighborhoodPipe: new Map(neighborhoodFunctions),
+          stopPipe: new Map(stopFunctions),
+        };
+
         setExecutionStage("solving");
         startWorker(contextData, configData, activeComponents);
+      } else if (selectedAlgorithm === "simulated-annealing") {
+        const activeDocentes = docentes.filter((d) => d.ativo);
+        const activeDisciplinas = disciplinas.filter((d) => d.ativo);
+        const activeFormularios = getActiveFormularios(
+          formularios,
+          disciplinas,
+          docentes,
+        );
+
+        const activeAtribuicoes = atribuicoes
+          .filter((attr) =>
+            activeDisciplinas.some((d) => d.id === attr.id_disciplina),
+          )
+          .map((attr) => ({
+            ...attr,
+            docentes: attr.docentes.filter((docente) =>
+              activeDocentes.some((d) => d.nome === docente),
+            ),
+          }));
+
+        const activeComponents: ActiveComponentsSerialized = {
+          constraints: serializeComponentMap(
+            new Map([...hardConstraints, ...softConstraints]),
+          ),
+          neighborhood: serializeComponentMap(neighborhoodFunctions),
+          stopFunctions: serializeComponentMap(stopFunctions),
+          aspiration: serializeComponentMap(aspirationFunctions),
+          objectives: serializeComponentMap(objectiveComponents),
+        };
+
+        const contextData = {
+          atribuicoes: activeAtribuicoes,
+          docentes: activeDocentes,
+          turmas: activeDisciplinas,
+          travas: travas,
+          prioridades: activeFormularios,
+        };
+
+        const configData = {
+          saConfig: parametros.saConfig,
+          maxPriority: maxPriority + 1,
+          objectiveType: "max",
+        };
+
+        algorithmParamsRef.current = {
+          name: "simulated-annealing",
+          initialTemperature: parametros.saConfig.initialTemperature,
+          coolingRate: parametros.saConfig.coolingRate,
+          iterationsPerTemperature: parametros.saConfig.iterationsPerTemperature,
+          constraints: { hard: new Map(hardConstraints), soft: new Map(softConstraints) },
+          neighborhoodPipe: new Map(neighborhoodFunctions),
+          stopPipe: new Map(stopFunctions),
+        };
+
+        setExecutionStage("solving");
+        saWorker.startWorker(contextData, configData, activeComponents);
       } else {
         const activeDocentes = docentes.filter((d) => d.ativo);
         const activeTurmas = disciplinas.filter((d) => d.ativo);
@@ -591,6 +670,8 @@ export function useAlgorithm() {
     setInterrompe(true);
     if (selectedAlgorithm === "tabu-search") {
       interruptWorker(); // Sinal para o Worker parar
+    } else if (selectedAlgorithm === "simulated-annealing") {
+      saWorker.interruptWorker();
     }
     addAlerta(tAlerts("executionInterrupted"), "warning");
   };

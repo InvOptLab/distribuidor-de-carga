@@ -2,6 +2,7 @@ import Algorithm from "../abstractions/Algorithm";
 import Constraint from "../abstractions/Constraint";
 import { MILP } from "../metodos/MILP/MILP";
 import { TabuSearch } from "../metodos/TabuSearch/Classes/TabuSearch";
+import { SimulatedAnnealing } from "../metodos/SimulatedAnnealing/Classes/SimulatedAnnealing";
 import {
   Atribuicao,
   Celula,
@@ -177,9 +178,19 @@ export function atribuicoesIguais(atr1: Atribuicao, atr2: Atribuicao): boolean {
 }
 
 // Definir um tipo de união para todos os seus algoritmos
-export type AnyAlgorithm = TabuSearch | MILP;
+export type AnyAlgorithm = TabuSearch | MILP | SimulatedAnnealing;
 
 // --- Type Guards ---
+
+/**
+ * Verifica se um algoritmo é uma instância de SimulatedAnnealing.
+ */
+export function isSimulatedAnnealing(
+  alg: Algorithm<any> | AnyAlgorithm
+): alg is SimulatedAnnealing {
+  return alg?.name === "simulated-annealing";
+}
+
 
 /**
  * Verifica se um algoritmo é uma instância de TabuSearch.
