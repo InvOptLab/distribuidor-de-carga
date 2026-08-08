@@ -1,7 +1,7 @@
 /**
  * Tipos de algoritmos disponíveis no sistema
  */
-export type AlgorithmType = "tabu-search" | "integer-solver";
+export type AlgorithmType = "tabu-search" | "integer-solver" | "simulated-annealing";
 
 /**
  * Seção de configuração de um algoritmo
@@ -94,4 +94,44 @@ export const AVAILABLE_ALGORITHMS: Algorithm[] = [
       },
     ],
   },
+  {
+    id: "simulated-annealing",
+    name: "Simulated Annealing",
+    description: "Têmpera Simulada: Algoritmo de busca estocástica inspirado no resfriamento de metais",
+    icon: "🔥",
+    configSections: [
+      {
+        id: "sa-config",
+        title: "Parâmetros do Resfriamento",
+        description: "Configure Temperatura Inicial, Taxa de Resfriamento e Iterações",
+        icon: "🌡️",
+      },
+      {
+        id: "constraints",
+        title: "Restrições",
+        description: "Gerencie as restrições rígias e flexíveis do algoritmo",
+        icon: "⚖️",
+      },
+      {
+        id: "objectiveCost",
+        title: "Custos da Função Objetivo",
+        description:
+          "Configure os custos que serão considerados na função objetivo",
+        icon: "🎯",
+      },
+      {
+        id: "neighborhood",
+        title: "Geração da Vizinhança",
+        description: "Configure as funções de geração de vizinhança",
+        icon: "🔄",
+      },
+      {
+        id: "stop-criteria",
+        title: "Critérios de Parada",
+        description: "Defina quando o algoritmo deve parar",
+        icon: "⏹️",
+      }
+    ],
+  },
 ];
+
