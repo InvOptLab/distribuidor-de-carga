@@ -43,16 +43,34 @@ export default function DocenteCard({
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
         border: "1px solid",
         borderColor: "divider",
+        borderRadius: 3,
+        backgroundImage: "linear-gradient(145deg, rgba(25, 118, 210, 0.02) 0%, transparent 100%)",
+        position: "relative",
+        overflow: "hidden",
         "&:hover": {
-          transform: "translateY(-8px)",
-          boxShadow: "0 12px 24px rgba(0, 0, 0, 0.12)",
-          borderColor: "primary.main",
+          transform: "translateY(-4px)",
+          boxShadow: "0 12px 28px rgba(0, 0, 0, 0.08)",
+          borderColor: "primary.light",
+          "& .action-buttons": {
+            opacity: 1,
+            transform: "translateY(0)",
+          }
         },
       }}
     >
+      <Box 
+        sx={{ 
+          position: "absolute", 
+          top: 0, 
+          left: 0, 
+          width: "4px", 
+          height: "100%", 
+          backgroundColor: docente.ativo ? "success.main" : "text.disabled" 
+        }} 
+      />
       <CardContent sx={{ flexGrow: 1, pb: 1 }}>
         {/* Header com ícone e nome */}
         <Box
@@ -196,12 +214,16 @@ export default function DocenteCard({
       </CardContent>
 
       <CardActions
+        className="action-buttons"
         sx={{
           justifyContent: "flex-end",
           borderTop: 1,
           borderColor: "divider",
           gap: 0.5,
-          pt: 1,
+          pt: 1.5,
+          pb: 1.5,
+          opacity: { xs: 1, md: 0.6 },
+          transition: "all 0.3s",
         }}
       >
         <Tooltip title={t("editTooltip")}>

@@ -321,12 +321,9 @@ export default function DocenteForm({
       <Paper
         elevation={0}
         sx={{
-          p: 3,
-          border: "1px solid",
-          borderColor: "divider",
+          p: 2,
           borderRadius: 2,
-          background:
-            "linear-gradient(135deg, rgba(25, 103, 210, 0.02) 0%, transparent 100%)",
+          backgroundColor: "transparent",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
@@ -389,6 +386,11 @@ export default function DocenteForm({
               multiline
               rows={2}
               placeholder={t("personalData.commentPlaceholder")}
+              sx={{
+                "& .MuiInputBase-root": {
+                  fieldSizing: "content",
+                },
+              }}
             />
           </Tooltip>
 
@@ -432,12 +434,9 @@ export default function DocenteForm({
       <Paper
         elevation={0}
         sx={{
-          p: 3,
-          border: "1px solid",
-          borderColor: "divider",
+          p: 2,
           borderRadius: 2,
-          background:
-            "linear-gradient(135deg, rgba(25, 103, 210, 0.02) 0%, transparent 100%)",
+          backgroundColor: "transparent",
         }}
       >
         <Box

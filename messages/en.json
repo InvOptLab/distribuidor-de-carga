@@ -796,6 +796,7 @@
       "professorsTabTooltip": "View and manage professors",
       "classesTab": "Classes",
       "classesTabTooltip": "View and manage classes/subjects",
+      "searchPlaceholder": "Search...",
       "professorsHeader": "Professors ({count})",
       "professorsSubheader": "Click on a professor to edit or add a new one",
       "classesHeader": "Classes/Subjects ({count})",

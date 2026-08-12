@@ -17,12 +17,16 @@ import {
   DialogActions,
   Button,
   Divider,
+  Slide,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import {
   School as SchoolIcon,
   Class as ClassIcon,
   Info as InfoIcon,
   Delete as DeleteIcon,
+  Search as SearchIcon,
 } from "@mui/icons-material";
 import { useAlertsContext } from "@/context/Alerts";
 import { useGlobalContext } from "@/context/Global";
@@ -65,15 +69,33 @@ export default function CadastroPage() {
     item: Docente | Disciplina;
   } | null>(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredDocentes = docentes.filter((d) =>
+    d.nome.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  const filteredDisciplinas = disciplinas.filter(
+    (t) =>
+      t.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.codigo.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
   const handleTipoChange = (
     _: React.MouseEvent<HTMLElement>,
     novoTipo: TipoCadastro | null,
   ) => {
     if (novoTipo !== null) {
-      setTipoCadastro(novoTipo);
-      setShowForm(false);
-      setDocenteParaEditar(null);
-      setTurmaParaEditar(null);
+      // Use startViewTransition for smooth tab switching
+      if (document.startViewTransition) {
+        document.startViewTransition(() => {
+          setTipoCadastro(novoTipo);
+          setSearchTerm("");
+        });
+      } else {
+        setTipoCadastro(novoTipo);
+        setSearchTerm("");
+      }
     }
   };
 
@@ -221,9 +243,10 @@ export default function CadastroPage() {
           </Box>
         </Box>
 
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-          <Tooltip title={t("professorsTabTooltip")} placement="bottom">
-            <ToggleButton
+        <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 3 }}>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Tooltip title={t("professorsTabTooltip")} placement="bottom">
+              <ToggleButton
               value="docente"
               selected={tipoCadastro === "docente"}
               onChange={handleTipoChange}
@@ -286,42 +309,42 @@ export default function CadastroPage() {
               <Typography fontWeight={600}>{t("classesTab")}</Typography>
             </ToggleButton>
           </Tooltip>
+          </Box>
+
+          <TextField
+            placeholder={t("searchPlaceholder", { defaultValue: "Pesquisar..." })}
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{
+              minWidth: { xs: "100%", md: 300 },
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                backgroundColor: "background.paper",
+                transition: "all 0.3s",
+                "&:hover, &.Mui-focused": {
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                },
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }}
+          />
         </Box>
       </Paper>
 
-      {showForm ? (
-        <Paper
-          elevation={0}
-          sx={{
-            p: 4,
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: 2,
-            background:
-              "linear-gradient(135deg, rgba(25, 103, 210, 0.02) 0%, transparent 100%)",
-          }}
-        >
-          {tipoCadastro === "docente" ? (
-            <DocenteForm
-              docenteParaEditar={docenteParaEditar}
-              onClose={handleCloseForm}
-              onSave={handleSaveForm}
-            />
-          ) : (
-            <TurmaForm
-              turmaParaEditar={turmaParaEditar}
-              onClose={handleCloseForm}
-              onSave={handleSaveForm}
-            />
-          )}
-        </Paper>
-      ) : (
-        <>
+
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" fontWeight={600} gutterBottom>
               {tipoCadastro === "docente"
-                ? t("professorsHeader", { count: docentes.length })
-                : t("classesHeader", { count: disciplinas.length })}
+                ? t("professorsHeader", { count: filteredDocentes.length })
+                : t("classesHeader", { count: filteredDisciplinas.length })}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {tipoCadastro === "docente"
@@ -345,19 +368,25 @@ export default function CadastroPage() {
           >
             {tipoCadastro === "docente" ? (
               <>
-                {docentes.length > 0 &&
-                  docentes.map((docente) => (
-                    <DocenteCard
-                      key={docente.nome}
-                      docente={docente}
-                      onEdit={handleEditDocente}
-                      onDelete={handleDeleteDocente}
-                    />
+                {filteredDocentes.length > 0 &&
+                  filteredDocentes.map((docente) => (
+                    <Box key={docente.nome} sx={{ height: "100%", style: { viewTransitionName: `card-${docente.nome.replace(/\s+/g, '-')}` } }}>
+                      <DocenteCard
+                        docente={docente}
+                        onEdit={handleEditDocente}
+                        onDelete={handleDeleteDocente}
+                      />
+                    </Box>
                   ))}
                 <AddCard
                   tooltip={t("Components.AddCard.newProfessor")}
                   onClick={handleAddClick}
                 />
+                {filteredDocentes.length === 0 && docentes.length > 0 && (
+                  <Box sx={{ gridColumn: "1 / -1", py: 4, textAlign: "center" }}>
+                     <Typography color="text.secondary">Nenhum docente encontrado para "{searchTerm}"</Typography>
+                  </Box>
+                )}
                 {docentes.length === 0 && (
                   <Box
                     sx={{
@@ -378,16 +407,22 @@ export default function CadastroPage() {
               </>
             ) : (
               <>
-                {disciplinas.length > 0 &&
-                  disciplinas.map((turma) => (
-                    <TurmaCard
-                      key={turma.id}
-                      turma={turma}
-                      onEdit={handleEditTurma}
-                      onDelete={handleDeleteTurma}
-                    />
+                {filteredDisciplinas.length > 0 &&
+                  filteredDisciplinas.map((turma) => (
+                    <Box key={turma.id} sx={{ height: "100%", style: { viewTransitionName: `card-${turma.id}` } }}>
+                      <TurmaCard
+                        turma={turma}
+                        onEdit={handleEditTurma}
+                        onDelete={handleDeleteTurma}
+                      />
+                    </Box>
                   ))}
                 <AddCard tooltip={t("Components.AddCard.newClass")} onClick={handleAddClick} />
+                {filteredDisciplinas.length === 0 && disciplinas.length > 0 && (
+                  <Box sx={{ gridColumn: "1 / -1", py: 4, textAlign: "center" }}>
+                     <Typography color="text.secondary">Nenhuma turma encontrada para "{searchTerm}"</Typography>
+                  </Box>
+                )}
                 {disciplinas.length === 0 && (
                   <Box
                     sx={{
@@ -408,17 +443,50 @@ export default function CadastroPage() {
               </>
             )}
           </Box>
-        </>
-      )}
+
+      {/* Formulário Modal */}
+      <Dialog 
+        open={showForm} 
+        onClose={handleCloseForm} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: { xs: 1, sm: 2 },
+            background: "background.paper"
+          }
+        }}
+      >
+        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>
+          {tipoCadastro === "docente" ? (
+            <DocenteForm
+              docenteParaEditar={docenteParaEditar}
+              onClose={handleCloseForm}
+              onSave={handleSaveForm}
+            />
+          ) : (
+            <TurmaForm
+              turmaParaEditar={turmaParaEditar}
+              onClose={handleCloseForm}
+              onSave={handleSaveForm}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         maxWidth="sm"
         fullWidth
+        TransitionComponent={Slide}
+        TransitionProps={{ direction: "up" } as any}
         PaperProps={{
           sx: {
-            borderRadius: 2,
+            borderRadius: 3,
+            p: 1,
+            boxShadow: "0 24px 48px rgba(0,0,0,0.15)",
           },
         }}
       >

@@ -800,6 +800,7 @@
       "professorsTabTooltip": "Visualizar e gerenciar docentes",
       "classesTab": "Turmas",
       "classesTabTooltip": "Visualizar e gerenciar turmas/disciplinas",
+      "searchPlaceholder": "Pesquisar...",
       "professorsHeader": "Docentes ({count})",
       "professorsSubheader": "Clique em um docente para editar ou adicione um novo",
       "classesHeader": "Turmas/Disciplinas ({count})",
