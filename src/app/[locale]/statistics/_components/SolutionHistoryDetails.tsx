@@ -20,6 +20,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import TrendingDownOutlinedIcon from "@mui/icons-material/TrendingDownOutlined";
 import { BarChart, LineChart } from "@mui/x-charts";
 import ConstraintsBarCharts from "./ConstraintsBarCharts";
+import ConstraintDiagnostics from "./ConstraintDiagnostics";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ShuffleOutlinedIcon from "@mui/icons-material/ShuffleOutlined";
 import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
@@ -818,6 +819,12 @@ export default function SolutionHistoryDetails({
                   {/* </ChartContainer> */}
                 </CardContent>
               </Card>
+              <ConstraintDiagnostics
+                ocorrencias={selectOcorrenciasToDisplay(
+                  solucao.solucao.estatisticas.qtdOcorrenciasRestricoes,
+                  "restricoes",
+                )}
+              />
             </Grid>
           ) : (
             <Grid size={{ xs: 12 }}>

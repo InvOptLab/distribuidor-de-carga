@@ -8,6 +8,7 @@ import {
   Atribuicao,
   ConstraintInterface,
   Docente,
+  Disciplina,
   IParameter,
 } from "../interfaces/interfaces";
 import { LpSum } from "@/algoritmo/metodos/MILP/utils";
@@ -81,8 +82,23 @@ export class DisciplinaSemDocente extends Constraint<LimiteDocente> {
     };
   }
 
-  occurrences(atribuicoes: Atribuicao[]): { label: string; qtd: number }[] {
-    const data: { label: string; qtd: number }[] = [];
+  occurrences(atribuicoes: Atribuicao[], docentes?: Docente[], turmas?: Disciplina[]): { label: string; qtd: number; items?: string[] }[] {
+    const data: { label: string; qtd: number; items?: string[] }[] = [];
+    const items: string[] = [];
+
+    let qtd: number = 0;
+
+    for (const atribuicao of atribuicoes) {
+      if (atribuicao.docentes.length === 0) {
+        qtd += 1;
+        const turmaEncontrada = turmas?.find((t) => t.id === atribuicao.id_disciplina);
+        if (turmaEncontrada) {
+          items.push(`${turmaEncontrada.codigo} - Turma ${turmaEncontrada.turma}`);
+        } else {
+          items.push(atribuicao.id_disciplina);
+        }
+      }
+    }
 
     if (this.penalty !== 0 && !this.hard) {
       const softEvaluation = this.soft(atribuicoes);
@@ -90,18 +106,13 @@ export class DisciplinaSemDocente extends Constraint<LimiteDocente> {
       data.push({
         label: "Sem Docente",
         qtd: Math.abs(softEvaluation / this.penalty),
+        items: items,
       });
     } else {
-      let qtd: number = 0;
-
-      for (const atribuicao of atribuicoes) {
-        if (atribuicao.docentes.length === 0) {
-          qtd += 1;
-        }
-      }
       data.push({
         label: "Sem Docente",
         qtd: qtd,
+        items: items,
       });
     }
 

@@ -100,21 +100,14 @@ export class ChoqueDeHorarios extends Constraint<any> {
 
   occurrences(
     atribuicoes: Atribuicao[],
-    docentes: Docente[],
-    disciplinas: Disciplina[],
-  ): { label: string; qtd: number }[] {
-    const data: { label: string; qtd: number }[] = [];
+    docentes?: Docente[],
+    disciplinas?: Disciplina[],
+  ): { label: string; qtd: number; items?: string[] }[] {
+    const data: { label: string; qtd: number; items?: string[] }[] = [];
+    const items: string[] = [];
+    let qtd: number = 0;
 
-    if (this.penalty !== 0 && !this.hard) {
-      const softEvaluation = this.soft(atribuicoes, docentes, disciplinas);
-
-      data.push({
-        label: "Choque de Horários",
-        qtd: Math.abs(softEvaluation / this.penalty),
-      });
-    } else {
-      let qtd: number = 0;
-
+    if (docentes && disciplinas) {
       // Incrementa o contador para cada choque de horários encontrados nas atribuições dos docentes
       for (const docente of docentes) {
         // Lista com os Ids das disciplinas
@@ -124,22 +117,38 @@ export class ChoqueDeHorarios extends Constraint<any> {
 
         // Comparar as atribuições para ver se a `Disciplia.conflitos` não incluem umas as outras
         for (let i = 0; i < atribuicoesDocente.length; i++) {
-          const disciplinaPivo: Disciplina = disciplinas.find(
+          const disciplinaPivo: Disciplina | undefined = disciplinas.find(
             (disciplina) => disciplina.id === atribuicoesDocente[i],
           );
 
+          if (!disciplinaPivo) continue;
+
           for (let j = i + 1; j < atribuicoesDocente.length; j++) {
-            const disciplinaAtual: Disciplina = disciplinas.find(
+            const disciplinaAtual: Disciplina | undefined = disciplinas.find(
               (disciplina) => disciplina.id === atribuicoesDocente[j],
             );
 
+            if (!disciplinaAtual) continue;
+
             if (disciplinaPivo.conflitos.has(disciplinaAtual.id)) {
               qtd += 1;
+              items.push(`Docente: ${docente.nome} -> ${disciplinaPivo.codigo} (T${disciplinaPivo.turma}) x ${disciplinaAtual.codigo} (T${disciplinaAtual.turma})`);
             }
           }
         }
       }
-      data.push({ label: "Choque de Horários", qtd: qtd });
+    }
+
+    if (this.penalty !== 0 && !this.hard && docentes && disciplinas) {
+      const softEvaluation = this.soft(atribuicoes, docentes, disciplinas);
+
+      data.push({
+        label: "Choque de Horários",
+        qtd: Math.abs(softEvaluation / this.penalty),
+        items: items,
+      });
+    } else {
+      data.push({ label: "Choque de Horários", qtd: qtd, items: items });
     }
 
     return data;
