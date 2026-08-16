@@ -1319,12 +1319,32 @@
       }
     },
     "Statistics": {
+      "dashboardTitle": "Dashboard de Resultados",
+      "dashboardSubtitle": "Selecione uma solução para visualizar as estatísticas detalhadas.",
       "chooseSolution": "Escolha uma solução para análise",
       "solution": "Solução",
       "noSolutionFound": "Nenhuma solução encontrada!",
       "tabs": {
+        "overview": "Visão Geral",
+        "constraints": "Restrições",
+        "configurations": "Configurações",
         "solutionDetails": "Detalhes da Solução",
         "workloadAnalysis": "Análise de Carga Didática"
+      },
+      "Overview": {
+        "finalEvaluation": "Avaliação Final",
+        "constraintViolations": "Violações de Restrições",
+        "algorithmEvolution": "Evolução do Algoritmo",
+        "noChartData": "O gráfico de evolução não pôde ser gerado para este tipo de inserção ou algoritmo."
+      },
+      "Constraints": {
+        "tabTitle": "Análise de Restrições e Violações",
+        "diagnosticsTitle": "Diagnóstico de Restrições",
+        "diagnosticsSubtitle": "Detalhamento dos casos específicos que violaram as restrições e impactaram a pontuação.",
+        "violationIn": "Violação na Restrição:",
+        "reportedCases": "casos reportados",
+        "violatingItems": "Itens em Violação:",
+        "noConstraintData": "Não há dados de restrições ou ocorreu um erro na análise."
       },
       "SingleSolutionWorkloadChart": {
         "totalProfessors": "Total de Docentes",
@@ -1364,7 +1384,35 @@
         "timeChartTitle": "Gráfico Tempo (ms) por Iteração",
         "noTimeData": "Dados de tempo por iteração não disponíveis para esta solução.",
         "histogramConstraintsTitle": "Histograma Ocorrências de Restrições",
-        "noConstraintsData": "Dados de ocorrências de restrições não disponíveis para esta solução."
+        "noConstraintsData": "Dados de ocorrências de restrições não disponíveis para esta solução.",
+        "xAxisLabelIterations": "Iteração",
+        "yAxisLabelEvaluation": "Avaliação",
+        "yAxisLabelTime": "Tempo (ms)",
+        "qualityIndicatorsTitle": "Indicadores de Qualidade da Solução",
+        "ispTitle": "Índice de Satisfação Ponderada (ISP)",
+        "ispSubtitle": "Eficácia do algoritmo em atender as melhores preferências do docente.",
+        "tapTitle": "Taxa de Atendimento Preferencial (TAP)",
+        "tapSubtitle": "Percentual de atribuições que são prioridade 1, 2 ou 3 do docente.",
+        "stdTitle": "Desvio Padrão da Carga Didática",
+        "stdSubtitle": "Mede a dispersão e o equilíbrio da carga atribuída entre os docentes.",
+        "ispDialogDesc": "O ISP avalia a qualidade global das soluções sob a ótica do atendimento às preferências, normalizada pelo cenário ideal (onde todo mundo ganharia sua prioridade número 1).",
+        "ispDialogFormula": "ISP = ( ∑ (Pontuação da Prioridade Atribuída) ) /\n      ( Total Atribuições × Pontuação Máxima ) × 100",
+        "ispDialogFooter": "Valores mais altos (próximos de 100%) refletem maior eficácia em dar as melhores escolhas aos docentes.",
+        "tapDialogDesc": "O TAP representa o percentual de atribuições realizadas que correspondem às opções mais desejadas do docente, ou seja, suas preferências listadas como prioridade 1, 2 ou 3.",
+        "tapDialogFormula": "TAP = ( ∑ Atribuições em Prioridade 1, 2 ou 3 ) /\n      ( Total de Atribuições ) × 100",
+        "tapDialogFooter": "Essa métrica ajuda a visualizar rapidamente quantos docentes ficaram completamente satisfeitos.",
+        "stdDialogDesc": "O Desvio Padrão é uma medida estatística que indica o quão dispersos estão os valores da carga didática total de cada docente em relação à média geral.",
+        "stdDialogFormula": "σ = √ [ ∑ (Carga do Docente - Média)² / Total de Docentes ]",
+        "stdDialogFooter": "Um valor próximo a 0 indica que quase todos os docentes estão com uma carga semelhante (ótima distribuição). Um valor mais alto indica desequilíbrio na distribuição.",
+        "close": "Fechar",
+        "configurations": "Configurações do Algoritmo",
+        "globalParameters": "Parâmetros Globais",
+        "tabuListSize": "Tamanho da Lista Tabu",
+        "tabuListType": "Tipo da Lista Tabu",
+        "constraints": "Restrições",
+        "neighborhoodGeneration": "Geração de Vizinhança",
+        "interruption": "Critérios de Parada (Interrupção)",
+        "aspirationCriteria": "Critérios de Aspiração"
       }
     },
     "History": {

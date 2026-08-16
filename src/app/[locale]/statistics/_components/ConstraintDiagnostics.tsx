@@ -17,6 +17,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import { useTranslations } from "next-intl";
 
 interface ConstraintDiagnosticsProps {
   ocorrencias: Map<
@@ -32,6 +33,8 @@ interface ConstraintDiagnosticsProps {
 export default function ConstraintDiagnostics({
   ocorrencias,
 }: ConstraintDiagnosticsProps) {
+  const t = useTranslations("Pages.Statistics.Constraints");
+
   // Coletar apenas as restrições que possuem casos problemáticos (items com tamanho > 0)
   const problematicConstraints: {
     constraintName: string;
@@ -70,11 +73,10 @@ export default function ConstraintDiagnostics({
           color: "text.primary",
         }}
       >
-        <ErrorOutlineIcon color="error" /> Diagnóstico de Restrições
+        <ErrorOutlineIcon color="error" /> {t("diagnosticsTitle")}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Detalhamento dos casos específicos que violaram as restrições e
-        precisam de atenção.
+        {t("diagnosticsSubtitle")}
       </Typography>
 
       {problematicConstraints.map((problem, index) => (
@@ -110,7 +112,7 @@ export default function ConstraintDiagnostics({
               </Typography>
             </Box>
             <Chip
-              label={`${problem.qtd} Violaç${problem.qtd === 1 ? "ão" : "ões"}`}
+              label={`${problem.qtd} ${t("reportedCases")}`}
               color="error"
               size="small"
               sx={{ fontWeight: "bold" }}
@@ -125,7 +127,7 @@ export default function ConstraintDiagnostics({
                   color="text.secondary"
                   gutterBottom
                 >
-                  Descrição do problema: {problem.label}
+                  {problem.label}
                 </Typography>
                 <Divider sx={{ mb: 1 }} />
                 <List dense disablePadding>

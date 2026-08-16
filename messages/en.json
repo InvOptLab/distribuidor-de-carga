@@ -1315,12 +1315,32 @@
       }
     },
     "Statistics": {
+      "dashboardTitle": "Results Dashboard",
+      "dashboardSubtitle": "Select a solution to view detailed statistics.",
       "chooseSolution": "Choose a solution for analysis",
       "solution": "Solution",
       "noSolutionFound": "No solution found!",
       "tabs": {
+        "overview": "Overview",
+        "constraints": "Constraints",
+        "configurations": "Configurations",
         "solutionDetails": "Solution Details",
         "workloadAnalysis": "Workload Analysis"
+      },
+      "Overview": {
+        "finalEvaluation": "Final Evaluation",
+        "constraintViolations": "Constraint Violations",
+        "algorithmEvolution": "Algorithm Evolution",
+        "noChartData": "The evolution chart could not be generated for this type of insertion or algorithm."
+      },
+      "Constraints": {
+        "tabTitle": "Constraints and Violations Analysis",
+        "diagnosticsTitle": "Constraint Diagnostics",
+        "diagnosticsSubtitle": "Details of specific cases that violated constraints and impacted the score.",
+        "violationIn": "Violation in Constraint:",
+        "reportedCases": "reported cases",
+        "violatingItems": "Violating Items:",
+        "noConstraintData": "There is no constraint data or an error occurred during analysis."
       },
       "SingleSolutionWorkloadChart": {
         "totalProfessors": "Total Professors",
@@ -1360,7 +1380,35 @@
         "timeChartTitle": "Chart: Time (ms) by Iteration",
         "noTimeData": "Time by iteration data not available for this solution.",
         "histogramConstraintsTitle": "Histogram: Constraint Occurrences",
-        "noConstraintsData": "Constraint occurrence data not available for this solution."
+        "noConstraintsData": "Constraint occurrence data not available for this solution.",
+        "xAxisLabelIterations": "Iteration",
+        "yAxisLabelEvaluation": "Evaluation",
+        "yAxisLabelTime": "Time (ms)",
+        "qualityIndicatorsTitle": "Solution Quality Indicators",
+        "ispTitle": "Weighted Satisfaction Index (WSI)",
+        "ispSubtitle": "Algorithm effectiveness in fulfilling professors' best preferences.",
+        "tapTitle": "Preferred Fulfillment Rate (PFR)",
+        "tapSubtitle": "Percentage of assignments that match priority 1, 2, or 3.",
+        "stdTitle": "Workload Standard Deviation",
+        "stdSubtitle": "Measures the dispersion and balance of the workload among professors.",
+        "ispDialogDesc": "WSI evaluates the overall quality of the solutions in terms of preference satisfaction, normalized by the ideal scenario (where everyone gets their first choice).",
+        "ispDialogFormula": "WSI = ( ∑ (Assigned Priority Score) ) /\n      ( Total Assignments × Maximum Score ) × 100",
+        "ispDialogFooter": "Higher values (closer to 100%) reflect greater effectiveness in giving the best choices to professors.",
+        "tapDialogDesc": "PFR represents the percentage of assignments made that correspond to the professors' most desired options (priorities 1, 2, or 3).",
+        "tapDialogFormula": "PFR = ( ∑ Assignments in Priority 1, 2, or 3 ) /\n      ( Total Assignments ) × 100",
+        "tapDialogFooter": "This metric quickly shows how many professors were completely satisfied.",
+        "stdDialogDesc": "The Standard Deviation is a statistical measure indicating how dispersed the total workload values of each professor are in relation to the average.",
+        "stdDialogFormula": "σ = √ [ ∑ (Professor Workload - Average)² / Total Professors ]",
+        "stdDialogFooter": "A value close to 0 indicates that almost all professors have a similar workload (optimal distribution). A higher value indicates an unbalanced distribution.",
+        "close": "Close",
+        "configurations": "Algorithm Configurations",
+        "globalParameters": "Global Parameters",
+        "tabuListSize": "Tabu List Size",
+        "tabuListType": "Tabu List Type",
+        "constraints": "Constraints",
+        "neighborhoodGeneration": "Neighborhood Generation",
+        "interruption": "Stopping Criteria (Interruption)",
+        "aspirationCriteria": "Aspiration Criteria"
       }
     },
     "History": {
