@@ -1335,7 +1335,10 @@
         "finalEvaluation": "Avaliação Final",
         "constraintViolations": "Violações de Restrições",
         "algorithmEvolution": "Evolução do Algoritmo",
-        "noChartData": "O gráfico de evolução não pôde ser gerado para este tipo de inserção ou algoritmo."
+        "noChartData": "O gráfico de evolução não pôde ser gerado para este tipo de inserção ou algoritmo.",
+        "priorityAssignments": "Atribuições por Prioridade",
+        "priorityLevel": "Nível de Prioridade",
+        "quantity": "Quantidade"
       },
       "Constraints": {
         "tabTitle": "Análise de Restrições e Violações",
