@@ -7,10 +7,12 @@ export class IteracoesMaximas extends StopCriteria {
    */
   public maxIteracoes: number;
 
+  readonly _name = "IteracoesMaximas";
+
   constructor(
     name: string,
     description: string | undefined,
-    maxIteracoes: number
+    maxIteracoes: number,
   ) {
     super(name, description);
     this.maxIteracoes = maxIteracoes;
@@ -25,6 +27,6 @@ export class IteracoesMaximas extends StopCriteria {
    */
 
   stop(iteracoes: number): boolean {
-    return iteracoes === this.maxIteracoes;
+    return iteracoes >= this.maxIteracoes;
   }
 }

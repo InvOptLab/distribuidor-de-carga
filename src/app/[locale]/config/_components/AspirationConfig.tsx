@@ -14,13 +14,15 @@ import {
   IconButton,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
+import { useAlgorithmContext } from "@/context/Algorithm";
 import SameObjective from "@/algoritmo/metodos/TabuSearch/AspirationCriteria/SameObjective";
+import { useTranslations } from "next-intl";
 
 export default function AspirationConfig() {
   const { aspirationFunctions, setAspirationFunctions } = useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
+  const t = useTranslations("Pages.Config.Aspiration");
 
   const handleToggle = (key: string, currentState: boolean) => {
     setAspirationFunctions((prev) => {
@@ -53,16 +55,14 @@ export default function AspirationConfig() {
     <Box>
       <Alert severity="info" sx={{ mb: 3 }}>
         <Typography variant="body2">
-          Os critérios de aspiração permitem aceitar soluções tabu em situações
-          especiais, como quando representam uma melhoria significativa ou
-          atendem a condições específicas.
+          {t("info")}
         </Typography>
       </Alert>
 
       <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
-        <Typography variant="h6">Critérios Ativos:</Typography>
+        <Typography variant="h6">{t("activeCriteria")}</Typography>
         <Chip
-          label={`${activeCount} de ${aspirationFunctions.size}`}
+          label={t("activeCount", { active: activeCount, total: aspirationFunctions.size })}
           color={activeCount > 0 ? "primary" : "default"}
           variant="outlined"
         />
@@ -95,7 +95,7 @@ export default function AspirationConfig() {
                   </Typography>
                   <Tooltip
                     title={
-                      func.instance.description || "Sem descrição disponível"
+                      func.instance.description || t("noDescription")
                     }
                   >
                     <IconButton
@@ -103,7 +103,7 @@ export default function AspirationConfig() {
                       onClick={() =>
                         addAlerta(
                           func.instance.description ||
-                            "Sem descrição disponível",
+                            t("noDescription"),
                           "info",
                           8
                         )
@@ -119,12 +119,12 @@ export default function AspirationConfig() {
                   color="text.secondary"
                   sx={{ mb: 2, minHeight: 40 }}
                 >
-                  {func.instance.description || "Descrição não disponível"}
+                  {func.instance.description || t("noDescription")}
                 </Typography>
 
                 {func.instance instanceof SameObjective && (
                   <TextField
-                    label="Iterações para Aceitação"
+                    label={t("iterationsAccept")}
                     type="number"
                     value={func.instance.iteracoesParaAceitacao}
                     onChange={(e) =>
@@ -136,7 +136,7 @@ export default function AspirationConfig() {
                     disabled={!func.isActive}
                     fullWidth
                     inputProps={{ min: 1 }}
-                    helperText="Número de iterações necessárias com o mesmo objetivo"
+                    helperText={t("iterationsAcceptHelper")}
                     sx={{ mb: 2 }}
                   />
                 )}
@@ -148,7 +148,7 @@ export default function AspirationConfig() {
                       onChange={() => handleToggle(key, func.isActive)}
                     />
                   }
-                  label={func.isActive ? "Ativo" : "Inativo"}
+                  label={func.isActive ? t("active") : t("inactive")}
                 />
               </CardContent>
             </Card>

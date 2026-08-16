@@ -12,6 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Warning as WarningIcon } from "@mui/icons-material";
+import { useTranslations } from "next-intl";
 
 interface IdentifierChangeDialogProps {
   open: boolean;
@@ -32,7 +33,8 @@ export default function IdentifierChangeDialog({
   onDeleteOld,
   onCancel,
 }: IdentifierChangeDialogProps) {
-  const label = type === "docente" ? "nome" : "ID";
+  const t = useTranslations("Pages.Cadastro.Components.IdentifierChangeDialog");
+  const label = type === "docente" ? t("name") : t("id");
 
   return (
     <Dialog
@@ -62,7 +64,7 @@ export default function IdentifierChangeDialog({
             <WarningIcon fontSize="small" />
           </Box>
           <Typography variant="h6" fontWeight={600}>
-            Identificador Alterado
+            {t("title")}
           </Typography>
         </Box>
       </DialogTitle>
@@ -72,7 +74,7 @@ export default function IdentifierChangeDialog({
       <DialogContent sx={{ pt: 3 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Typography variant="body2">
-            O identificador único ({label}) foi alterado:
+            {t("description", { label })}
           </Typography>
 
           <Box
@@ -90,7 +92,7 @@ export default function IdentifierChangeDialog({
               display="block"
               sx={{ mb: 0.5 }}
             >
-              De:
+              {t("from")}
             </Typography>
             <Typography
               variant="body2"
@@ -112,7 +114,7 @@ export default function IdentifierChangeDialog({
               display="block"
               sx={{ mt: 1.5, mb: 0.5 }}
             >
-              Para:
+              {t("to")}
             </Typography>
             <Typography
               variant="body2"
@@ -130,8 +132,7 @@ export default function IdentifierChangeDialog({
           </Box>
 
           <Typography variant="body2" color="text.secondary">
-            Isso resultará na criação de um novo registro. Escolha uma das
-            opções abaixo:
+            {t("warningText")}
           </Typography>
         </Box>
       </DialogContent>
@@ -150,7 +151,7 @@ export default function IdentifierChangeDialog({
             },
           }}
         >
-          Cancelar
+          {t("cancel")}
         </Button>
         <Button
           onClick={onContinue}
@@ -164,7 +165,7 @@ export default function IdentifierChangeDialog({
             },
           }}
         >
-          Criar Novo
+          {t("createNew")}
         </Button>
         <Button
           onClick={onDeleteOld}
@@ -178,7 +179,7 @@ export default function IdentifierChangeDialog({
             },
           }}
         >
-          Excluir Antigo
+          {t("deleteOld")}
         </Button>
       </DialogActions>
     </Dialog>

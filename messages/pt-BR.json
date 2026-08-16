@@ -24,6 +24,15 @@
           "f7": "Análise de saldo de carga didática dos docentes"
         }
       },
+      "howItWorks": {
+        "title": "Como Funciona?",
+        "step1Title": "Insira seus Dados",
+        "step1Desc": "Faça o upload da sua planilha padrão de docentes, turmas e prioridades ou cadastre manualmente no sistema.",
+        "step2Title": "Configure a Otimização",
+        "step2Desc": "Ajuste os parâmetros dos métodos de otimização e as restrições desejadas para o seu ambiente acadêmico.",
+        "step3Title": "Analise os Resultados",
+        "step3Desc": "Explore a planilha interativa gerada com a melhor distribuição possível, garantindo uma distirbuição justa e sem conflitos."
+      },
       "technologies": {
         "title": "Tecnologias"
       },
@@ -369,6 +378,8 @@
         "guestsCanEditBadge": "Edição liberada",
         "guestsCanFilterTooltip": "Convidados podem editar os filtros",
         "guestsCanFilterBadge": "Filtros liberada",
+        "privateBadge": "Privada",
+        "privateTooltip": "Esta sala requer uma senha",
         "joinTooltip": "Entrar nesta sala como convidado",
         "joinButton": "Entrar na Sala"
       },
@@ -386,6 +397,11 @@
         "guestsCanEditDesc": "Permite que convidados façam alterações na grade. Você pode alterar isso depois.",
         "guestsCanFilterLabel": "Convidados podem filtrar",
         "guestsCanFilterDesc": "Permite que convidados façam alterações nos filtros grade. Você pode alterar isso depois.",
+        "privateRoomLabel": "Sala Privada",
+        "privateRoomDesc": "Exigir uma senha para entrar.",
+        "passwordLabel": "Senha da Sala",
+        "passwordPlaceholder": "Crie uma senha",
+        "autoDeleteWarning": "Aviso: Salas vazias ou com mais de 12 horas são automaticamente excluídas.",
         "cancelButton": "Cancelar",
         "submitButton": "Criar Sala"
       },
@@ -399,6 +415,8 @@
         "userNameTooltip": "Como você será identificado na sala",
         "userNameLabel": "Seu Nome",
         "userNamePlaceholder": "Ex: Maria Santos",
+        "passwordLabel": "Senha",
+        "passwordPlaceholder": "Digite a senha da sala",
         "cancelButton": "Cancelar",
         "submitButton": "Entrar"
       }
@@ -499,6 +517,24 @@
         "lock": "Travar",
         "unlockItem": "Destravar item",
         "lockItem": "Travar item"
+      },
+      "SelectedTurma": {
+        "priority": "Prioridade",
+        "class": "Turma",
+        "course": "Curso",
+        "schedules": "Horários",
+        "toBeDefined": "A definir",
+        "syllabus": "Ementa",
+        "view": "Visualizar",
+        "evening": "Noturna",
+        "undergraduate": "Graduação",
+        "postgraduate": "Pós-graduação",
+        "remove": "Remover",
+        "currentProfessor": "Docente atual",
+        "add": "Adicionar"
+      },
+      "TurmaItem": {
+        "noSchedule": "Sem horário"
       }
     },
     "Select": {
@@ -518,6 +554,8 @@
         "group": "Grupo",
         "evening": "Noturna",
         "english": "Inglês",
+        "noAssignments": "Sem atribuição",
+        "noForms": "Sem formulários",
         "weekDaysLabel": "Dias da Semana",
         "WeekDays": {
           "mon": "Seg.",
@@ -596,8 +634,18 @@
         "searchClassByNameCodeId": "Buscar turma por nome, código ou ID",
         "addProfessorFilter": "Adicionar Filtro de Docente",
         "name": "Nome",
+        "WeekDays": {
+          "mon": "Seg.",
+          "tue": "Ter.",
+          "wed": "Qua.",
+          "thu": "Qui.",
+          "fri": "Sex.",
+          "sat": "Sáb."
+        },
         "active": "Ativo",
         "comment": "Comentário",
+        "withoutAssignment": "Sem atribuição",
+        "withoutTeacher": "Sem docente",
         "groupPreference": "Agrupar",
         "indifferent": "Indiferente",
         "spreadPreference": "Espalhar",
@@ -720,6 +768,9 @@
         "cancel": "Cancelar",
         "apply": "Aplicar"
       },
+      "TimetableGrid": {
+        "professors": "Docentes"
+      },
       "ActionBar": {
         "allocationGrid": "Grade de Atribuições",
         "filters": "Filtros",
@@ -731,7 +782,655 @@
         "download": "Download",
         "solutionAlreadySaved": "Solução já salva no histórico",
         "saveToHistory": "Salvar no histórico",
-        "save": "Salvar"
+        "save": "Salvar",
+        "toggleLockMode": "Alternar Modo de Travas",
+        "lockMode": "Modo Trava"
+      }
+    },
+    "Cadastro": {
+      "title": "Gestão de Cadastros",
+      "subtitle": "Administre docentes e turmas/disciplinas de forma intuitiva",
+      "selectType": "Selecione o Tipo de Gestão",
+      "selectTypeDesc": "Escolha entre gerenciar docentes ou turmas/disciplinas",
+      "professorCount": "{count} docente",
+      "professorsCount": "{count} docentes",
+      "classCount": "{count} turma",
+      "classesCount": "{count} turmas",
+      "professorsTab": "Docentes",
+      "professorsTabTooltip": "Visualizar e gerenciar docentes",
+      "classesTab": "Turmas",
+      "classesTabTooltip": "Visualizar e gerenciar turmas/disciplinas",
+      "professorsHeader": "Docentes ({count})",
+      "professorsSubheader": "Clique em um docente para editar ou adicione um novo",
+      "classesHeader": "Turmas/Disciplinas ({count})",
+      "classesSubheader": "Clique em uma turma para editar ou adicione uma nova",
+      "noProfessors": "Nenhum docente cadastrado",
+      "noProfessorsDesc": "Clique no botão abaixo para criar um novo",
+      "noClasses": "Nenhuma turma cadastrada",
+      "noClassesDesc": "Clique no botão abaixo para criar uma nova",
+      "confirmDelete": "Confirmar Exclusão",
+      "confirmDeleteProfessor": "Você está prestes a excluir o docente:",
+      "confirmDeleteClass": "Você está prestes a excluir a turma:",
+      "irreversibleProfessor": "Esta ação é irreversível. Todos os formulários associados serão removidos.",
+      "irreversibleClass": "Esta ação é irreversível. Todas as atribuições e referências serão removidas.",
+      "cancel": "Cancelar",
+      "deletePermanently": "Excluir Permanentemente",
+      "editingProfessor": "Editando docente: {name}",
+      "editingClass": "Editando turma: {name}",
+      "professorDeleted": "Docente \\\"{name}\\\" excluído com sucesso!",
+      "classDeleted": "Turma \\\"{name}\\\" excluída com sucesso!",
+      "Components": {
+        "AddCard": {
+          "addNew": "Adicionar Novo",
+          "newProfessor": "Criar novo docente",
+          "newClass": "Criar nova turma"
+        },
+        "DocenteCard": {
+          "active": "Ativo",
+          "inactive": "Inativo",
+          "balance": "Saldo de Carga Didática",
+          "formsFilled": "Formulários Preenchidos",
+          "class": "turma",
+          "classes": "turmas",
+          "groupPreference": "Preferência de Agrupamento",
+          "editTooltip": "Editar docente",
+          "deleteTooltip": "Excluir docente"
+        },
+        "TurmaCard": {
+          "class": "Turma {number}",
+          "courses": "Cursos",
+          "level": "Nível",
+          "workload": "Carga Horária",
+          "hoursPerWeek": "{hours}h/semana",
+          "schedules": "Horários",
+          "active": "Ativa",
+          "inactive": "Inativa",
+          "nightClass": "Noturna",
+          "english": "English",
+          "more": "+{count} mais",
+          "editTooltip": "Editar turma",
+          "deleteTooltip": "Excluir turma"
+        },
+        "IdentifierChangeDialog": {
+          "title": "Identificador Alterado",
+          "name": "nome",
+          "id": "ID",
+          "description": "O identificador único ({label}) foi alterado:",
+          "from": "De:",
+          "to": "Para:",
+          "warningText": "Isso resultará na criação de um novo registro. Escolha uma das opções abaixo:",
+          "cancel": "Cancelar",
+          "createNew": "Criar Novo",
+          "deleteOld": "Excluir Antigo"
+        },
+        "DocenteForm": {
+          "alerts": {
+            "selectClass": "Selecione uma turma",
+            "positiveIntegerPriority": "A prioridade deve ser um número inteiro positivo",
+            "integerPriority": "A prioridade deve ser um número inteiro",
+            "uniquePriority": "A prioridade {priority} já foi atribuída a outra turma. Cada prioridade deve ser única.",
+            "classAlreadyAdded": "Esta turma já foi adicionada aos formulários",
+            "classNotFound": "Disciplina não encontrada",
+            "formAdded": "Formulário adicionado: {name} com prioridade {priority}",
+            "formRemoved": "Formulário removido: {name}",
+            "nameRequired": "O nome do docente é obrigatório",
+            "nameExists": "Já existe um docente com este nome",
+            "professorUpdated": "Docente \\\"{name}\\\" atualizado com sucesso!",
+            "professorReplaced": "Docente \\\"{oldName}\\\" excluído e \\\"{newName}\\\" criado com sucesso!",
+            "professorCreated": "Docente \\\"{name}\\\" criado com sucesso!",
+            "formCleared": "Formulário limpo"
+          },
+          "header": {
+            "editProfessor": "Editar Docente",
+            "newProfessor": "Novo Docente",
+            "subtitle": "Preencha os dados e configure as preferências de turmas",
+            "closeForm": "Fechar formulário"
+          },
+          "personalData": {
+            "title": "Dados Pessoais",
+            "nameTooltip": "Nome completo do docente (identificador único)",
+            "nameLabel": "Nome",
+            "namePlaceholder": "Ex: João da Silva",
+            "balanceTooltip": "Saldo de horas/créditos disponíveis (opcional)",
+            "balanceLabel": "Saldo",
+            "balancePlaceholder": "Ex: 40",
+            "commentTooltip": "Comentários ou observações sobre o docente (opcional)",
+            "commentLabel": "Comentário",
+            "commentPlaceholder": "Ex: Preferência por aulas matutinas",
+            "groupingTooltip": "Preferência de agrupamento de aulas (opcional)",
+            "groupingLabel": "Agrupamento",
+            "groupingOptions": {
+              "indifferent": "Indiferente",
+              "group": "Agrupar",
+              "spread": "Espalhar"
+            },
+            "activeTooltip": "Docentes inativos não serão considerados nas alocações",
+            "activeLabel": "Docente Ativo"
+          },
+          "classAllocation": {
+            "title": "Alocação de Turmas",
+            "subtitle": "Defina as prioridades de preferência do docente",
+            "infoTooltip": "Quanto menor o número, maior a prioridade. Cada prioridade deve ser única.",
+            "selectClassTooltip": "Selecione a turma/disciplina de interesse",
+            "classLabel": "Turma/Disciplina",
+            "noClassAvailable": "Nenhuma turma disponível",
+            "priorityTooltip": "Prioridade do docente (número inteiro positivo, único). Já utilizadas: {used}",
+            "none": "nenhuma",
+            "priorityLabel": "Prioridade",
+            "priorityPlaceholder": "Ex: 1",
+            "priorityUsed": "Prioridade já utilizada",
+            "addTooltip": "Adicionar turma à lista de prioridades",
+            "addButton": "Adicionar",
+            "noClassesWarning": "Nenhuma turma cadastrada. Cadastre turmas primeiro para poder adicionar formulários.",
+            "addedClasses": "Turmas adicionadas ({count}):",
+            "noClassesAdded": "Nenhuma turma adicionada ainda",
+            "removeTooltip": "Remover esta turma"
+          },
+          "actions": {
+            "clear": "Limpar",
+            "updateTooltip": "Salvar alterações do docente",
+            "createTooltip": "Salvar o docente com todas as informações preenchidas",
+            "updateButton": "Atualizar Docente",
+            "createButton": "Criar Docente"
+          }
+        },
+        "TurmaForm": {
+          "alerts": {
+            "invalidTime": "O horário de início deve ser anterior ao horário de fim",
+            "scheduleExists": "Este horário já foi adicionado",
+            "scheduleAdded": "Horário adicionado: {day} {start}-{end}",
+            "scheduleRemoved": "Horário removido: {day} {start}-{end}",
+            "codeRequired": "O código da disciplina é obrigatório",
+            "nameRequired": "O nome da disciplina é obrigatório",
+            "scheduleRequired": "Adicione pelo menos um horário para a turma",
+            "classExists": "Já existe a turma {number} para a disciplina {code}",
+            "updatedWithConflicts": "Turma atualizada com {count} conflito(s) de horário: {conflicts}",
+            "createdWithConflicts": "Turma criada com {count} conflito(s) de horário: {conflicts}",
+            "classReplaced": "Turma \\\"{id}\\\" excluída e nova turma \\\"{name} - Turma {number}\\\" criada com sucesso!",
+            "classUpdated": "Turma \\\"{name} - Turma {number}\\\" atualizada com sucesso!",
+            "classCreated": "Turma \\\"{name} - Turma {number}\\\" criada com sucesso!",
+            "formCleared": "Formulário limpo"
+          },
+          "header": {
+            "editClass": "Editar Turma",
+            "newClass": "Nova Turma",
+            "subtitle": "Preencha os dados e configure os horários",
+            "closeForm": "Fechar formulário"
+          },
+          "classInfo": {
+            "title": "Informações da Disciplina",
+            "idTooltip": "Identificador único da turma. Alterá-lo criará um novo registro.",
+            "idLabel": "ID",
+            "codeTooltip": "Código único da disciplina (ex: MAT101)",
+            "codeLabel": "Código",
+            "codePlaceholder": "Ex: MAT101",
+            "numberTooltip": "Número da turma para esta disciplina",
+            "numberLabel": "Turma",
+            "nameTooltip": "Nome completo da disciplina",
+            "nameLabel": "Nome da Disciplina",
+            "namePlaceholder": "Ex: Cálculo I",
+            "coursesTooltip": "Cursos que oferecem esta disciplina",
+            "coursesLabel": "Cursos",
+            "coursesPlaceholder": "Ex: Engenharia, Ciência da Computação",
+            "levelTooltip": "Nível da disciplina (Graduação, Pós-graduação, etc.)",
+            "levelLabel": "Nível",
+            "levelPlaceholder": "Ex: Graduação",
+            "workloadTooltip": "Carga horária semanal da disciplina",
+            "workloadLabel": "Carga Horária",
+            "workloadPlaceholder": "Ex: 4",
+            "groupTooltip": "Grupo para agrupar disciplinas relacionadas",
+            "groupLabel": "Grupo",
+            "groupPlaceholder": "Ex: Matemática Básica",
+            "syllabusTooltip": "Ementa ou descrição da disciplina (opcional)",
+            "syllabusLabel": "Ementa",
+            "syllabusPlaceholder": "Descrição do conteúdo...",
+            "nightTooltip": "Marque se a disciplina é oferecida no período noturno",
+            "nightLabel": "Noturna",
+            "englishTooltip": "Marque se a disciplina é ministrada em inglês",
+            "englishLabel": "Em Inglês",
+            "activeTooltip": "Disciplinas inativas não serão consideradas nas alocações",
+            "activeLabel": "Ativa"
+          },
+          "schedules": {
+            "title": "Horários de Aula",
+            "subtitle": "Conflitos serão detectados automaticamente",
+            "infoTooltip": "Adicione todos os dias e horários em que as aulas serão ministradas.",
+            "dayLabel": "Dia",
+            "startTooltip": "Horário de início da aula",
+            "startLabel": "Início",
+            "endTooltip": "Horário de término da aula",
+            "endLabel": "Fim",
+            "addTooltip": "Adicionar horário à lista",
+            "addButton": "Adicionar",
+            "addedCount": "Horários adicionados ({count}):",
+            "noSchedules": "Nenhum horário adicionado ainda"
+          },
+          "conflicts": {
+            "title": "Prévia de Conflitos",
+            "tempName": "Nova Turma",
+            "noConflicts": "Nenhum conflito de horário detectado com as turmas existentes.",
+            "detected": "{count} conflito(s) detectado(s): {conflicts}"
+          },
+          "actions": {
+            "clear": "Limpar",
+            "updateTooltip": "Salvar alterações da turma",
+            "createTooltip": "Salvar a turma com todas as informações preenchidas",
+            "updateButton": "Atualizar Turma",
+            "createButton": "Criar Turma"
+          }
+        }
+      }
+    },
+    "Guia": {
+      "title": "Documentação",
+      "sectionsCount": "{count} seções",
+      "LeftSidebar": {
+        "searchPlaceholder": "Buscar na documentação...",
+        "noResults": "Nenhum resultado encontrado.",
+        "tryOtherTerms": "Tente usar outros termos de busca."
+      },
+      "RightSidebar": {
+        "onThisPage": "Nesta página"
+      },
+      "ContentRenderer": {
+        "next": "Próximo",
+        "back": "Voltar"
+      }
+    },
+    "InputFile": {
+      "Alerts": {
+        "testDataSuccess": "Dados de teste importados com sucesso!",
+        "testDataError": "Erro ao carregar dados de teste. Verifique se o arquivo existe.",
+        "jsonParseError": "Erro ao analisar o arquivo JSON.",
+        "selectJsonWarning": "Por favor, selecione um arquivo JSON.",
+        "backupSuccess": "Backup criado com sucesso!",
+        "uploadSuccess": "{fileName} carregado(s) com sucesso.",
+        "uploadError": "Erro ao processar os dados.\\n{error}"
+      },
+      "Progress": {
+        "stepDocentes": "Aplicando docentes...",
+        "stepDisciplinas": "Aplicando disciplinas...",
+        "stepAtribuicoes": "Aplicando atribuições...",
+        "stepFormularios": "Aplicando formulários...",
+        "stepTravas": "Aplicando travas...",
+        "stepSolucao": "Processando solução...",
+        "stepFinalizando": "Finalizando..."
+      },
+      "UploadBox": {
+        "title": "Upload de Arquivo",
+        "subtitle": "Arraste e solte um arquivo JSON aqui ou clique para selecionar",
+        "chooseFile": "Escolher Arquivo",
+        "or": "ou",
+        "testDataSubtitle": "Use dados de teste para experimentar a plataforma",
+        "importing": "Importando...",
+        "importTestData": "Importar Dados Padrões",
+        "loading": "Carregando...",
+        "loadData": "Carregar Dados"
+      },
+      "BackupDialog": {
+        "title": "Substituir dados existentes?",
+        "description": "Você está prestes a carregar novos dados. Isso irá <strong>apagar e substituir</strong> todas as informações atuais do sistema. Recomenda-se criar um backup antes de prosseguir.",
+        "lostDataTitle": "Dados atuais que serão perdidos:",
+        "professors": "Docentes",
+        "classes": "Turmas",
+        "assignments": "Atribuições",
+        "cancel": "Cancelar",
+        "backup": "Fazer Backup",
+        "continueWithoutBackup": "Continuar sem Backup"
+      },
+      "FilePreview": {
+        "title": "Pré-visualização dos Dados",
+        "version": "Versão: {version}",
+        "professors": "Docentes",
+        "activeProfessors": "{active} ativos, {inactive} inativos",
+        "classes": "Turmas",
+        "activeClasses": "{active} ativas, {inactive} inativas",
+        "assignments": "Atribuições",
+        "withProfessors": "{with} com docentes, {without} sem",
+        "quality": "Métricas de Qualidade",
+        "professorsNoForm": "{count} docentes sem formulário",
+        "classesNoInterested": "{count} turmas sem interessados",
+        "scheduleConflicts": "{count} conflitos de horário",
+        "solutionFound": "Solução Pré-calculada Incluída"
+      },
+      "DataComparison": {
+        "title": "Dados Atuais da Sessão",
+        "professors": "Docentes",
+        "classes": "Turmas",
+        "assignments": "Atribuições",
+        "backup": "Salvar Backup",
+        "warning": "Você já possui dados carregados. Carregar um novo arquivo irá substituí-los.",
+        "recommendation": "Recomendamos criar um backup antes de carregar novos dados para evitar perda de informações."
+      },
+      "UploadProgress": {
+        "title": "Carregando Dados..."
+      }
+    },
+    "Config": {
+      "page": {
+        "title": "Configurações do Algoritmo",
+        "description": "Selecione o algoritmo e ajuste seus parâmetros para otimizar os resultados",
+        "selectAlgorithm": "Selecione o Algoritmo",
+        "configSections": "Seções de configuração:"
+      },
+      "Algorithms": {
+        "tabu-search": {
+          "name": "Busca Tabu",
+          "description": "Algoritmo de busca local com memória adaptativa"
+        },
+        "integer-solver": {
+          "name": "Solver Inteiro",
+          "description": "Solver de programação linear inteira"
+        },
+        "simulated-annealing": {
+          "name": "Simulated Annealing",
+          "description": "Têmpera Simulada: Algoritmo de busca estocástica inspirado no resfriamento de metais"
+        }
+      },
+      "Sections": {
+        "tabu-list": {
+          "title": "Lista Tabu",
+          "description": "Configure o tipo e tamanho da lista tabu"
+        },
+        "constraints": {
+          "title": "Restrições",
+          "description": "Gerencie as restrições rígias e flexíveis do algoritmo"
+        },
+        "objectiveCost": {
+          "title": "Custos da Função Objetivo",
+          "description": "Configure os custos que serão considerados na função objetivo"
+        },
+        "neighborhood": {
+          "title": "Geração da Vizinhança",
+          "description": "Configure as funções de geração de vizinhança"
+        },
+        "stop-criteria": {
+          "title": "Critérios de Parada",
+          "description": "Defina quando o algoritmo deve parar"
+        },
+        "aspiration": {
+          "title": "Critérios de Aspiração",
+          "description": "Configure critérios para aceitar soluções tabu"
+        },
+        "sa-config": {
+          "title": "Parâmetros do Resfriamento",
+          "description": "Configure Temperatura Inicial, Taxa de Resfriamento e Iterações"
+        }
+      },
+      "TabuList": {
+        "title": "Configuração da Lista Tabu",
+        "active": "Ativo",
+        "info": "A lista tabu mantém um histórico de soluções ou movimentos recentes para evitar ciclos no algoritmo de busca.",
+        "typeLabel": "Tipo da Lista Tabu",
+        "typeSolution": "Soluções",
+        "typeSolutionDesc": "Armazena soluções completas visitadas recentemente",
+        "typeMovement": "Movimentos",
+        "typeMovementDesc": "Armazena movimentos específicos (add/drop) realizados",
+        "typeHash": "Soluções com Hash",
+        "typeHashDesc": "Armazena o hash das soluções visitadas para uma verificação otimizada e mais rápida",
+        "paramsSolution": "Parâmetros para Lista de Soluções",
+        "sizeLabel": "Tamanho da Lista Tabu",
+        "sizeHelper": "Número máximo de soluções mantidas na lista tabu.",
+        "solutionAlertTitle": "Tipo Solução:",
+        "solutionAlertDesc": "Utiliza o valor de {code} para controlar quantas soluções completas ficam na lista tabu.",
+        "paramsMovement": "Parâmetros para Lista de Movimentos",
+        "addTenureLabel": "Add Tenure",
+        "addTenureHelper": "Iterações que um movimento de adição fica tabu.",
+        "dropTenureLabel": "Drop Tenure",
+        "dropTenureHelper": "Iterações que um movimento de remoção fica tabu.",
+        "movementAlertTitle": "Tipo Movimento:",
+        "movementAlertDesc": "Utiliza {codeAdd} e {codeDrop} para controlar por quantas iterações cada tipo de movimento permanece tabu.",
+        "currentConfig": "Configuração Atual:",
+        "typeConfig": "Tipo: {type} |",
+        "sizeConfig": " Tamanho: {size}",
+        "tenureConfig": " Add: {add}, Drop: {drop}"
+      },
+      "SimulatedAnnealing": {
+        "title": "Parâmetros do Simulated Annealing",
+        "info": "O Simulated Annealing aceita soluções piores no início para escapar de ótimos locais. A Temperatura Inicial define a flexibilidade inicial, a Taxa de Resfriamento controla o quão rápido o algoritmo se torna guloso, e as Iterações definem quantos vizinhos avaliar em cada nível de temperatura.",
+        "paramsTitle": "Configurações Globais",
+        "initialTemperatureLabel": "Temperatura Inicial (T0)",
+        "initialTemperatureHelper": "Ex: 10000",
+        "coolingRateLabel": "Taxa de Resfriamento (α)",
+        "coolingRateHelper": "Ex: 0.95 (0 a 1)",
+        "iterationsLabel": "Iterações por Temperatura (L)",
+        "iterationsHelper": "Ex: 100",
+        "currentConfig": "Configuração Atual:"
+      },
+      "Constraints": {
+        "activeStats": "{active}/{total} ativas",
+        "hardStats": "{hard} rígidas",
+        "softStats": "{soft} flexíveis",
+        "statsLabel": "📊 Estatísticas:",
+        "configInfoTitle": "💡 Configuração de Restrições",
+        "configInfoHard": "<strong>Rígidas:</strong> Devem ser sempre satisfeitas (violações são críticas)",
+        "configInfoSoft": "<strong>Flexíveis:</strong> Preferíveis mas não obrigatórias (violações têm penalidade configurável)",
+        "availableTitle": "📋 Restrições Disponíveis para Adicionar",
+        "activeTitle": "✅ Restrições Ativas",
+        "noActiveTitle": "🚫 Nenhuma restrição ativa",
+        "noActiveDesc": "Adicione restrições acima para configurar o algoritmo",
+        "saveAll": "Salvar Todas as Configurações",
+        "removedSuccess": "Restrição \"{name}\" removida com sucesso!",
+        "addedSuccess": "Restrição \"{name}\" adicionada com sucesso!",
+        "savedSuccess": "Configurações de restrições salvas com sucesso!"
+      },
+      "Neighborhood": {
+        "info": "As funções de vizinhança definem como novas soluções são geradas a partir da solução atual.",
+        "warning": "Pelo menos uma função deve estar ativa.",
+        "activeFunctions": "Funções Ativas:",
+        "sampleSizeLabel": "Tamanho da Vizinhança",
+        "activeCount": "{active} de {total} ativas",
+        "noDescription": "Sem descrição disponível",
+        "active": "Ativo",
+        "inactive": "Inativo",
+        "minActiveWarning": "Pelo menos uma função deve permanecer ativa"
+      },
+      "StopCriteria": {
+        "info": "Os critérios de parada determinam quando o algoritmo deve encerrar a busca.",
+        "warning": "Pelo menos um critério deve estar ativo para evitar execução infinita.",
+        "activeCriteria": "Critérios Ativos:",
+        "activeCount": "{active} de {total}",
+        "maxIterations": "Máximo de Iterações",
+        "iterationsNoMod": "Iterações sem Modificação",
+        "iterationsNoImp": "Iterações sem Melhora",
+        "value": "Valor",
+        "minActiveWarning": "Pelo menos um critério deve permanecer ativo",
+        "noDescription": "Sem descrição disponível",
+        "active": "Ativo",
+        "inactive": "Inativo"
+      },
+      "Aspiration": {
+        "info": "Os critérios de aspiração permitem aceitar soluções tabu em situações especiais, como quando representam uma melhoria significativa ou atendem a condições específicas.",
+        "activeCriteria": "Critérios Ativos:",
+        "activeCount": "{active} de {total}",
+        "iterationsAccept": "Iterações para Aceitação",
+        "iterationsAcceptHelper": "Número de iterações necessárias com o mesmo objetivo",
+        "noDescription": "Sem descrição disponível",
+        "active": "Ativo",
+        "inactive": "Inativo"
+      },
+      "Objective": {
+        "info": "As componentes da função objetivo determinam como a qualidade das soluções será avaliada.",
+        "warning": "Pelo menos uma componente deve estar ativa para que o algoritmo funcione corretamente.",
+        "activeComponents": "Componentes Ativas:",
+        "activeCount": "{active} de {total}",
+        "noDescription": "Sem descrição disponível",
+        "active": "Ativa",
+        "inactive": "Inativa",
+        "default": "Padrão",
+        "custom": "Customizada",
+        "multiplier": "Multiplicador",
+        "multiplierHelper": "Peso da componente na função objetivo",
+        "configTableBtn": "Configurar Tabela",
+        "configTableTooltip": "Configurar tabela de multiplicadores por prioridade",
+        "useDefaultBtn": "Usar Padrão",
+        "useDefaultTooltip": "Usar cálculo padrão: 2^({maior} - p)",
+        "minActiveWarning": "Pelo menos uma componente deve permanecer ativa",
+        "usingExpCalc": "Usando cálculo exponencial: 2^({maior} - prioridade)",
+        "dialogTitle": "Configurar Multiplicadores por Prioridade",
+        "dialogInfo": "Configure os multiplicadores para cada nível de prioridade (1 a {maior}). Valores maiores dão mais peso para aquela prioridade na função objetivo.",
+        "dialogWarningTitle": "Cálculo Padrão:",
+        "dialogWarningExp": "2^({maior} - prioridade)",
+        "dialogWarningExample": "Exemplo: Para prioridade 1 = 2^({maior} - 1) = {valor}",
+        "colPriority": "Prioridade",
+        "colRange": "Faixa",
+        "colMultiplier": "Multiplicador",
+        "colDefault": "Padrão",
+        "btnCancel": "Cancelar",
+        "btnSave": "Salvar Configuração",
+        "snackbarSuccess": "Tabela de multiplicadores salva com sucesso!",
+        "defaultApplied": "Configuração padrão aplicada para {name}. Será usado o cálculo exponencial 2^({maior} - p)",
+        "minActiveAlert": "Pelo menos uma componente da função objetivo deve permanecer ativa",
+        "priorityHigh": "Alta",
+        "priorityMedium": "Média",
+        "priorityLow": "Baixa"
+      }
+    },
+    "Spreadsheet": {
+      "classesSpreadsheet": "Planilha de Disciplinas",
+      "exportExcel": "Exportar Excel",
+      "clearFilters": "Limpar Filtros",
+      "manageColumns": "Gerenciar Colunas",
+      "displayingCount": "Exibindo {visible} de {total} disciplinas",
+      "filtrado": " (filtrado)",
+      "schedule": "Horário {value}",
+      "day_SEG": "Seg",
+      "day_TER": "Ter",
+      "day_QUA": "Qua",
+      "day_QUI": "Qui",
+      "day_SEX": "Sex",
+      "day_SAB": "Sáb",
+      "day_DOM": "Dom",
+      "yes": "Sim",
+      "no": "Não",
+      "Columns": {
+        "code": "Código",
+        "class": "Turma",
+        "name": "Nome",
+        "professors": "Docentes",
+        "courses": "Cursos",
+        "level": "Nível",
+        "evening": "Noturna",
+        "english": "Inglês",
+        "active": "Ativa",
+        "group": "Grupo",
+        "workload": "Carga",
+        "schedule": "Horário {value}"
+      }
+    },
+    "Statistics": {
+      "dashboardTitle": "Dashboard de Resultados",
+      "dashboardSubtitle": "Selecione uma solução para visualizar as estatísticas detalhadas.",
+      "chooseSolution": "Escolha uma solução para análise",
+      "solution": "Solução",
+      "noSolutionFound": "Nenhuma solução encontrada!",
+      "tabs": {
+        "overview": "Visão Geral",
+        "constraints": "Restrições",
+        "configurations": "Configurações",
+        "solutionDetails": "Detalhes da Solução",
+        "workloadAnalysis": "Análise de Carga Didática"
+      },
+      "Overview": {
+        "finalEvaluation": "Avaliação Final",
+        "constraintViolations": "Violações de Restrições",
+        "algorithmEvolution": "Evolução do Algoritmo",
+        "noChartData": "O gráfico de evolução não pôde ser gerado para este tipo de inserção ou algoritmo."
+      },
+      "Constraints": {
+        "tabTitle": "Análise de Restrições e Violações",
+        "diagnosticsTitle": "Diagnóstico de Restrições",
+        "diagnosticsSubtitle": "Detalhamento dos casos específicos que violaram as restrições e impactaram a pontuação.",
+        "violationIn": "Violação na Restrição:",
+        "reportedCases": "casos reportados",
+        "violatingItems": "Itens em Violação:",
+        "noConstraintData": "Não há dados de restrições ou ocorreu um erro na análise."
+      },
+      "SingleSolutionWorkloadChart": {
+        "totalProfessors": "Total de Docentes",
+        "withAssignments": "Com Atribuições",
+        "avgWorkload": "Carga Média",
+        "withoutAssignments": "Sem Atribuições",
+        "maxWorkload": "Carga Máxima:",
+        "minWorkload": "Carga Mínima (com atribuições):",
+        "stdDeviation": "Desvio Padrão:",
+        "noDataFound": "Nenhum dado de carga didática encontrado",
+        "colorLegend": "Legenda de Cores por Faixa de Carga:",
+        "professorDetails": "Detalhes dos Docentes por Faixa de Carga",
+        "distributionAnalysis": "Análise de Distribuição de Carga:"
+      },
+      "SolutionHistoryDetails": {
+        "notFound": "Solução não encontrada!",
+        "details": "Detalhes da Solução",
+        "algorithm": "Algoritmo Utilizado:",
+        "datetime": "Data e Hora:",
+        "insertion": "Inserção:",
+        "interrupted": "Interrompido:",
+        "evaluation": "Avaliação:",
+        "executionTime": "Tempo de Execução:",
+        "iterations": "Iterações:",
+        "configurations": "Configurações",
+        "globalParameters": "Parâmetros Globais",
+        "tabuListSize": "Tamanho da Lista Tabu",
+        "constraints": "Restrições",
+        "neighborhoodGeneration": "Geração da Vizinhança",
+        "interruption": "Interrupção",
+        "aspirationCriteria": "Critérios de Aspiração",
+        "charts": "Gráficos",
+        "histogramPriorityTitle": "Histograma Quantidade de Atribuições por Prioridade",
+        "noPriorityData": "Dados de prioridade não disponíveis para esta solução.",
+        "evaluationChartTitle": "Gráfico Avaliação por Iteração",
+        "noEvaluationData": "Dados de avaliação por iteração não disponíveis para esta solução.",
+        "timeChartTitle": "Gráfico Tempo (ms) por Iteração",
+        "noTimeData": "Dados de tempo por iteração não disponíveis para esta solução.",
+        "histogramConstraintsTitle": "Histograma Ocorrências de Restrições",
+        "noConstraintsData": "Dados de ocorrências de restrições não disponíveis para esta solução.",
+        "xAxisLabelIterations": "Iteração",
+        "yAxisLabelEvaluation": "Avaliação",
+        "yAxisLabelTime": "Tempo (ms)",
+        "qualityIndicatorsTitle": "Indicadores de Qualidade da Solução",
+        "ispTitle": "Índice de Satisfação Ponderada (ISP)",
+        "ispSubtitle": "Eficácia do algoritmo em atender as melhores preferências do docente.",
+        "tapTitle": "Taxa de Atendimento Preferencial (TAP)",
+        "tapSubtitle": "Percentual de atribuições que são prioridade 1, 2 ou 3 do docente.",
+        "stdTitle": "Desvio Padrão da Carga Didática",
+        "stdSubtitle": "Mede a dispersão e o equilíbrio da carga atribuída entre os docentes.",
+        "ispDialogDesc": "O ISP avalia a qualidade global das soluções sob a ótica do atendimento às preferências, normalizada pelo cenário ideal (onde todo mundo ganharia sua prioridade número 1).",
+        "ispDialogFormula": "ISP = ( ∑ (Pontuação da Prioridade Atribuída) ) /\n      ( Total Atribuições × Pontuação Máxima ) × 100",
+        "ispDialogFooter": "Valores mais altos (próximos de 100%) refletem maior eficácia em dar as melhores escolhas aos docentes.",
+        "tapDialogDesc": "O TAP representa o percentual de atribuições realizadas que correspondem às opções mais desejadas do docente, ou seja, suas preferências listadas como prioridade 1, 2 ou 3.",
+        "tapDialogFormula": "TAP = ( ∑ Atribuições em Prioridade 1, 2 ou 3 ) /\n      ( Total de Atribuições ) × 100",
+        "tapDialogFooter": "Essa métrica ajuda a visualizar rapidamente quantos docentes ficaram completamente satisfeitos.",
+        "stdDialogDesc": "O Desvio Padrão é uma medida estatística que indica o quão dispersos estão os valores da carga didática total de cada docente em relação à média geral.",
+        "stdDialogFormula": "σ = √ [ ∑ (Carga do Docente - Média)² / Total de Docentes ]",
+        "stdDialogFooter": "Um valor próximo a 0 indica que quase todos os docentes estão com uma carga semelhante (ótima distribuição). Um valor mais alto indica desequilíbrio na distribuição.",
+        "close": "Fechar",
+        "configurations": "Configurações do Algoritmo",
+        "globalParameters": "Parâmetros Globais",
+        "tabuListSize": "Tamanho da Lista Tabu",
+        "tabuListType": "Tipo da Lista Tabu",
+        "constraints": "Restrições",
+        "neighborhoodGeneration": "Geração de Vizinhança",
+        "interruption": "Critérios de Parada (Interrupção)",
+        "aspirationCriteria": "Critérios de Aspiração"
+      }
+    },
+    "History": {
+      "columns": {
+        "identifier": "Identificador",
+        "evaluation": "Avaliação",
+        "insertion": "Inserção",
+        "actions": "Ações"
+      },
+      "SolutionHistoryRow": {
+        "details": "Detalhes",
+        "restore": "Restaurar essa solução",
+        "delete": "Excluir essa solução"
+      },
+      "Alerts": {
+        "removed": "A solução foi removida do histórico!",
+        "applied": "A solução {datetime} foi aplicada!",
+        "downloaded": "A solução {datetime} foi baixada!"
       }
     }
   },
@@ -751,6 +1450,7 @@
     "register": "Cadastrar",
     "loadData": "Carregar dados",
     "selection": "Seleção",
+    "networkAnalysis": "Análise de Rede",
     "settings": "Configurações",
     "assignments": "Atribuições",
     "table": "Tabela",
@@ -765,9 +1465,11 @@
     "navigationMenu": "Menu de navegação"
   },
   "Collaboration": {
-    "roomNotFound": "Sala não encontrada.",
-    "nameAlreadyExistis": "Nome de usuário já existe nesta sala.",
-    "ownerEndedRoom": "O dono encerrou a sala."
+    "roomNotFound": "Sala não encontrada ou indisponível.",
+    "nameAlreadyExistis": "Este nome já está em uso na sala.",
+    "passwordRequired": "É necessário informar a senha para entrar.",
+    "incorrectPassword": "Senha incorreta.",
+    "ownerEndedRoom": "O criador da sala encerrou a sessão. Você foi desconectado."
   },
   "AlgorithmContext": {
     "Constraints": {
@@ -790,7 +1492,9 @@
       "remove": "Remover",
       "removeDescription": "Remover um docente de uma turma",
       "swap": "Trocar",
-      "swapDescription": "Troca as atribuições entre duas turmas."
+      "swapDescription": "Troca as atribuições entre duas turmas.",
+      "stochasticMove": "Movimento Estocástico",
+      "stochasticMoveDescription": "Executa múltiplas alterações aleatórias de uma vez para saltar para regiões distantes da vizinhança."
     },
     "StopCriteria": {
       "iterationLimit": "Limite de Iterações",
@@ -861,6 +1565,7 @@
     "notSupported": "Esta restrição não implementa nenhum tipo.",
     "onlySoftAvailable": "Apenas modo flexível disponível.",
     "onlyHardAvailable": "Apenas modo rígido disponível.",
+    "penalty": "Penalidade",
     "bothAvailable": "Ambos os modos disponíveis.",
     "penaltyHelperText": "Peso da penalização quando violada.",
     "enterPenalty": "Digite a penalidade",
@@ -871,21 +1576,32 @@
     "unsupportedParameter": "Tipo de parâmetro não suportado: {valueType}",
     "constraintParameter": "Parâmetro da Restrição"
   },
+  "AlgorithmAlerts": {
+    "errorWorkerExecution": "Erro na execução do algoritmo pelo Worker:",
+    "errorExecution": "Erro na execução do algoritmo!",
+    "solutionAppliedSuccess": "A solução foi aplicada com sucesso!",
+    "errorApplyingSolution": "Erro ao aplicar a solução!",
+    "executionInterrupted": "A execução do algoritmo foi interrompida!"
+  },
   "AlgorithmDialog": {
     "StatusMessages": {
       "preprocessing": "Processando variáveis e construindo o modelo matemático...",
       "solving": "O otimizador está buscando a melhor solução...",
-      "completed": "Processo concluído!"
+      "completed": "Uma solução foi encontrada",
+      "infeasible": "Não foi possível encontrar uma solução viável"
     },
     "SubMessages": {
       "preprocessing": "Isso pode levar alguns segundos dependendo da quantidade de docentes e restrições.",
       "solving": "Aguarde enquanto o algoritmo explora o espaço de soluções.",
-      "completed": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela."
+      "completed": "O processo foi concluído! Agora você pode aplicar a solução ou fechar esta tela.",
+      "infeasible": "Não foi possível encontrar uma solução viável para o conjunto de restrições definidas no sistema para os dados apresentados."
     },
     "Stage": {
       "preprocessing": "Preparando Otimização",
       "preprocessingDescription": "Gerando matrizes e restrições...",
-      "solving": "Execução do Algoritmo"
+      "solving": "Execução do Algoritmo",
+      "completed": "Otimização Finalizada",
+      "infeasible": "Falha na Otimização"
     },
     "Metrics": {
       "iterations": "Iterações",
@@ -903,6 +1619,11 @@
     "apply": "Aplicar",
     "linearProgressLabel": "Atribuições: {current} de {total}"
   },
+  "ConstraintsPage": {
+    "availableConstraints": "Restrições Disponíveis",
+    "noConstraintsAvailable": "Não há restrições disponíveis para adicionar",
+    "save": "Salvar"
+  },
   "Spreadsheet": {
     "DocenteSelectionDialog": {
       "selectedCount": "Docentes selecionados: {count}",
@@ -912,7 +1633,11 @@
       "professorsWithFormsCount": "Docentes com Formulário: {count}",
       "selectProfessorsTitle": "Selecionar Docentes - {codigo} (Turma {turma})",
       "balance": "Saldo: {saldo}",
-      "priority": "Prioridade: {prioridade}"
+      "priority": "Prioridade: {prioridade}",
+      "searchProfessor": "Buscar docente...",
+      "sortBy": "Ordenar por",
+      "sortByPriority": "Prioridade",
+      "sortByName": "Nome"
     },
     "DocenteCell": {
       "addTeacher": "Adicionar docente",
@@ -933,21 +1658,65 @@
     "close": "Fechar"
   },
   "Components": {
+    "TreeView": {
+      "professorsCount": "Docentes ({count})",
+      "classesCount": "Disciplinas ({count})",
+      "professors": "Docentes",
+      "classes": "Disciplinas",
+      "balance": "Saldo: ",
+      "noInfoSelected": "Nenhuma informação selecionada!",
+      "chosenByProfessor": "Escolhidas pelo docente",
+      "chosenByProfessors": "Escolhida pelos docentes",
+      "forms": "Formulários",
+      "assignedToProfessor": "Atribuídas ao docente",
+      "assignedToProfessors": "Atribuída aos docentes",
+      "assignments": "Atribuições"
+    },
+    "PlanilhaTable": {
+      "filter": "Filtro"
+    },
+    "LineChartsSelector": {
+      "evaluation": "Avaliação",
+      "time": "Tempo",
+      "noInfoSelected": "Nenhuma informação selecionada!",
+      "iterations": "Iterações",
+      "timeMs": "Tempo (ms)"
+    },
+    "ConstraintsBarCharts": {
+      "quantity": "Quantidade"
+    },
+    "StatusPieChart": {
+      "active": "Ativos",
+      "inactive": "Inativos",
+      "locked": "Travados"
+    },
+    "AnimatedLogo": {
+      "alt": "Logo do Distribuidor de Carga."
+    },
     "ClearStorageModal": {
-      "title": "Sessão Anterior Encontrada",
-      "description": "Identificamos que você possui dados de um planejamento anterior salvos no navegador. Você deseja continuar de onde parou ou prefere apagar tudo para começar um novo projeto do zero?",
-      "savedDataInfo": "{count, plural, =1 {1 categoria de dados encontrada} other {# categorias de dados encontradas}}",
-      "continueButton": "Continuar Planejamento",
-      "clearButton": "Começar do Zero",
-      "clearingButton": "Apagando dados...",
-      "closeAriaLabel": "Fechar modal",
-      "continueAriaDescription": "Continua com os dados salvos anteriormente sem fazer alterações",
-      "clearAriaDescription": "Remove todos os dados salvos e recarrega a página para começar um novo planejamento"
+      "title": "Limpar Dados",
+      "closeAriaLabel": "Fechar",
+      "description": "Tem certeza que deseja limpar os dados da sessão atual? Todas as atribuições não salvas serão perdidas.",
+      "savedDataInfo": "{count} soluções estão salvas no histórico e não serão apagadas.",
+      "continueButton": "Continuar sem limpar",
+      "continueAriaDescription": "Fechar este aviso e manter os dados atuais",
+      "clearButton": "Limpar Dados",
+      "clearingButton": "Limpando...",
+      "clearAriaDescription": "Limpar permanentemente todos os dados da sessão atual"
     },
     "NoDataFound": {
       "noDataFound": "Nenhum dado encontrado",
-      "description": "Parece que você ainda não carregou os dados necessários para realizar a atribuição. Importe os docentes e turmas para começar.",
+      "description": "Parece que você ainda não carregou nenhum arquivo de dados no sistema.",
       "loadData": "Carregar Dados"
+    },
+    "OnboardingDialog": {
+      "title": "Bem-vindo ao Distribuidor de Carga!",
+      "description": "Notamos que é sua primeira vez por aqui. Gostaria de fazer um rápido tour para entender como o sistema funciona?",
+      "question": "O que você gostaria de fazer?",
+      "startTourBtn": "Iniciar Tour",
+      "loadDataBtn": "Carregar meus Dados",
+      "skipBtn": "Pular",
+      "dontShowAgain": "Não mostrar novamente"
     }
   }
 }

@@ -61,23 +61,53 @@ export function setCellColor(
   celula: Celula,
   atribuido: boolean,
   maxPriority: number,
+  isHighContrast: boolean = false
 ) {
   // Célula travada
   if (celula.trava) {
-    return `rgba(224, 224, 224, 0.6)`;
+    if (isHighContrast) {
+      return {
+        backgroundColor: "transparent",
+        border: "3px dashed #FFFFFF",
+        color: "#FFFFFF",
+      };
+    }
+    return { backgroundColor: `rgba(224, 224, 224, 0.6)` };
   }
 
   // Docente atribuido a Disciplina
   if (atribuido) {
-    return `rgba(255, 0, 0, 0.4)`;
+    if (isHighContrast) {
+      return {
+        backgroundColor: "#FFFF00",
+        border: "3px solid #FFFF00",
+        color: "#000000",
+      };
+    }
+    return { backgroundColor: `rgba(255, 0, 0, 0.4)` };
   }
 
   // O Docente apresentou uma prioridade para a Disciplina
   if (prioridade) {
-    return getPriorityColor(prioridade, maxPriority);
+    if (isHighContrast) {
+      return {
+        backgroundColor: "transparent",
+        border: "2px solid #FFFFFF",
+        color: "#FFFF00", // Amarelo no preto para alto contraste da prioridade
+      };
+    }
+    return { backgroundColor: getPriorityColor(prioridade, maxPriority) };
   }
 
-  return `rgba(255, 255, 255, 1)`;
+  if (isHighContrast) {
+    return {
+      backgroundColor: "#000000",
+      border: "1px solid #FFFFFF",
+      color: "#FFFFFF",
+    };
+  }
+
+  return { backgroundColor: `rgba(255, 255, 255, 1)` };
 }
 
 /**

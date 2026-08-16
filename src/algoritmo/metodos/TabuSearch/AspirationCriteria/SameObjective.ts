@@ -12,6 +12,8 @@ import { AspirationCriteria } from "../Classes/Abstract/AspirationCriteria";
  * com diferentes atribuições) melhores globais, incentivando a busca por melhores vizinhanças.
  */
 export default class SameObjective extends AspirationCriteria {
+  readonly _name = "SameObjective";
+
   public iteracoesParaAceitacao: number;
 
   public qtdIteracoesSemModificacao: number = 0;
@@ -23,7 +25,7 @@ export default class SameObjective extends AspirationCriteria {
   constructor(
     name: string,
     description: string,
-    iteracoesParaAceitacao: number
+    iteracoesParaAceitacao: number,
   ) {
     super(name, description);
     this.iteracoesParaAceitacao = iteracoesParaAceitacao;
@@ -34,7 +36,7 @@ export default class SameObjective extends AspirationCriteria {
   fulfills(
     vizinho: Vizinho,
     melhorVizinho: Vizinho,
-    iteracao: number
+    iteracao: number,
   ): boolean {
     /**
      * Verifica a primeira iteração. A primeira é identificada com `this.prevMelhorVizinho`

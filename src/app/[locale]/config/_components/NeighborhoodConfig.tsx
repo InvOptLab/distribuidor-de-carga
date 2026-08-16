@@ -11,15 +11,18 @@ import {
   Chip,
   Tooltip,
   IconButton,
+  TextField,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
+import { useTranslations } from "next-intl";
 
 export default function NeighborhoodConfig() {
   const { neighborhoodFunctions, setNeighborhoodFunctions } =
     useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
+  const t = useTranslations("Pages.Config.Neighborhood");
 
   const handleToggle = (key: string, currentState: boolean) => {
     setNeighborhoodFunctions((prev) => {
@@ -40,20 +43,19 @@ export default function NeighborhoodConfig() {
     <Box>
       <Alert severity="info" sx={{ mb: 1 }}>
         <Typography variant="body2">
-          As funções de vizinhança definem como novas soluções são geradas a
-          partir da solução atual.
+          {t("info")}
         </Typography>
       </Alert>
       <Alert severity="warning" sx={{ mb: 1 }}>
         <Typography variant="body2">
-          Pelo menos uma função deve estar ativa.
+          {t("warning")}
         </Typography>
       </Alert>
 
       <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
-        <Typography variant="h6">Funções Ativas:</Typography>
+        <Typography variant="h6">{t("activeFunctions")}</Typography>
         <Chip
-          label={`${activeCount} de ${neighborhoodFunctions.size}`}
+          label={t("activeCount", { active: activeCount, total: neighborhoodFunctions.size })}
           color={activeCount > 0 ? "success" : "error"}
           variant="outlined"
         />
@@ -86,7 +88,7 @@ export default function NeighborhoodConfig() {
                   </Typography>
                   <Tooltip
                     title={
-                      func.instance.description || "Sem descrição disponível"
+                      func.instance.description || t("noDescription")
                     }
                   >
                     <IconButton
@@ -94,7 +96,7 @@ export default function NeighborhoodConfig() {
                       onClick={() =>
                         addAlerta(
                           func.instance.description ||
-                            "Sem descrição disponível",
+                            t("noDescription"),
                           "info",
                           8
                         )
@@ -110,7 +112,7 @@ export default function NeighborhoodConfig() {
                   color="text.secondary"
                   sx={{ mb: 2, minHeight: 40 }}
                 >
-                  {func.instance.description || "Descrição não disponível"}
+                  {func.instance.description || t("noDescription")}
                 </Typography>
 
                 <FormControlLabel
@@ -121,8 +123,40 @@ export default function NeighborhoodConfig() {
                       disabled={func.isActive && activeCount === 1}
                     />
                   }
-                  label={func.isActive ? "Ativo" : "Inativo"}
+                  label={func.isActive ? t("active") : t("inactive")}
                 />
+
+                {func.instance._name === "StochasticMove" && (
+                   <Box sx={{ mt: 2 }}>
+                     <Typography variant="body2" gutterBottom>
+                        {t("sampleSizeLabel")}
+                     </Typography>
+                     <TextField 
+                       type="number"
+                       size="small"
+                       disabled={!func.isActive}
+                       value={(func.instance as any).sampleSize}
+                       onChange={(e) => {
+                          const val = Math.max(1, parseInt(e.target.value) || 1);
+                          setNeighborhoodFunctions((prev) => {
+                            const newMap = new Map(prev);
+                            const current = newMap.get(key);
+                            if (current) {
+                              // Clona para engatilhar render do contexto
+                              const newInstance = Object.assign(
+                                Object.create(Object.getPrototypeOf(current.instance)),
+                                current.instance
+                              );
+                              (newInstance as any).sampleSize = val;
+                              newMap.set(key, { ...current, instance: newInstance });
+                            }
+                            return newMap;
+                          });
+                       }}
+                       fullWidth
+                     />
+                   </Box>
+                )}
 
                 {func.isActive && activeCount === 1 && (
                   <Typography
@@ -131,7 +165,7 @@ export default function NeighborhoodConfig() {
                     display="block"
                     sx={{ mt: 1 }}
                   >
-                    Pelo menos uma função deve permanecer ativa
+                    {t("minActiveWarning")}
                   </Typography>
                 )}
               </CardContent>

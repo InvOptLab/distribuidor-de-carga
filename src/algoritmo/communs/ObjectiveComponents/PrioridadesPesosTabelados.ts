@@ -24,6 +24,8 @@ export class PrioridadesPesosTabelados extends ObjectiveComponent<null> {
 
   maiorPrioridade: number = undefined;
 
+  readonly _name = "PrioridadesPesosTabelados";
+
   constructor(
     name: string,
     isActive: boolean,
@@ -32,7 +34,7 @@ export class PrioridadesPesosTabelados extends ObjectiveComponent<null> {
     multiplier: number | undefined,
     maiorPrioridade: number | undefined,
     tabelaMultiplicadores: Map<number, number> | undefined,
-    parametros: null
+    parametros: null,
   ) {
     super(name, isActive, type, description, multiplier);
 
@@ -79,7 +81,7 @@ export class PrioridadesPesosTabelados extends ObjectiveComponent<null> {
   calculate(
     atribuicoes: Atribuicao[],
     formularios: Formulario[],
-    docentes?: Docente[]
+    docentes?: Docente[],
   ): number {
     /**
      * Verifica se `this.maiorPrioridade` já foi calculada. Caso negativo deverá calculará.
@@ -98,7 +100,7 @@ export class PrioridadesPesosTabelados extends ObjectiveComponent<null> {
     for (const atribuicao of atribuicoes) {
       for (const docenteAtribuido of atribuicao.docentes) {
         const docente: Docente = docentes.find(
-          (d) => d.nome === docenteAtribuido
+          (d) => d.nome === docenteAtribuido,
         );
 
         /**
@@ -130,7 +132,7 @@ export class PrioridadesPesosTabelados extends ObjectiveComponent<null> {
           coefficient:
             this.multiplier * this.tabelaMultiplicadores.get(modelData.p[i][j]),
         });
-      })
+      }),
     );
 
     return objectiveTerms;

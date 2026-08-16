@@ -247,6 +247,8 @@ export default function WorkloadHistogramChart({
                 <Box key={docente.nome}>
                   <ListItem>
                     <ListItemText
+                      primaryTypographyProps={{ component: "div" } as any}
+                      secondaryTypographyProps={{ component: "div" } as any}
                       primary={
                         <Box
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}

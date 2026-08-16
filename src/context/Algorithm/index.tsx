@@ -6,12 +6,14 @@ import { StopCriteria } from "@/algoritmo/abstractions/StopCriteria";
 import { AtribuicaoSemFormulario } from "@/algoritmo/communs/Constraints/AtribuicaoSemFormulario";
 import { CargaDeTrabalhoMaximaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMaximaDocente";
 import { CargaDeTrabalhoMinimaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMinimaDocente";
+import { CargaDeTrabalhoMinimaDocenteContinua } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMinimaDocenteContinua";
 import { ChoqueDeHorarios } from "@/algoritmo/communs/Constraints/ChoqueDeHorarios";
 import { DisciplinaSemDocente } from "@/algoritmo/communs/Constraints/DisciplinaSemDocente";
 import { ValidaTravas } from "@/algoritmo/communs/Constraints/ValidaTravas";
 import { Add } from "@/algoritmo/communs/NeighborhoodGeneration/Add";
 import { Remove } from "@/algoritmo/communs/NeighborhoodGeneration/Remove";
 import { Swap } from "@/algoritmo/communs/NeighborhoodGeneration/Swap";
+import { StochasticMove } from "@/algoritmo/communs/NeighborhoodGeneration/StochasticMove";
 import { MinimizarDiferencaCargaDidatica } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaCargaDidatica";
 import { MinimizarDiferencaSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarDiferencaSaldos";
 import { MinimizarUtilizacaoSaldos } from "@/algoritmo/communs/ObjectiveComponents/MinimizarUtilizacaoSaldos";
@@ -64,6 +66,11 @@ export interface AlgorithmInterface {
         drop: number;
       };
     };
+    saConfig: {
+      initialTemperature: number;
+      coolingRate: number;
+      iterationsPerTemperature: number;
+    };
     maxIterations: { value?: number; isActive: boolean };
   };
   setParametros: React.Dispatch<
@@ -74,6 +81,11 @@ export interface AlgorithmInterface {
           add: number;
           drop: number;
         };
+      };
+      saConfig: {
+        initialTemperature: number;
+        coolingRate: number;
+        iterationsPerTemperature: number;
       };
       maxIterations: { value?: number; isActive: boolean };
     }>
@@ -90,8 +102,8 @@ export interface AlgorithmInterface {
   setAspirationFunctions: React.Dispatch<
     React.SetStateAction<Map<string, AspirationCriteriaEntry>>
   >;
-  tabuListType: "Solução" | "Movimento";
-  setTabuListType: React.Dispatch<"Solução" | "Movimento">;
+  tabuListType: "Solução" | "Movimento" | "Hash";
+  setTabuListType: React.Dispatch<"Solução" | "Movimento" | "Hash">;
   objectiveComponents: Map<string, ObjectiveComponent<any>>;
   setObjectiveComponents: React.Dispatch<
     React.SetStateAction<Map<string, ObjectiveComponent<any>>>
@@ -117,6 +129,11 @@ const AlgorithmContext = createContext<AlgorithmInterface>({
         add: 5,
         drop: 5,
       },
+    },
+    saConfig: {
+      initialTemperature: 10000,
+      coolingRate: 0.95,
+      iterationsPerTemperature: 100,
     },
     maxIterations: { value: undefined, isActive: false },
   },
@@ -175,7 +192,7 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
           false,
           1000000,
           true,
-          null,
+          {limiteDocente: 1},
         ),
       ],
       [
@@ -215,7 +232,21 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   );
 
   const [allConstraints, setAllConstraints] = useState(
-    new Map([...softConstraints, ...hardConstraints]),
+    new Map([
+      ...softConstraints, 
+      ...hardConstraints,
+      [
+        "Carga de Trabalho Mínima (Contínua)",
+        new CargaDeTrabalhoMinimaDocenteContinua(
+          "Carga de Trabalho Mínima (Contínua)",
+          "O número mínimo de carga didática que pode ser atribuída a um docente, penalizado continuamente pelo déficit.",
+          false,
+          10000,
+          false, // inicialmente não estará ativa
+          { minLimit: 1 },
+        ),
+      ]
+    ]),
   );
 
   const [parametros, setParametros] = useState<{
@@ -226,6 +257,11 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         drop: number;
       };
     };
+    saConfig: {
+      initialTemperature: number;
+      coolingRate: number;
+      iterationsPerTemperature: number;
+    };
     maxIterations: { value?: number; isActive: boolean };
   }>({
     tabuTenure: {
@@ -234,6 +270,11 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
         add: 5,
         drop: 5,
       },
+    },
+    saConfig: {
+      initialTemperature: 10000,
+      coolingRate: 0.95,
+      iterationsPerTemperature: 100,
     },
     maxIterations: { value: undefined, isActive: false },
   });
@@ -268,6 +309,17 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
             t("Movements.swapDescription"),
           ),
           isActive: true,
+        },
+      ],
+      [
+        "StochasticMove",
+        {
+          instance: new StochasticMove(
+            t("Movements.stochasticMove"),
+            t("Movements.stochasticMoveDescription"),
+            1
+          ),
+          isActive: false,
         },
       ],
     ]),
@@ -347,9 +399,9 @@ export function AlgorithmWrapper({ children }: { children: React.ReactNode }) {
   );
 
   // TODO: Os textos devem ser modificados para um ENEM de forma a podermos utilizar as traduções de forma correta e não através de ajustes.
-  // FIX: Removi a tipagem pois os tipos estavam fixados em texto < "Solução" | "Movimento">
+  // FIX: Removi a tipagem pois os tipos estavam fixados em texto < "Solução" | "Movimento" | "Hash">
   const [tabuListType, setTabuListType] = useState(
-    t("TabuType.solution") as "Solução" | "Movimento",
+    t("TabuType.solution") as "Solução" | "Movimento" | "Hash",
   );
 
   const [objectiveComponents, setObjectiveComponents] = useState(

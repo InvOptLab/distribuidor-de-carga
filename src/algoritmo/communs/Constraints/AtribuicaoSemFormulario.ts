@@ -13,13 +13,15 @@ import {
 import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
 export class AtribuicaoSemFormulario extends Constraint<null> {
+  readonly _name = "AtribuicaoSemFormulario";
+
   constructor(
     name: string,
     description: string,
     isHard: boolean,
     penalty: number,
     isActive: boolean,
-    parametros: null
+    parametros: null,
   ) {
     super(name, description, isHard, penalty, isActive);
     this.params = parametros;
@@ -27,7 +29,7 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
 
   soft(
     atribuicoes: Atribuicao[],
-    docentes: Docente[]
+    docentes: Docente[],
     //disciplinas?: Disciplina[]
   ): number {
     let avaliacao: number = 0;
@@ -48,7 +50,7 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
   hard(
     atribuicoes: Atribuicao[],
     docentes: Docente[],
-    disciplinas: Disciplina[]
+    disciplinas: Disciplina[],
   ): boolean {
     docentes = docentes.filter((doc) => doc !== null && doc !== undefined);
 
@@ -80,34 +82,47 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
 
   occurrences(
     atribuicoes: Atribuicao[],
-    docentes: Docente[]
-  ): { label: string; qtd: number }[] {
-    const data: { label: string; qtd: number }[] = [];
-
-    if (this.penalty !== 0 && !this.hard) {
-      const softEvaluation = Math.abs(this.soft(atribuicoes, docentes));
-
-      data.push({
-        label: "Sem Formulário",
-        qtd: softEvaluation / this.penalty,
-      });
-    } else {
-      let qtd = 0;
+    docentes?: Docente[],
+    disciplinas?: Disciplina[],
+  ): { label: string; qtd: number; items?: string[] }[] {
+    const data: { label: string; qtd: number; items?: string[] }[] = [];
+    const items: string[] = [];
+    let qtd = 0;
+    
+    if (docentes) {
       for (const atribuicao of atribuicoes) {
         for (const docenteAtribuido of atribuicao.docentes) {
           const docente = docentes.find((obj) => obj.nome === docenteAtribuido);
 
           if (docente && !docente.formularios.has(atribuicao.id_disciplina)) {
             qtd += 1;
+            const turmaEncontrada = disciplinas?.find((t) => t.id === atribuicao.id_disciplina);
+            if (turmaEncontrada) {
+              items.push(`${docenteAtribuido} -> Turma: ${turmaEncontrada.codigo} - Turma ${turmaEncontrada.turma}`);
+            } else {
+              items.push(`${docenteAtribuido} -> Turma: ${atribuicao.id_disciplina}`);
+            }
           }
         }
       }
+    }
+
+    if (this.penalty !== 0 && !this.hard && docentes) {
+      const softEvaluation = Math.abs(this.soft(atribuicoes, docentes));
+
+      data.push({
+        label: "Sem Formulário",
+        qtd: softEvaluation / this.penalty,
+        items: items,
+      });
+    } else {
       data.push({
         label: "Sem Formulário",
         qtd: qtd,
+        items: items,
       });
     }
-    return data ? data : [{ label: "Sem Formulário", qtd: 0 }];
+    return data ? data : [{ label: "Sem Formulário", qtd: 0, items: [] }];
   }
 
   milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
@@ -117,15 +132,15 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
           `prioridade_definida_${i}_${j}`,
           LpSum([modelData.x[i][j]]),
           "<=",
-          modelData.P[i][j] + modelData.m[i][j]
+          modelData.P[i][j] + modelData.m[i][j], //* modelData.a[i][j],
         );
-      })
+      }),
     );
   }
 
   milpSoftFormulation(
     model: OptimizationModel,
-    modelData: modelSCP
+    modelData: modelSCP,
   ): { objectiveTerms: Term[] } {
     /**
      * Restrição
@@ -159,10 +174,10 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
               { variable: modelData.b[i][j], coefficient: -1 },
             ]),
             "==",
-            0
+            0,
           );
         }
-      })
+      }),
     );
 
     /**
@@ -178,7 +193,7 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
             coefficient: this.penalty,
           });
         }
-      })
+      }),
     );
 
     return { objectiveTerms };

@@ -8,6 +8,8 @@ import { AspirationCriteria } from "../Classes/Abstract/AspirationCriteria";
  * a avaliação maior que a do melhor vizinho global.
  */
 export class Objective extends AspirationCriteria {
+  readonly _name = "Objective";
+
   constructor(name: string, description: string) {
     super(name, description);
   }

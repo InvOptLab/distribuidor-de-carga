@@ -19,7 +19,7 @@ export class Statistics implements Estatisticas {
   public docentesPrioridade: Map<number, number>;
   public qtdOcorrenciasRestricoes: Map<
     string,
-    { label: string; qtd: number }[]
+    { label: string; qtd: number; items?: string[] }[]
   >;
 
   constructor() {
@@ -31,7 +31,7 @@ export class Statistics implements Estatisticas {
     this.docentesPrioridade = new Map<number, number>();
     this.qtdOcorrenciasRestricoes = new Map<
       string,
-      { label: string; qtd: number }[]
+      { label: string; qtd: number; items?: string[] }[]
     >();
   }
 

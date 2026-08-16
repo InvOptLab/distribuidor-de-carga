@@ -15,6 +15,11 @@ const nextConfig = {
       };
     }
 
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true, // Permite o carregamento assíncrono de módulos WASM
+    };
+
     return config;
   },
 };

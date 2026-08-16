@@ -38,11 +38,13 @@ import { useAlertsContext } from "@/context/Alerts";
 import { getPriorityColor } from "@/app/[locale]/atribuicoes";
 import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 import ConstraintParameters from "@/components/Constraints/ConstraintParameters";
+import { useTranslations } from "next-intl";
 
 export default function ObjectiveConfig() {
   const { objectiveComponents, setObjectiveComponents, maiorPrioridade } =
     useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
+  const t = useTranslations("Pages.Config.Objective");
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState<string | null>(
@@ -95,7 +97,7 @@ export default function ObjectiveConfig() {
     // Verificar se é a última componente ativa
     if (currentState && activeCount === 1) {
       addAlerta(
-        "Pelo menos uma componente da função objetivo deve permanecer ativa",
+        t("minActiveAlert"),
         "warning",
         4,
       );
@@ -164,7 +166,7 @@ export default function ObjectiveConfig() {
       setObjectiveComponents(newComponents);
 
       addAlerta(
-        `Configuração padrão aplicada para ${componentName}. Será usado o cálculo exponencial 2^(${maiorPrioridade} - p)`,
+        t("defaultApplied", { name: componentName, maior: maiorPrioridade }),
         "success",
         5,
       );
@@ -218,9 +220,9 @@ export default function ObjectiveConfig() {
   // };
 
   const getPriorityLabel = (priority: number) => {
-    if (priority <= 3) return "Alta";
-    if (priority <= 6) return "Média";
-    return "Baixa";
+    if (priority <= 3) return t("priorityHigh");
+    if (priority <= 6) return t("priorityMedium");
+    return t("priorityLow");
   };
 
   const isUsingDefaultMultipliers = (componentName: string): boolean => {
@@ -268,22 +270,20 @@ export default function ObjectiveConfig() {
     <Box>
       <Alert severity="info" sx={{ mb: 1 }}>
         <Typography variant="body2">
-          As componentes da função objetivo determinam como a qualidade das
-          soluções será avaliada.
+          {t("info")}
         </Typography>
       </Alert>
 
       <Alert severity="warning" sx={{ mb: 1 }}>
         <Typography variant="body2">
-          Pelo menos uma componente deve estar ativa para que o algoritmo
-          funcione corretamente.
+          {t("warning")}
         </Typography>
       </Alert>
 
       <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
-        <Typography variant="h6">Componentes Ativas:</Typography>
+        <Typography variant="h6">{t("activeComponents")}</Typography>
         <Chip
-          label={`${activeCount} de ${totalComponents}`}
+          label={t("activeCount", { active: activeCount, total: totalComponents })}
           color={activeCount > 0 ? "success" : "error"}
           variant="outlined"
         />
@@ -334,7 +334,7 @@ export default function ObjectiveConfig() {
                           size="small"
                         />
                         <Chip
-                          label={component.isActive ? "Ativa" : "Inativa"}
+                          label={component.isActive ? t("active") : t("inactive")}
                           color={component.isActive ? "success" : "default"}
                           size="small"
                         />
@@ -342,8 +342,8 @@ export default function ObjectiveConfig() {
                           <Chip
                             label={
                               isUsingDefaultMultipliers(name)
-                                ? "Padrão"
-                                : "Customizada"
+                                ? t("default")
+                                : t("custom")
                             }
                             color={
                               isUsingDefaultMultipliers(name)
@@ -373,7 +373,7 @@ export default function ObjectiveConfig() {
                             onClick={() =>
                               addAlerta(
                                 component.description ||
-                                  "Sem descrição disponível",
+                                  t("noDescription"),
                                 "info",
                                 8,
                               )
@@ -388,7 +388,7 @@ export default function ObjectiveConfig() {
 
                   <Box sx={{ mb: 2 }}>
                     <TextField
-                      label="Multiplicador"
+                      label={t("multiplier")}
                       type="number"
                       value={component.multiplier || 0}
                       onChange={(e) =>
@@ -398,13 +398,13 @@ export default function ObjectiveConfig() {
                       size="small"
                       fullWidth
                       slotProps={{ htmlInput: { min: 0, step: 1 } }}
-                      helperText="Peso da componente na função objetivo"
+                      helperText={t("multiplierHelper")}
                     />
                   </Box>
 
                   {componentHasMultiplierTable(component) && (
                     <Box sx={{ mb: 2, display: "flex", gap: 1 }}>
-                      <Tooltip title="Configurar tabela de multiplicadores por prioridade">
+                      <Tooltip title={t("configTableTooltip")}>
                         <Button
                           variant={
                             isUsingDefaultMultipliers(name)
@@ -420,12 +420,12 @@ export default function ObjectiveConfig() {
                           }
                           sx={{ flex: 1 }}
                         >
-                          Configurar Tabela
+                          {t("configTableBtn")}
                         </Button>
                       </Tooltip>
 
                       <Tooltip
-                        title={`Usar cálculo padrão: 2^(${maiorPrioridade} - p)`}
+                        title={t("useDefaultTooltip", { maior: maiorPrioridade })}
                       >
                         <Button
                           variant={
@@ -442,7 +442,7 @@ export default function ObjectiveConfig() {
                           }
                           sx={{ flex: 1 }}
                         >
-                          Usar Padrão
+                          {t("useDefaultBtn")}
                         </Button>
                       </Tooltip>
                     </Box>
@@ -470,7 +470,7 @@ export default function ObjectiveConfig() {
                         color="primary"
                       />
                     }
-                    label={component.isActive ? "Ativo" : "Inativo"}
+                    label={component.isActive ? t("active") : t("inactive")}
                   />
 
                   {component.isActive && activeCount === 1 && (
@@ -480,7 +480,7 @@ export default function ObjectiveConfig() {
                       display="block"
                       sx={{ mt: 1 }}
                     >
-                      Pelo menos uma componente deve permanecer ativa
+                      {t("minActiveWarning")}
                     </Typography>
                   )}
                   {componentHasMultiplierTable(component) &&
@@ -491,8 +491,7 @@ export default function ObjectiveConfig() {
                         display="block"
                         sx={{ mt: 1 }}
                       >
-                        Usando cálculo exponencial: 2^({maiorPrioridade} -
-                        prioridade)
+                        {t("usingExpCalc", { maior: maiorPrioridade })}
                       </Typography>
                     )}
                 </CardContent>
@@ -502,7 +501,6 @@ export default function ObjectiveConfig() {
         })}
       </Grid>
 
-      {/* Dialog para Tabela de Multiplicadores */}
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
@@ -512,7 +510,7 @@ export default function ObjectiveConfig() {
         <DialogTitle>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <TableChartIcon />
-            Configurar Multiplicadores por Prioridade
+            {t("dialogTitle")}
             {selectedComponent && (
               <Chip label={selectedComponent} color="primary" size="small" />
             )}
@@ -520,18 +518,14 @@ export default function ObjectiveConfig() {
         </DialogTitle>
         <DialogContent>
           <Alert severity="info" sx={{ mb: 2 }}>
-            Configure os multiplicadores para cada nível de prioridade (1 a{" "}
-            {maiorPrioridade}). Valores maiores dão mais peso para aquela
-            prioridade na função objetivo.
+            {t("dialogInfo", { maior: maiorPrioridade })}
           </Alert>
 
           <Alert severity="warning" sx={{ mb: 2 }}>
             <Typography variant="body2">
-              <strong>Cálculo Padrão:</strong> 2^({maiorPrioridade} -
-              prioridade)
+              <strong>{t("dialogWarningTitle")}</strong> {t("dialogWarningExp", { maior: maiorPrioridade })}
               <br />
-              Exemplo: Para prioridade 1 = 2^({maiorPrioridade} - 1) ={" "}
-              {Math.pow(2, maiorPrioridade - 1)}
+              {t("dialogWarningExample", { maior: maiorPrioridade, valor: Math.pow(2, maiorPrioridade - 1) })}
             </Typography>
           </Alert>
           <TableContainer component={Paper} variant="outlined">
@@ -539,16 +533,16 @@ export default function ObjectiveConfig() {
               <TableHead>
                 <TableRow>
                   <TableCell>
-                    <strong>Prioridade</strong>
+                    <strong>{t("colPriority")}</strong>
                   </TableCell>
                   <TableCell>
-                    <strong>Faixa</strong>
+                    <strong>{t("colRange")}</strong>
                   </TableCell>
                   <TableCell>
-                    <strong>Multiplicador</strong>
+                    <strong>{t("colMultiplier")}</strong>
                   </TableCell>
                   <TableCell>
-                    <strong>Padrão</strong>
+                    <strong>{t("colDefault")}</strong>
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -604,9 +598,9 @@ export default function ObjectiveConfig() {
           </TableContainer>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={() => setDialogOpen(false)}>{t("btnCancel")}</Button>
           <Button onClick={saveMultiplierTable} variant="contained">
-            Salvar Configuração
+            {t("btnSave")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -616,7 +610,7 @@ export default function ObjectiveConfig() {
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
-        message="Tabela de multiplicadores salva com sucesso!"
+        message={t("snackbarSuccess")}
       />
     </Box>
   );

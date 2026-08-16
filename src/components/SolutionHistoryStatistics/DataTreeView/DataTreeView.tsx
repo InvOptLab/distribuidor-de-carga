@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Grid, Paper } from "@mui/material";
 import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import DocentesTreeView from "./DocentesTreeView";
@@ -30,6 +31,8 @@ const DataTreeView: React.FC<DataTreeViewProps> = ({
   setHoveredCourese,
   entidade,
 }) => {
+  const t = useTranslations("Components.TreeView");
+
   const [lastClickedItem, setLastClickedItem] = React.useState<{
     tipo: string;
     id: string;
@@ -67,7 +70,7 @@ const DataTreeView: React.FC<DataTreeViewProps> = ({
             {entidade === "Docente" && (
               <TreeItem
                 itemId="grid_Docentes"
-                label={`Docentes (${docentes.size})`}
+                label={t("professorsCount", { count: docentes.size })}
                 aria-expanded="true"
               >
                 <DocentesTreeView docentesAtribuicoes={docentes} />
@@ -76,7 +79,7 @@ const DataTreeView: React.FC<DataTreeViewProps> = ({
             {entidade === "Disciplina" && (
               <TreeItem
                 itemId="grid_Disciplinas"
-                label={`Disciplinas (${disciplinas.size})`}
+                label={t("classesCount", { count: disciplinas.size })}
               >
                 <DisciplinasTreeView disciplinas={disciplinas} />
               </TreeItem>

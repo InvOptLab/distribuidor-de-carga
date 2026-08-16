@@ -9,6 +9,7 @@ import {
   Box,
 } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
+import { useTranslations } from "next-intl";
 
 interface AddCardProps {
   tooltip: string;
@@ -16,6 +17,7 @@ interface AddCardProps {
 }
 
 export default function AddCard({ tooltip, onClick }: AddCardProps) {
+  const t = useTranslations("Pages.Cadastro.Components.AddCard");
   return (
     <Tooltip title={tooltip}>
       <Card
@@ -100,7 +102,7 @@ export default function AddCard({ tooltip, onClick }: AddCardProps) {
                   transition: "all 0.3s",
                 }}
               >
-                Adicionar Novo
+                {t("addNew")}
               </Typography>
               <Typography
                 variant="caption"

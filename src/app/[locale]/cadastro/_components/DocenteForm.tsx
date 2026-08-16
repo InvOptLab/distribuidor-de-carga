@@ -30,6 +30,7 @@ import IdentifierChangeDialog from "./IdentifierChangeDialog";
 import { Docente, Formulario } from "@/algoritmo/communs/interfaces/interfaces";
 import { useGlobalContext } from "@/context/Global";
 import { useAlertsContext } from "@/context/Alerts";
+import { useTranslations } from "next-intl";
 
 interface FormularioTemp {
   id_disciplina: string;
@@ -51,6 +52,7 @@ export default function DocenteForm({
   const { docentes, setDocentes, disciplinas, formularios, setFormularios } =
     useGlobalContext();
   const { addAlerta } = useAlertsContext();
+  const t = useTranslations("Pages.Cadastro.Components.DocenteForm");
 
   const [nome, setNome] = useState("");
   const [saldo, setSaldo] = useState<number | undefined>(undefined);
@@ -106,17 +108,17 @@ export default function DocenteForm({
 
   const handleAddFormulario = () => {
     if (!selectedDisciplina) {
-      addAlerta("Selecione uma turma", "warning");
+      addAlerta(t("alerts.selectClass"), "warning");
       return;
     }
 
     if (prioridade === "" || prioridade <= 0) {
-      addAlerta("A prioridade deve ser um número inteiro positivo", "warning");
+      addAlerta(t("alerts.positiveIntegerPriority"), "warning");
       return;
     }
 
     if (!Number.isInteger(prioridade)) {
-      addAlerta("A prioridade deve ser um número inteiro", "warning");
+      addAlerta(t("alerts.integerPriority"), "warning");
       return;
     }
 
@@ -125,7 +127,7 @@ export default function DocenteForm({
     );
     if (prioridadeExiste) {
       addAlerta(
-        `A prioridade ${prioridade} já foi atribuída a outra turma. Cada prioridade deve ser única.`,
+        t("alerts.uniquePriority", { priority: prioridade }),
         "error",
       );
       return;
@@ -135,13 +137,13 @@ export default function DocenteForm({
       (f) => f.id_disciplina === selectedDisciplina,
     );
     if (disciplinaExiste) {
-      addAlerta("Esta turma já foi adicionada aos formulários", "warning");
+      addAlerta(t("alerts.classAlreadyAdded"), "warning");
       return;
     }
 
     const disc = disciplinas.find((d) => d.id === selectedDisciplina);
     if (!disc) {
-      addAlerta("Disciplina não encontrada", "error");
+      addAlerta(t("alerts.classNotFound"), "error");
       return;
     }
 
@@ -155,7 +157,7 @@ export default function DocenteForm({
     ]);
 
     addAlerta(
-      `Formulário adicionado: ${disc.nome} com prioridade ${prioridade}`,
+      t("alerts.formAdded", { name: disc.nome, priority: prioridade }),
       "info",
     );
     setSelectedDisciplina(null);
@@ -165,12 +167,12 @@ export default function DocenteForm({
   const handleRemoveFormulario = (index: number) => {
     const removed = formulariosTemp[index];
     setFormulariosTemp(formulariosTemp.filter((_, i) => i !== index));
-    addAlerta(`Formulário removido: ${removed.nome_turma}`, "info");
+    addAlerta(t("alerts.formRemoved", { name: removed.nome_turma }), "info");
   };
 
   const handleSubmit = () => {
     if (!nome.trim()) {
-      addAlerta("O nome do docente é obrigatório", "error");
+      addAlerta(t("alerts.nameRequired"), "error");
       return;
     }
 
@@ -190,7 +192,7 @@ export default function DocenteForm({
         d.nome !== originalNome,
     );
     if (docenteExiste) {
-      addAlerta("Já existe um docente com este nome", "error");
+      addAlerta(t("alerts.nameExists"), "error");
       return;
     }
 
@@ -232,7 +234,7 @@ export default function DocenteForm({
           prioridade: f.prioridade,
         })),
       );
-      addAlerta(`Docente "${nome}" atualizado com sucesso!`, "success");
+      addAlerta(t("alerts.professorUpdated", { name: nome.trim() }), "success");
     } else if (excluirAntigo && originalNome) {
       novosDocentes = docentes.filter((d) => d.nome !== originalNome);
       novosDocentes.push(novoDocente);
@@ -247,7 +249,7 @@ export default function DocenteForm({
         })),
       );
       addAlerta(
-        `Docente "${originalNome}" excluído e "${nome}" criado com sucesso!`,
+        t("alerts.professorReplaced", { oldName: originalNome, newName: nome.trim() }),
         "success",
       );
     } else {
@@ -260,7 +262,7 @@ export default function DocenteForm({
           prioridade: f.prioridade,
         })),
       ];
-      addAlerta(`Docente "${nome}" criado com sucesso!`, "success");
+      addAlerta(t("alerts.professorCreated", { name: nome.trim() }), "success");
     }
 
     setDocentes(novosDocentes);
@@ -300,15 +302,15 @@ export default function DocenteForm({
           </Box>
           <Box>
             <Typography variant="h6" fontWeight={600}>
-              {docenteParaEditar ? "Editar Docente" : "Novo Docente"}
+              {docenteParaEditar ? t("header.editProfessor") : t("header.newProfessor")}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Preencha os dados e configure as preferências de turmas
+              {t("header.subtitle")}
             </Typography>
           </Box>
         </Box>
         {onClose && (
-          <Tooltip title="Fechar formulário">
+          <Tooltip title={t("header.closeForm")}>
             <IconButton onClick={onClose} sx={{ color: "text.secondary" }}>
               <CloseIcon />
             </IconButton>
@@ -337,70 +339,76 @@ export default function DocenteForm({
             }}
           />
           <Typography variant="subtitle1" fontWeight={600}>
-            Dados Pessoais
+            {t("personalData.title")}
           </Typography>
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Tooltip
-            title="Nome completo do docente (identificador único)"
+            title={t("personalData.nameTooltip")}
             placement="right"
             arrow
           >
             <TextField
-              label="Nome"
+              label={t("personalData.nameLabel")}
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               fullWidth
               required
-              placeholder="Ex: João da Silva"
+              placeholder={t("personalData.namePlaceholder")}
             />
           </Tooltip>
 
           <Tooltip
-            title="Saldo de horas/créditos disponíveis (opcional)"
+            title={t("personalData.balanceTooltip")}
             placement="right"
             arrow
           >
             <TextField
-              label="Saldo"
+              label={t("personalData.balanceLabel")}
               type="number"
               value={saldo ?? ""}
               onChange={(e) =>
                 setSaldo(e.target.value ? Number(e.target.value) : undefined)
               }
               fullWidth
-              placeholder="Ex: 40"
+              placeholder={t("personalData.balancePlaceholder")}
             />
           </Tooltip>
 
           <Tooltip
-            title="Comentários ou observações sobre o docente (opcional)"
+            title={t("personalData.commentTooltip")}
             placement="right"
             arrow
           >
             <TextField
-              label="Comentário"
+              label={t("personalData.commentLabel")}
               value={comentario}
               onChange={(e) => setComentario(e.target.value)}
               fullWidth
               multiline
               rows={2}
-              placeholder="Ex: Preferência por aulas matutinas"
+              placeholder={t("personalData.commentPlaceholder")}
             />
           </Tooltip>
 
           <Tooltip
-            title="Preferência de agrupamento de aulas (opcional)"
+            title={t("personalData.groupingTooltip")}
             placement="right"
             arrow
           >
             <Autocomplete
               options={["Indiferente", "Agrupar", "Espalhar"]}
+              getOptionLabel={(option) => {
+                if (option === "Indiferente") return t("personalData.groupingOptions.indifferent");
+                if (option === "Agrupar") return t("personalData.groupingOptions.group");
+                if (option === "Espalhar") return t("personalData.groupingOptions.spread");
+                return option;
+              }}
               value={agrupar || null}
               onChange={(_, newValue) => setAgrupar(newValue || "")}
               renderInput={(params) => (
-                <TextField {...params} label="Agrupamento" />
+                <TextField {...params} label={t("personalData.groupingLabel")} />
               )}
             />
           </Tooltip>
@@ -413,8 +421,8 @@ export default function DocenteForm({
               />
             }
             label={
-              <Tooltip title="Docentes inativos não serão considerados nas alocações">
-                <span>Docente Ativo</span>
+              <Tooltip title={t("personalData.activeTooltip")}>
+                <span>{t("personalData.activeLabel")}</span>
               </Tooltip>
             }
           />
@@ -451,14 +459,14 @@ export default function DocenteForm({
             />
             <Box>
               <Typography variant="subtitle1" fontWeight={600}>
-                Alocação de Turmas
+                {t("classAllocation.title")}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Defina as prioridades de preferência do docente
+                {t("classAllocation.subtitle")}
               </Typography>
             </Box>
           </Box>
-          <Tooltip title="Quanto menor o número, maior a prioridade. Cada prioridade deve ser única.">
+          <Tooltip title={t("classAllocation.infoTooltip")}>
             <IconButton size="small">
               <InfoIcon fontSize="small" />
             </IconButton>
@@ -475,7 +483,7 @@ export default function DocenteForm({
           }}
         >
           <Tooltip
-            title="Selecione a turma/disciplina de interesse"
+            title={t("classAllocation.selectClassTooltip")}
             placement="top"
             arrow
           >
@@ -494,25 +502,25 @@ export default function DocenteForm({
                 setSelectedDisciplina(newValue?.id || null)
               }
               renderInput={(params) => (
-                <TextField {...params} label="Turma/Disciplina" size="small" />
+                <TextField {...params} label={t("classAllocation.classLabel")} size="small" />
               )}
               disabled={disciplinas.length === 0}
-              noOptionsText="Nenhuma turma disponível"
+              noOptionsText={t("classAllocation.noClassAvailable")}
             />
           </Tooltip>
 
           <Tooltip
-            title={`Prioridade do docente (número inteiro positivo, único). Já utilizadas: ${
-              prioridadesUsadas.length > 0
+            title={t("classAllocation.priorityTooltip", {
+              used: prioridadesUsadas.length > 0
                 ? prioridadesUsadas.join(", ")
-                : "nenhuma"
-            }`}
+                : t("classAllocation.none")
+            })}
             placement="top"
             arrow
           >
             <TextField
               sx={{ flex: 1, minWidth: 100 }}
-              label="Prioridade"
+              label={t("classAllocation.priorityLabel")}
               type="number"
               value={prioridade}
               onChange={(e) =>
@@ -520,7 +528,7 @@ export default function DocenteForm({
               }
               size="small"
               inputProps={{ min: 1, step: 1 }}
-              placeholder="Ex: 1"
+              placeholder={t("classAllocation.priorityPlaceholder")}
               error={
                 prioridade !== "" &&
                 prioridadesUsadas.includes(prioridade as number)
@@ -528,13 +536,13 @@ export default function DocenteForm({
               helperText={
                 prioridade !== "" &&
                 prioridadesUsadas.includes(prioridade as number)
-                  ? "Prioridade já utilizada"
+                  ? t("classAllocation.priorityUsed")
                   : ""
               }
             />
           </Tooltip>
 
-          <Tooltip title="Adicionar turma à lista de prioridades">
+          <Tooltip title={t("classAllocation.addTooltip")}>
             <span>
               <Button
                 variant="contained"
@@ -542,7 +550,7 @@ export default function DocenteForm({
                 startIcon={<AddIcon />}
                 disabled={!selectedDisciplina || prioridade === ""}
               >
-                Adicionar
+                {t("classAllocation.addButton")}
               </Button>
             </span>
           </Tooltip>
@@ -554,15 +562,14 @@ export default function DocenteForm({
             color="warning.main"
             sx={{ mb: 2, fontStyle: "italic" }}
           >
-            Nenhuma turma cadastrada. Cadastre turmas primeiro para poder
-            adicionar formulários.
+            {t("classAllocation.noClassesWarning")}
           </Typography>
         )}
 
         <Divider sx={{ my: 2 }} />
 
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          Turmas adicionadas ({formulariosTemp.length}):
+          {t("classAllocation.addedClasses", { count: formulariosTemp.length })}
         </Typography>
 
         {formulariosTemp.length === 0 ? (
@@ -571,7 +578,7 @@ export default function DocenteForm({
             color="text.secondary"
             sx={{ fontStyle: "italic", textAlign: "center", py: 2 }}
           >
-            Nenhuma turma adicionada ainda
+            {t("classAllocation.noClassesAdded")}
           </Typography>
         ) : (
           <List dense>
@@ -587,7 +594,7 @@ export default function DocenteForm({
                   />
                   <ListItemText primary={f.nome_turma} />
                   <ListItemSecondaryAction>
-                    <Tooltip title="Remover esta turma">
+                    <Tooltip title={t("classAllocation.removeTooltip")}>
                       <IconButton
                         edge="end"
                         onClick={() => handleRemoveFormulario(index)}
@@ -608,7 +615,7 @@ export default function DocenteForm({
           variant="outlined"
           onClick={() => {
             limparFormulario();
-            addAlerta("Formulário limpo", "info");
+            addAlerta(t("alerts.formCleared"), "info");
           }}
           sx={{
             px: 3,
@@ -619,13 +626,13 @@ export default function DocenteForm({
             },
           }}
         >
-          Limpar
+          {t("actions.clear")}
         </Button>
         <Tooltip
           title={
             docenteParaEditar
-              ? "Salvar alterações do docente"
-              : "Salvar o docente com todas as informações preenchidas"
+              ? t("actions.updateTooltip")
+              : t("actions.createTooltip")
           }
         >
           <span>
@@ -645,7 +652,7 @@ export default function DocenteForm({
                 },
               }}
             >
-              {docenteParaEditar ? "Atualizar Docente" : "Criar Docente"}
+              {docenteParaEditar ? t("actions.updateButton") : t("actions.createButton")}
             </Button>
           </span>
         </Tooltip>

@@ -9,6 +9,8 @@ import {
 import { podeAtribuir } from "../utils";
 
 export class Swap extends NeighborhoodFunction {
+  readonly _name = "Swap";
+
   constructor(name: string, description: string | undefined) {
     super(name, description);
   }
@@ -16,7 +18,7 @@ export class Swap extends NeighborhoodFunction {
   async generate(
     context: Context,
     hardConstraints: Map<string, Constraint<any>>,
-    baseSolution: Vizinho
+    baseSolution: Vizinho,
   ): Promise<Vizinho[]> {
     const vizinhos: Vizinho[] = [];
 
@@ -32,7 +34,7 @@ export class Swap extends NeighborhoodFunction {
        * Encontrar todos os docentes atribuídos a turma pivot.
        */
       const docentesPivot = baseSolution.atribuicoes.find(
-        (atribuicao) => atribuicao.id_disciplina === turmaPivot.id
+        (atribuicao) => atribuicao.id_disciplina === turmaPivot.id,
       )?.docentes;
       if (!docentesPivot) {
         continue;
@@ -44,7 +46,7 @@ export class Swap extends NeighborhoodFunction {
          * Encontrar todos os docentes atribuídos a turma atual.
          */
         const docentesAtual = baseSolution.atribuicoes.find(
-          (atribuicao) => atribuicao.id_disciplina === turmaAtual.id
+          (atribuicao) => atribuicao.id_disciplina === turmaAtual.id,
         )?.docentes;
 
         if (!docentesAtual) {
@@ -63,7 +65,7 @@ export class Swap extends NeighborhoodFunction {
               context.travas,
               hardConstraints,
               baseSolution,
-              context.turmas
+              context.turmas,
             );
         }
 
@@ -77,7 +79,7 @@ export class Swap extends NeighborhoodFunction {
               context.travas,
               hardConstraints,
               baseSolution,
-              context.turmas
+              context.turmas,
             );
         }
         //&& !compareArrays(docentesPivot, docentesAtual);
@@ -86,10 +88,10 @@ export class Swap extends NeighborhoodFunction {
           const atribuicoes = structuredClone(baseSolution.atribuicoes);
 
           const atrib1 = atribuicoes.find(
-            (a) => a.id_disciplina === turmaPivot.id
+            (a) => a.id_disciplina === turmaPivot.id,
           );
           const atrib2 = atribuicoes.find(
-            (a) => a.id_disciplina === turmaAtual.id
+            (a) => a.id_disciplina === turmaAtual.id,
           );
 
           // Realizar a troca de docentes entre as duas disciplinas

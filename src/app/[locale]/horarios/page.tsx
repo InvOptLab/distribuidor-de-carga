@@ -27,6 +27,7 @@ import {
   Disciplina,
   HistoricoSolucao,
 } from "@/context/Global/utils";
+import NoDataFound from "@/components/NoDataFound";
 
 export interface TimetableEntry {
   disciplina: Disciplina;
@@ -39,7 +40,9 @@ export interface TimetableEntry {
 
 export default function HorariosPage() {
   const { historicoSolucoes } = useSolutionHistory();
-  const { docentes } = useGlobalContext();
+  const { docentes, disciplinas } = useGlobalContext();
+
+  const hasData = docentes.length > 0 && disciplinas.length > 0;
 
   const [selectedSolution, setSelectedSolution] =
     useState<HistoricoSolucao | null>(null);
@@ -135,27 +138,33 @@ export default function HorariosPage() {
     const diasUtilizados = new Set(timetableData.map((entry) => entry.dia))
       .size;
     const horariosUnicos = new Set(
-      timetableData.map((entry) => `${entry.inicio}-${entry.fim}`)
+      timetableData.map((entry) => `${entry.inicio}-${entry.fim}`),
     ).size;
     const duracaoTotal = timetableData.reduce(
       (total, entry) => total + entry.duracao,
-      0
+      0,
     );
     const duracaoMedia =
       totalDisciplinas > 0 ? duracaoTotal / timetableData.length : 0;
 
     // Distribuição por dia
-    const distribuicaoDias = timetableData.reduce((acc, entry) => {
-      acc[entry.dia] = (acc[entry.dia] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const distribuicaoDias = timetableData.reduce(
+      (acc, entry) => {
+        acc[entry.dia] = (acc[entry.dia] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     // Horários mais utilizados
-    const horariosCount = timetableData.reduce((acc, entry) => {
-      const slot = `${entry.inicio}-${entry.fim}`;
-      acc[slot] = (acc[slot] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const horariosCount = timetableData.reduce(
+      (acc, entry) => {
+        const slot = `${entry.inicio}-${entry.fim}`;
+        acc[slot] = (acc[slot] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     return {
       totalDisciplinas,
@@ -169,6 +178,14 @@ export default function HorariosPage() {
       horariosCount,
     };
   }, [selectedSolution, timetableData]);
+
+  if (!hasData) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <NoDataFound />
+      </Container>
+    );
+  }
 
   if (historicoSolucoes.size === 0) {
     return (

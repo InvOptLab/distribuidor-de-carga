@@ -9,12 +9,15 @@ import { modelSCP } from "../metodos/MILP/MILP";
 import { OptimizationModel, Term } from "../metodos/MILP/optimization_model";
 
 export default abstract class ObjectiveComponent<
-  T extends ObjectiveComponentParams[] | any
+  T extends ObjectiveComponentParams[] | any,
 > {
   /**
    * Nome dado a componente da função objetivo
    */
   readonly name: string;
+
+  // Identificador da classe (ComponentRegistr)
+  abstract readonly _name: string;
 
   /**
    * Detalhes sobre o componente da função objetivo.
@@ -41,7 +44,7 @@ export default abstract class ObjectiveComponent<
     isActive: boolean,
     type: "min" | "max",
     description: string | undefined,
-    multiplier: number | undefined
+    multiplier: number | undefined,
   ) {
     this.name = name;
     this.isActive = isActive;
@@ -64,7 +67,7 @@ export default abstract class ObjectiveComponent<
     atribuicoes: Atribuicao[],
     formularios: Formulario[],
     docentes: Docente[],
-    turmas: Disciplina[]
+    turmas: Disciplina[],
   ): number;
 
   /**
@@ -73,6 +76,6 @@ export default abstract class ObjectiveComponent<
    */
   abstract milpFormulation(
     model: OptimizationModel,
-    modelData: modelSCP
+    modelData: modelSCP,
   ): Term[];
 }

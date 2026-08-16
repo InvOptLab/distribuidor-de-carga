@@ -20,6 +20,7 @@ import { TreeItemProvider } from "@mui/x-tree-view/TreeItemProvider";
 import { TreeItemIcon } from "@mui/x-tree-view/TreeItemIcon";
 import { TreeDocente } from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 import { styled, useTheme } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 declare module "react" {
   interface CSSProperties {
@@ -171,6 +172,8 @@ export default function DocenteTreeView({
   docentes,
   handleClickedItem,
 }: DocenteTreeViewProps) {
+  const t = useTranslations("Components.TreeView");
+
   // docentes > docente > docente.atribuicoes, docente.formularios
 
   const renderItens = (itens: Map<string, TreeDocente>) => {
@@ -274,7 +277,7 @@ export default function DocenteTreeView({
       <CustomTreeItem
         key="docentes"
         itemId="0"
-        label="Docentes"
+        label={t("professors")}
         labelIcon={null}
         bgColor="#e8f0fe"
       >

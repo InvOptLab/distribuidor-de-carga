@@ -23,7 +23,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WarningIcon from "@mui/icons-material/Warning";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
-// import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import { useTranslations } from "next-intl";
 
 interface FileAnalysis {
   docentes: { total: number; ativos: number; inativos: number };
@@ -46,6 +47,8 @@ interface FilePreviewProps {
 }
 
 export default function FilePreview({ analysis }: FilePreviewProps) {
+  const t = useTranslations("Pages.InputFile.FilePreview");
+
   // Calcular score de qualidade (0-100)
   const calculateQualityScore = () => {
     let score = 100;
@@ -68,18 +71,6 @@ export default function FilePreview({ analysis }: FilePreviewProps) {
 
   const qualityScore = calculateQualityScore();
 
-  // const getQualityColor = (score: number) => {
-  //   if (score >= 80) return "success";
-  //   if (score >= 60) return "warning";
-  //   return "error";
-  // };
-
-  // const getQualityIcon = (score: number) => {
-  //   if (score >= 80) return <CheckCircleIcon />;
-  //   if (score >= 60) return <WarningIcon />;
-  //   return <ErrorIcon />;
-  // };
-
   return (
     <Card elevation={3}>
       <CardContent>
@@ -89,39 +80,35 @@ export default function FilePreview({ analysis }: FilePreviewProps) {
           sx={{ display: "flex", alignItems: "center", gap: 1 }}
         >
           <InfoIcon color="primary" />
-          Prévia do Arquivo
+          {t("title")}
         </Typography>
+        {analysis.versao && (
+          <Chip
+            label={t("version", { version: analysis.versao })}
+            size="small"
+            color="primary"
+            variant="outlined"
+            sx={{ mb: 2 }}
+          />
+        )}
 
         {/* Informações Básicas */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ textAlign: "center", p: 2 }}>
-              <PersonIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
-              <Typography variant="h4" color="primary.main">
+              <PersonIcon color="info" sx={{ fontSize: 40, mb: 1 }} />
+              <Typography variant="h4" fontWeight="bold">
                 {analysis.docentes.total}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Docentes
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {t("professors")}
               </Typography>
-              <Box
-                sx={{
-                  mt: 1,
-                  display: "flex",
-                  gap: 0.5,
-                  justifyContent: "center",
-                }}
-              >
-                <Chip
-                  label={`${analysis.docentes.ativos} ativos`}
-                  size="small"
-                  color="success"
-                />
-                <Chip
-                  label={`${analysis.docentes.inativos} inativos`}
-                  size="small"
-                  color="default"
-                />
-              </Box>
+              <Typography variant="caption" color="text.secondary">
+                {t("activeProfessors", {
+                  active: analysis.docentes.ativos,
+                  inactive: analysis.docentes.inativos,
+                })}
+              </Typography>
             </Card>
           </Grid>
 
@@ -158,32 +145,19 @@ export default function FilePreview({ analysis }: FilePreviewProps) {
 
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ textAlign: "center", p: 2 }}>
-              <AssignmentIcon color="info" sx={{ fontSize: 40, mb: 1 }} />
-              <Typography variant="h4" color="info.main">
-                {analysis.atribuicoes.comDocentes}
+              <AssignmentIcon color="warning" sx={{ fontSize: 40, mb: 1 }} />
+              <Typography variant="h4" fontWeight="bold">
+                {analysis.atribuicoes.total}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Atribuições
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {t("assignments")}
               </Typography>
-              <Box
-                sx={{
-                  mt: 1,
-                  display: "flex",
-                  gap: 0.5,
-                  justifyContent: "center",
-                }}
-              >
-                <Chip
-                  label={`${analysis.atribuicoes.comDocentes} preenchidas`}
-                  size="small"
-                  color="success"
-                />
-                <Chip
-                  label={`${analysis.atribuicoes.semDocentes} vazias`}
-                  size="small"
-                  color="warning"
-                />
-              </Box>
+              <Typography variant="caption" color="text.secondary">
+                {t("withProfessors", {
+                  with: analysis.atribuicoes.comDocentes,
+                  without: analysis.atribuicoes.semDocentes,
+                })}
+              </Typography>
             </Card>
           </Grid>
 
@@ -206,35 +180,6 @@ export default function FilePreview({ analysis }: FilePreviewProps) {
             </Card>
           </Grid>
         </Grid>
-
-        {/* Score de Qualidade */}
-        {/* <Card
-          variant="outlined"
-          sx={{ mb: 3, bgcolor: `${getQualityColor(qualityScore)}.50` }}
-        >
-          <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-              {getQualityIcon(qualityScore)}
-              <Typography variant="h6">Score de Qualidade dos Dados</Typography>
-              <Chip
-                label={`${qualityScore}/100`}
-                color={getQualityColor(qualityScore)}
-                icon={<TrendingUpIcon />}
-                sx={{ ml: "auto" }}
-              />
-            </Box>
-            <LinearProgress
-              variant="determinate"
-              value={qualityScore}
-              color={getQualityColor(qualityScore)}
-              sx={{ height: 8, borderRadius: 4, mb: 2 }}
-            />
-            <Typography variant="body2" color="text.secondary">
-              Baseado na completude dos dados, formulários preenchidos e
-              conflitos detectados
-            </Typography>
-          </CardContent>
-        </Card> */}
 
         {/* Detalhes Adicionais */}
         <Grid container spacing={3}>
@@ -265,9 +210,19 @@ export default function FilePreview({ analysis }: FilePreviewProps) {
                       ? "Contém solução salva"
                       : "Não contém solução"
                   }
-                  secondary={analysis.versao && `Versão: ${analysis.versao}`}
                 />
               </ListItem>
+              {analysis.solucao && (
+                <Box sx={{ mt: 1 }}>
+                  <Alert
+                    icon={<TaskAltIcon fontSize="inherit" />}
+                    severity="success"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    <strong>{t("solutionFound")}</strong>
+                  </Alert>
+                </Box>
+              )}
               {analysis.dataModificacao && (
                 <ListItem>
                   <ListItemIcon>
@@ -286,71 +241,67 @@ export default function FilePreview({ analysis }: FilePreviewProps) {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <Typography
-              variant="subtitle1"
-              gutterBottom
-              sx={{ fontWeight: "bold" }}
+              variant="subtitle2"
+              color="text.primary"
+              sx={{ mt: 3, mb: 2, fontWeight: 600 }}
             >
-              Análise de Qualidade
+              {t("quality")}
             </Typography>
-            <List dense>
-              <ListItem>
-                <ListItemIcon>
-                  <WarningIcon
-                    color={
-                      analysis.qualidade.docentesSemFormulario > 0
-                        ? "warning"
-                        : "disabled"
-                    }
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${analysis.qualidade.docentesSemFormulario} docentes sem formulário`}
-                  secondary={
-                    analysis.qualidade.docentesSemFormulario > 0
-                      ? "Alguns docentes não preencheram formulários"
-                      : "Todos os docentes preencheram formulários"
-                  }
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <WarningIcon
-                    color={
-                      analysis.qualidade.disciplinasSemInteressados > 0
-                        ? "warning"
-                        : "disabled"
-                    }
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${analysis.qualidade.disciplinasSemInteressados} disciplinas sem interessados`}
-                  secondary={
-                    analysis.qualidade.disciplinasSemInteressados > 0
-                      ? "Algumas disciplinas não têm docentes interessados"
-                      : "Todas as disciplinas têm docentes interessados"
-                  }
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <ErrorIcon
-                    color={
-                      analysis.qualidade.conflitosHorario > 0
-                        ? "error"
-                        : "disabled"
-                    }
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${analysis.qualidade.conflitosHorario} conflitos de horário detectados`}
-                  secondary={
-                    analysis.qualidade.conflitosHorario > 0
-                      ? "Disciplinas com horários sobrepostos encontradas"
-                      : "Nenhum conflito de horário detectado"
-                  }
-                />
-              </ListItem>
-            </List>
+
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+              <Chip
+                icon={
+                  analysis.qualidade.docentesSemFormulario > 0 ? (
+                    <WarningIcon />
+                  ) : (
+                    <CheckCircleIcon />
+                  )
+                }
+                label={t("professorsNoForm", {
+                  count: analysis.qualidade.docentesSemFormulario,
+                })}
+                variant="outlined"
+                color={
+                  analysis.qualidade.docentesSemFormulario > 0
+                    ? "warning"
+                    : "success"
+                }
+              />
+              <Chip
+                icon={
+                  analysis.qualidade.disciplinasSemInteressados > 0 ? (
+                    <WarningIcon />
+                  ) : (
+                    <CheckCircleIcon />
+                  )
+                }
+                label={t("classesNoInterested", {
+                  count: analysis.qualidade.disciplinasSemInteressados,
+                })}
+                variant="outlined"
+                color={
+                  analysis.qualidade.disciplinasSemInteressados > 0
+                    ? "warning"
+                    : "success"
+                }
+              />
+              <Chip
+                icon={
+                  analysis.qualidade.conflitosHorario > 0 ? (
+                    <ErrorIcon />
+                  ) : (
+                    <CheckCircleIcon />
+                  )
+                }
+                label={t("scheduleConflicts", {
+                  count: analysis.qualidade.conflitosHorario,
+                })}
+                variant="outlined"
+                color={
+                  analysis.qualidade.conflitosHorario > 0 ? "error" : "success"
+                }
+              />
+            </Box>
           </Grid>
         </Grid>
 

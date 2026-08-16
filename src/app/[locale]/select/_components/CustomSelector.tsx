@@ -44,6 +44,7 @@ import {
   isDisciplina,
 } from "@/context/Global/utils";
 import { useTranslations } from "next-intl";
+import { useGlobalContext } from "@/context/Global";
 
 // Mapa para relacionar a chave neutra com o dado em pt-br que vem do arquivo
 const dayDataMapping: Record<string, string> = {
@@ -85,6 +86,7 @@ export default function CustomSelector({
   const [filtersExpanded, setFiltersExpanded] = useState(false);
 
   const t = useTranslations("Pages.Select.CustomSelector");
+  const { atribuicoes, formularios } = useGlobalContext();
 
   // Determinar se estamos lidando com docentes ou disciplinas
   const isDocenteList = items.length > 0 && !isDisciplina(items[0]);
@@ -100,6 +102,8 @@ export default function CustomSelector({
       type: "chips",
       options: [t("groupPreference"), t("indifferent"), t("spreadPreference")],
     },
+    { key: "sem_atribuicao", label: t("noAssignments"), type: "boolean" },
+    { key: "sem_formulario", label: t("noForms"), type: "boolean" },
   ];
 
   const disciplinaFields = [
@@ -118,6 +122,8 @@ export default function CustomSelector({
       options: ["mon", "tue", "wed", "thu", "fri", "sat"],
     },
     { key: "horarios_tempo", label: t("schedule"), type: "timeRange" },
+    { key: "sem_atribuicao", label: t("noAssignments"), type: "boolean" },
+    { key: "sem_formulario", label: t("noForms"), type: "boolean" },
   ];
 
   // Obter opções únicas para campos de chips
@@ -156,7 +162,27 @@ export default function CustomSelector({
     ) {
       rule.fieldKey = "horarios";
     }
-    const value = item[rule.fieldKey];
+    let value = item[rule.fieldKey];
+
+    if (rule.fieldKey === "sem_atribuicao") {
+       if (isDocenteList) {
+          const hasAtribuicao = atribuicoes.some(a => a.docentes.includes(item.nome));
+          value = !hasAtribuicao;
+       } else {
+          const hasAtribuicao = atribuicoes.some(a => a.id_disciplina === item.id && a.docentes.length > 0);
+          value = !hasAtribuicao;
+       }
+    }
+    
+    if (rule.fieldKey === "sem_formulario") {
+       if (isDocenteList) {
+          const hasFormulario = formularios.some(f => f.nome_docente === item.nome);
+          value = !hasFormulario;
+       } else {
+          const hasFormulario = formularios.some(f => f.id_disciplina === item.id);
+          value = !hasFormulario;
+       }
+    }
 
     switch (rule.type) {
       case "text":

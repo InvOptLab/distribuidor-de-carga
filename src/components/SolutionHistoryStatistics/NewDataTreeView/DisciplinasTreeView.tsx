@@ -20,6 +20,7 @@ import { TreeItemProvider } from "@mui/x-tree-view/TreeItemProvider";
 import { TreeItemIcon } from "@mui/x-tree-view/TreeItemIcon";
 import { TreeDisciplina } from "@/app/[locale]/history/_components/SolutionHistoryStatistics";
 import { styled, useTheme } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 declare module "react" {
   interface CSSProperties {
@@ -171,6 +172,8 @@ export default function DisciplinasTreeView({
   disciplinas,
   handleClickedItem,
 }: DisciplinasTreeViewProps) {
+  const t = useTranslations("Components.TreeView");
+
   const renderItens = (itens: Map<string, TreeDisciplina>) => {
     const itensToRender = [];
 
@@ -297,7 +300,7 @@ export default function DisciplinasTreeView({
       <CustomTreeItem
         key="disciplinas"
         itemId="0"
-        label="Disciplinas"
+        label={t("classes")}
         labelIcon={null}
         bgColor="#e8f0fe"
       >

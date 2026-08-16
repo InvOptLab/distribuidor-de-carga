@@ -5,6 +5,8 @@ import { TabuValidationFunction } from "../Classes/Abstract/TabuValidationFuncti
 export class Solution extends TabuValidationFunction<
   [Atribuicao[][], Vizinho]
 > {
+  readonly _name = "Solution";
+
   constructor(name: string, description: string | undefined) {
     super(name, description);
   }
@@ -12,8 +14,8 @@ export class Solution extends TabuValidationFunction<
   validate(tabuList: Atribuicao[][], vizinho: Vizinho): boolean {
     return tabuList.some((tabuSet) =>
       vizinho.atribuicoes.every((atribuicao) =>
-        tabuSet.some((tabu) => atribuicoesIguais(tabu, atribuicao))
-      )
+        tabuSet.some((tabu) => atribuicoesIguais(tabu, atribuicao)),
+      ),
     );
   }
 }

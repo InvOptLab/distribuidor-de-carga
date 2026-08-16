@@ -8,16 +8,18 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Box,
 } from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import { useTimetableRows } from "../hooks/useTimetableRows";
 import { useHoverEffects } from "../hooks/useHoverEffects";
 import HeaderCell from "./HeaderCell";
 import { useTimetable } from "../context/TimetableContext";
-import {
-  Disciplina,
-  TipoTrava,
-} from "@/algoritmo/communs/interfaces/interfaces";
+import { TipoTrava, Disciplina } from "@/algoritmo/communs/interfaces/interfaces";
 import { useCollaboration } from "@/context/Collaboration";
+import { useTranslations } from "next-intl";
+import { useAccessibility } from "@/context/Accessibility";
 
 interface TimetableGridProps {
   setHoveredCourse: (disciplina: Disciplina | null) => void;
@@ -48,7 +50,7 @@ export default function TimetableGrid({
   setHoveredDocente,
   onMouseLeaveGrid,
 }: TimetableGridProps) {
-  const { filteredDisciplinas } = useTimetable();
+  const { filteredDisciplinas, isLockMode, travas } = useTimetable();
   const { rows } = useTimetableRows();
 
   const {
@@ -65,6 +67,9 @@ export default function TimetableGrid({
 
   //  Pegar infos da colaboração
   const { isInRoom, isOwner, config } = useCollaboration();
+  const { cursors } = useCollaboration();
+  const t = useTranslations("Pages.Assignment.TimetableGrid");
+  const { isHighContrast } = useAccessibility();
 
   const handleMouseEnterDocente = (
     atribuicao: {
@@ -109,7 +114,7 @@ export default function TimetableGrid({
                 fontSize: "0.875rem",
               }}
             >
-              Docentes
+              {t("professors")}
             </TableCell>
 
             {/* CÉLULAS HEADER DISCIPLINAS */}
@@ -142,6 +147,9 @@ export default function TimetableGrid({
                       setHeaderCollor={setHeaderCollor}
                       setParentHoveredCourse={setHoveredCourse}
                     />
+                    {isLockMode && travas.some(t => t.id_disciplina === disciplina.id && t.tipo_trava === TipoTrava.Column) && (
+                      <LockOutlinedIcon sx={{ position: "absolute", top: 2, right: 2, fontSize: "1rem", color: "text.secondary" }} />
+                    )}
                   </TableCell>
                 ),
             )}
@@ -186,6 +194,9 @@ export default function TimetableGrid({
                   onMouseLeave={() => handleMouseEnterDocente(null)}
                 >
                   {atribuicao.nome}
+                  {isLockMode && travas.some(t => t.nome_docente === atribuicao.nome && t.tipo_trava === TipoTrava.Row) && (
+                    <LockOutlinedIcon sx={{ position: "absolute", top: 2, right: 2, fontSize: "1rem", color: "text.secondary" }} />
+                  )}
                 </Typography>
               </TableCell>
 
@@ -207,16 +218,15 @@ export default function TimetableGrid({
                       }
                       align="center"
                       sx={{
-                        // 'style' com 'setBorder' foi removido
-                        backgroundColor: setCellColor(prioridade.prioridade, {
-                          nome_docente: atribuicao.nome,
-                          id_disciplina: prioridade.id_disciplina,
-                          tipo_trava: TipoTrava.Cell,
-                        }),
                         padding: "2px",
                         borderBottom: "1px solid",
                         borderColor: "divider",
                         borderRight: "1px solid rgba(224, 224, 224, 1)",
+                        ...(setCellColor(prioridade.prioridade, {
+                          nome_docente: atribuicao.nome,
+                          id_disciplina: prioridade.id_disciplina,
+                          tipo_trava: TipoTrava.Cell,
+                        }, isHighContrast) as any),
                         transition: "background-color 0.2s ease",
                         // Highlight sutil para linha/coluna hover
                         ...(hover.docente === atribuicao.nome && {
@@ -230,6 +240,7 @@ export default function TimetableGrid({
                         "&:hover": {
                           boxShadow: "inset 0 0 0 5px rgba(25, 118, 210, 0.9)",
                           zIndex: 2,
+                          cursor: isLockMode ? "pointer" : "default",
                         },
                       }}
                       onClick={(event) =>
@@ -258,7 +269,12 @@ export default function TimetableGrid({
                         onMouseLeaveGrid();
                       }}
                     >
-                      {prioridade.prioridade}
+                      <Box sx={{ position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {prioridade.prioridade}
+                        {isLockMode && travas.some(t => t.id_disciplina === prioridade.id_disciplina && t.nome_docente === atribuicao.nome) && (
+                          <LockOutlinedIcon sx={{ position: "absolute", opacity: 0.6, fontSize: "1.2rem" }} />
+                        )}
+                      </Box>
                     </TableCell>
                   ),
               )}

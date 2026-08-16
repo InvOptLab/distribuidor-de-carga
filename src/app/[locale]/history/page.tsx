@@ -17,22 +17,28 @@ import HoveredCourse from "../atribuicoes/_components/HoveredCourse";
 import { useEffect, useRef, useState } from "react";
 import { TreeDisciplina } from "./_components/SolutionHistoryStatistics";
 import { Formulario } from "@/algoritmo/communs/interfaces/interfaces";
+import NoDataFound from "@/components/NoDataFound";
+import { useTranslations } from "next-intl";
 
-const tableColumns = [
-  "Identificador",
-  "Avaliação",
-  "Inserção",
-  /*'Algoritmo',*/ "Ações",
-];
 
 export default function History() {
-  const { historicoSolucoes } = useGlobalContext();
+  const t = useTranslations("Pages.History");
+  const { historicoSolucoes, docentes, disciplinas } = useGlobalContext();
+
+  const hasData = docentes.length > 0 && disciplinas.length > 0;
+
+  const tableColumns = [
+    t("columns.identifier"),
+    t("columns.evaluation"),
+    t("columns.insertion"),
+    t("columns.actions"),
+  ];
 
   /**
    * State para controlar o hover nos filhos do table header a fim de exibir o componenete HoveredCourese
    */
   const [hoveredCourse, setHoveredCourse] = useState<TreeDisciplina | null>(
-    null
+    null,
   );
 
   // Refs dos timers
@@ -75,7 +81,7 @@ export default function History() {
           >
             {column}
           </Typography>
-        </TableCell>
+        </TableCell>,
       );
     }
 
@@ -92,7 +98,7 @@ export default function History() {
           id={key}
           solucao={value}
           setHoveredCourese={setHoveredCourse}
-        />
+        />,
       );
     });
 
@@ -132,17 +138,21 @@ export default function History() {
 
   return (
     <Container maxWidth="lg" key="container">
-      <TableContainer key="tabbleContainer" onMouseLeave={handleMouseLeave}>
-        <Table key="table">
-          <TableHead key="tableHead">
-            <TableRow key="tableHeadRow">
-              <TableCell key="emptyCellRow" />
-              {createHistoryColumns()}
-            </TableRow>
-          </TableHead>
-          <TableBody key="tableBody">{createHistoryComponents()}</TableBody>
-        </Table>
-      </TableContainer>
+      {!hasData ? (
+        <NoDataFound />
+      ) : (
+        <TableContainer key="tabbleContainer" onMouseLeave={handleMouseLeave}>
+          <Table key="table">
+            <TableHead key="tableHead">
+              <TableRow key="tableHeadRow">
+                <TableCell key="emptyCellRow" />
+                {createHistoryColumns()}
+              </TableRow>
+            </TableHead>
+            <TableBody key="tableBody">{createHistoryComponents()}</TableBody>
+          </Table>
+        </TableContainer>
+      )}
       {/* Envolve os cards em <Fade> para fluidez */}
       {/* O `in` agora é um booleano */}
       <Fade in={!!hoveredCourse} timeout={150}>
@@ -167,7 +177,7 @@ export default function History() {
                     prioridade: item.prioridade,
                   };
                   return formulario;
-                })
+                }),
               )}
             >
               {/* <Grid

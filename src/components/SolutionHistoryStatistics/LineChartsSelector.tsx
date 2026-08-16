@@ -9,6 +9,7 @@ import {
 import Checkbox from "@mui/material/Checkbox";
 import { LineChart } from "@mui/x-charts";
 import React from "react";
+import { useTranslations } from "next-intl";
 
 interface LineChartsSelectorProps {
   solucao: HistoricoSolucao;
@@ -17,8 +18,9 @@ interface LineChartsSelectorProps {
 export default function LineChartsSelector({
   solucao,
 }: LineChartsSelectorProps) {
+  const t = useTranslations("Components.LineChartsSelector");
   const [selectedCharts, setSelectedCharts] = React.useState(
-    new Set<string>(["Avaliação"])
+    new Set<string>([t("evaluation")])
   );
 
   const handleToggleSelectedCharts = (event) => {
@@ -39,7 +41,7 @@ export default function LineChartsSelector({
       return (
         <Box height="100%" alignContent="center">
           <Typography variant="h6" color="error" align="center">
-            Nenhuma informação selecionada!
+            {t("noInfoSelected")}
           </Typography>
         </Box>
       );
@@ -49,17 +51,17 @@ export default function LineChartsSelector({
     const iteracoes = Array.from(estatisticas.avaliacaoPorIteracao.keys());
 
     const series = [];
-    const xAxis = { label: "Iterações", data: iteracoes };
+    const xAxis = { label: t("iterations"), data: iteracoes };
 
-    if (selectedCharts.has("Avaliação")) {
+    if (selectedCharts.has(t("evaluation"))) {
       const avaliacaoData = Array.from(
         estatisticas.avaliacaoPorIteracao.values()
       );
-      series.push({ label: "Avaliação", data: avaliacaoData });
+      series.push({ label: t("evaluation"), data: avaliacaoData });
     }
-    if (selectedCharts.has("Tempo")) {
+    if (selectedCharts.has(t("time"))) {
       const tempoData = Array.from(estatisticas.tempoPorIteracao.values());
-      series.push({ label: "Tempo (ms)", data: tempoData });
+      series.push({ label: t("timeMs"), data: tempoData });
     }
 
     return (
@@ -79,22 +81,22 @@ export default function LineChartsSelector({
         <FormControlLabel
           control={
             <Checkbox
-              value="Avaliação"
-              checked={selectedCharts.has("Avaliação")}
+              value={t("evaluation")}
+              checked={selectedCharts.has(t("evaluation"))}
               onChange={handleToggleSelectedCharts}
             />
           }
-          label="Avaliação"
+          label={t("evaluation")}
         />
         <FormControlLabel
           control={
             <Checkbox
-              value="Tempo"
-              checked={selectedCharts.has("Tempo")}
+              value={t("time")}
+              checked={selectedCharts.has(t("time"))}
               onChange={handleToggleSelectedCharts}
             />
           }
-          label="Tempo"
+          label={t("time")}
         />
       </FormGroup>
       <Divider />

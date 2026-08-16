@@ -37,6 +37,8 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
   private delta_minus: Variable[] = [];
   private delta_abs: Variable[] = []; // Variável auxiliar para o desvio absoluto
 
+  readonly _name = "MinimizarDiferencaCargaDidatica";
+
   constructor(
     name: string,
     isActive: boolean,
@@ -59,10 +61,10 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
     docentes: Docente[],
     turmas: Disciplina[],
   ): number {
-    // 1. Evitar divisão por zero caso não haja docentes
+    // Evitar divisão por zero caso não haja docentes
     if (docentes.length === 0) return 0;
 
-    // 2. Calcular a Carga Média Ideal (mu)
+    // Calcular a Carga Média Ideal (mu)
     // Soma a carga de todas as disciplinas disponíveis (ou filtradas, dependendo do contexto)
     const totalCarga = turmas.reduce(
       (acc, turma) => acc + (turma.carga || 0),
@@ -72,7 +74,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
 
     let desvioTotal = 0;
 
-    // 3. Somar os desvios absolutos de cada docente
+    // Somar os desvios absolutos de cada docente
     for (const docente of docentes) {
       // Calcula a carga atual atribuída ao docente nesta solução
       const cargaDocente = calcularCargaDidatica(docente, atribuicoes, turmas);
@@ -91,7 +93,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
   milpFormulation(model: OptimizationModel, modelData: modelSCP): Term[] {
     const objectiveTerms: Term[] = [];
 
-    // 1. Calcular a "Carga Média Ideal" ($\mu$) - Eq. (25)
+    // Calcular a "Carga Média Ideal" ($\mu$) - Eq. (25)
     // $\mu = \frac{\sum_{j \in T} c_j}{|D|}$
     const totalCreditos = modelData.c.reduce((sum, carga) => sum + carga, 0);
     const numDocentes = modelData.D.length;
@@ -104,7 +106,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
     this.delta_minus = [];
     this.delta_abs = [];
 
-    // 2. Criar as variáveis de desvio para cada docente
+    // Criar as variáveis de desvio para cada docente
     for (const i of modelData.D) {
       // $\delta_i^+$: Desvio acima da média (Excesso)
       const d_plus = model.addVariable(`delta_plus_${i}`, {
@@ -120,7 +122,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
       });
       this.delta_minus.push(d_minus);
 
-      // * $\delta_i^{abs}$: Desvio Absoluto (Soma dos desvios)
+      // $\delta_i^{abs}$: Desvio Absoluto (Soma dos desvios)
       // Esta variável representa "d_plus[i] + d_minus[i]" como uma entidade única
       const d_abs = model.addVariable(`delta_abs_${i}`, {
         type: "Continuous",
@@ -128,7 +130,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
       });
       this.delta_abs.push(d_abs);
 
-      // * Adiciona restrição de definição: d_plus + d_minus - d_abs = 0
+      // Adiciona restrição de definição: d_plus + d_minus - d_abs = 0
       // Isso garante que d_abs seja exatamente a soma dos dois.
       model.addConstraint(
         `def_delta_abs_${i}`,
@@ -141,7 +143,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
         0,
       );
 
-      // 3. Adicionar termos à função objetivo
+      // Adicionar termos à função objetivo
       // Agora adicionamos APENAS a variável d_abs, que encapsula a soma.
       objectiveTerms.push({
         variable: d_abs,
@@ -149,7 +151,7 @@ export class MinimizarDiferencaCargaDidatica extends ObjectiveComponent<any> {
       });
     }
 
-    // 4. Adicionar a restrição de balanço para cada docente - Eq. (26)
+    // Adicionar a restrição de balanço para cada docente - Eq. (26)
     // $\sum_{j \in T} (c_j \cdot x_{i,j}) - \delta_i^+ + \delta_i^- = \mu$
 
     for (const i of modelData.D) {

@@ -19,14 +19,17 @@ type UpdateStateFunction<T> = (data: T[]) => void;
 
 const selecionarArraysPorChaves = (
   obj: Record<string, any[]>,
-  chaves: string[]
+  chaves: string[],
 ): Record<string, any[]> => {
-  return chaves.reduce((resultado, chave) => {
-    if (obj.hasOwnProperty(chave)) {
-      resultado[chave] = obj[chave];
-    }
-    return resultado;
-  }, {} as Record<string, any[]>);
+  return chaves.reduce(
+    (resultado, chave) => {
+      if (obj.hasOwnProperty(chave)) {
+        resultado[chave] = obj[chave];
+      }
+      return resultado;
+    },
+    {} as Record<string, any[]>,
+  );
 };
 
 // Função genérica para processar e atualizar estado
@@ -34,7 +37,7 @@ export const processAndUpdateState = <T>(
   jsonData: Record<string, any>,
   keys: string | string[],
   processor: (version: string, data: any) => T[],
-  updateState: UpdateStateFunction<T>
+  updateState: UpdateStateFunction<T>,
 ) => {
   let data;
 
@@ -65,7 +68,7 @@ export const processDocentes = (
           agrupar?: string;
         }[]
       | string[];
-  }
+  },
 ): Docente[] => {
   const { saldos, docentes } = data;
 
@@ -96,7 +99,7 @@ export const processDocentes = (
     return docentes.map((docente) =>
       typeof docente === "string"
         ? createDocenteFromString(docente)
-        : createDocenteFromObject(docente)
+        : createDocenteFromObject(docente),
     );
   }
 
@@ -105,7 +108,7 @@ export const processDocentes = (
 
 export const processDisciplinas = (
   version: string,
-  data: DisciplinaETL[]
+  data: DisciplinaETL[],
 ): Disciplina[] => {
   const disciplinasJson: DisciplinaETL[] = data;
   const newDisciplinas: DisciplinaETL[] = [];
@@ -136,7 +139,7 @@ export const processDisciplinas = (
 
 export const processAtribuicoes = (
   version: string,
-  data: Record<string, string[]>
+  data: Record<string, string[]>,
 ): Atribuicao[] => {
   const atribuicoesJson: Record<string, string[]> = data;
   const newAtribuicoes: Atribuicao[] = [];
@@ -152,7 +155,7 @@ export const processAtribuicoes = (
 
 export const processFormularios = (
   version: string,
-  data: Record<string, Disciplina[] | number>
+  data: Record<string, Disciplina[] | number>,
 ): Formulario[] => {
   const formulariosJson: Record<string, Disciplina[] | number> = data;
   const newFormularios: Formulario[] = [];
@@ -201,9 +204,11 @@ export function processSolucao(
   historicoSolucoes: Map<string, HistoricoSolucao>,
   setHistoricoSolucoes: Dispatch<SetStateAction<Map<string, HistoricoSolucao>>>,
   setSolucaoAtual: Dispatch<SetStateAction<Solucao>>,
-  formularios: Formulario[]
+  formularios: Formulario[],
 ) {
   if (!historicoSolucoes.has(solucaoImportacao.id)) {
+    console.log("Caiu aqui");
+
     /**
      * Carrega solução no histórico
      */
@@ -223,6 +228,7 @@ export function processSolucao(
         maxPriority: solucaoImportacao.maxPriority,
         formularios: formularios,
       },
+      algorithm: solucaoImportacao.algorithm ?? "Importação",
     };
 
     /**
@@ -230,19 +236,11 @@ export function processSolucao(
      */
     if (solucaoImportacao.solucao.estatisticas) {
       const tempoPorIteracao = new Map<number, number>(
-        solucaoImportacao.solucao.estatisticas.tempoPorIteracao
+        solucaoImportacao.solucao.estatisticas.tempoPorIteracao,
       );
       const avaliacaoPorIteracao = new Map<number, number>(
-        solucaoImportacao.solucao.estatisticas.avaliacaoPorIteracao
+        solucaoImportacao.solucao.estatisticas.avaliacaoPorIteracao,
       );
-
-      // solucaoHistorico.solucao.estatisticas = {
-      //   avaliacaoPorIteracao: avaliacaoPorIteracao,
-      //   tempoPorIteracao: tempoPorIteracao,
-      //   interrupcao: solucaoImportacao.solucao.estatisticas.interrupcao,
-      //   iteracoes: solucaoImportacao.solucao.estatisticas.iteracoes,
-      //   tempoExecucao: solucaoImportacao.solucao.estatisticas.tempoExecucao,
-      // };
 
       solucaoHistorico.solucao.estatisticas = new Statistics();
 
@@ -254,7 +252,7 @@ export function processSolucao(
         solucaoHistorico.solucao.estatisticas.addIteracaoData(
           i,
           avaliacaoPorIteracao.get(i),
-          tempoPorIteracao.get(i)
+          tempoPorIteracao.get(i),
         );
       }
 
@@ -272,8 +270,11 @@ export function processSolucao(
      * Altera o state referente ao histórico de soluções
      */
     const newHistoricoSolucoes = new Map<string, HistoricoSolucao>(
-      historicoSolucoes
+      historicoSolucoes,
     );
+
+    console.log(solucaoHistorico);
+
     newHistoricoSolucoes.set(solucaoHistorico.id, solucaoHistorico);
 
     setHistoricoSolucoes(newHistoricoSolucoes);

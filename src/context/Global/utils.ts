@@ -94,7 +94,7 @@ export interface Estatisticas {
   avaliacaoPorIteracao: Map<number, number>;
   tempoPorIteracao: Map<number, number>;
   docentesPrioridade?: Map<number, number>; // Quantidade de docentes por prioridade (histograma)
-  qtdOcorrenciasRestricoes?: Map<string, { label: string; qtd: number }[]>;
+  qtdOcorrenciasRestricoes?: Map<string, { label: string; qtd: number; items?: string[] }[]>;
 }
 
 export enum TipoInsercao {

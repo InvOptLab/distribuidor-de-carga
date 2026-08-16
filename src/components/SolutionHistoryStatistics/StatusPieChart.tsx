@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Box } from '@mui/material';
 import { PieChart } from '@mui/x-charts';
+import { useTranslations } from 'next-intl';
 
 interface StatusPieChartProps {
   title: string;
@@ -10,18 +11,19 @@ interface StatusPieChartProps {
 }
 
 const StatusPieChart: React.FC<StatusPieChartProps> = ({ title, activeCount, inactiveCount, lockedCount }) => {
+  const t = useTranslations("Components.StatusPieChart");
   // Dados para o gráfico de pizza
   const data = [];
 
   if(activeCount !== 0) {
-    data.push({ id: 0, label: "Ativos", value: activeCount, color: "blue" },)
+    data.push({ id: 0, label: t("active"), value: activeCount, color: "blue" },)
   }
   if(inactiveCount !== 0) {
-    data.push({ id: 1, label: "Inativos", value: inactiveCount, color: "red" })
+    data.push({ id: 1, label: t("inactive"), value: inactiveCount, color: "red" })
   }
 
   if(lockedCount !== 0) {
-    data.push({ id: 2, label: "Travados", value: lockedCount, color: "gray" })
+    data.push({ id: 2, label: t("locked"), value: lockedCount, color: "gray" })
   }
 
   return (

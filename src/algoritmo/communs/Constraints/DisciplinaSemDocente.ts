@@ -8,21 +8,46 @@ import {
   Atribuicao,
   ConstraintInterface,
   Docente,
+  Disciplina,
+  IParameter,
 } from "../interfaces/interfaces";
 import { LpSum } from "@/algoritmo/metodos/MILP/utils";
 
-export class DisciplinaSemDocente extends Constraint<any> {
+/**
+ * Parâmetro para o limite de docentes por turma.
+ */
+export type LimiteDocente = {
+  limiteDocente: IParameter<number>;
+};
+
+type constructorLimiteDocente = {
+  limiteDocente: number;
+};
+
+/**
+ * TODO: Observar se manteremos o parâmetro sem causar nenhum tipo de penalidade.
+ */
+export class DisciplinaSemDocente extends Constraint<LimiteDocente> {
+  readonly _name = "DisciplinaSemDocente";
+
   constructor(
     name: string,
     description: string,
     isHard: boolean,
     penalty: number,
     isActive: boolean,
-    parametros: any
+    parametros: constructorLimiteDocente,
   ) {
     super(name, description, isHard, penalty, isActive);
 
-    this.params = parametros;
+    this.params = {
+      limiteDocente: {
+        value: parametros.limiteDocente,
+        name: "Limite de Docentes.",
+        description:
+          "O número máximo de docentes que podem ser atribuídos a uma turma.",
+      },
+    };
   }
 
   soft(atribuicoes: Atribuicao[]): number {
@@ -57,8 +82,23 @@ export class DisciplinaSemDocente extends Constraint<any> {
     };
   }
 
-  occurrences(atribuicoes: Atribuicao[]): { label: string; qtd: number }[] {
-    const data: { label: string; qtd: number }[] = [];
+  occurrences(atribuicoes: Atribuicao[], docentes?: Docente[], turmas?: Disciplina[]): { label: string; qtd: number; items?: string[] }[] {
+    const data: { label: string; qtd: number; items?: string[] }[] = [];
+    const items: string[] = [];
+
+    let qtd: number = 0;
+
+    for (const atribuicao of atribuicoes) {
+      if (atribuicao.docentes.length === 0) {
+        qtd += 1;
+        const turmaEncontrada = turmas?.find((t) => t.id === atribuicao.id_disciplina);
+        if (turmaEncontrada) {
+          items.push(`${turmaEncontrada.codigo} - Turma ${turmaEncontrada.turma}`);
+        } else {
+          items.push(atribuicao.id_disciplina);
+        }
+      }
+    }
 
     if (this.penalty !== 0 && !this.hard) {
       const softEvaluation = this.soft(atribuicoes);
@@ -66,18 +106,13 @@ export class DisciplinaSemDocente extends Constraint<any> {
       data.push({
         label: "Sem Docente",
         qtd: Math.abs(softEvaluation / this.penalty),
+        items: items,
       });
     } else {
-      let qtd: number = 0;
-
-      for (const atribuicao of atribuicoes) {
-        if (atribuicao.docentes.length === 0) {
-          qtd += 1;
-        }
-      }
       data.push({
         label: "Sem Docente",
         qtd: qtd,
+        items: items,
       });
     }
 
@@ -87,13 +122,18 @@ export class DisciplinaSemDocente extends Constraint<any> {
   milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {
     modelData.T.forEach((j) => {
       const lhs = modelData.D.map((i) => modelData.x[i][j]);
-      model.addConstraint(`cobertura_turma_hard_${j}`, LpSum(lhs), "==", 1);
+      model.addConstraint(
+        `cobertura_turma_hard_${j}`,
+        LpSum(lhs),
+        "==",
+        this.params.limiteDocente.value,
+      );
     });
   }
 
   milpSoftFormulation(
     model: OptimizationModel,
-    modelData: modelSCP
+    modelData: modelSCP,
   ): { objectiveTerms: Term[] } {
     /**
      * Restrições
@@ -101,7 +141,12 @@ export class DisciplinaSemDocente extends Constraint<any> {
     modelData.T.forEach((j) => {
       const lhs = modelData.D.map((i) => modelData.x[i][j]);
       lhs.push(modelData.u[j]);
-      model.addConstraint(`cobertura_turma_soft_${j}`, LpSum(lhs), "==", 1);
+      model.addConstraint(
+        `cobertura_turma_soft_${j}`,
+        LpSum(lhs),
+        "==",
+        this.params.limiteDocente.value,
+      );
     });
 
     /**

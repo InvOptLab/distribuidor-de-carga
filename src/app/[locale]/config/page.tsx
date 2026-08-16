@@ -25,11 +25,16 @@ import NeighborhoodConfig from "./_components/NeighborhoodConfig";
 import StopCriteriaConfig from "./_components/StopCriteriaConfig";
 import AspirationConfig from "./_components/AspirationConfig";
 import ObjectiveConfig from "./_components/ObjectiveConfig";
+import SimulatedAnnealingConfig from "./_components/SimulatedAnnealingConfig";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { AlgorithmType, AVAILABLE_ALGORITHMS } from "../types/algorithm-types";
+import { useTranslations } from "next-intl";
 
 export default function Configuracoes() {
   const { selectedAlgorithm, setSelectedAlgorithm } = useAlgorithmContext();
+  const t = useTranslations("Pages.Config.page");
+  const tAlg = useTranslations("Pages.Config.Algorithms");
+  const tSec = useTranslations("Pages.Config.Sections");
   const [expandedPanels, setExpandedPanels] = useState<string[]>([
     "constraints",
     "objectiveCost",
@@ -62,6 +67,7 @@ export default function Configuracoes() {
     neighborhood: <NeighborhoodConfig />,
     "stop-criteria": <StopCriteriaConfig />,
     aspiration: <AspirationConfig />,
+    "sa-config": <SimulatedAnnealingConfig />,
   };
 
   return (
@@ -72,11 +78,10 @@ export default function Configuracoes() {
           <SettingsIcon sx={{ fontSize: 40, color: "primary.main" }} />
           <Box>
             <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 0 }}>
-              Configurações do Algoritmo
+              {t("title")}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Selecione o algoritmo e ajuste seus parâmetros para otimizar os
-              resultados
+              {t("description")}
             </Typography>
           </Box>
         </Box>
@@ -87,13 +92,13 @@ export default function Configuracoes() {
         <CardContent>
           <FormControl fullWidth>
             <InputLabel id="algorithm-select-label">
-              Selecione o Algoritmo
+              {t("selectAlgorithm")}
             </InputLabel>
             <Select
               labelId="algorithm-select-label"
               id="algorithm-select"
               value={selectedAlgorithm}
-              label="Selecione o Algoritmo"
+              label={t("selectAlgorithm")}
               onChange={handleAlgorithmChange}
             >
               {AVAILABLE_ALGORITHMS.map((algorithm) => (
@@ -104,10 +109,10 @@ export default function Configuracoes() {
                     </Typography>
                     <Box>
                       <Typography variant="body1" fontWeight="medium">
-                        {algorithm.name}
+                        {tAlg(`${algorithm.id}.name`)}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {algorithm.description}
+                        {tAlg(`${algorithm.id}.description`)}
                       </Typography>
                     </Box>
                   </Box>
@@ -119,12 +124,12 @@ export default function Configuracoes() {
           {currentAlgorithm && (
             <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
               <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
-                Seções de configuração:
+                {t("configSections")}
               </Typography>
               {currentAlgorithm.configSections.map((section) => (
                 <Chip
                   key={section.id}
-                  label={section.title}
+                  label={tSec(`${section.id}.title`)}
                   size="small"
                   icon={
                     <Typography sx={{ fontSize: "1rem" }}>
@@ -180,10 +185,10 @@ export default function Configuracoes() {
                 </Typography>
                 <Box>
                   <Typography variant="h6" component="div">
-                    {section.title}
+                    {tSec(`${section.id}.title`)}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                    {section.description}
+                    {tSec(`${section.id}.description`)}
                   </Typography>
                 </Box>
               </Box>

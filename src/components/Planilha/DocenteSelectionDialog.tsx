@@ -17,6 +17,11 @@ import {
   ListItemText,
   Divider,
   Chip,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import {
   Disciplina,
@@ -77,6 +82,8 @@ export function DocenteSelectionDialog({
   onConfirm,
 }: DocenteSelectionDialogProps) {
   const [selectedDocentes, setSelectedDocentes] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"name" | "priority">("priority");
 
   const t = useTranslations("Spreadsheet.DocenteSelectionDialog");
   const tUtils = useTranslations("Utils");
@@ -84,6 +91,8 @@ export function DocenteSelectionDialog({
   useEffect(() => {
     if (open) {
       setSelectedDocentes(docentesAtribuidos);
+      setSearchQuery("");
+      setSortBy("priority");
     }
   }, [open, docentesAtribuidos]);
 
@@ -99,6 +108,13 @@ export function DocenteSelectionDialog({
     todosDocentes
       .filter((d) => d.ativo)
       .forEach((docente) => {
+        if (
+          searchQuery &&
+          !docente.nome.toLowerCase().includes(searchQuery.toLowerCase())
+        ) {
+          return;
+        }
+
         const formulario = formularios.find(
           (f) =>
             f.id_disciplina === disciplina.id &&
@@ -112,11 +128,21 @@ export function DocenteSelectionDialog({
         }
       });
 
+    if (sortBy === "name") {
+      comFormulario.sort((a, b) => a.nome.localeCompare(b.nome));
+      semFormulario.sort((a, b) => a.nome.localeCompare(b.nome));
+    } else if (sortBy === "priority") {
+      comFormulario.sort(
+        (a, b) => (a.prioridade ?? 999) - (b.prioridade ?? 999),
+      );
+      semFormulario.sort((a, b) => a.nome.localeCompare(b.nome));
+    }
+
     return {
       docentesComFormulario: comFormulario,
       docentesSemFormulario: semFormulario,
     };
-  }, [todosDocentes, formularios, disciplina.id]);
+  }, [todosDocentes, formularios, disciplina.id, searchQuery, sortBy]);
 
   /**
    * Retorna a cor do saldo baseado nas regras:
@@ -230,6 +256,27 @@ export function DocenteSelectionDialog({
         })}
       </DialogTitle>
       <DialogContent>
+        <Box sx={{ display: "flex", gap: 2, p: 1 }}>
+          <TextField
+            label={t("searchProfessor")}
+            variant="outlined"
+            size="small"
+            fullWidth
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel>{t("sortBy")}</InputLabel>
+            <Select
+              value={sortBy}
+              label={t("sortBy")}
+              onChange={(e) => setSortBy(e.target.value as "name" | "priority")}
+            >
+              <MenuItem value="priority">{t("sortByPriority")}</MenuItem>
+              <MenuItem value="name">{t("sortByName")}</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
         <Box sx={{ display: "flex", gap: 2, minHeight: "400px" }}>
           {/* Bloco Esquerdo: Docentes com Formulário */}
           <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>

@@ -112,7 +112,7 @@ export default function ConstraintCard({
         </FormControl>
 
         <TextField
-          label="Penalidade"
+          label={t("penalty")}
           variant="outlined"
           value={penalidade}
           onChange={handlePenalidadeChange}

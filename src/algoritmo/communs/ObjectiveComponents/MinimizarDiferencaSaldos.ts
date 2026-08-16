@@ -27,13 +27,15 @@ export class MinimizarDiferencaSaldos extends ObjectiveComponent<null> {
   private s_plus: Variable[] = [];
   private s_minus: Variable[] = [];
 
+  readonly _name = "MinimizarDiferencaSaldos";
+
   constructor(
     name: string,
     isActive: boolean,
     type: "min" | "max",
     description: string | undefined,
     multiplier: number | undefined,
-    parametros: null
+    parametros: null,
   ) {
     super(name, isActive, type, description, multiplier);
 
@@ -53,7 +55,7 @@ export class MinimizarDiferencaSaldos extends ObjectiveComponent<null> {
     atribuicoes: Atribuicao[],
     formularios: Formulario[],
     docentes?: Docente[],
-    turmas?: Disciplina[]
+    turmas?: Disciplina[],
   ): number {
     /**
      * Para a formulação Heurística, podemos utilizar a formulação
@@ -68,7 +70,7 @@ export class MinimizarDiferencaSaldos extends ObjectiveComponent<null> {
       custo += Math.abs(
         docente.saldo +
           calcularCargaDidatica(docente, atribuicoes, turmas) -
-          L_avg
+          L_avg,
       );
     }
     return custo;

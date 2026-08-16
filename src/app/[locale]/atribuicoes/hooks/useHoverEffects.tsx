@@ -92,7 +92,7 @@ export function useHoverEffects() {
   /**
    * Define a cor da célula com base na prioridade e estado
    */
-  const setCellColor = (prioridade: number | null, celula: Celula) => {
+  const setCellColor = (prioridade: number | null, celula: Celula, isHighContrast: boolean = false) => {
     if (
       travas.some(
         (obj) =>
@@ -107,9 +107,23 @@ export function useHoverEffects() {
             obj.docentes.some((docente) => docente == celula.nome_docente)
         )
       ) {
-        return `rgba(182, 44, 44, 0.4)`;
+        if (isHighContrast) {
+          return {
+            backgroundColor: "#FFFF00",
+            border: "3px solid #FFFF00",
+            color: "#000000",
+          };
+        }
+        return { backgroundColor: `rgba(182, 44, 44, 0.4)` };
       }
-      return `rgba(224, 224, 224, 0.6)`;
+      if (isHighContrast) {
+        return {
+          backgroundColor: "transparent",
+          border: "3px dashed #FFFFFF",
+          color: "#FFFFFF",
+        };
+      }
+      return { backgroundColor: `rgba(224, 224, 224, 0.6)` };
     } else if (
       atribuicoes.some(
         (obj) =>
@@ -117,11 +131,32 @@ export function useHoverEffects() {
           obj.docentes.some((docente) => docente == celula.nome_docente)
       )
     ) {
-      return `rgba(255, 0, 0, 0.4)`;
+      if (isHighContrast) {
+        return {
+          backgroundColor: "#FFFF00",
+          border: "3px solid #FFFF00",
+          color: "#000000",
+        };
+      }
+      return { backgroundColor: `rgba(255, 0, 0, 0.4)` };
     } else if (prioridade) {
-      return getPriorityColor(prioridade, maxPriority + 1);
+      if (isHighContrast) {
+        return {
+          backgroundColor: "transparent",
+          border: "2px solid #FFFFFF",
+          color: "#FFFF00",
+        };
+      }
+      return { backgroundColor: getPriorityColor(prioridade, maxPriority + 1) };
     } else {
-      return `rgba(255, 255, 255, 1)`;
+      if (isHighContrast) {
+        return {
+          backgroundColor: "#000000",
+          border: "1px solid #FFFFFF",
+          color: "#FFFFFF",
+        };
+      }
+      return { backgroundColor: `rgba(255, 255, 255, 1)` };
     }
   };
 

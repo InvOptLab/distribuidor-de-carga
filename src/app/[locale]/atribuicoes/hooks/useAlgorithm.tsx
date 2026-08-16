@@ -25,6 +25,9 @@ import {
 import { MILP } from "@/algoritmo/metodos/MILP/MILP";
 import { useCollaboration } from "@/context/Collaboration";
 import { AlgorithmStage } from "@/components/AlgorithmDialog";
+import { useTabuWorker } from "@/hooks/useTabuWorker";
+import { useSAWorker } from "@/hooks/useSAWorker";
+import { useTranslations } from "next-intl";
 
 /**
  * Converte a saída do solver HiGHS (baseada em índices e objeto 'Primal')
@@ -75,9 +78,68 @@ export function reconstruirAtribuicoes(
   return atribuicoesFinais;
 }
 
-// =========================================================
-// FUNÇÕES AUXILIARES DE CONVERSÃO (Map/Set <-> Array)
-// =========================================================
+/**
+ * ============================================
+ * AJUSTES
+ * ============================================
+ */
+// Representa a estrutura de um único componente após ser limpo/serializado
+export interface SerializedComponent {
+  name: string;
+  data: Record<string, any>;
+}
+
+// Representa o objeto agrupado contendo todas as listas de componentes prontas para o Worker
+export interface ActiveComponentsSerialized {
+  constraints: SerializedComponent[];
+  neighborhood: SerializedComponent[];
+  stopFunctions: SerializedComponent[];
+  aspiration: SerializedComponent[];
+  objectives: SerializedComponent[];
+}
+
+// Tipo auxiliar para mapear o que pode vir de dentro do Map (instância pura ou wrapper com isActive)
+interface MapEntry {
+  instance?: { name: string; [key: string]: any };
+  name?: string;
+  isActive?: boolean;
+  [key: string]: any;
+}
+
+/**
+ * Função Auxiliar para "Serializar" classes removendo funções e mantendo as
+ * propriedades configuradas pelo usuário.
+ */
+export function serializeComponentMap(
+  map: Map<string, MapEntry | any>,
+): SerializedComponent[] {
+  return Array.from(map.values())
+    .filter((entry) => {
+      if (!entry) return false;
+      const isActive = entry.isActive !== undefined ? entry.isActive : true;
+      return isActive;
+    })
+    .map((entry): SerializedComponent => {
+      const instance = entry.instance || entry;
+
+      if (!instance._name) {
+        console.warn(
+          `[serializeComponentMap] Instância sem '_name' definido:`,
+          instance,
+        );
+      }
+
+      return {
+        name: instance._name, // chave estável, imune a tradução e a minificação
+        data: JSON.parse(JSON.stringify(instance)), // aqui dentro data.name segue sendo o rótulo traduzido
+      };
+    });
+}
+/**
+ * ============================================
+ * AJUSTES
+ * ============================================
+ */
 
 export function useAlgorithm() {
   const {
@@ -93,7 +155,7 @@ export function useAlgorithm() {
     updateAtribuicoes,
   } = useGlobalContext();
 
-  const { isInRoom, broadcastDataUpdate } = useCollaboration(); // Hooks de Colaboração
+  const { isInRoom, broadcastDataUpdate } = useCollaboration();
 
   const { maxPriority } = useTimetable();
 
@@ -109,6 +171,8 @@ export function useAlgorithm() {
     selectedAlgorithm,
   } = useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
+  const tAlerts = useTranslations("AlgorithmAlerts");
+  const tDialog = useTranslations("AlgorithmDialog");
 
   const [openDialog, setOpenDialog] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -129,7 +193,7 @@ export function useAlgorithm() {
 
   const disciplinasAlocadasRef = useRef(disciplinasAlocadas);
   const interrompeRef = useRef(interrompe);
-  // const estatisticasMonitoradasRef = useRef(estatisticasMonitoradas);
+  const algorithmParamsRef = useRef<any>(null);
 
   /**
    * Campos a serem monitorados durante a execução do algoritmo.
@@ -189,6 +253,55 @@ export function useAlgorithm() {
     [],
   );
 
+  // Hook do Worker
+  const onProgressAllocation = useCallback((qtd: number) => {
+    setDisciplinasAlocadas(qtd);
+  }, []);
+
+  const onProgressStats = useCallback(
+    (stats: Partial<Estatisticas>) => {
+      handleStatisticsUpdate(stats);
+    },
+    [handleStatisticsUpdate],
+  );
+
+  const onSuccess = useCallback((solucao: Solucao) => {
+    if (algorithmParamsRef.current) {
+      solucao.algorithm = algorithmParamsRef.current;
+      algorithmParamsRef.current = null;
+    }
+    setSolucaoAtual(solucao);
+    setProcessing(false);
+    setInterrompe(false);
+    setDisciplinasAlocadas(0);
+    setExecutionStage("idle");
+  }, [setSolucaoAtual]);
+
+  const onError = useCallback(
+    (error: string) => {
+      console.error(tAlerts("errorWorkerExecution"), error);
+      addAlerta(tAlerts("errorExecution"), "error");
+      setProcessing(false);
+      setInterrompe(false);
+      setExecutionStage("idle");
+    },
+    [addAlerta, tAlerts],
+  );
+
+  const { startWorker, interruptWorker } = useTabuWorker({
+    onProgressAllocation,
+    onProgressStats,
+    onSuccess,
+    onError,
+  });
+
+  const saWorker = useSAWorker({
+    onProgressAllocation,
+    onProgressStats,
+    onSuccess,
+    onError,
+  });
+
   /**
    * Executa o algoritmo Busca Tabu
    */
@@ -202,23 +315,6 @@ export function useAlgorithm() {
 
     try {
       if (selectedAlgorithm === "tabu-search") {
-        const neighborhood = Array.from(neighborhoodFunctions.values())
-          .filter((entry) => entry.isActive)
-          .map((entry) => entry.instance);
-
-        const stop = Array.from(stopFunctions.values())
-          .filter((entry) => entry.isActive)
-          .map((entry) => entry.instance);
-
-        const aspiration = Array.from(aspirationFunctions.values())
-          .filter((entry) => entry.isActive)
-          .map((entry) => entry.instance);
-
-        const objectives = Array.from(objectiveComponents.values()).filter(
-          (entry) => entry.isActive,
-        );
-
-        // Filter only active items
         const activeDocentes = docentes.filter((d) => d.ativo);
         const activeDisciplinas = disciplinas.filter((d) => d.ativo);
         const activeFormularios = getActiveFormularios(
@@ -227,7 +323,6 @@ export function useAlgorithm() {
           docentes,
         );
 
-        // Filter atribuicoes to only include active items
         const activeAtribuicoes = atribuicoes
           .filter((attr) =>
             activeDisciplinas.some((d) => d.id === attr.id_disciplina),
@@ -239,45 +334,104 @@ export function useAlgorithm() {
             ),
           }));
 
-        const buscaTabu = new TabuSearch(
-          activeAtribuicoes,
-          activeDocentes,
-          activeDisciplinas,
-          travas,
-          activeFormularios,
-          [...hardConstraints.values(), ...softConstraints.values()],
-          { atribuicoes: activeAtribuicoes },
-          neighborhood,
-          tabuListType,
-          tabuListType === "Solução"
-            ? parametros.tabuTenure.size
-            : parametros.tabuTenure.tenures,
-          stop,
-          aspiration,
-          maxPriority + 1,
-          "max",
-          objectives,
-        );
+        // SERIALIZAÇÃO DAS INSTÂNCIAS! (Removemos os métodos e mandamos pro Worker)
+        const activeComponents: ActiveComponentsSerialized = {
+          constraints: serializeComponentMap(
+            new Map([...hardConstraints, ...softConstraints]),
+          ),
+          neighborhood: serializeComponentMap(neighborhoodFunctions),
+          stopFunctions: serializeComponentMap(stopFunctions),
+          aspiration: serializeComponentMap(aspirationFunctions),
+          objectives: serializeComponentMap(objectiveComponents),
+        };
 
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        const contextData = {
+          atribuicoes: activeAtribuicoes,
+          docentes: activeDocentes,
+          turmas: activeDisciplinas,
+          travas: travas,
+          prioridades: activeFormularios,
+        };
+
+        const configData = {
+          tabuListType,
+          tabuSize:
+            tabuListType !== "Movimento"
+              ? parametros.tabuTenure.size
+              : parametros.tabuTenure.tenures,
+          maxPriority: maxPriority + 1,
+          objectiveType: "max",
+        };
+
+        algorithmParamsRef.current = {
+          name: "tabu-search",
+          tabuList: { 
+            _name: tabuListType === "Movimento" ? "Moviment" : (tabuListType === "Solução" ? "Solution" : "Hash"),
+            tabuSize: tabuListType !== "Movimento" ? parametros.tabuTenure.size : parametros.tabuTenure.tenures 
+          },
+          constraints: { hard: new Map(hardConstraints), soft: new Map(softConstraints) },
+          neighborhoodPipe: new Map(neighborhoodFunctions),
+          stopPipe: new Map(stopFunctions),
+        };
 
         setExecutionStage("solving");
-
-        await buscaTabu.execute(
-          () => interrompeRef.current,
-          setDisciplinasAlocadas,
-          { campos: camposMonitorados, onUpdate: handleStatisticsUpdate },
+        startWorker(contextData, configData, activeComponents);
+      } else if (selectedAlgorithm === "simulated-annealing") {
+        const activeDocentes = docentes.filter((d) => d.ativo);
+        const activeDisciplinas = disciplinas.filter((d) => d.ativo);
+        const activeFormularios = getActiveFormularios(
+          formularios,
+          disciplinas,
+          docentes,
         );
 
-        const solucao: Solucao = {
-          atribuicoes: buscaTabu.bestSolution.atribuicoes,
-          avaliacao: buscaTabu.bestSolution.avaliacao,
-          estatisticas: buscaTabu.statistics,
-          algorithm: buscaTabu,
-        };
-        setSolucaoAtual(solucao);
+        const activeAtribuicoes = atribuicoes
+          .filter((attr) =>
+            activeDisciplinas.some((d) => d.id === attr.id_disciplina),
+          )
+          .map((attr) => ({
+            ...attr,
+            docentes: attr.docentes.filter((docente) =>
+              activeDocentes.some((d) => d.nome === docente),
+            ),
+          }));
 
-        console.log(buscaTabu.statistics);
+        const activeComponents: ActiveComponentsSerialized = {
+          constraints: serializeComponentMap(
+            new Map([...hardConstraints, ...softConstraints]),
+          ),
+          neighborhood: serializeComponentMap(neighborhoodFunctions),
+          stopFunctions: serializeComponentMap(stopFunctions),
+          aspiration: serializeComponentMap(aspirationFunctions),
+          objectives: serializeComponentMap(objectiveComponents),
+        };
+
+        const contextData = {
+          atribuicoes: activeAtribuicoes,
+          docentes: activeDocentes,
+          turmas: activeDisciplinas,
+          travas: travas,
+          prioridades: activeFormularios,
+        };
+
+        const configData = {
+          saConfig: parametros.saConfig,
+          maxPriority: maxPriority + 1,
+          objectiveType: "max",
+        };
+
+        algorithmParamsRef.current = {
+          name: "simulated-annealing",
+          initialTemperature: parametros.saConfig.initialTemperature,
+          coolingRate: parametros.saConfig.coolingRate,
+          iterationsPerTemperature: parametros.saConfig.iterationsPerTemperature,
+          constraints: { hard: new Map(hardConstraints), soft: new Map(softConstraints) },
+          neighborhoodPipe: new Map(neighborhoodFunctions),
+          stopPipe: new Map(stopFunctions),
+        };
+
+        setExecutionStage("solving");
+        saWorker.startWorker(contextData, configData, activeComponents);
       } else {
         const activeDocentes = docentes.filter((d) => d.ativo);
         const activeTurmas = disciplinas.filter((d) => d.ativo);
@@ -320,26 +474,12 @@ export function useAlgorithm() {
         // Prioridades p_ij do docente i para a turma j
         const p: number[][] = [];
 
-        const m: number[][] = [];
-        const a: number[][] = [];
-
-        for (const docente of activeDocentes) {
-          const dados = [];
-          for (const turma of activeTurmas) {
-            dados.push(0);
-
-            const trava = travas.find(
-              (trava) =>
-                trava.nome_docente === docente.nome &&
-                trava.id_disciplina === turma.id,
-            );
-
-            if (trava) {
-            }
-          }
-          m.push(dados);
-          a.push(dados);
-        }
+        const m: number[][] = Array(activeDocentes.length)
+          .fill(0)
+          .map(() => Array(activeTurmas.length).fill(0));
+        const a: number[][] = Array(activeDocentes.length)
+          .fill(0)
+          .map(() => Array(activeTurmas.length).fill(0));
 
         // Crie um Set para busca O(1)
         const travasSet = new Set(
@@ -433,6 +573,16 @@ export function useAlgorithm() {
 
         const solution = await solver.execute();
 
+        if (solution.Status === "Infeasible") {
+          addAlerta(tDialog("SubMessages.infeasible"), "warning");
+          // Limpeza de estados, não define solucaoAtual
+          setProcessing(false);
+          setInterrompe(false);
+          setDisciplinasAlocadas(0);
+          setExecutionStage("infeasible");
+          return;
+        }
+
         const solucao: Solucao = {
           atribuicoes: solver.solution.atribuicoes,
           avaliacao: solution.ObjectiveValue,
@@ -441,15 +591,22 @@ export function useAlgorithm() {
         };
 
         setSolucaoAtual(solucao);
+
+        //Limpeza de estados
+        setProcessing(false);
+        setInterrompe(false);
+        setDisciplinasAlocadas(0);
+        setExecutionStage("completed");
       }
     } catch (error) {
       console.error("Erro na execução do algoritmo:", error);
-      addAlerta("Erro na execução do algoritmo!", "error");
-    } finally {
+      addAlerta(tAlerts("errorExecution"), "error");
+
+      //Limpeza de estados
       setProcessing(false);
       setInterrompe(false);
       setDisciplinasAlocadas(0);
-      setExecutionStage("idle");
+      setExecutionStage("infeasible"); // Or error stage
     }
   };
 
@@ -487,16 +644,6 @@ export function useAlgorithm() {
 
       // LÓGICA DE COLABORAÇÃO: Broadcast da solução para todos na sala
       if (isInRoom) {
-        // broadcastDataUpdate(
-        //   {
-        //     atribuicoes: solucaoAtual.atribuicoes,
-        //     disciplinas: disciplinas,
-        //     docentes: docentes,
-        //     formularios: formularios,
-        //     travas: travas,
-        //   },
-        //   "FULL_DATA"
-        // );
         broadcastDataUpdate(
           {
             atribuicoes: solucaoAtual.atribuicoes,
@@ -509,11 +656,11 @@ export function useAlgorithm() {
         );
       }
 
-      addAlerta("A solução foi aplicada com sucesso!", "success");
+      addAlerta(tAlerts("solutionAppliedSuccess"), "success");
       handleCloseDialog();
     } catch (error) {
       console.error("Erro ao aplicar solução:", error);
-      addAlerta("Erro ao aplicar a solução!", "error");
+      addAlerta(tAlerts("errorApplyingSolution"), "error");
     }
   };
 
@@ -522,7 +669,12 @@ export function useAlgorithm() {
    */
   const interruptExecution = () => {
     setInterrompe(true);
-    addAlerta("A execução do algoritmo foi interrompida!", "warning");
+    if (selectedAlgorithm === "tabu-search") {
+      interruptWorker(); // Sinal para o Worker parar
+    } else if (selectedAlgorithm === "simulated-annealing") {
+      saWorker.interruptWorker();
+    }
+    addAlerta(tAlerts("executionInterrupted"), "warning");
   };
 
   return {

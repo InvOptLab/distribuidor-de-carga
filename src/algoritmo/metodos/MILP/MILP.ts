@@ -35,6 +35,7 @@ export interface modelParamns {
   v: (Variable | null)[][][];
   z: Variable[];
   w: Variable[];
+  y: Variable[];
   b: Variable[][]; // (3) flexível
 }
 
@@ -65,6 +66,7 @@ export class MILP extends ExactAlgorithm {
     u: undefined,
     v: undefined,
     w: undefined,
+    y: undefined,
     z: undefined,
     b: undefined,
   };
@@ -112,10 +114,7 @@ export class MILP extends ExactAlgorithm {
     this.modelConsts.Pmax = Math.max(...this.modelSets.p.flat()) + 1;
 
     this.modelConsts.P = this.modelSets.D.map((i) =>
-      this.modelSets.T.map(
-        (j) => (this.modelSets.p[i][j] > 0 ? 1 : 0),
-        // this.modelSets.p[i][j] !== this.modelConsts.Pmax - 1 ? 1 : 0
-      ),
+      this.modelSets.T.map((j) => (this.modelSets.p[i][j] > 0 ? 1 : 0)),
     );
 
     // --- Criação das Variáveis de Decisão ---
@@ -157,6 +156,10 @@ export class MILP extends ExactAlgorithm {
 
     this.modelParamns.w = this.modelSets.D.map((i) =>
       this.model.addVariable(`w_${i}`, { type: "Continuous", lb: 0 }),
+    );
+
+    this.modelParamns.y = this.modelSets.D.map((i) =>
+      this.model.addVariable(`y_${i}`, { type: "Continuous", lb: 0 }),
     );
   }
 
@@ -231,36 +234,40 @@ export class MILP extends ExactAlgorithm {
   }
 
   /**
-   * Implementação da execução do solver
+   * Implementação da execução do solver isolada em um Web Worker
    */
   protected async runSolver(): Promise<HighsSolverResult> {
-    // const highs_settings = {
-    //   // In node, locateFile is not needed
-    //   // In the browser, point locateFile to the URL of the wasm file (see below)
-    //   locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file,
-    // };
-
-    const highs_settings = {
-      // Arquivo na raiz da pasta public:
-      locateFile: (file) => "/assets/" + file,
-    };
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const highs_promise = require("highs")(highs_settings);
-
-    const highs = await highs_promise;
-
     const lpString = this.model.toCplexLpFormat();
     console.log(lpString);
 
-    // TODO Rebuildar o Highs pois o log não está presente no retorno.
-    // prettier-ignore
-    const sol = highs.solve(lpString, {
-      "log_to_console": true,
-      "mip_report_level": 2,
+    return new Promise((resolve, reject) => {
+      // Instancia o worker utilizando a URL relativa ao arquivo atual.
+      // O Next.js/Webpack 5 entende essa sintaxe nativamente.
+      const worker = new Worker(
+        new URL("../../../workers/highs.worker.ts", import.meta.url),
+        {
+          type: "module",
+        },
+      );
+
+      worker.onmessage = (event: MessageEvent) => {
+        if (event.data.success) {
+          console.log(event.data.solution);
+          resolve(event.data.solution);
+        } else {
+          reject(new Error(`Erro no Highs Solver Worker: ${event.data.error}`));
+        }
+        // Encerra o worker após a conclusão para liberar memória
+        worker.terminate();
+      };
+
+      worker.onerror = (error: ErrorEvent) => {
+        reject(new Error(`Erro de execução no Worker: ${error.message}`));
+        worker.terminate();
+      };
+
+      // Envia a string do modelo LP para o worker iniciar o processamento
+      worker.postMessage({ lpString });
     });
-
-    console.log(sol);
-
-    return sol;
   }
 }

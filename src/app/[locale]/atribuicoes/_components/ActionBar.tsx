@@ -13,6 +13,8 @@ import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import DownloadIcon from "@mui/icons-material/Download";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import { useSolutionHistory } from "@/context/SolutionHistory/hooks";
 import { useTranslations } from "next-intl";
 
@@ -23,6 +25,8 @@ interface ActionBarProps {
   onSave: () => void;
   onToggleFilters: () => void;
   hasActiveFilters: boolean;
+  isLockMode: boolean;
+  onToggleLockMode: () => void;
 }
 
 /**
@@ -36,6 +40,8 @@ export default function ActionBar({
   onSave,
   onToggleFilters,
   hasActiveFilters,
+  isLockMode,
+  onToggleLockMode,
 }: ActionBarProps) {
   const { solucaoAtual } = useSolutionHistory();
 
@@ -66,6 +72,19 @@ export default function ActionBar({
               onClick={onExecute}
             >
               {t("run")}
+            </Button>
+          </Tooltip>
+
+          <Tooltip title={t("toggleLockMode")} arrow>
+            <Button
+              variant={isLockMode ? "contained" : "outlined"}
+              color={isLockMode ? "error" : "primary"}
+              startIcon={
+                isLockMode ? <LockOutlinedIcon /> : <LockOpenOutlinedIcon />
+              }
+              onClick={onToggleLockMode}
+            >
+              {t("lockMode")}
             </Button>
           </Tooltip>
 

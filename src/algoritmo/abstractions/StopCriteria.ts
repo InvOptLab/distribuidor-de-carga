@@ -9,6 +9,9 @@ export abstract class StopCriteria {
    */
   readonly name: string;
 
+  // Identificador da classe (ComponentRegistr)
+  abstract readonly _name: string;
+
   /**
    * Detalhes sobre o critério de parada
    */
@@ -29,6 +32,6 @@ export abstract class StopCriteria {
   abstract stop(
     iteracoes?: number,
     melhorVizinho?: Vizinho,
-    vizinhoGerado?: Vizinho
+    vizinhoGerado?: Vizinho,
   ): boolean;
 }

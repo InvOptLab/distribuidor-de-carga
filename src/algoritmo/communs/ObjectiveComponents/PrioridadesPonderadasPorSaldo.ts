@@ -58,6 +58,8 @@ export class PrioridadesPonderadasPorSaldo extends ObjectiveComponent<Parametros
    */
   public maiorPrioridade: number | undefined;
 
+  readonly _name = "PrioridadesPonderadasPorSaldo";
+
   constructor(
     name: string,
     isActive: boolean,
@@ -66,7 +68,7 @@ export class PrioridadesPonderadasPorSaldo extends ObjectiveComponent<Parametros
     multiplier: number | undefined,
     maiorPrioridade: number | undefined,
     // --- Parâmetros Específicos ---
-    parametros: constructorParametrosSaldoPonderado | undefined
+    parametros: constructorParametrosSaldoPonderado | undefined,
   ) {
     super(name, isActive, type, description, multiplier);
 
@@ -148,7 +150,7 @@ export class PrioridadesPonderadasPorSaldo extends ObjectiveComponent<Parametros
   calculate(
     atribuicoes: Atribuicao[],
     formularios: Formulario[],
-    docentes: Docente[]
+    docentes: Docente[],
   ): number {
     // 1. Garante que 'maiorPrioridade' esteja definido
     if (!this.maiorPrioridade) {

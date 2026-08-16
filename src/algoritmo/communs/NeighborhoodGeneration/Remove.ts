@@ -7,6 +7,7 @@ import { podeAtribuir } from "../utils";
  * Caso não haja um docente, a vizinhança não deverá ser gerada. (Podemos testar remover essa opção)
  */
 export class Remove extends NeighborhoodFunction {
+  readonly _name = "Remove";
   constructor(name: string, description: string | undefined) {
     super(name, description);
   }
@@ -14,7 +15,7 @@ export class Remove extends NeighborhoodFunction {
   async generate(
     context: Context,
     hardConstraints: Map<string, Constraint<any>>,
-    baseSolution: Vizinho
+    baseSolution: Vizinho,
   ): Promise<Vizinho[]> {
     const vizinhos: Vizinho[] = [];
     for (const turma of context.turmas) {
@@ -25,7 +26,7 @@ export class Remove extends NeighborhoodFunction {
           context.travas,
           hardConstraints,
           baseSolution,
-          context.turmas
+          context.turmas,
         )
       ) {
         /**
@@ -39,7 +40,7 @@ export class Remove extends NeighborhoodFunction {
        */
       const solucaoAtual = structuredClone(baseSolution.atribuicoes);
       const atribuicao = solucaoAtual.find(
-        (atribuicao) => atribuicao.id_disciplina === turma.id
+        (atribuicao) => atribuicao.id_disciplina === turma.id,
       );
 
       atribuicao.docentes = [];

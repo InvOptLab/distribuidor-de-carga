@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function SemResultadosFiltro({ onClearFilters }: Props) {
-  const t = useTranslations("Pages.Assignment.NoDatNoDataFiltersaFilters");
+  const t = useTranslations("Pages.Assignment.NoDataFilters");
   return (
     <Box
       display="flex"

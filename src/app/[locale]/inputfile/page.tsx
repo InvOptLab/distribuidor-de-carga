@@ -10,17 +10,13 @@ import {
   Container,
   Grid as Grid,
   Chip,
-  Alert,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Paper,
   Divider,
+  useTheme,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -57,6 +53,7 @@ import {
 } from "@/context/Global/utils";
 import { exportJson } from "../atribuicoes";
 import { useAlgorithmContext } from "@/context/Algorithm";
+import { useTranslations } from "next-intl";
 
 interface FileAnalysis {
   docentes: { total: number; ativos: number; inativos: number };
@@ -107,8 +104,8 @@ export default function InputFileUpload() {
   } = useGlobalContext();
 
   const { cleanSolucaoAtual } = useSolutionHistory();
-
   const { setMaiorPrioridade } = useAlgorithmContext();
+  const t = useTranslations("Pages.InputFile");
 
   // Função para processar e analisar o arquivo usando suas funções existentes
   const processAndAnalyzeFile = useCallback(
@@ -305,13 +302,10 @@ export default function InputFileUpload() {
       setTempData(temp);
       setSelectedFile(null); // Limpar arquivo selecionado
 
-      addAlerta("Dados de teste importados com sucesso!", "success");
+      addAlerta(t("Alerts.testDataSuccess"), "success");
     } catch (error) {
       console.error("Erro ao carregar dados de teste:", error);
-      addAlerta(
-        "Erro ao carregar dados de teste. Verifique se o arquivo existe.",
-        "error",
-      );
+      addAlerta(t("Alerts.testDataError"), "error");
     } finally {
       setLoadingTestData(false);
     }
@@ -334,7 +328,7 @@ export default function InputFileUpload() {
               setFileAnalysis(analysis);
               setTempData(temp);
             } catch (error) {
-              addAlerta("Erro ao analisar o arquivo JSON.", "error");
+              addAlerta(t("Alerts.jsonParseError"), "error");
               console.log(error);
               setFileAnalysis(null);
               setTempData(null);
@@ -342,7 +336,7 @@ export default function InputFileUpload() {
           };
           reader.readAsText(file);
         } else {
-          addAlerta("Por favor, selecione um arquivo JSON.", "warning");
+          addAlerta(t("Alerts.selectJsonWarning"), "warning");
         }
       }
     },
@@ -362,7 +356,7 @@ export default function InputFileUpload() {
       currentTravas,
     );
     setSafeContinue(true);
-    addAlerta("Backup criado com sucesso!", "success");
+    addAlerta(t("Alerts.backupSuccess"), "success");
   }, [
     currentDocentes,
     currentDisciplinas,
@@ -376,13 +370,13 @@ export default function InputFileUpload() {
     if (!tempData) return;
 
     const steps = [
-      "Aplicando docentes...",
-      "Aplicando disciplinas...",
-      "Aplicando atribuições...",
-      "Aplicando formulários...",
-      "Aplicando travas...",
-      "Processando solução...",
-      "Finalizando...",
+      t("Progress.stepDocentes"),
+      t("Progress.stepDisciplinas"),
+      t("Progress.stepAtribuicoes"),
+      t("Progress.stepFormularios"),
+      t("Progress.stepTravas"),
+      t("Progress.stepSolucao"),
+      t("Progress.stepFinalizando"),
     ];
 
     const updateProgress = (step: string) => {
@@ -407,6 +401,20 @@ export default function InputFileUpload() {
     updateProgress(steps[5]);
     // Processa solução e insere no histórico
     if (tempData.jsonData["solucao"]) {
+      // Formata a data e hora atual (ex: 08-07-2026_09h12m30s)
+      const agora = new Date();
+      const dia = String(agora.getDate()).padStart(2, "0");
+      const mes = String(agora.getMonth() + 1).padStart(2, "0");
+      const ano = agora.getFullYear();
+      const horas = String(agora.getHours()).padStart(2, "0");
+      const minutos = String(agora.getMinutes()).padStart(2, "0");
+      const segundos = String(agora.getSeconds()).padStart(2, "0");
+
+      const nomeImportacao = `Importação_${dia}-${mes}-${ano}_${horas}h${minutos}m${segundos}s`;
+
+      tempData.jsonData["solucao"]["id"] = nomeImportacao;
+      tempData.jsonData["solucao"]["datetime"] = agora.toLocaleString();
+
       processSolucao(
         tempData.jsonData["versao"],
         tempData.jsonData["solucao"],
@@ -485,13 +493,11 @@ export default function InputFileUpload() {
       setTempData(null);
       const fileName = selectedFile ? selectedFile.name : "dados de teste";
       addAlerta(
-        `${fileName} carregado${
-          fileName === "dados de teste" ? "s" : ""
-        } com sucesso.`,
+        t("Alerts.uploadSuccess", { fileName: fileName }),
         "success",
       );
     } catch (error) {
-      addAlerta("Erro ao processar os dados.\n" + error, "error");
+      addAlerta(t("Alerts.uploadError", { error: String(error) }), "error");
     }
 
     setUploading(false);
@@ -540,10 +546,10 @@ export default function InputFileUpload() {
             }}
           >
             <Typography variant="h5" gutterBottom>
-              Upload de Arquivo
+              {t("UploadBox.title")}
             </Typography>
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              Arraste e solte um arquivo JSON aqui ou clique para selecionar
+              {t("UploadBox.subtitle")}
             </Typography>
 
             <input
@@ -563,7 +569,7 @@ export default function InputFileUpload() {
                 size="large"
                 sx={{ mt: 2, mb: 2 }}
               >
-                Escolher Arquivo
+                {t("UploadBox.chooseFile")}
               </Button>
             </label>
 
@@ -582,13 +588,13 @@ export default function InputFileUpload() {
 
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                ou
+                {t("UploadBox.or")}
               </Typography>
             </Divider>
 
             {/* Botão para carregar dados de teste */}
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              Use dados de teste para experimentar a plataforma
+              {t("UploadBox.testDataSubtitle")}
             </Typography>
             <Button
               variant="contained"
@@ -605,7 +611,7 @@ export default function InputFileUpload() {
               size="large"
               sx={{ mt: 2, mb: 2 }}
             >
-              {loadingTestData ? "Carregando..." : "Carregar Dados Padrões"}
+              {loadingTestData ? t("UploadBox.importing") : t("UploadBox.importTestData")}
             </Button>
 
             <Box sx={{ mt: 3 }}>
@@ -623,7 +629,7 @@ export default function InputFileUpload() {
                 disabled={(!selectedFile && !tempData) || uploading}
                 size="large"
               >
-                {uploading ? "Carregando..." : "Carregar Dados"}
+                {uploading ? t("UploadBox.loading") : t("UploadBox.loadData")}
               </Button>
             </Box>
           </Paper>
@@ -666,82 +672,163 @@ export default function InputFileUpload() {
         onClose={() => setShowBackupDialog(false)}
         maxWidth="sm"
         fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3, p: 1 } } }}
       >
-        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <WarningIcon color="warning" />
-          Dados Existentes Detectados
-        </DialogTitle>
-        <DialogContent>
-          <Alert
-            severity="warning"
-            color="warning"
-            sx={{ mb: 2, color: "text.primary" }}
-          >
-            Você já possui dados carregados. Carregar novos dados irá substituir
-            todos os dados atuais.
-          </Alert>
-          <Typography variant="body1" gutterBottom>
-            Recomendamos criar um backup dos dados atuais antes de continuar.
-          </Typography>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              Dados atuais:
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box
+              sx={{
+                // backgroundColor: "warning.light",
+                color: "warning.dark",
+                borderRadius: "50%",
+                width: 40,
+                height: 40,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <WarningIcon />
+            </Box>
+            <Typography variant="h6" fontWeight="bold">
+              {t("BackupDialog.title")}
             </Typography>
-            <List dense>
-              <ListItem>
-                <ListItemIcon>
-                  <PersonIcon />
-                </ListItemIcon>
-                <ListItemText primary={`${currentDocentes.length} docentes`} />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <SchoolIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${currentDisciplinas.length} disciplinas`}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <AssignmentIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${
-                    currentAtribuicoes.filter((a) => a.docentes.length > 0)
-                      .length
-                  } atribuições`}
-                />
-              </ListItem>
-            </List>
           </Box>
+        </DialogTitle>
+
+        <DialogContent sx={{ pb: 3 }}>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mb: 3 }}
+            dangerouslySetInnerHTML={{ __html: t.raw("BackupDialog.description") }}
+          />
+
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 2.5,
+              borderRadius: 2,
+              backgroundColor: "background.default",
+              borderColor: "divider",
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              color="text.primary"
+              sx={{ mb: 2, fontWeight: 600 }}
+            >
+              {t("BackupDialog.lostDataTitle")}
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  <PersonIcon color="info" sx={{ mb: 0.5 }} />
+                  <Typography variant="h5" fontWeight="bold">
+                    {currentDocentes.length}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {t("BackupDialog.professors")}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid size={{ xs: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  <SchoolIcon color="secondary" sx={{ mb: 0.5 }} />
+                  <Typography variant="h5" fontWeight="bold">
+                    {currentDisciplinas.length}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {t("BackupDialog.classes")}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid size={{ xs: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  <AssignmentIcon color="warning" sx={{ mb: 0.5 }} />
+                  <Typography variant="h5" fontWeight="bold">
+                    {
+                      currentAtribuicoes.filter((a) => a.docentes.length > 0)
+                        .length
+                    }
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {t("BackupDialog.assignments")}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
         </DialogContent>
-        <DialogActions>
+
+        <DialogActions sx={{ px: 3, pb: 2, justifyContent: "space-between" }}>
           <Button
             onClick={() => setShowBackupDialog(false)}
-            variant="contained"
-            color="error"
+            color="inherit"
+            sx={{ textTransform: "none", fontWeight: 500 }}
+            variant="text"
           >
-            Cancelar
+            {t("BackupDialog.cancel")}
           </Button>
-          <Button
-            onClick={createBackup}
-            startIcon={<BackupIcon />}
-            color="info"
-            variant="outlined"
-          >
-            Criar Backup
-          </Button>
-          {!safeCOntinue && (
-            <Button onClick={performUpload} variant="contained" color="warning">
-              Continuar sem Backup
-            </Button>
-          )}
-          {safeCOntinue && (
-            <Button onClick={performUpload} variant="contained" color="info">
-              Continuar
-            </Button>
-          )}
+
+          <Box sx={{ display: "flex", gap: 1.5 }}>
+            {!safeCOntinue ? (
+              <>
+                <Button
+                  onClick={performUpload}
+                  color="error"
+                  sx={{ textTransform: "none", fontWeight: 500 }}
+                >
+                  {t("BackupDialog.continueWithoutBackup")}
+                </Button>
+                <Button
+                  onClick={createBackup}
+                  variant="contained"
+                  startIcon={<BackupIcon />}
+                  color="primary"
+                  disableElevation
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: 600,
+                    borderRadius: 2,
+                  }}
+                >
+                  {t("BackupDialog.backup")}
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={performUpload}
+                variant="contained"
+                color="primary"
+                disableElevation
+                sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
+              >
+                Importar Novos Dados
+              </Button>
+            )}
+          </Box>
         </DialogActions>
       </Dialog>
     </Container>

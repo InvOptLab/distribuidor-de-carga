@@ -5,6 +5,8 @@ import { TabuList } from "../Classes/Abstract/TabuList";
 export class Solution extends TabuList<Vizinho[]> {
   public tabuSize: number;
 
+  readonly _name = "Solution";
+
   constructor(tabuSize: number | undefined) {
     super([]);
 
@@ -25,8 +27,8 @@ export class Solution extends TabuList<Vizinho[]> {
   has(vizinho: Vizinho): boolean {
     return this.itens.some((tabuSet) =>
       vizinho.atribuicoes.every((atribuicao) =>
-        tabuSet.atribuicoes.some((tabu) => atribuicoesIguais(tabu, atribuicao))
-      )
+        tabuSet.atribuicoes.some((tabu) => atribuicoesIguais(tabu, atribuicao)),
+      ),
     );
   }
 

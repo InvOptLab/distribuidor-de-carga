@@ -16,6 +16,8 @@ import {
 } from "../../../communs/interfaces/interfaces";
 import { Moviment, TenureSizes } from "../TabuList/Moviment";
 import { Solution } from "../TabuList/Solution";
+import { HashSolution } from "../TabuList/HashSolution";
+import { ZobristHasher } from "../TabuList/ZobristHasher";
 import { AspirationCriteria } from "./Abstract/AspirationCriteria";
 import { TabuList } from "./Abstract/TabuList";
 import { HeuristicAlgorithm } from "@/algoritmo/abstractions/HeuristicAlgorithm";
@@ -35,6 +37,7 @@ export class TabuSearch extends HeuristicAlgorithm {
         addList: Map<string, number>;
         dropList: Map<string, number>;
       }
+    | Set<string>
   >;
 
   /**
@@ -58,6 +61,7 @@ export class TabuSearch extends HeuristicAlgorithm {
   >();
 
   public statistics: TabuStatistics;
+  private hasher?: ZobristHasher;
 
   constructor(
     atribuicoes: Atribuicao[],
@@ -68,18 +72,17 @@ export class TabuSearch extends HeuristicAlgorithm {
     constraints: Constraint<any>[],
     solution: Solucao | undefined,
     neighborhoodFunctions: NeighborhoodFunction[],
-    tipoTabuList: "Solução" | "Atribuição" | "Movimento",
+    tipoTabuList: "Solução" | "Atribuição" | "Movimento" | "Hash",
     tabuSize: number | TenureSizes,
     stopFunctions: StopCriteria[],
     aspirationFunctions: AspirationCriteria[],
     maiorPrioridade: number | undefined,
     objectiveType: "min" | "max",
-    objectiveComponentes: ObjectiveComponent<any>[]
+    objectiveComponentes: ObjectiveComponent<any>[],
   ) {
     /**
      * Inicialização do contexto.
      */
-
     super(
       "tabu-search",
       {
@@ -96,7 +99,7 @@ export class TabuSearch extends HeuristicAlgorithm {
       maiorPrioridade,
       true,
       neighborhoodFunctions,
-      stopFunctions
+      stopFunctions,
     );
 
     /**
@@ -137,6 +140,18 @@ export class TabuSearch extends HeuristicAlgorithm {
         "drop" in tabuSize
       ) {
         this.tabuList = new Moviment(tabuSize.add, tabuSize.drop);
+      }
+    } else if (tipoTabuList === "Hash") {
+      this.tabuList = new HashSolution(tabuSize as number);
+      this.hasher = new ZobristHasher();
+
+      // Calcular Hash Inicial da Solução Inicial
+      if (this.bestSolution) {
+        const hashInicial = this.hasher.computeFullHash(
+          this.bestSolution.atribuicoes,
+        );
+        this.bestSolution.hash = hashInicial;
+        this.incumbente.hash = hashInicial;
       }
     }
     // TODO: Implementar os demais casos quando as classes forem criadas.
@@ -195,7 +210,7 @@ export class TabuSearch extends HeuristicAlgorithm {
         avaliacao += constraint.soft(
           vizinho.atribuicoes,
           this.context.docentes,
-          this.context.turmas
+          this.context.turmas,
         );
       }
 
@@ -207,7 +222,7 @@ export class TabuSearch extends HeuristicAlgorithm {
         vizinho.atribuicoes,
         this.context.prioridades,
         this.context.docentes,
-        this.context.turmas
+        this.context.turmas,
       );
 
       // Atualiza o valor da avaliação do vizinho.
@@ -231,9 +246,14 @@ export class TabuSearch extends HeuristicAlgorithm {
    */
   async verifyTabu(
     vizinhanca: Vizinho[],
-    iteracaoAtual: number
+    iteracaoAtual: number,
   ): Promise<Vizinho[]> {
+    const hashBase = this.bestSolution.hash;
+
     for (const vizinho of vizinhanca) {
+      if (this.hasher && this.tabuList instanceof HashSolution) {
+        vizinho.hash = this.hasher.computeNeighborHash(vizinho, hashBase);
+      }
       vizinho.isTabu = this.tabuList.has(vizinho, iteracaoAtual);
     }
 
@@ -241,12 +261,12 @@ export class TabuSearch extends HeuristicAlgorithm {
   }
 
   /**
-   * (Provisório) Método que define se o processo deve ser encerrado.
+   * Método que define se o processo deve ser encerrado.
    */
   stop(
     iteracoes: number,
     melhorVizinhoGerado: Vizinho,
-    interrompe?: () => boolean
+    interrompe?: () => boolean,
   ): boolean {
     if (interrompe && interrompe()) return true;
 
@@ -270,7 +290,7 @@ export class TabuSearch extends HeuristicAlgorithm {
    */
   async findBestSolution(
     vizinhanca: Vizinho[],
-    iteracoes: number
+    iteracoes: number,
   ): Promise<{
     vizinho: Vizinho;
     index: number | undefined;
@@ -309,7 +329,7 @@ export class TabuSearch extends HeuristicAlgorithm {
   async execute(
     interrompe?: () => boolean,
     atualizaQuantidadeAlocacoes?: (qtd: number) => void,
-    atualizaEstatisticas?: OpcoesMonitoramento
+    atualizaEstatisticas?: OpcoesMonitoramento,
   ): Promise<Vizinho> {
     let iteracoes = 0;
     let vizinhanca: Vizinho[] = [];
@@ -318,9 +338,6 @@ export class TabuSearch extends HeuristicAlgorithm {
      */
     let tempoInicial: number; // Por iteração
     // let tempoFinal: number; // Por iteração
-
-    let tempoInicialTabu: number; // Por iteração
-    let tempoFinalTabu: number; // Por iteração
 
     if (!this.bestSolution.avaliacao) {
       this.bestSolution = (
@@ -337,7 +354,18 @@ export class TabuSearch extends HeuristicAlgorithm {
     // Inicia o tempo inicial total
     const tempoInicialTotal = performance.now();
 
-    while (!this.stop(iteracoes, vizinhanca[0], interrompe)) {
+    /**
+     * CORREÇÃO: Utiliza this.bestSolution como fallback para a primeira iteração,
+     * impedindo que "vizinhanca[0]" seja undefined e faça o algoritmo quebrar
+     * ao tentar ler a propriedade de avaliação dentro dos critérios de parada.
+     */
+    while (
+      !this.stop(
+        iteracoes,
+        vizinhanca.length > 0 ? vizinhanca[0] : this.bestSolution,
+        interrompe,
+      )
+    ) {
       // console.log("Iteração: " + iteracoes); // Apenas para o script
 
       await delay(0);
@@ -364,9 +392,7 @@ export class TabuSearch extends HeuristicAlgorithm {
       vizinhanca = await this.evaluateNeighbors(vizinhanca);
 
       // Verificar tempo Tabu
-      tempoInicialTabu = performance.now();
       vizinhanca = await this.verifyTabu(vizinhanca, iteracoes);
-      tempoFinalTabu = performance.now();
 
       vizinhanca = vizinhanca.sort((a, b) => b.avaliacao - a.avaliacao);
 
@@ -375,7 +401,7 @@ export class TabuSearch extends HeuristicAlgorithm {
        */
       const localBestSolution = await this.findBestSolution(
         vizinhanca,
-        iteracoes
+        iteracoes,
       );
 
       /**
@@ -403,6 +429,18 @@ export class TabuSearch extends HeuristicAlgorithm {
          * !!@@@!! Adicionar um Map para armazenar quando a solução incumbente é alterada
          */
         this.bestSolution = localBestSolution.vizinho;
+
+        if (this.hasher && this.tabuList instanceof HashSolution) {
+          if (this.bestSolution.hash) {
+            this.hasher.updateBaseHash(this.bestSolution.hash);
+          } else {
+            const h = this.hasher.computeFullHash(
+              this.bestSolution.atribuicoes,
+            );
+            this.bestSolution.hash = h;
+          }
+        }
+
         this.tabuList.add(localBestSolution.vizinho, iteracoes);
         if (this.bestSolution.avaliacao >= this.incumbente.avaliacao) {
           this.incumbente = structuredClone(this.bestSolution);
@@ -415,25 +453,16 @@ export class TabuSearch extends HeuristicAlgorithm {
       this.statistics.addIteracaoData(
         iteracoes,
         this.bestSolution.avaliacao,
-        performance.now() - tempoInicial
+        performance.now() - tempoInicial,
       );
-      /**
-       * Captura o tempo final de execução da iteração, como também atualiza o map com as novas informações
-       */
-      // tempoFinal = performance.now();
-      this.statistics.tempoPorIteracaoTabu.set(
-        iteracoes,
-        tempoFinalTabu - tempoInicialTabu
-      );
-
       /**
        * Atualiza um contador para ser utilizado como status de alocação
        */
       if (atualizaQuantidadeAlocacoes) {
         atualizaQuantidadeAlocacoes(
           this.incumbente.atribuicoes.filter(
-            (atribuicao) => atribuicao.docentes.length > 0
-          ).length
+            (atribuicao) => atribuicao.docentes.length > 0,
+          ).length,
         );
       }
 
@@ -479,7 +508,7 @@ export class TabuSearch extends HeuristicAlgorithm {
      */
     this.statistics.avaliacaoPorIteracao.set(
       iteracoes,
-      this.bestSolution.avaliacao
+      this.bestSolution.avaliacao,
     );
 
     /**
@@ -492,7 +521,7 @@ export class TabuSearch extends HeuristicAlgorithm {
     this.statistics.generateFinalStatistics(
       this.incumbente.atribuicoes,
       this.context,
-      this.constraints
+      this.constraints,
     );
     this.bestSolution = this.incumbente;
 

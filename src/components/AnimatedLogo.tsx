@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, GlobalStyles } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 // Keyframes (os mesmos de antes)
 const keyframes = `
@@ -30,6 +31,7 @@ const keyframes = `
 export default function AnimatedLogo() {
   const logoSize = { xs: 120, sm: 150, md: 180 };
   const wrapperPadding = "4px";
+  const t = useTranslations("Components.AnimatedLogo");
 
   return (
     <>
@@ -104,7 +106,7 @@ export default function AnimatedLogo() {
             // Adiciona uma transição suave para o play/pause
             transition: "animation-play-state 0.3s ease-out",
           }}
-          alt="Logo do Distribuidor de Carga."
+          alt={t("alt")}
           src="./images/logo_sem_fundo.png"
         />
       </Box>

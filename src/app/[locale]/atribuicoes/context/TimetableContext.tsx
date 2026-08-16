@@ -109,6 +109,8 @@ interface TimetableContextType {
   cleanStateAtribuicoes: () => void;
   saveAlterations: () => void;
   downalodJson: () => void;
+  isLockMode: boolean;
+  setIsLockMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TimetableContext = createContext<TimetableContextType | undefined>(
@@ -159,6 +161,8 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       rules: [],
     },
   );
+
+  const [isLockMode, setIsLockMode] = useState(false);
 
   // =======================================================
   // SINCRONIZAÇÃO DE FILTROS E DADOS
@@ -370,6 +374,17 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
 
       // Apply rule filters
       for (const rule of docenteFilters.rules) {
+        if (rule.fieldKey === "semAtribuicao") {
+          const hasAtribuicao = atribuicoes.some((atribuicao) =>
+            atribuicao.docentes.includes(docente.nome),
+          );
+          const isSemAtribuicao = !hasAtribuicao;
+          if (isSemAtribuicao !== rule.value) {
+            return false;
+          }
+          continue;
+        }
+
         const value = (docente as any)[rule.fieldKey];
         if (!matchesRule(value, rule)) {
           return false;
@@ -399,6 +414,19 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
 
       // Apply rule filters
       for (const rule of disciplinaFilters.rules) {
+        if (rule.fieldKey === "semDocente") {
+          const hasDocente = atribuicoes.some(
+            (atribuicao) =>
+              atribuicao.id_disciplina === disciplina.id &&
+              atribuicao.docentes.length > 0
+          );
+          const isSemDocente = !hasDocente;
+          if (isSemDocente !== rule.value) {
+            return false;
+          }
+          continue;
+        }
+
         let fieldKey = rule.fieldKey;
 
         if (
@@ -518,11 +546,10 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    if (event.ctrlKey) {
+    if (isLockMode || event.ctrlKey) {
       // Lógica de TRAVAS (Locks)
       let newTravas = [...travas];
       const exists = travas.some(
-        // (obj) => JSON.stringify(obj) === JSON.stringify(celula),
         (obj) =>
           obj.id_disciplina === celula.id_disciplina &&
           obj.nome_docente === celula.nome_docente &&
@@ -533,11 +560,12 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
         newTravas.push(celula);
       } else {
         newTravas = newTravas.filter(
-          // (obj) => JSON.stringify(obj) !== JSON.stringify(celula),
           (obj) =>
-            obj.id_disciplina !== celula.id_disciplina &&
-            obj.nome_docente !== celula.nome_docente &&
-            obj.tipo_trava !== celula.tipo_trava,
+            !(
+              obj.id_disciplina === celula.id_disciplina &&
+              obj.nome_docente === celula.nome_docente &&
+              obj.tipo_trava === celula.tipo_trava
+            ),
         );
       }
 
@@ -590,7 +618,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    * Gerencia os comportamentos das colunas ao serem clicadas
    */
   const handleColumnClick = (event: React.MouseEvent, trava: Celula) => {
-    if (event.ctrlKey) {
+    if (isLockMode || event.ctrlKey) {
       let newTravas = [...travas];
       const exists = travas.some(
         // (obj) => JSON.stringify(obj) === JSON.stringify(trava),
@@ -644,7 +672,7 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
    * Gerencia os comportamentos das linhas ao serem clicadas
    */
   const handleRowClick = (event: React.MouseEvent, trava: Celula) => {
-    if (event.ctrlKey) {
+    if (isLockMode || event.ctrlKey) {
       let newTravas = [...travas];
       const exists = travas.some(
         // (obj) => JSON.stringify(obj) === JSON.stringify(trava),
@@ -877,6 +905,8 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     cleanStateAtribuicoes,
     saveAlterations,
     downalodJson,
+    isLockMode,
+    setIsLockMode,
   };
 
   return (

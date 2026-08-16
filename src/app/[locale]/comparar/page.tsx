@@ -24,6 +24,8 @@ import SolutionSummary from "./_components/SolutionSummary";
 import PriorityDistributionChart from "./_components/PriorityDistributionChart";
 import ConstraintViolationsChart from "./_components/ConstraintViolationsChart";
 import { HistoricoSolucao } from "@/context/Global/utils";
+import { useGlobalContext } from "@/context/Global";
+import NoDataFound from "@/components/NoDataFound";
 
 export default function CompararSolucoes() {
   const { historicoSolucoes } = useSolutionHistory();
@@ -32,13 +34,16 @@ export default function CompararSolucoes() {
   const [solutionA, setSolutionA] = useState<HistoricoSolucao | null>(null);
   const [solutionB, setSolutionB] = useState<HistoricoSolucao | null>(null);
 
+  const { docentes, disciplinas } = useGlobalContext();
+  const hasData = docentes.length && disciplinas.length;
+
   // Pegar a solução mais recente como padrão para A
   useEffect(() => {
     if (historicoSolucoes.size > 0 && !solutionA) {
       const solutions = Array.from(historicoSolucoes.values());
       const mostRecent = solutions.sort(
         (a, b) =>
-          new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+          new Date(b.datetime).getTime() - new Date(a.datetime).getTime(),
       )[0];
       setSolutionA(mostRecent);
     }
@@ -130,6 +135,14 @@ export default function CompararSolucoes() {
     setSolutionB(temp);
   };
 
+  // Retornar o componente padrão `NoDataFound` quando não houver nenhum docente ou turma carregados
+  if (!hasData) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <NoDataFound />
+      </Container>
+    );
+  }
   if (historicoSolucoes.size === 0) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4 }}>

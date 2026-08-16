@@ -12,6 +12,8 @@ import {
 } from "@/algoritmo/metodos/MILP/optimization_model";
 
 export class MinimizarUtilizacaoSaldos extends ObjectiveComponent<null> {
+  readonly _name = "MinimizarUtilizacaoSaldos";
+
   constructor(
     name: string,
     isActive: boolean,

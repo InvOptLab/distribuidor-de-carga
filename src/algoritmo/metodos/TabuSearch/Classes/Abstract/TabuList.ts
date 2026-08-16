@@ -1,6 +1,9 @@
 import { Vizinho } from "../../../../communs/interfaces/interfaces";
 
 export abstract class TabuList<T> {
+  // Identificador da classe (ComponentRegistr)
+  abstract readonly _name: string;
+
   public itens: T;
 
   constructor(initialItens: T) {
