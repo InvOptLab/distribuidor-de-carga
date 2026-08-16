@@ -76,24 +76,21 @@ export default function Restricoes() {
     if (constraintToRemove) {
       setAvailableConstraints((prevAvailable) => {
         const newAvailable = new Map(prevAvailable);
-        newAvailable.set(
-          name,
-          new constraintToRemove.constraint(
-            constraintToRemove.name,
-            constraintToRemove.descricao,
-            constraintToRemove.tipo === "Hard",
-            Number(constraintToRemove.penalidade),
-          ),
-        );
+        const instance = allConstraints.get(name);
+        if (instance) {
+          instance.isHard = constraintToRemove.tipo === "Hard";
+          instance.penalty = Number(constraintToRemove.penalidade);
+          newAvailable.set(name, instance);
+        }
         return newAvailable;
       });
 
       if (constraintToRemove.tipo === "Hard") {
-        const newHardConstraints = hardConstraints;
+        const newHardConstraints = new Map(hardConstraints);
         newHardConstraints.delete(constraintToRemove.name);
         setHardConstraints(newHardConstraints);
       } else {
-        const newSoftConstraints = softConstraints;
+        const newSoftConstraints = new Map(softConstraints);
         newSoftConstraints.delete(constraintToRemove.name);
         setSoftConstraints(newSoftConstraints);
       }
@@ -121,18 +118,16 @@ export default function Restricoes() {
     const newHardConstraints = new Map<string, Constraint<any>>();
 
     for (const constraint of constraints) {
-      const ConstraintClass = constraint.constraint;
-      const newConstraintInstance = new ConstraintClass(
-        constraint.name,
-        constraint.descricao,
-        constraint.tipo === "Hard",
-        constraint.penalidade,
-      );
+      const instance = allConstraints.get(constraint.name);
+      if (instance) {
+        instance.isHard = constraint.tipo === "Hard";
+        instance.penalty = Number(constraint.penalidade);
 
-      if (constraint.tipo === "Hard") {
-        newHardConstraints.set(constraint.name, newConstraintInstance);
-      } else {
-        newSoftConstraints.set(constraint.name, newConstraintInstance);
+        if (constraint.tipo === "Hard") {
+          newHardConstraints.set(constraint.name, instance);
+        } else {
+          newSoftConstraints.set(constraint.name, instance);
+        }
       }
     }
 

@@ -35,6 +35,7 @@ export interface modelParamns {
   v: (Variable | null)[][][];
   z: Variable[];
   w: Variable[];
+  y: Variable[];
   b: Variable[][]; // (3) flexível
 }
 
@@ -65,6 +66,7 @@ export class MILP extends ExactAlgorithm {
     u: undefined,
     v: undefined,
     w: undefined,
+    y: undefined,
     z: undefined,
     b: undefined,
   };
@@ -154,6 +156,10 @@ export class MILP extends ExactAlgorithm {
 
     this.modelParamns.w = this.modelSets.D.map((i) =>
       this.model.addVariable(`w_${i}`, { type: "Continuous", lb: 0 }),
+    );
+
+    this.modelParamns.y = this.modelSets.D.map((i) =>
+      this.model.addVariable(`y_${i}`, { type: "Continuous", lb: 0 }),
     );
   }
 

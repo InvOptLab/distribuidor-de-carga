@@ -8,6 +8,7 @@ import { TabuSearch } from "@/algoritmo/metodos/TabuSearch/Classes/TabuSearch";
 import { AtribuicaoSemFormulario } from "@/algoritmo/communs/Constraints/AtribuicaoSemFormulario";
 import { CargaDeTrabalhoMaximaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMaximaDocente";
 import { CargaDeTrabalhoMinimaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMinimaDocente";
+import { CargaDeTrabalhoMinimaDocenteContinua } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMinimaDocenteContinua";
 import { ChoqueDeHorarios } from "@/algoritmo/communs/Constraints/ChoqueDeHorarios";
 import { DisciplinaSemDocente } from "@/algoritmo/communs/Constraints/DisciplinaSemDocente";
 import { ValidaTravas } from "@/algoritmo/communs/Constraints/ValidaTravas";
@@ -76,6 +77,7 @@ const ComponentRegistry: Record<
   AtribuicaoSemFormulario,
   CargaDeTrabalhoMaximaDocente,
   CargaDeTrabalhoMinimaDocente,
+  CargaDeTrabalhoMinimaDocenteContinua,
   ChoqueDeHorarios,
   DisciplinaSemDocente,
   ValidaTravas,
