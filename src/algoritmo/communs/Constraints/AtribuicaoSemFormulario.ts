@@ -82,34 +82,47 @@ export class AtribuicaoSemFormulario extends Constraint<null> {
 
   occurrences(
     atribuicoes: Atribuicao[],
-    docentes: Docente[],
-  ): { label: string; qtd: number }[] {
-    const data: { label: string; qtd: number }[] = [];
-
-    if (this.penalty !== 0 && !this.hard) {
-      const softEvaluation = Math.abs(this.soft(atribuicoes, docentes));
-
-      data.push({
-        label: "Sem Formulário",
-        qtd: softEvaluation / this.penalty,
-      });
-    } else {
-      let qtd = 0;
+    docentes?: Docente[],
+    disciplinas?: Disciplina[],
+  ): { label: string; qtd: number; items?: string[] }[] {
+    const data: { label: string; qtd: number; items?: string[] }[] = [];
+    const items: string[] = [];
+    let qtd = 0;
+    
+    if (docentes) {
       for (const atribuicao of atribuicoes) {
         for (const docenteAtribuido of atribuicao.docentes) {
           const docente = docentes.find((obj) => obj.nome === docenteAtribuido);
 
           if (docente && !docente.formularios.has(atribuicao.id_disciplina)) {
             qtd += 1;
+            const turmaEncontrada = disciplinas?.find((t) => t.id === atribuicao.id_disciplina);
+            if (turmaEncontrada) {
+              items.push(`${docenteAtribuido} -> Turma: ${turmaEncontrada.codigo} - Turma ${turmaEncontrada.turma}`);
+            } else {
+              items.push(`${docenteAtribuido} -> Turma: ${atribuicao.id_disciplina}`);
+            }
           }
         }
       }
+    }
+
+    if (this.penalty !== 0 && !this.hard && docentes) {
+      const softEvaluation = Math.abs(this.soft(atribuicoes, docentes));
+
+      data.push({
+        label: "Sem Formulário",
+        qtd: softEvaluation / this.penalty,
+        items: items,
+      });
+    } else {
       data.push({
         label: "Sem Formulário",
         qtd: qtd,
+        items: items,
       });
     }
-    return data ? data : [{ label: "Sem Formulário", qtd: 0 }];
+    return data ? data : [{ label: "Sem Formulário", qtd: 0, items: [] }];
   }
 
   milpHardFormulation(model: OptimizationModel, modelData: modelSCP): void {

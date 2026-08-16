@@ -356,7 +356,7 @@ export function useAlgorithm() {
         const configData = {
           tabuListType,
           tabuSize:
-            tabuListType === "Solução"
+            tabuListType !== "Movimento"
               ? parametros.tabuTenure.size
               : parametros.tabuTenure.tenures,
           maxPriority: maxPriority + 1,
@@ -366,7 +366,8 @@ export function useAlgorithm() {
         algorithmParamsRef.current = {
           name: "tabu-search",
           tabuList: { 
-            tabuSize: tabuListType === "Solução" ? parametros.tabuTenure.size : parametros.tabuTenure.tenures 
+            _name: tabuListType === "Movimento" ? "Moviment" : (tabuListType === "Solução" ? "Solution" : "Hash"),
+            tabuSize: tabuListType !== "Movimento" ? parametros.tabuTenure.size : parametros.tabuTenure.tenures 
           },
           constraints: { hard: new Map(hardConstraints), soft: new Map(softConstraints) },
           neighborhoodPipe: new Map(neighborhoodFunctions),

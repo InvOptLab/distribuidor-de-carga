@@ -113,7 +113,7 @@ export default abstract class Constraint<T extends ConstraintParams[] | any> {
     docentes?: Docente[],
     disciplinas?: Disciplina[],
     travas?: Celula[],
-  ): { label: string; qtd: number }[];
+  ): { label: string; qtd: number; items?: string[] }[];
 
   /**
    * (NOVO) Método para formulação de restrições HARD no MILP.

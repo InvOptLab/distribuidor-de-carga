@@ -115,62 +115,73 @@ export class ValidaTravas extends Constraint<any> {
     docentes?: Docente[],
     disciplinas?: Disciplina[],
     travas?: Celula[],
-  ): { label: string; qtd: number }[] {
-    const data: { label: string; qtd: number }[] = [];
+  ): { label: string; qtd: number; items?: string[] }[] {
+    const data: { label: string; qtd: number; items?: string[] }[] = [];
     let qtdTravasTurma: number = 0;
     let qtdTravasDocente: number = 0;
     let qtdTravasCelula: number = 0;
-    /**
-     * Validar as travas presentes no docente
-     */
-    for (const docente of docentes) {
-      if (
-        travas.some(
-          (trava) =>
-            trava.nome_docente === docente.nome &&
-            trava.tipo_trava === TipoTrava.Row,
-        )
-      ) {
-        qtdTravasDocente += 1;
-      }
-    }
+    
+    const itemsDocente: string[] = [];
+    const itemsTurma: string[] = [];
+    const itemsCelula: string[] = [];
 
-    /**
-     * Valida se a trava está na turma
-     */
-    for (const turma of disciplinas) {
-      if (
-        travas.some(
-          (trava) =>
-            trava.id_disciplina === turma.id &&
-            trava.tipo_trava === TipoTrava.Column,
-        )
-      ) {
-        qtdTravasTurma += 1;
-      }
-    }
-
-    /**
-     * Valida se a trava não está na célula
-     */
-    for (const turma of disciplinas) {
+    if (docentes && disciplinas && travas) {
+      /**
+       * Validar as travas presentes no docente
+       */
       for (const docente of docentes) {
         if (
           travas.some(
             (trava) =>
-              trava.id_disciplina === turma.id &&
-              trava.nome_docente === docente.nome,
+              trava.nome_docente === docente.nome &&
+              trava.tipo_trava === TipoTrava.Row,
           )
         ) {
-          qtdTravasCelula += 1;
+          qtdTravasDocente += 1;
+          itemsDocente.push(`Docente: ${docente.nome}`);
+        }
+      }
+
+      /**
+       * Valida se a trava está na turma
+       */
+      for (const turma of disciplinas) {
+        if (
+          travas.some(
+            (trava) =>
+              trava.id_disciplina === turma.id &&
+              trava.tipo_trava === TipoTrava.Column,
+          )
+        ) {
+          qtdTravasTurma += 1;
+          itemsTurma.push(`Turma: ${turma.codigo} (T${turma.turma})`);
+        }
+      }
+
+      /**
+       * Valida se a trava não está na célula
+       */
+      for (const turma of disciplinas) {
+        for (const docente of docentes) {
+          if (
+            travas.some(
+              (trava) =>
+                trava.id_disciplina === turma.id &&
+                trava.nome_docente === docente.nome &&
+                trava.tipo_trava === TipoTrava.Cell,
+            )
+          ) {
+            qtdTravasCelula += 1;
+            itemsCelula.push(`Docente: ${docente.nome} x Turma: ${turma.codigo} (T${turma.turma})`);
+          }
         }
       }
     }
 
     data.push(
-      { label: "Travas Docentes", qtd: qtdTravasDocente },
-      { label: "Travas Turmas", qtd: qtdTravasTurma },
-      { label: "Travas Células", qtd: qtdTravasCelula },
+      { label: "Travas Docentes", qtd: qtdTravasDocente, items: itemsDocente },
+      { label: "Travas Turmas", qtd: qtdTravasTurma, items: itemsTurma },
+      { label: "Travas Células", qtd: qtdTravasCelula, items: itemsCelula },
     );
     return data;
   }
