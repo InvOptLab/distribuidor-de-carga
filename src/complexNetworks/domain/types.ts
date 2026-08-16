@@ -93,3 +93,33 @@ export interface CapacityCascadeResult {
   orphanedClasses: string[];
 }
 
+export interface HealingSimulationResult {
+  failedTeachers: string[];
+  totalOrphanedClasses: number;
+  substitutesNeeded: number;
+  substituteAssignments: {
+    substituteId: string;
+    classesAssigned: string[];
+  }[];
+  unassignedClasses: string[]; // Turmas que não conseguiram ser assinaladas nem para substitutos
+}
+
+export interface SpreadingSimulationResult {
+  initialNodeId: string;
+  steps: {
+    step: number;
+    newlyInfected: string[];
+    totalInfected: number;
+  }[];
+  topSpreaders: { docenteId: string; score: number }[];
+}
+
+export interface CurriculumCutSimulationResult {
+  cutClassId: string;
+  affectedTeachers: {
+    docenteId: string;
+    previousDegree: number;
+    newDegree: number;
+    isZeroed: boolean;
+  }[];
+}

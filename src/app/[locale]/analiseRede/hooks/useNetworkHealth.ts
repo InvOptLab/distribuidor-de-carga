@@ -7,6 +7,9 @@ import { RobustnessReport } from "@/complexNetworks/domain/types";
 import { CascadingFailureService } from "@/complexNetworks/services/CascadingFailureService";
 import { CentralityService } from "@/complexNetworks/services/CentralityService";
 import { ResilienceService } from "@/complexNetworks/services/ResilienceService";
+import { HealingService } from "@/complexNetworks/services/HealingService";
+import { SpreadingService } from "@/complexNetworks/services/SpreadingService";
+import { CurriculumCutService } from "@/complexNetworks/services/CurriculumCutService";
 import { CentralityReport } from "@/complexNetworks/domain/types";
 export function useNetworkHealth() {
   const { docentes, disciplinas } = useGlobalContext();
@@ -70,6 +73,33 @@ export function useNetworkHealth() {
     [graph]
   );
 
+  const runHealing = useCallback(
+    (failedTeachers: string[], maxClassesPerSubstitute: number = 4) => {
+      if (!graph) return null;
+      const simulator = new HealingService(graph);
+      return simulator.simulateRecovery(failedTeachers, maxClassesPerSubstitute);
+    },
+    [graph]
+  );
+
+  const runSpreading = useCallback(
+    (initialInfectedId: string, steps: number = 10, prob: number = 1.0) => {
+      if (!graph) return null;
+      const simulator = new SpreadingService(graph);
+      return simulator.simulateSIR(initialInfectedId, steps, prob);
+    },
+    [graph]
+  );
+
+  const runCurriculumCut = useCallback(
+    (classId: string) => {
+      if (!graph) return null;
+      const simulator = new CurriculumCutService(graph);
+      return simulator.simulateCourseCut(classId);
+    },
+    [graph]
+  );
+
   return {
     graph,
     report,
@@ -77,6 +107,9 @@ export function useNetworkHealth() {
     simulateCascadingFailure,
     simulateCapacityCascade,
     runResilienceSimulation,
+    runHealing,
+    runSpreading,
+    runCurriculumCut,
     isLoading: !report && docentes.length > 0,
     hasData: docentes.length > 0 && disciplinas.length > 0,
   };

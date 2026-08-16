@@ -23,9 +23,15 @@ import DynamicFeedIcon from "@mui/icons-material/DynamicFeed";
 import SecurityIcon from "@mui/icons-material/Security";
 import CapacitySimulator from "./_components/CapacitySimulator";
 import ResilienceSimulator from "./_components/ResilienceSimulator";
+import HealingSimulator from "./_components/HealingSimulator";
+import SpreadingSimulator from "./_components/SpreadingSimulator";
+import CurriculumCutSimulator from "./_components/CurriculumCutSimulator";
+import HealingIcon from "@mui/icons-material/Healing";
+import PodcastsIcon from "@mui/icons-material/Podcasts";
+import ContentCutIcon from "@mui/icons-material/ContentCut";
 
 export default function NetworkAnalysisPage() {
-  const { report, graph, centrality, simulateCapacityCascade, runResilienceSimulation, isLoading, hasData } = useNetworkHealth();
+  const { report, graph, centrality, simulateCapacityCascade, runResilienceSimulation, runHealing, runSpreading, runCurriculumCut, isLoading, hasData } = useNetworkHealth();
   const [tabIndex, setTabIndex] = useState(0);
 
   // Comunidades Ocultas ---
@@ -106,6 +112,21 @@ export default function NetworkAnalysisPage() {
                 label="Resiliência"
                 iconPosition="start"
               />
+              <Tab
+                icon={<HealingIcon />}
+                label="Recuperação (Healing)"
+                iconPosition="start"
+              />
+              <Tab
+                icon={<PodcastsIcon />}
+                label="Difusão (Adoção)"
+                iconPosition="start"
+              />
+              <Tab
+                icon={<ContentCutIcon />}
+                label="Corte Curricular"
+                iconPosition="start"
+              />
             </Tabs>
           </Box>
 
@@ -138,6 +159,18 @@ export default function NetworkAnalysisPage() {
 
           {tabIndex === 3 && (
             <ResilienceSimulator runResilienceSimulation={runResilienceSimulation} />
+          )}
+
+          {tabIndex === 4 && (
+            <HealingSimulator graph={graph} runHealing={runHealing} />
+          )}
+
+          {tabIndex === 5 && (
+            <SpreadingSimulator graph={graph} runSpreading={runSpreading} />
+          )}
+
+          {tabIndex === 6 && (
+            <CurriculumCutSimulator graph={graph} runCurriculumCut={runCurriculumCut} />
           )}
         </>
       ) : (
