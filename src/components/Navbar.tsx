@@ -298,6 +298,7 @@ export default function Navbar() {
         { name: "register", link: "/cadastro" },
         { name: "loadData", link: "/inputfile" },
         { name: "selection", link: "/select" },
+        { name: "networkAnalysis", link: "/analiseRede" },
       ],
     },
     { name: "settings", link: "/config" },

@@ -1446,6 +1446,7 @@
     "register": "Register",
     "loadData": "Load data",
     "selection": "Selection",
+    "networkAnalysis": "Network Analysis",
     "settings": "Settings",
     "assignments": "Assignments",
     "table": "Table",
