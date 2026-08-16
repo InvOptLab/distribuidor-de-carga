@@ -1,6 +1,21 @@
 import React, { useMemo, useState } from "react";
-import { Box, Typography, Grid, Paper, Card, CardContent, Divider, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Alert } from "@mui/material";
-import { LineChart } from "@mui/x-charts";
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  Card,
+  CardContent,
+  Divider,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Alert,
+} from "@mui/material";
+import { LineChart, BarChart } from "@mui/x-charts";
 import StarIcon from "@mui/icons-material/Star";
 import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
 import ShuffleOutlinedIcon from "@mui/icons-material/ShuffleOutlined";
@@ -40,11 +55,13 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
   const totalViolacoes = useMemo(() => {
     let total = 0;
     if (solucao.solucao.estatisticas.qtdOcorrenciasRestricoes) {
-      solucao.solucao.estatisticas.qtdOcorrenciasRestricoes.forEach((restrictions) => {
-        restrictions.forEach((restriction) => {
-          total += restriction.qtd;
-        });
-      });
+      solucao.solucao.estatisticas.qtdOcorrenciasRestricoes.forEach(
+        (restrictions) => {
+          restrictions.forEach((restriction) => {
+            total += restriction.qtd;
+          });
+        },
+      );
     }
     return total;
   }, [solucao.solucao.estatisticas.qtdOcorrenciasRestricoes]);
@@ -62,9 +79,13 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
     // Se não houver maxPriority, assumimos que não há prioridades ou o valor é fallback
     const pMaxScore = maxPriority && maxPriority > 1 ? maxPriority - 1 : 1;
 
+    const priorityCounts = new Map<number, number>();
+
     // Workload calculation map
     const docenteWorkloadMap = new Map<string, number>();
-    docentes.filter((d) => d.ativo).forEach((d) => docenteWorkloadMap.set(d.nome, 0));
+    docentes
+      .filter((d) => d.ativo)
+      .forEach((d) => docenteWorkloadMap.set(d.nome, 0));
     const disciplinaMap = new Map(disciplinas.map((d) => [d.id, d]));
 
     atribuicoes.forEach((atribuicao) => {
@@ -74,18 +95,22 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
       atribuicao.docentes.forEach((nomeDocente) => {
         totalAssignments += 1;
         const docente = docentes.find((d) => d.nome === nomeDocente);
-        
+
         // Carga didática update
         if (docenteWorkloadMap.has(nomeDocente)) {
           docenteWorkloadMap.set(
-            nomeDocente, 
-            docenteWorkloadMap.get(nomeDocente)! + (disciplina.carga || 0)
+            nomeDocente,
+            docenteWorkloadMap.get(nomeDocente)! + (disciplina.carga || 0),
           );
         }
 
         if (docente && docente.formularios) {
           const prioridade = docente.formularios.get(atribuicao.id_disciplina);
           if (prioridade !== undefined && prioridade > 0) {
+            priorityCounts.set(
+              prioridade,
+              (priorityCounts.get(prioridade) || 0) + 1,
+            );
             // TAP: check if priority is 1, 2, or 3
             if (prioridade <= 3) {
               tapCount += 1;
@@ -99,16 +124,22 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
     });
 
     const tap = totalAssignments > 0 ? (tapCount / totalAssignments) * 100 : 0;
-    const isp = totalAssignments > 0 ? (ispScoreSum / (pMaxScore * totalAssignments)) * 100 : 0;
+    const isp =
+      totalAssignments > 0
+        ? (ispScoreSum / (pMaxScore * totalAssignments)) * 100
+        : 0;
 
     // Desvio padrão da carga
     const workloads = Array.from(docenteWorkloadMap.values());
     const totalDocentes = workloads.length;
     let stdDeviation = 0;
-    
+
     if (totalDocentes > 0) {
-      const avgWorkload = workloads.reduce((sum, w) => sum + w, 0) / totalDocentes;
-      const variance = workloads.reduce((sum, w) => sum + Math.pow(w - avgWorkload, 2), 0) / totalDocentes;
+      const avgWorkload =
+        workloads.reduce((sum, w) => sum + w, 0) / totalDocentes;
+      const variance =
+        workloads.reduce((sum, w) => sum + Math.pow(w - avgWorkload, 2), 0) /
+        totalDocentes;
       stdDeviation = Math.sqrt(variance);
     }
 
@@ -116,11 +147,13 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
       tap,
       isp,
       stdDeviation,
+      priorityCounts,
     };
   }, [solucao.solucao.atribuicoes, solucao.contexto]);
 
   const avaliacaoFinal =
-    solucao.solucao.avaliacao !== undefined && solucao.solucao.avaliacao !== null
+    solucao.solucao.avaliacao !== undefined &&
+    solucao.solucao.avaliacao !== null
       ? solucao.solucao.avaliacao
       : historyDataAvaliacao.length > 0
         ? historyDataAvaliacao[historyDataAvaliacao.length - 1]
@@ -146,7 +179,13 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
           <Paper
             elevation={2}
-            sx={{ p: 2, textAlign: "center", bgcolor: "primary.50", borderRadius: 3, height: '100%' }}
+            sx={{
+              p: 2,
+              textAlign: "center",
+              bgcolor: "primary.50",
+              borderRadius: 3,
+              height: "100%",
+            }}
           >
             <StarIcon sx={{ fontSize: 36, color: "primary.main", mb: 1 }} />
             <Typography variant="h4" color="primary.main" fontWeight="bold">
@@ -161,9 +200,17 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
           <Paper
             elevation={2}
-            sx={{ p: 2, textAlign: "center", bgcolor: "info.50", borderRadius: 3, height: '100%' }}
+            sx={{
+              p: 2,
+              textAlign: "center",
+              bgcolor: "info.50",
+              borderRadius: 3,
+              height: "100%",
+            }}
           >
-            <TimerOutlinedIcon sx={{ fontSize: 36, color: "info.main", mb: 1 }} />
+            <TimerOutlinedIcon
+              sx={{ fontSize: 36, color: "info.main", mb: 1 }}
+            />
             <Typography variant="h4" color="info.main" fontWeight="bold">
               {solucao.solucao.estatisticas.tempoExecucao.toFixed(2)}s
             </Typography>
@@ -176,9 +223,17 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
           <Paper
             elevation={2}
-            sx={{ p: 2, textAlign: "center", bgcolor: "success.50", borderRadius: 3, height: '100%' }}
+            sx={{
+              p: 2,
+              textAlign: "center",
+              bgcolor: "success.50",
+              borderRadius: 3,
+              height: "100%",
+            }}
           >
-            <ShuffleOutlinedIcon sx={{ fontSize: 36, color: "success.main", mb: 1 }} />
+            <ShuffleOutlinedIcon
+              sx={{ fontSize: 36, color: "success.main", mb: 1 }}
+            />
             <Typography variant="h4" color="success.main" fontWeight="bold">
               {solucao.solucao.estatisticas.iteracoes}
             </Typography>
@@ -191,10 +246,26 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
           <Paper
             elevation={2}
-            sx={{ p: 2, textAlign: "center", bgcolor: totalViolacoes === 0 ? "success.50" : "error.50", borderRadius: 3, height: '100%' }}
+            sx={{
+              p: 2,
+              textAlign: "center",
+              bgcolor: totalViolacoes === 0 ? "success.50" : "error.50",
+              borderRadius: 3,
+              height: "100%",
+            }}
           >
-            <WarningAmberIcon sx={{ fontSize: 36, color: totalViolacoes === 0 ? "success.main" : "error.main", mb: 1 }} />
-            <Typography variant="h4" color={totalViolacoes === 0 ? "success.main" : "error.main"} fontWeight="bold">
+            <WarningAmberIcon
+              sx={{
+                fontSize: 36,
+                color: totalViolacoes === 0 ? "success.main" : "error.main",
+                mb: 1,
+              }}
+            />
+            <Typography
+              variant="h4"
+              color={totalViolacoes === 0 ? "success.main" : "error.main"}
+              fontWeight="bold"
+            >
               {totalViolacoes}
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -209,47 +280,103 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
         NEW QUALITY METRICS GRID
         ==============================
       */}
-      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: 'text.secondary' }}>
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{ fontWeight: 600, color: "text.secondary" }}
+      >
         {t("qualityIndicatorsTitle")}
       </Typography>
       <Grid container spacing={2} sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, md: 4 }}>
           <Paper
             elevation={2}
-            sx={{ p: 2, textAlign: "center", bgcolor: "warning.50", borderRadius: 3, height: '100%', position: 'relative' }}
+            sx={{
+              p: 2,
+              textAlign: "center",
+              bgcolor: "warning.50",
+              borderRadius: 3,
+              height: "100%",
+              position: "relative",
+            }}
           >
-            <IconButton size="small" sx={{ position: 'absolute', top: 8, right: 8, color: 'warning.main' }} onClick={() => handleOpenInfo("ISP")}>
+            <IconButton
+              size="small"
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                color: "warning.main",
+              }}
+              onClick={() => handleOpenInfo("ISP")}
+            >
               <InfoOutlinedIcon />
             </IconButton>
-            <TrendingUpIcon sx={{ fontSize: 36, color: "warning.main", mb: 1 }} />
+            <TrendingUpIcon
+              sx={{ fontSize: 36, color: "warning.main", mb: 1 }}
+            />
             <Typography variant="h4" color="warning.main" fontWeight="bold">
               {metrics.isp.toFixed(1)}%
             </Typography>
-            <Typography variant="subtitle2" color="text.secondary" fontWeight="bold">
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              fontWeight="bold"
+            >
               {t("ispTitle")}
             </Typography>
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              sx={{ mt: 1 }}
+            >
               {t("ispSubtitle")}
             </Typography>
           </Paper>
         </Grid>
-        
+
         <Grid size={{ xs: 12, md: 4 }}>
           <Paper
             elevation={2}
-            sx={{ p: 2, textAlign: "center", bgcolor: "secondary.50", borderRadius: 3, height: '100%', position: 'relative' }}
+            sx={{
+              p: 2,
+              textAlign: "center",
+              bgcolor: "secondary.50",
+              borderRadius: 3,
+              height: "100%",
+              position: "relative",
+            }}
           >
-            <IconButton size="small" sx={{ position: 'absolute', top: 8, right: 8, color: 'secondary.main' }} onClick={() => handleOpenInfo("TAP")}>
+            <IconButton
+              size="small"
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                color: "secondary.main",
+              }}
+              onClick={() => handleOpenInfo("TAP")}
+            >
               <InfoOutlinedIcon />
             </IconButton>
             <StarIcon sx={{ fontSize: 36, color: "secondary.main", mb: 1 }} />
             <Typography variant="h4" color="secondary.main" fontWeight="bold">
               {metrics.tap.toFixed(1)}%
             </Typography>
-            <Typography variant="subtitle2" color="text.secondary" fontWeight="bold">
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              fontWeight="bold"
+            >
               {t("tapTitle")}
             </Typography>
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              sx={{ mt: 1 }}
+            >
               {t("tapSubtitle")}
             </Typography>
           </Paper>
@@ -258,19 +385,44 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
         <Grid size={{ xs: 12, md: 4 }}>
           <Paper
             elevation={2}
-            sx={{ p: 2, textAlign: "center", bgcolor: "info.50", borderRadius: 3, height: '100%', position: 'relative' }}
+            sx={{
+              p: 2,
+              textAlign: "center",
+              bgcolor: "info.50",
+              borderRadius: 3,
+              height: "100%",
+              position: "relative",
+            }}
           >
-            <IconButton size="small" sx={{ position: 'absolute', top: 8, right: 8, color: 'info.main' }} onClick={() => handleOpenInfo("STD")}>
+            <IconButton
+              size="small"
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                color: "info.main",
+              }}
+              onClick={() => handleOpenInfo("STD")}
+            >
               <InfoOutlinedIcon />
             </IconButton>
             <BalanceIcon sx={{ fontSize: 36, color: "info.main", mb: 1 }} />
             <Typography variant="h4" color="info.main" fontWeight="bold">
               {metrics.stdDeviation.toFixed(2)}
             </Typography>
-            <Typography variant="subtitle2" color="text.secondary" fontWeight="bold">
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              fontWeight="bold"
+            >
               {t("stdTitle")}
             </Typography>
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              sx={{ mt: 1 }}
+            >
               {t("stdSubtitle")}
             </Typography>
           </Paper>
@@ -279,7 +431,7 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
 
       {/* Info Dialog */}
       <Dialog open={infoOpen} onClose={handleCloseInfo} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: 'bold' }}>
+        <DialogTitle sx={{ fontWeight: "bold" }}>
           {infoType === "ISP" && t("ispTitle")}
           {infoType === "TAP" && t("tapTitle")}
           {infoType === "STD" && t("stdTitle")}
@@ -291,7 +443,11 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
                 {t("ispDialogDesc")}
               </Typography>
               <Paper sx={{ p: 2, bgcolor: "grey.100", mb: 2 }}>
-                <Typography variant="body2" component="pre" sx={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}>
+                <Typography
+                  variant="body2"
+                  component="pre"
+                  sx={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}
+                >
                   {t("ispDialogFormula")}
                 </Typography>
               </Paper>
@@ -306,7 +462,11 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
                 {t("tapDialogDesc")}
               </Typography>
               <Paper sx={{ p: 2, bgcolor: "grey.100", mb: 2 }}>
-                <Typography variant="body2" component="pre" sx={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}>
+                <Typography
+                  variant="body2"
+                  component="pre"
+                  sx={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}
+                >
                   {t("tapDialogFormula")}
                 </Typography>
               </Paper>
@@ -321,7 +481,11 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
                 {t("stdDialogDesc")}
               </Typography>
               <Paper sx={{ p: 2, bgcolor: "grey.100", mb: 2 }}>
-                <Typography variant="body2" component="pre" sx={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}>
+                <Typography
+                  variant="body2"
+                  component="pre"
+                  sx={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}
+                >
                   {t("stdDialogFormula")}
                 </Typography>
               </Paper>
@@ -332,10 +496,11 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseInfo} color="inherit">{t("close")}</Button>
+          <Button onClick={handleCloseInfo} color="inherit">
+            {t("close")}
+          </Button>
         </DialogActions>
       </Dialog>
-
 
       <Divider sx={{ my: 4 }} />
 
@@ -348,13 +513,74 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
         {tGlobal("Pages.Statistics.Overview.algorithmEvolution")}
       </Typography>
 
+      {metrics.priorityCounts.size > 0 && (
+        <Grid container spacing={3} sx={{ mb: 3 }}>
+          <Grid size={{ xs: 12 }}>
+            <Card elevation={3} sx={{ borderRadius: 3 }}>
+              <CardContent>
+                <Typography
+                  variant="subtitle1"
+                  align="center"
+                  gutterBottom
+                  fontWeight="600"
+                >
+                  {tGlobal("Pages.Statistics.Overview.priorityAssignments", {
+                    fallback: "Atribuições por Prioridade",
+                  })}
+                </Typography>
+                <Box sx={{ width: "100%", height: 350 }}>
+                  <BarChart
+                    xAxis={[
+                      {
+                        scaleType: "band",
+                        data: Array.from(metrics.priorityCounts.keys())
+                          .sort((a, b) => a - b)
+                          .map((p) => `${p}ª`),
+                        label: tGlobal(
+                          "Pages.Statistics.Overview.priorityLevel",
+                          { fallback: "Nível de Prioridade" },
+                        ),
+                      },
+                    ]}
+                    series={[
+                      {
+                        data: Array.from(metrics.priorityCounts.keys())
+                          .sort((a, b) => a - b)
+                          .map((p) => metrics.priorityCounts.get(p)!),
+                        label: tGlobal("Pages.Statistics.Overview.quantity", {
+                          fallback: "Quantidade",
+                        }),
+                        color: "#9c27b0",
+                        barLabel: "value",
+                      },
+                    ]}
+                    slotProps={{
+                      barLabel: {
+                        style: { fill: 'white', fontWeight: 'bold' },
+                      },
+                    }}
+                    height={350}
+                    margin={{ left: 50, right: 20, top: 20, bottom: 50 }}
+                  />
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      )}
+
       {historyDataIteracoes.length > 0 || tempoDataIteracoes.length > 0 ? (
         <Grid container spacing={3}>
           {historyDataIteracoes.length > 0 ? (
             <Grid size={{ xs: 12, lg: 6 }}>
               <Card elevation={3} sx={{ borderRadius: 3 }}>
                 <CardContent>
-                  <Typography variant="subtitle1" align="center" gutterBottom fontWeight="600">
+                  <Typography
+                    variant="subtitle1"
+                    align="center"
+                    gutterBottom
+                    fontWeight="600"
+                  >
                     {t("evaluationChartTitle")}
                   </Typography>
                   <Box sx={{ width: "100%", height: 350 }}>
@@ -391,7 +617,12 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
             <Grid size={{ xs: 12, lg: 6 }}>
               <Card elevation={3} sx={{ borderRadius: 3 }}>
                 <CardContent>
-                  <Typography variant="subtitle1" align="center" gutterBottom fontWeight="600">
+                  <Typography
+                    variant="subtitle1"
+                    align="center"
+                    gutterBottom
+                    fontWeight="600"
+                  >
                     {t("timeChartTitle")}
                   </Typography>
                   <Box sx={{ width: "100%", height: 350 }}>
@@ -401,7 +632,9 @@ export default function OverviewTab({ solucao }: OverviewTabProps) {
                           data: tempoDataIteracoes,
                           label: t("xAxisLabelIterations"),
                           min: tempoDataIteracoes[0],
-                          max: tempoDataIteracoes[tempoDataIteracoes.length - 1],
+                          max: tempoDataIteracoes[
+                            tempoDataIteracoes.length - 1
+                          ],
                         },
                       ]}
                       series={[

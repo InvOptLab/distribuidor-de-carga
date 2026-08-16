@@ -1331,7 +1331,10 @@
         "finalEvaluation": "Final Evaluation",
         "constraintViolations": "Constraint Violations",
         "algorithmEvolution": "Algorithm Evolution",
-        "noChartData": "The evolution chart could not be generated for this type of insertion or algorithm."
+        "noChartData": "The evolution chart could not be generated for this type of insertion or algorithm.",
+        "priorityAssignments": "Priority Assignments",
+        "priorityLevel": "Priority Level",
+        "quantity": "Quantity"
       },
       "Constraints": {
         "tabTitle": "Constraints and Violations Analysis",
