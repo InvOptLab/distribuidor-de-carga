@@ -60,15 +60,15 @@ export default async function RootLayout({
 
             {/* Descomentado o PageHeaderProvider para ativar o Contexto Global */}
             {/* <PageHeaderProvider> */}
-            <AvatarChatProvider>
-              <CollaborationProvider>
-                {/* Container para proteger as barras de serem "amassadas" pelo flexbox */}
-                <Box sx={{ flexShrink: 0 }}>
-                  <Navbar />
-                  {/* <CollapsibleHeader /> */}
-                </Box>
+            <GlobalWrapper>
+              <AvatarChatProvider>
+                <CollaborationProvider>
+                  {/* Container para proteger as barras de serem "amassadas" pelo flexbox */}
+                  <Box sx={{ flexShrink: 0 }}>
+                    <Navbar />
+                    {/* <CollapsibleHeader /> */}
+                  </Box>
 
-                <GlobalWrapper>
                   <AlgorithmWrapper>
                     <AlertsWrapper>
                       <HistorySolutionProvider>
@@ -94,9 +94,9 @@ export default async function RootLayout({
                       </HistorySolutionProvider>
                     </AlertsWrapper>
                   </AlgorithmWrapper>
-                </GlobalWrapper>
-              </CollaborationProvider>
-            </AvatarChatProvider>
+                </CollaborationProvider>
+              </AvatarChatProvider>
+            </GlobalWrapper>
             {/* </PageHeaderProvider> */}
 
             <VLibras forceOnload />
