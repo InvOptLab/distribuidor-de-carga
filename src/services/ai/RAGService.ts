@@ -1,4 +1,4 @@
-import { ILLMProvider } from "./interfaces/ILLMProvider";
+import { ILLMProvider, LLMResponse } from "./interfaces/ILLMProvider";
 import { IVectorStoreRepository } from "./interfaces/IVectorStoreRepository";
 
 export class RAGService {
@@ -10,17 +10,17 @@ export class RAGService {
   async askQuestion(
     question: string,
     locale: string = "pt-BR",
-  ): Promise<string> {
+  ): Promise<LLMResponse> {
     await this.vectorStore.initialize();
 
     const relevantDocs = await this.vectorStore.search(question);
 
-    const answer = await this.llmProvider.generateResponse(
+    const response = await this.llmProvider.generateResponse(
       question,
       relevantDocs,
       locale,
     );
 
-    return answer;
+    return response;
   }
 }
