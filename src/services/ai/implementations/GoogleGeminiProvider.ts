@@ -1,11 +1,12 @@
-import { ILLMProvider } from "../interfaces/ILLMProvider";
+import { ILLMProvider, LLMResponse } from "../interfaces/ILLMProvider";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { Document } from "langchain";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { StringOutputParser } from "@langchain/core/output_parsers";
+import { aiTools } from "../tools";
 
 export class GoogleGeminiProvider implements ILLMProvider {
   private model: ChatGoogleGenerativeAI;
+  private modelWithTools: any;
 
   constructor() {
     const apiKey = process.env.GOOGLE_API_KEY;
@@ -18,20 +19,24 @@ export class GoogleGeminiProvider implements ILLMProvider {
       temperature: 0.3,
       apiKey: apiKey,
     });
+    
+    this.modelWithTools = this.model.bindTools(aiTools);
   }
 
   async generateResponse(
     query: string,
     context: Document[],
     locale: string = "pt-BR",
-  ): Promise<string> {
-    // Transforma o array de documentos em uma string única
+  ): Promise<LLMResponse> {
     const contextText = context.map((doc) => doc.pageContent).join("\n---\n");
 
     const prompt = ChatPromptTemplate.fromTemplate(`
       Você é um assistente especialista na plataforma Distribuidor de Carga.
-      Responda a pergunta do usuário baseando-se APENAS no contexto abaixo.
-      Se a resposta não estiver no contexto, diga educadamente que não possui essa informação. 
+      
+      Se o usuário pedir para realizar uma ação (como atribuir um docente a uma turma ou travar uma atribuição), USE A FERRAMENTA ADEQUADA! Não se preocupe se o contexto não possuir informações sobre isso.
+      
+      Caso contrário, responda a pergunta do usuário baseando-se APENAS no contexto abaixo.
+      Se a resposta não estiver no contexto e não for uma chamada de ferramenta, diga educadamente que não possui essa informação. 
       MUITO IMPORTANTE: A sua resposta DEVE ser escrita no idioma correspondente a este código (locale): {locale}.
 
       Contexto:
@@ -41,14 +46,25 @@ export class GoogleGeminiProvider implements ILLMProvider {
       {question}
     `);
 
-    const chain = prompt.pipe(this.model).pipe(new StringOutputParser());
-
-    const response = await chain.invoke({
+    const formattedPrompt = await prompt.format({
       context: contextText,
       question: query,
       locale: locale,
     });
 
-    return response;
+    const response = await this.modelWithTools.invoke(formattedPrompt);
+    
+    const result: LLMResponse = { content: "" };
+    
+    if (response.tool_calls && response.tool_calls.length > 0) {
+      result.toolCalls = response.tool_calls.map((tc: any) => ({
+        name: tc.name,
+        args: tc.args,
+      }));
+    } else {
+      result.content = response.content as string;
+    }
+
+    return result;
   }
 }
