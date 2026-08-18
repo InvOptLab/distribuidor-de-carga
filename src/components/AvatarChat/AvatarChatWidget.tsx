@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Fab,
   Box,
@@ -19,6 +19,7 @@ import AspectRatioIcon from "@mui/icons-material/AspectRatio";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { ChatContent } from "./ChatContent";
 import Draggable from "react-draggable";
 import { useAvatarChat } from "@/context/AvatarChat/AvatarChatContext";
@@ -40,10 +41,22 @@ export const AvatarChatWidget = () => {
     toggleMute,
     chatSize,
     cycleSize,
+    clearChat,
   } = useAvatarChat();
 
   const [isDragging, setIsDragging] = useState(false);
+  const [showTeaser, setShowTeaser] = useState(false);
   const nodeRef = useRef(null);
+
+  useEffect(() => {
+    // Mostra o teaser depois de 2 segundos, e esconde após 6 segundos
+    const timer1 = setTimeout(() => setShowTeaser(true), 2000);
+    const timer2 = setTimeout(() => setShowTeaser(false), 8000);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
 
   const handleFabClick = () => {
     if (!isDragging) {
@@ -165,6 +178,20 @@ export const AvatarChatWidget = () => {
                   </IconButton>
                 </Tooltip>
 
+                <Tooltip title={t("Actions.clearConversation")} arrow>
+                  <IconButton
+                    onClick={clearChat}
+                    size="small"
+                    sx={{
+                      color: "white",
+                      transition: "transform 0.2s",
+                      "&:hover": { transform: "scale(1.1)", color: "#ffcdd2" },
+                    }}
+                  >
+                    <DeleteOutlineIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+
                 <Divider
                   orientation="vertical"
                   flexItem
@@ -205,39 +232,72 @@ export const AvatarChatWidget = () => {
           </Paper>
         </Zoom>
 
-        <Tooltip
-          title={
-            isChatOpen
-              ? t("Actions.closeAssistant")
-              : t("Actions.openAssistant")
-          }
-          arrow
-          placement="right"
-        >
-          <Fab
-            color="primary"
-            aria-label={t("Actions.openChat")}
-            onClick={handleFabClick}
-            sx={{
-              cursor: isDragging ? "grabbing" : "grab",
-              transition: "all 0.3s ease",
-              boxShadow: isChatOpen
-                ? "0 4px 20px rgba(25, 118, 210, 0.4)"
-                : "0 4px 12px rgba(0,0,0,0.15)",
-              "&:hover": {
-                transform: "scale(1.05)",
-                boxShadow: "0 6px 24px rgba(25, 118, 210, 0.5)",
-              },
-            }}
+        <Box sx={{ position: "relative", display: "inline-block" }}>
+          <Zoom in={showTeaser && !isChatOpen} unmountOnExit>
+            <Paper
+              elevation={4}
+              sx={{
+                position: "absolute",
+                left: "calc(100% + 16px)",
+                top: "50%",
+                transform: "translateY(-50%) !important",
+                width: 220,
+                p: 1.5,
+                borderRadius: 2,
+                backgroundColor: "primary.main",
+                color: "white",
+                zIndex: 1400,
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: "50%",
+                  left: -10,
+                  transform: "translateY(-50%)",
+                  borderWidth: 5,
+                  borderStyle: "solid",
+                  borderColor: "transparent #1976d2 transparent transparent",
+                }
+              }}
+            >
+              <Typography variant="body2" fontWeight="bold">
+                Oi! Posso distribuir a carga para você? 🚀
+              </Typography>
+            </Paper>
+          </Zoom>
+          <Tooltip
+            title={
+              isChatOpen
+                ? t("Actions.closeAssistant")
+                : t("Actions.openAssistant")
+            }
+            arrow
+            placement="right"
           >
-            <Zoom in={isChatOpen} unmountOnExit>
-              <CloseIcon />
-            </Zoom>
-            <Zoom in={!isChatOpen} unmountOnExit>
-              <SmartToyIcon />
-            </Zoom>
-          </Fab>
-        </Tooltip>
+            <Fab
+              color="primary"
+              aria-label={t("Actions.openChat")}
+              onClick={handleFabClick}
+              sx={{
+                cursor: isDragging ? "grabbing" : "grab",
+                transition: "all 0.3s ease",
+                boxShadow: isChatOpen
+                  ? "0 4px 20px rgba(25, 118, 210, 0.4)"
+                  : "0 4px 12px rgba(0,0,0,0.15)",
+                "&:hover": {
+                  transform: "scale(1.05)",
+                  boxShadow: "0 6px 24px rgba(25, 118, 210, 0.5)",
+                },
+              }}
+            >
+              <Zoom in={isChatOpen} unmountOnExit>
+                <CloseIcon />
+              </Zoom>
+              <Zoom in={!isChatOpen} unmountOnExit>
+                <SmartToyIcon />
+              </Zoom>
+            </Fab>
+          </Tooltip>
+        </Box>
       </Box>
     </Draggable>
   );

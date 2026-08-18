@@ -10,13 +10,17 @@ import {
   Tooltip,
   Fade,
   keyframes,
+  TextField,
+  Chip
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { AvatarIcon } from "./AvatarIcon";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { useAvatarChat } from "@/context/AvatarChat/AvatarChatContext";
 import { useLocale, useTranslations } from "next-intl";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const typingAnimation = keyframes`
   0%, 60%, 100% { transform: translateY(0); }
@@ -40,23 +44,6 @@ const TypingIndicator = () => (
     ))}
   </Box>
 );
-
-const formatMessage = (text: string): React.ReactNode => {
-  // Regex para capturar **texto** (negrito) e _texto_ (itálico)
-  const parts = text.split(/(\*\*[^*]+\*\*|_[^_]+_)/g);
-
-  return parts.map((part, index) => {
-    // Negrito: **texto**
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={index}>{part.slice(2, -2)}</strong>;
-    }
-    // Itálico: _texto_
-    if (part.startsWith("_") && part.endsWith("_")) {
-      return <em key={index}>{part.slice(1, -1)}</em>;
-    }
-    return part;
-  });
-};
 
 const formatTime = (date: Date) => {
   // TODO: Implementar as modificações necessárias para exibir baseado na localidade do usuário
@@ -141,27 +128,6 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
           overflow: "hidden",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            flexShrink: 0,
-            mb: 1,
-          }}
-        >
-          <Tooltip title={t("Actions.clearConversation")} arrow>
-            <IconButton
-              size="small"
-              onClick={clearChat}
-              sx={{
-                color: "text.secondary",
-                "&:hover": { color: "error.main" },
-              }}
-            >
-              <DeleteOutlineIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
 
         <Paper
           ref={chatHistoryRef}
@@ -192,6 +158,31 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
             },
           }}
         >
+          {messages.length === 1 && messages[0].id === "welcome" && (
+            <Fade in timeout={500}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3, justifyContent: 'flex-start' }}>
+                <Chip 
+                  size="small" 
+                  label="Quais turmas do professor X?" 
+                  onClick={() => { setUserInput("Quais turmas o professor está ministrando?"); }} 
+                  sx={{ backgroundColor: "primary.50", color: "primary.main", '&:hover': { backgroundColor: "primary.100" } }}
+                />
+                <Chip 
+                  size="small" 
+                  label="Atribuir Docente à turma" 
+                  onClick={() => { setUserInput("Atribua o docente X à turma Y"); }} 
+                  sx={{ backgroundColor: "primary.50", color: "primary.main", '&:hover': { backgroundColor: "primary.100" } }}
+                />
+                <Chip 
+                  size="small" 
+                  label="Limpar turmas do professor" 
+                  onClick={() => { setUserInput("Limpe todas as turmas do professor Z"); }} 
+                  sx={{ backgroundColor: "primary.50", color: "primary.main", '&:hover': { backgroundColor: "primary.100" } }}
+                />
+              </Box>
+            </Fade>
+          )}
+
           {messages.map((msg) => (
             <Fade key={msg.id} in timeout={300}>
               <Box
@@ -209,11 +200,11 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
                     px: 2,
                     maxWidth: "85%",
                     backgroundColor:
-                      msg.sender === "user" ? "primary.main" : "grey.100",
+                      msg.sender === "user" ? "primary.main" : 
+                      msg.sender === "action" ? "success.light" : "grey.100",
                     color:
-                      msg.sender === "user"
-                        ? "primary.contrastText"
-                        : "text.primary",
+                      msg.sender === "user" ? "primary.contrastText" :
+                      msg.sender === "action" ? "success.contrastText" : "text.primary",
                     borderRadius: 2,
                     borderTopRightRadius: msg.sender === "user" ? 4 : 16,
                     borderTopLeftRadius: msg.sender === "user" ? 16 : 4,
@@ -223,9 +214,20 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
                         : "0 2px 8px rgba(0, 0, 0, 0.05)",
                   }}
                 >
-                  <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
-                    {formatMessage(msg.text)}
-                  </Typography>
+                  <Box sx={{ "& p": { margin: 0 }, "& ul, & ol": { pl: 2, margin: 0, mt: 1 }, "& li": { mb: 0.5 } }}>
+                    {msg.sender === "action" ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CheckCircleOutlineIcon fontSize="small" />
+                        <Typography variant="body2">{msg.text}</Typography>
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" component="div" sx={{ wordBreak: 'break-word' }}>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {msg.text}
+                        </ReactMarkdown>
+                      </Typography>
+                    )}
+                  </Box>
                 </Paper>
                 <Typography
                   variant="caption"
@@ -284,14 +286,14 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
               },
             }}
           >
-            <Box
-              component="textarea"
-              ref={textareaRef}
+            <TextField
+              multiline
+              maxRows={4}
+              variant="standard"
+              fullWidth
               value={userInput}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setUserInput(e.target.value)
-              }
-              onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSubmit();
@@ -299,34 +301,15 @@ export const ChatContent = ({ avatarSize = 80 }: ChatContentProps) => {
               }}
               disabled={isTyping || isAvatarSpeaking}
               placeholder={t("Actions.askQuestion")}
-              rows={1}
-              sx={{
-                flex: 1,
-                border: "none",
-                outline: "none",
-                resize: "none",
-                fontFamily: "inherit",
-                fontSize: "0.9rem",
-                lineHeight: 1.5,
-                backgroundColor: "transparent",
-                color: "text.primary",
-                minHeight: "24px",
-                maxHeight: "120px",
-                py: 0.5,
-                overflowY: "auto",
-                scrollbarWidth: "none", // Firefox
-                msOverflowStyle: "none", // IE/Edge
-                "&::-webkit-scrollbar": {
-                  display: "none", // Chrome/Safari
-                },
-                "&::placeholder": {
-                  color: "text.secondary",
-                  opacity: 0.6,
-                },
-                "&:disabled": {
-                  color: "text.disabled",
-                  cursor: "not-allowed",
-                },
+              InputProps={{
+                disableUnderline: true,
+                sx: { 
+                  fontSize: "0.9rem", 
+                  lineHeight: 1.5, 
+                  py: 0.5,
+                  '&::-webkit-scrollbar': { display: 'none' },
+                  scrollbarWidth: 'none',
+                }
               }}
             />
             <Tooltip title={t("Actions.sendMessage")} arrow>
