@@ -6,6 +6,10 @@ export interface ChatResponse {
   success: boolean;
   answer?: string;
   error?: string;
+  toolCalls?: {
+    name: string;
+    args: Record<string, any>;
+  }[];
 }
 
 export async function askAssistantAction(
@@ -19,9 +23,13 @@ export async function askAssistantAction(
 
     const ragService = createRAGService();
 
-    const answer = await ragService.askQuestion(message, locale);
+    const response = await ragService.askQuestion(message, locale);
 
-    return { success: true, answer };
+    return { 
+      success: true, 
+      answer: response.content,
+      toolCalls: response.toolCalls
+    };
   } catch (error) {
     console.error("Erro na Server Action:", error);
     return {
