@@ -1,45 +1,42 @@
 "use client";
 
-import { Fade, Drawer, Box, Paper } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { Drawer, Box, Paper } from "@mui/material";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import CleanAlertDialog from "./CleanAlertDialog";
-
-import TimetableFilters from "./TimetableFilters";
-import ActionBar from "./ActionBar";
 import { useAlgorithm } from "../hooks/useAlgorithm";
-
 import { useTimetable } from "../context/TimetableContext";
-import { useGlobalContext } from "@/context/Global";
-import { Disciplina, Docente } from "@/algoritmo/communs/interfaces/interfaces";
 import AlgoritmoDialog from "@/components/AlgorithmDialog";
-import HoveredCourse from "./HoveredCourse";
-import HoveredDocente from "./HoveredDocente";
-// import TimetableDataGrid from "./TimetableDataGrid";
-// import TimetableGrid from "./TimetableGrid";
-// import TimetableDataGrid from "./TimetableDataGrid";
-import TimetableGrid from "./TimetableGrid";
+import AssignmentGrid from "./grid/AssignmentGrid";
+import GridLegend from "./grid/GridLegend";
+import GridToolbar from "./toolbar/GridToolbar";
+import FilterBar from "./toolbar/FilterBar";
+import FiltersDrawer from "./filters/FiltersDrawer";
+import { useCanFilter } from "./filters/useFilterFields";
+import DetailsPanel from "./details/DetailsPanel";
 import { CollaborativeGridWrapper } from "./CollaborativeGridWrapper";
 import NoDataFound from "@/components/NoDataFound";
 import SemResultadosFiltro from "./SemResultadosFiltro";
+import {
+  hasActiveFilters as computeHasActiveFilters,
+  hasQuickRule,
+  toggleQuickRule,
+} from "../model/filters";
+import { type DetailsTarget, sameTarget } from "../state/detailsTarget";
+import { useDensity } from "../state/useDensity";
+import { useTranslations } from "next-intl";
 
-const customTheme = createTheme({
-  components: {
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          border: "1px solid rgba(224, 224, 224, 1)",
-        },
-      },
-    },
-  },
-});
+const PREVIEW_DELAY_MS = 150;
 
 export default function TimetableView() {
   const {
+    docentes,
+    disciplinas,
+    formularios,
     filteredDocentes,
     filteredDisciplinas,
+    model,
+    commands,
     cleanStateAtribuicoes,
     saveAlterations,
     downalodJson,
@@ -64,121 +61,125 @@ export default function TimetableView() {
     executionStage,
   } = useAlgorithm();
 
-  const { formularios, docentes, disciplinas, atribuicoes } =
-    useGlobalContext();
-
+  const canFilter = useCanFilter();
+  const tFilter = useTranslations("Pages.Assignment.FilterBar");
+  const [density, setDensity] = useDensity();
   const [openCleanDialog, setOpenCleanDialog] = useState(false);
-  const [hoveredCourse, setHoveredCourse] = useState<Disciplina | null>(null);
-  const [hoveredDocente, setHoveredDocente] = useState<Docente | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [drawerTop, setDrawerTop] = useState(0);
 
-  const enterTimer = useRef<NodeJS.Timeout | null>(null);
-  const leaveTimer = useRef<NodeJS.Timeout | null>(null);
+  // Painel de detalhes: pré-visualização no hover e fixação (5.7)
+  const [details, setDetails] = useState<DetailsTarget | null>(null);
+  const [pinned, setPinned] = useState(false);
+  const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const ENTER_DELAY_MS = 100;
-  const LEAVE_DELAY_MS = 100;
-
-  const courseCardContentRef = useRef<HTMLDivElement>(null);
-  const docenteCardContentRef = useRef<HTMLDivElement>(null);
-
-  const clearTimers = () => {
-    if (enterTimer.current) {
-      clearTimeout(enterTimer.current);
-      enterTimer.current = null;
-    }
-    if (leaveTimer.current) {
-      clearTimeout(leaveTimer.current);
-      leaveTimer.current = null;
+  const cancelPreview = () => {
+    if (previewTimer.current) {
+      clearTimeout(previewTimer.current);
+      previewTimer.current = null;
     }
   };
 
-  const handleCourseEnter = (disciplina: Disciplina | null) => {
-    if (!disciplina) return;
-    clearTimers();
-    enterTimer.current = setTimeout(() => {
-      setHoveredCourse(disciplina);
-      setHoveredDocente(null);
-    }, ENTER_DELAY_MS);
+  const handlePreview = (target: DetailsTarget) => {
+    cancelPreview();
+    if (pinned) return;
+    previewTimer.current = setTimeout(() => setDetails(target), PREVIEW_DELAY_MS);
   };
 
-  const handleDocenteEnter = (nome: string | null) => {
-    clearTimers();
-    if (!nome) return;
-
-    const docente = docentes.find((d) => d.nome === nome);
-    if (!docente) return;
-
-    enterTimer.current = setTimeout(() => {
-      setHoveredDocente(docente);
-      setHoveredCourse(null);
-    }, ENTER_DELAY_MS);
+  const handlePin = (target: DetailsTarget) => {
+    cancelPreview();
+    // Clicar de novo no item fixado desafixa
+    if (pinned && sameTarget(details, target)) {
+      setPinned(false);
+      return;
+    }
+    setDetails(target);
+    setPinned(true);
   };
 
-  const handleMouseLeave = () => {
-    clearTimers();
-    leaveTimer.current = setTimeout(() => {
-      setHoveredCourse(null);
-      setHoveredDocente(null);
-    }, LEAVE_DELAY_MS);
-  };
+  const handleUnpin = useCallback(() => setPinned(false), []);
 
-  const handleCleanDialogClose = () => {
-    setOpenCleanDialog(false);
-  };
+  useEffect(() => cancelPreview, []);
+
+  // Esc fora da grade também sai do modo trava / desafixa o painel
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      if (isLockMode) setIsLockMode(false);
+      else if (pinned) setPinned(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isLockMode, setIsLockMode, pinned]);
 
   const handleCleanApply = () => {
     cleanStateAtribuicoes();
     setOpenCleanDialog(false);
   };
 
-  const hasActiveFilters =
-    docenteFilters.search ||
-    docenteFilters.rules.length > 0 ||
-    disciplinaFilters.search ||
-    disciplinaFilters.rules.length > 0;
+  // Convidado sem permissão não executa nem limpa (D5)
+  const handleExecute = () => {
+    if (!commands.ensureCanEdit()) return;
+    executeProcess();
+  };
 
-  useEffect(() => {
-    const handleWheel = (event: WheelEvent) => {
-      if (hoveredDocente && docenteCardContentRef.current) {
-        event.preventDefault();
-        docenteCardContentRef.current.scrollTop += event.deltaY;
-      } else if (hoveredCourse && courseCardContentRef.current) {
-        event.preventDefault();
-        courseCardContentRef.current.scrollTop += event.deltaY;
-      }
-    };
+  const handleOpenClean = () => {
+    if (!commands.ensureCanEdit()) return;
+    setOpenCleanDialog(true);
+  };
 
-    if (hoveredDocente || hoveredCourse) {
-      window.addEventListener("wheel", handleWheel, { passive: false });
-    }
+  const toggleFilters = () => {
+    // O drawer começa abaixo da navbar (U8), sem padding fixo
+    const main = document.getElementById("main-content");
+    setDrawerTop(main ? Math.max(0, main.getBoundingClientRect().top) : 0);
+    setFiltersOpen(!filtersOpen);
+  };
 
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-    };
-  }, [hoveredDocente, hoveredCourse]);
+  const hasActiveFilters = computeHasActiveFilters(docenteFilters, disciplinaFilters);
+  const semDocenteActive = hasQuickRule(disciplinaFilters, "semDocente");
+  const conflitosActive = hasQuickRule(docenteFilters, "comConflito");
+
+  const hasData =
+    docentes.length > 0 && disciplinas.length > 0 && formularios.length > 0;
+  const hasRows = filteredDocentes.length > 0 && filteredDisciplinas.length > 0;
 
   return (
-    <ThemeProvider theme={customTheme}>
+    <>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: "90vh",
+          flex: 1,
+          minHeight: 0,
           width: "100%",
-          gap: 1, // Substitui o 'space-y-4' (gap: 2 = 16px)overflow: "hidden"
           overflow: "hidden",
         }}
       >
-        <ActionBar
-          onExecute={executeProcess}
-          onClean={() => setOpenCleanDialog(true)}
+        <GridToolbar
+          onExecute={handleExecute}
+          onClean={handleOpenClean}
           onDownload={downalodJson}
           onSave={saveAlterations}
-          onToggleFilters={() => setFiltersOpen(!filtersOpen)}
-          hasActiveFilters={!!hasActiveFilters}
-          isLockMode={isLockMode}
-          onToggleLockMode={() => setIsLockMode(!isLockMode)}
+          onToggleFilters={toggleFilters}
+          hasActiveFilters={hasActiveFilters}
+          density={density}
+          onDensityChange={setDensity}
+          semDocenteActive={semDocenteActive}
+          conflitosActive={conflitosActive}
+          onToggleSemDocente={() =>
+            setDisciplinaFilters((prev) =>
+              toggleQuickRule(prev, "semDocente", tFilter("quickWithoutTeacher")),
+            )
+          }
+          onToggleConflitos={() =>
+            setDocenteFilters((prev) =>
+              toggleQuickRule(prev, "comConflito", tFilter("quickConflicts")),
+            )
+          }
+          canFilter={canFilter}
         />
+
+        {hasData && <FilterBar />}
 
         <Drawer
           anchor="right"
@@ -188,10 +189,12 @@ export default function TimetableView() {
             "& .MuiDrawer-paper": {
               width: { xs: "100%", sm: 400, md: 500 },
               padding: 2,
+              top: drawerTop,
+              height: `calc(100% - ${drawerTop}px)`,
             },
           }}
         >
-          <TimetableFilters
+          <FiltersDrawer
             docenteFilters={docenteFilters}
             disciplinaFilters={disciplinaFilters}
             onDocenteFiltersChange={setDocenteFilters}
@@ -202,31 +205,49 @@ export default function TimetableView() {
         </Drawer>
 
         <CollaborativeGridWrapper>
-          <Paper
-            sx={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
-              overflow: "hidden",
-            }}
-          >
-            {docentes.length > 0 &&
-            disciplinas.length > 0 &&
-            formularios.length > 0 ? (
-              filteredDocentes.length > 0 && filteredDisciplinas.length > 0 ? (
-                <TimetableGrid
-                  setHoveredCourse={handleCourseEnter}
-                  setHoveredDocente={handleDocenteEnter}
-                  onMouseLeaveGrid={handleMouseLeave}
-                />
+          <Box sx={{ flex: 1, minHeight: 0, display: "flex", gap: 1, p: 1 }}>
+            <Paper
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                // Durante a execução a grade fica translúcida e não interativa (5.9)
+                ...(processing && { opacity: 0.5, pointerEvents: "none" }),
+              }}
+              inert={processing || undefined}
+            >
+              {hasData ? (
+                hasRows ? (
+                  <>
+                    <AssignmentGrid
+                      density={density}
+                      onPreview={handlePreview}
+                      onLeave={cancelPreview}
+                      onPin={handlePin}
+                      onUnpin={handleUnpin}
+                    />
+                    <GridLegend maxPriority={model.maxPriority} />
+                  </>
+                ) : (
+                  <SemResultadosFiltro
+                    onClearFilters={canFilter ? clearFilters : undefined}
+                  />
+                )
               ) : (
-                <SemResultadosFiltro />
-              )
-            ) : (
-              <NoDataFound />
+                <NoDataFound />
+              )}
+            </Paper>
+            {hasData && (
+              <DetailsPanel
+                target={details}
+                pinned={pinned}
+                onPin={handlePin}
+                onUnpin={handleUnpin}
+              />
             )}
-          </Paper>
+          </Box>
         </CollaborativeGridWrapper>
       </Box>
 
@@ -239,54 +260,17 @@ export default function TimetableView() {
         stage={executionStage}
         progress={{
           current: disciplinasAlocadas,
-          total: filteredDisciplinas.filter((disciplina) => disciplina.ativo)
-            .length,
+          // O algoritmo roda sobre todas as turmas ativas, não só as filtradas (D8)
+          total: disciplinas.filter((disciplina) => disciplina.ativo).length,
         }}
         estatisticasMonitoradas={estatisticasMonitoradas}
       />
 
-      <Fade in={!!hoveredCourse} timeout={150}>
-        <div
-          style={{ position: "fixed", zIndex: 99, bottom: "6vh", right: "2vw" }}
-        >
-          {hoveredCourse && (
-            <HoveredCourse
-              ref={courseCardContentRef}
-              disciplina={hoveredCourse}
-              formularios={formularios}
-              docentes={docentes}
-              onMouseEnter={clearTimers}
-              onMouseLeave={handleMouseLeave}
-            />
-          )}
-        </div>
-      </Fade>
-
-      <Fade in={!!hoveredDocente} timeout={150}>
-        <div
-          style={{ position: "fixed", zIndex: 99, bottom: "6vh", right: "2vw" }}
-        >
-          {hoveredDocente && (
-            <HoveredDocente
-              ref={docenteCardContentRef}
-              docente={hoveredDocente}
-              disciplinas={disciplinas}
-              formularios={formularios}
-              atribuicoes={atribuicoes.filter((atribuicao) =>
-                atribuicao.docentes.includes(hoveredDocente.nome),
-              )}
-              onMouseEnter={clearTimers}
-              onMouseLeave={handleMouseLeave}
-            />
-          )}
-        </div>
-      </Fade>
-
       <CleanAlertDialog
         openDialog={openCleanDialog}
         cleanState={handleCleanApply}
-        onCloseDialog={handleCleanDialogClose}
+        onCloseDialog={() => setOpenCleanDialog(false)}
       />
-    </ThemeProvider>
+    </>
   );
 }
