@@ -4,6 +4,7 @@ import type React from "react";
 
 import {
   Paper,
+  useTheme,
   Stack,
   Typography,
   Divider,
@@ -26,6 +27,7 @@ import type {
 } from "@/algoritmo/communs/interfaces/interfaces";
 import { forwardRef } from "react";
 import { useTranslations } from "next-intl";
+import { priorityRampColor } from "../theme/priorityRamp";
 
 interface HoveredDocenteProps {
   docente: Docente;
@@ -34,8 +36,10 @@ interface HoveredDocenteProps {
   atribuicoes?: Atribuicao[];
   children?: React.ReactNode;
   // setHoveredDocente: Dispatch<SetStateAction<Docente | null>>;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  /** "panel": sem sombra/limite de altura, para o painel lateral de detalhes. */
+  variant?: "card" | "panel";
 }
 
 /**
@@ -50,6 +54,7 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
       formularios = [],
       atribuicoes = [],
       children,
+      variant = "card",
       onMouseEnter,
       onMouseLeave,
     },
@@ -69,10 +74,26 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
     };
 
     // Função para determinar a cor da prioridade
-    const getPrioridadeColor = (prioridade: number): string => {
-      if (prioridade >= 4) return "#4caf50"; // Verde para alta prioridade
-      if (prioridade === 3) return "#ff9800"; // Laranja para média prioridade
-      return "#f44336"; // Vermelho para baixa prioridade
+    // Mesma rampa da grade (1 = mais preferida), sobre a maior prioridade dos formulários
+    const theme = useTheme();
+    const maxPrioridade = formularios.reduce(
+      (max, f) => Math.max(max, f.prioridade),
+      1,
+    );
+    const rampMode = theme.palette.mode === "dark" ? "dark" : "light";
+    const getPrioridadeColor = (prioridade: number): string =>
+      priorityRampColor(prioridade, maxPrioridade, rampMode).bg;
+    const priorityPill = (prioridade: number) => {
+      const { bg, fg } = priorityRampColor(prioridade, maxPrioridade, rampMode);
+      return {
+        backgroundColor: bg,
+        color: fg,
+        px: 0.75,
+        borderRadius: 1,
+        alignSelf: "flex-start",
+        display: "inline-block",
+        fontWeight: 600,
+      };
     };
 
     // Função para buscar disciplina por ID
@@ -96,27 +117,27 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
 
     return (
       <Paper
-        elevation={12}
+        elevation={variant === "panel" ? 0 : 12}
         sx={{
           // position: "fixed",
           // zIndex: 99,
           // bottom: "6vh",
           // right: "2vw",
-          maxWidth: 700,
-          borderRadius: 3,
+          maxWidth: variant === "panel" ? "none" : 700,
+          borderRadius: variant === "panel" ? 0 : 3,
           // overflow: "hidden",
-          border: "1px solid",
+          border: variant === "panel" ? 0 : "1px solid",
           borderColor: "divider",
         }}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        {/* Cabeçalho com gradiente */}
+        {/* Cabeçalho na cor primária do tema (vale para alto contraste) */}
         <Box
           sx={{
-            background: "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
+            bgcolor: "primary.main",
             p: 2.5,
-            color: "white",
+            color: "primary.contrastText",
           }}
         >
           <Stack direction="row" spacing={1} alignItems="center" mb={1}>
@@ -161,7 +182,7 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
           spacing={2}
           sx={{
             p: 2.5,
-            maxHeight: "55vh", //Define uma altura máxima (ex: 50% da tela)
+            maxHeight: variant === "panel" ? "none" : "55vh", //Define uma altura máxima (ex: 50% da tela)
             overflowY: "auto", // Adiciona o scroll vertical
             // Estilização opcional da barra de scroll
             "&::-webkit-scrollbar": {
@@ -344,10 +365,7 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                                 <Typography
                                   variant="caption"
                                   sx={{
-                                    color: getPrioridadeColor(
-                                      formulario.prioridade,
-                                    ),
-                                    fontWeight: 600,
+                                    ...priorityPill(formulario.prioridade),
                                   }}
                                 >
                                   {t("priorityLevel", {

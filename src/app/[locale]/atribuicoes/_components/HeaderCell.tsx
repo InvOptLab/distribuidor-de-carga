@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Typography, Stack, styled } from "@mui/material";
 import { Disciplina } from "@/context/Global/utils";
 import { useTranslations } from "next-intl";
+import { formatCursos } from "../model/text";
 
 interface HeaderCellProps {
   disciplina: Disciplina;
@@ -10,6 +11,32 @@ interface HeaderCellProps {
     React.SetStateAction<Disciplina | null>
   >;
 }
+
+// Definido fora do render para não recriar o componente nem o CSS a cada render (P5)
+const StyledStack = styled(Stack, {
+  shouldForwardProp: (prop) => prop !== "bg" && prop !== "hoverEnabled",
+})<{ bg: string; hoverEnabled: boolean }>(({ bg, hoverEnabled }) => ({
+  position: "relative",
+  zIndex: 1,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  minWidth: "12rem",
+  maxWidth: "12rem",
+  height: "8rem",
+  backgroundColor: bg,
+  transition: "max-width 0.3s ease, height 0.3s ease",
+  padding: 0,
+  margin: 0,
+
+  ...(hoverEnabled && {
+    "&:hover": {
+      overflow: "visible",
+      whiteSpace: "normal",
+      maxWidth: "50rem", // Expande a largura no hover
+    },
+  }),
+}));
 
 /**
  * Componente para cada disciplina no cabeçalho da tabela.
@@ -28,21 +55,18 @@ const HeaderCell: React.FC<HeaderCellProps> = ({
 
   const t = useTranslations("Pages.Assignment.HeaderCell");
 
-  // Funções de hover
   const handleMouseEnter = (id: string) => {
     if (hoverEnabled) {
       setHoveredCellId(id);
     }
-    setParentHoveredCourse?.(disciplina); // Se `setParentHoveredCourse` estiver definido, executa
+    setParentHoveredCourse?.(disciplina);
   };
 
   const handleMouseLeave = () => {
     if (hoverEnabled) {
       setHoveredCellId(null);
     }
-    // NÃO chamamos setParentHoveredCourse?.(null) aqui.
-    // O onMouseLeave do <TableCell> no TimetableGrid vai cuidar disso. (30/10/2025)
-    // setParentHoveredCourse?.(null); // Reseta o estado no componente pai, se aplicável
+    // O fechamento do card é responsabilidade do componente pai. (30/10/2025)
   };
 
   // Criação do bloco de horários da disciplina
@@ -81,57 +105,32 @@ const HeaderCell: React.FC<HeaderCellProps> = ({
 
   // Estilo condicional com base no hover e ID da disciplina
   const getTypographyStyle = (id: string) => ({
-    whiteSpace: "nowrap", // Quebra a linha apenas no hover
-    overflow: "hidden", // Mostra o texto completo no hover
-    textOverflow: "ellipsis", // Elipses se o texto for muito longo
-    fontSize: hoveredCellId === id ? "14px" : "12px", // Aumenta a fonte no hover
-    transition: "all 0.3s ease", // Transição suave
-    paddingTop: "2px", // Padding adicional no hover
-  });
-
-  // StyledStack com hover opcional
-  const StyledStack = styled(Stack)<{ id: string }>(({ id }) => ({
-    position: "relative",
-    zIndex: 1,
+    whiteSpace: "nowrap" as const,
     overflow: "hidden",
     textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    minWidth: "12rem",
-    maxWidth: "12rem",
-    height: "8rem",
-    backgroundColor: setHeaderCollor(id),
-    transition: "max-width 0.3s ease, height 0.3s ease",
-    padding: 0,
-    margin: 0,
-
-    ...(hoverEnabled && {
-      "&:hover": {
-        overflow: "visible",
-        whiteSpace: "normal",
-        maxWidth: "50rem", // Expande a largura no hover
-      },
-    }),
-  }));
+    fontSize: hoveredCellId === id ? "14px" : "12px", // Aumenta a fonte no hover
+    transition: "all 0.3s ease",
+    paddingTop: "2px",
+  });
 
   return (
     <StyledStack
       id={disciplina.id}
+      bg={setHeaderCollor(disciplina.id)}
+      hoverEnabled={hoverEnabled}
       spacing={1}
       className="stack-style"
-      onMouseEnter={() => handleMouseEnter(disciplina.id)} // Ativa o hover
-      onMouseLeave={handleMouseLeave} // Desativa o hover
+      onMouseEnter={() => handleMouseEnter(disciplina.id)}
+      onMouseLeave={handleMouseLeave}
     >
+      {/* Texto puro: `cursos` pode vir de arquivo importado ou de outro participante da sala (D2) */}
       <Typography
         align="left"
         variant="body1"
         style={{ fontWeight: "bold", ...getTypographyStyle(disciplina.id) }}
-        dangerouslySetInnerHTML={{
-          __html: disciplina.cursos
-            .replace(/^[^;]*;/, "")
-            .replace(/<br\s*\/?>/gi, "")
-            .replace(/&emsp;/gi, " "),
-        }}
-      />
+      >
+        {formatCursos(disciplina.cursos)}
+      </Typography>
 
       <Typography
         align="left"
