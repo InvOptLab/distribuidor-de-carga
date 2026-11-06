@@ -42,7 +42,7 @@ function exportarJsonBrowser(objeto: any, nomeArquivo: string) {
 }
 
 /**
- * Monta o objeto do JSON de saída (formato v3, B17). Separado do download para ser testável.
+ * Monta o objeto do JSON de saída (formato v3). Separado do download para ser testável.
  */
 export function buildExportPayload(
   docentes: Docente[],
@@ -160,7 +160,7 @@ export function buildExportPayload(
             avaliacaoPorIteracao: avaliacaoPorIteracao,
             tempoExecucao: solucao.estatisticas.tempoExecucao,
             iteracoes: solucao.estatisticas.iteracoes,
-            interrupcao: solucao.estatisticas.iteracoes,
+            interrupcao: solucao.estatisticas.interrupcao,
           },
         },
         maxPriority: contexto.maxPriority,
