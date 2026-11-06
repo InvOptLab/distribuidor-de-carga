@@ -27,6 +27,7 @@ import {
   Grid,
   FormControlLabel,
   Snackbar,
+  useTheme,
 } from "@mui/material";
 import {
   Info as InfoIcon,
@@ -35,12 +36,13 @@ import {
 } from "@mui/icons-material";
 import { useAlgorithmContext } from "@/context/Algorithm";
 import { useAlertsContext } from "@/context/Alerts";
-import { getPriorityColor } from "@/app/[locale]/atribuicoes";
+import { priorityRampColor } from "@/app/[locale]/atribuicoes/theme/priorityRamp";
 import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
 import ConstraintParameters from "@/components/Constraints/ConstraintParameters";
 import { useTranslations } from "next-intl";
 
 export default function ObjectiveConfig() {
+  const theme = useTheme();
   const { objectiveComponents, setObjectiveComponents, maiorPrioridade } =
     useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
@@ -558,12 +560,19 @@ export default function ObjectiveConfig() {
                         <TableCell>
                           <Chip
                             label={priority}
-                            sx={{
-                              backgroundColor: getPriorityColor(
-                                priority,
-                                maiorPrioridade,
-                              ),
-                            }}
+                            sx={
+                              // Mesma rampa da grade; prioridade 0 (sem preferência) fica neutra
+                              priority > 0
+                                ? (() => {
+                                    const c = priorityRampColor(
+                                      priority,
+                                      maiorPrioridade,
+                                      theme.palette.mode === "dark" ? "dark" : "light",
+                                    );
+                                    return { backgroundColor: c.bg, color: c.fg };
+                                  })()
+                                : undefined
+                            }
                             size="small"
                           />
                         </TableCell>

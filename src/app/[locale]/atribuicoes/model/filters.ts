@@ -26,10 +26,7 @@ export function matchesRule(value: any, rule: FilterRule): boolean {
     case "exact":
       return value === rule.value;
     case "contains":
-      return value
-        ?.toString()
-        .toLowerCase()
-        .includes(rule.value.toLowerCase());
+      return value?.toString().toLowerCase().includes(rule.value.toLowerCase());
     case "chips":
       if (rule.fieldKey === "horarios_dias") {
         // Basta um dos dias selecionados coincidir
@@ -68,7 +65,7 @@ export function matchesRule(value: any, rule: FilterRule): boolean {
 }
 
 /**
- * Docentes ativos que passam na busca por nome e nas regras avançadas (B1, B19).
+ * Docentes ativos que passam na busca por nome e nas regras avançadas.
  */
 export function applyDocenteFilters(
   docentes: Docente[],
@@ -112,7 +109,7 @@ export function applyDocenteFilters(
 }
 
 /**
- * Turmas ativas que passam na busca (nome, código ou id) e nas regras avançadas (B1, B19).
+ * Turmas ativas que passam na busca (nome, código ou id) e nas regras avançadas.
  */
 export function applyTurmaFilters(
   disciplinas: Disciplina[],
@@ -169,9 +166,9 @@ export function hasActiveFilters(
 ): boolean {
   return Boolean(
     docenteFilters.search ||
-      docenteFilters.rules.length > 0 ||
-      disciplinaFilters.search ||
-      disciplinaFilters.rules.length > 0,
+    docenteFilters.rules.length > 0 ||
+    disciplinaFilters.search ||
+    disciplinaFilters.rules.length > 0,
   );
 }
 

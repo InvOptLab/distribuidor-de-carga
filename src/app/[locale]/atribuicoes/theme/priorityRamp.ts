@@ -1,5 +1,5 @@
 /**
- * Rampa sequencial de 1 matiz para a prioridade (D10, decisão 10.1: 1 = mais preferida).
+ * Rampa sequencial de 1 matiz para a prioridade (decisão: 1 = mais preferida).
  * A luminosidade varia de forma linear em HSL entre a prioridade 1 e `maxPriority`, então a escala
  * é monotônica e não satura. No tema claro, mais preferida = mais escura; no escuro, mais clara.
  */
@@ -19,20 +19,31 @@ export interface RampColor {
   t: number;
 }
 
-export function priorityPosition(priority: number, maxPriority: number): number {
+export function priorityPosition(
+  priority: number,
+  maxPriority: number,
+): number {
   if (!(maxPriority > 1)) return 0;
   const t = (priority - 1) / (maxPriority - 1);
   return Math.min(1, Math.max(0, t));
 }
 
-export function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+export function hslToRgb(
+  h: number,
+  s: number,
+  l: number,
+): [number, number, number] {
   const sat = s / 100;
   const lig = l / 100;
   const k = (n: number) => (n + h / 30) % 12;
   const a = sat * Math.min(lig, 1 - lig);
   const f = (n: number) =>
     lig - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-  return [f(0), f(8), f(4)].map((v) => Math.round(v * 255)) as [number, number, number];
+  return [f(0), f(8), f(4)].map((v) => Math.round(v * 255)) as [
+    number,
+    number,
+    number,
+  ];
 }
 
 export function relativeLuminance([r, g, b]: [number, number, number]): number {
@@ -65,7 +76,8 @@ export function priorityRampColor(
   const l = priorityLightness(priority, maxPriority, mode);
   const rgb = hslToRgb(HUE, SATURATION, l);
   const lum = relativeLuminance(rgb);
-  const fg = contrastRatio(lum, 1) >= contrastRatio(lum, 0) ? "#FFFFFF" : "#000000";
+  const fg =
+    contrastRatio(lum, 1) >= contrastRatio(lum, 0) ? "#FFFFFF" : "#000000";
   return {
     bg: `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`,
     fg,

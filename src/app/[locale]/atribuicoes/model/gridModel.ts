@@ -25,7 +25,7 @@ export function cellKey(nome_docente: string, id_disciplina: string): string {
 export interface GridModel {
   priority: Map<string, number>;
   assigned: Set<string>;
-  /** Qualquer trava na célula (B7). */
+  /** Qualquer trava na célula. */
   cellLocked: Set<string>;
   /** Docentes com trava Row. */
   rowLocked: Set<string>;
@@ -102,7 +102,10 @@ export function buildGridModel(
     if (trava.id_disciplina !== undefined && trava.nome_docente !== undefined) {
       cellLocked.add(cellKey(trava.nome_docente, trava.id_disciplina));
     }
-    if (trava.tipo_trava === TipoTrava.Row && trava.nome_docente !== undefined) {
+    if (
+      trava.tipo_trava === TipoTrava.Row &&
+      trava.nome_docente !== undefined
+    ) {
       rowLocked.add(trava.nome_docente);
     }
     if (

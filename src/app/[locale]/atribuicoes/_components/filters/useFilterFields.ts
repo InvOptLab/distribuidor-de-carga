@@ -27,7 +27,7 @@ export function useFilterFields() {
     [t],
   );
 
-  // O valor salvo na regra é o dado bruto; só o rótulo é traduzido (D4)
+  // O valor salvo na regra é o dado bruto; só o rótulo é traduzido
   const agruparOptions = useMemo(
     () => [
       { label: t("groupPreference"), value: "Agrupar" },
@@ -56,7 +56,9 @@ export function useFilterFields() {
 
   const disciplinaFields: FilterField[] = useMemo(() => {
     const uniqueGroups = Array.from(
-      new Set(disciplinas.filter((d) => d.ativo && d.grupo).map((d) => d.grupo)),
+      new Set(
+        disciplinas.filter((d) => d.ativo && d.grupo).map((d) => d.grupo),
+      ),
     ).filter(Boolean);
     const uniqueLevels = Array.from(
       new Set(disciplinas.filter((d) => d.ativo).map((d) => d.nivel)),
@@ -92,7 +94,8 @@ export function useFilterFields() {
       } else if (rule.type === "timeRange") {
         const start = rule.value.start || "00:00";
         const end = rule.value.end || "23:59";
-        if (rule.value.start && rule.value.end) displayValue = `${start} - ${end}`;
+        if (rule.value.start && rule.value.end)
+          displayValue = `${start} - ${end}`;
         else if (rule.value.start) displayValue = t("fromStart", { start });
         else if (rule.value.end) displayValue = t("toEnd", { end });
       } else if (rule.type === "boolean") {
@@ -106,8 +109,9 @@ export function useFilterFields() {
       }
       // Rótulo do campo traduzido no idioma atual (a regra pode ter vindo de outro participante)
       const field =
-        [...docenteFields, ...disciplinaFields].find((f) => f.key === rule.fieldKey)
-          ?.label ?? rule.field;
+        [...docenteFields, ...disciplinaFields].find(
+          (f) => f.key === rule.fieldKey,
+        )?.label ?? rule.field;
       return `${field}: ${displayValue}`;
     },
     [diasSemana, agruparOptions, docenteFields, disciplinaFields, t],

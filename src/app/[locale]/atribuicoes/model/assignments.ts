@@ -39,7 +39,10 @@ export function setAssignment(
       const nova = { id_disciplina, docentes: [nome_docente] };
       return { atribuicoes: [...atribuicoes, nova], changed: nova };
     }
-    const updated = { ...current, docentes: [...current.docentes, nome_docente] };
+    const updated = {
+      ...current,
+      docentes: [...current.docentes, nome_docente],
+    };
     const next = [...atribuicoes];
     next[index] = updated;
     return { atribuicoes: next, changed: updated };
@@ -55,7 +58,7 @@ export function setAssignment(
 }
 
 /**
- * Alterna o docente na turma (B6). Vários docentes por turma são permitidos.
+ * Alterna o docente na turma. Vários docentes por turma são permitidos.
  */
 export function toggleAssignment(
   atribuicoes: Atribuicao[],
@@ -71,9 +74,9 @@ export function toggleAssignment(
 }
 
 /**
- * Limpa as atribuições (B16):
+ * Limpa as atribuições:
  * - turmas ativas mantêm apenas docentes travados naquela célula (qualquer tipo de trava) ou inativos;
- * - turmas inativas ficam intocadas (decisão D12: não remover docentes de turmas inativas).
+ * - turmas inativas ficam intocadas (decisão: não remover docentes de turmas inativas).
  */
 export function clearAssignments(
   atribuicoes: Atribuicao[],
@@ -89,7 +92,9 @@ export function clearAssignments(
   );
   const travadas = new Set(
     travas
-      .filter((t) => t.id_disciplina !== undefined && t.nome_docente !== undefined)
+      .filter(
+        (t) => t.id_disciplina !== undefined && t.nome_docente !== undefined,
+      )
       .map((t) => `${t.id_disciplina}\u001f${t.nome_docente}`),
   );
 

@@ -78,21 +78,32 @@ export default function GridLegend({ maxPriority }: GridLegendProps) {
         {t("legend")}:
       </Typography>
       {item(
-        <Swatch sx={{ ...tk.cell.empty, color: tk.cell.empty.color }}>·</Swatch>,
+        <Swatch sx={{ ...tk.cell.empty, color: tk.cell.empty.color }}>
+          ·
+        </Swatch>,
         t("legendEmpty"),
       )}
       {item(
         tk.highContrast ? (
-          // No alto contraste a prioridade é só texto amarelo com borda (B23), sem rampa
+          // No alto contraste a prioridade é só texto amarelo com borda, sem rampa
           <Swatch sx={tk.cell.pref}>1…{top}</Swatch>
         ) : (
           <Box display="flex" alignItems="center" gap={0.5}>
-            <Swatch sx={{ backgroundColor: first.bg, color: first.fg }}>1</Swatch>
+            <Swatch sx={{ backgroundColor: first.bg, color: first.fg }}>
+              1
+            </Swatch>
             <Box
               aria-hidden="true"
-              sx={{ width: 48, height: 8, borderRadius: 1, background: tk.rampGradient }}
+              sx={{
+                width: 48,
+                height: 8,
+                borderRadius: 1,
+                background: tk.rampGradient,
+              }}
             />
-            <Swatch sx={{ backgroundColor: last.bg, color: last.fg }}>{top}</Swatch>
+            <Swatch sx={{ backgroundColor: last.bg, color: last.fg }}>
+              {top}
+            </Swatch>
           </Box>
         ),
         `${t("legendPriority")} (${t("legendPriorityHint")})`,

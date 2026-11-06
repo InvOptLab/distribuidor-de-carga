@@ -12,7 +12,7 @@ import { docente, turma } from "./fixtures";
 const docentes = [docente("Ana"), docente("Bruno", { ativo: false })];
 const turmas = [turma("T1"), turma("T2", { ativo: false })];
 
-describe("travas de célula (B9)", () => {
+describe("travas de célula", () => {
   it("alterna uma trava Cell", () => {
     const on = toggleCellLock([], "Ana", "T1");
     expect(on).toEqual([
@@ -35,10 +35,13 @@ describe("travas de célula (B9)", () => {
   });
 });
 
-describe("travas de coluna e linha (B9, B10)", () => {
+describe("travas de coluna e linha", () => {
   it("coluna trava todos os docentes, inclusive inativos", () => {
     const travas = toggleColumnLock([], "T1", docentes);
-    expect(travas).toContainEqual({ id_disciplina: "T1", tipo_trava: TipoTrava.Column });
+    expect(travas).toContainEqual({
+      id_disciplina: "T1",
+      tipo_trava: TipoTrava.Column,
+    });
     expect(isCellLocked(travas, "Ana", "T1")).toBe(true);
     expect(isCellLocked(travas, "Bruno", "T1")).toBe(true);
   });
@@ -55,9 +58,14 @@ describe("travas de coluna e linha (B9, B10)", () => {
   it("linha trava todas as turmas, inclusive inativas, e destravar mantém Cell", () => {
     let travas = toggleCellLock([], "Ana", "T2");
     travas = toggleRowLock(travas, "Ana", turmas);
-    expect(travas).toContainEqual({ nome_docente: "Ana", tipo_trava: TipoTrava.Row });
+    expect(travas).toContainEqual({
+      nome_docente: "Ana",
+      tipo_trava: TipoTrava.Row,
+    });
     expect(isCellLocked(travas, "Ana", "T1")).toBe(true);
-    expect(travas.filter((t) => t.tipo_trava === TipoTrava.RowCell)).toHaveLength(2);
+    expect(
+      travas.filter((t) => t.tipo_trava === TipoTrava.RowCell),
+    ).toHaveLength(2);
     travas = toggleRowLock(travas, "Ana", turmas);
     expect(travas).toEqual([
       { id_disciplina: "T2", nome_docente: "Ana", tipo_trava: TipoTrava.Cell },

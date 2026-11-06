@@ -19,6 +19,7 @@ import {
   CheckCircle as CheckCircleIcon,
 } from "@mui/icons-material";
 import {
+  Atribuicao,
   Disciplina,
   Docente,
   Formulario,
@@ -33,6 +34,8 @@ interface HoveredCourseProps {
   disciplina: Disciplina;
   formularios?: Formulario[];
   docentes?: Docente[];
+  /** Atribuições a exibir. Padrão: as do estado global (grade). O histórico passa as da entrada. */
+  atribuicoes?: Atribuicao[];
   children?: React.ReactNode;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -50,6 +53,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
       disciplina,
       formularios = [],
       docentes = [],
+      atribuicoes: atribuicoesProp,
       children,
       variant = "card",
       onMouseEnter,
@@ -58,7 +62,8 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
     ref,
   ) => {
     // Acessa o contexto global para buscar as atribuições atualizadas
-    const { atribuicoes } = useGlobalContext();
+    const { atribuicoes: atribuicoesGlobais } = useGlobalContext();
+    const atribuicoes = atribuicoesProp ?? atribuicoesGlobais;
 
     const t = useTranslations("Pages.Assignment.Hover.Course");
 

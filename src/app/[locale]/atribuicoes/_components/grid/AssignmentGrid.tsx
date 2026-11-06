@@ -36,7 +36,7 @@ import DocenteRowHeader from "./DocenteRowHeader";
 
 interface AssignmentGridProps {
   density: Density;
-  /** Pré-visualização no hover (B14). */
+  /** Pré-visualização no hover. */
   onPreview: (target: DetailsTarget) => void;
   onLeave: () => void;
   /** Clique no cabeçalho/nome fora do modo trava, ou tecla I: fixa o painel. */
@@ -48,8 +48,18 @@ const NO_HOVER = { r: -1, c: -1 };
 
 // Medidas esperadas por densidade (as reais são lidas do DOM depois do primeiro render)
 const DEFAULT_METRICS: Record<Density, GridMetrics> = {
-  compact: { rowHeaderWidth: 144, headerHeight: 85, colWidth: 92, rowHeight: 29 },
-  comfortable: { rowHeaderWidth: 176, headerHeight: 117, colWidth: 128, rowHeight: 37 },
+  compact: {
+    rowHeaderWidth: 144,
+    headerHeight: 85,
+    colWidth: 92,
+    rowHeight: 29,
+  },
+  comfortable: {
+    rowHeaderWidth: 176,
+    headerHeight: 117,
+    colWidth: 128,
+    rowHeight: 37,
+  },
 };
 
 // Cursor de cadeado para o modo trava (U10)
@@ -61,235 +71,238 @@ const LOCK_CURSOR = `url("data:image/svg+xml;utf8,${encodeURIComponent(
 const GridRoot = styled("div", {
   shouldForwardProp: (prop) =>
     prop !== "hc" && prop !== "lockMode" && prop !== "density",
-})<{ hc: boolean; lockMode: boolean; density: Density }>(
-  ({ theme, hc, lockMode, density }) => {
-    const tk = gridTokens(theme, hc);
-    const compact = density === "compact";
-    const cellStates = Object.fromEntries(
-      Object.entries(tk.cell).map(([state, style]) => [
-        `& td.c[data-s="${state}"]`,
-        style,
-      ]),
-    );
-    const pointer = lockMode ? LOCK_CURSOR : "pointer";
+})<{ hc: boolean; lockMode: boolean; density: Density }>(({
+  theme,
+  hc,
+  lockMode,
+  density,
+}) => {
+  const tk = gridTokens(theme, hc);
+  const compact = density === "compact";
+  const cellStates = Object.fromEntries(
+    Object.entries(tk.cell).map(([state, style]) => [
+      `& td.c[data-s="${state}"]`,
+      style,
+    ]),
+  );
+  const pointer = lockMode ? LOCK_CURSOR : "pointer";
 
-    return {
-      // Tamanhos em px inteiros: os espaçadores da virtualização precisam compensar exatamente
-      // as linhas/colunas fora da janela, senão a área de rolagem muda a cada troca de janela.
-      "--col-w": compact ? "92px" : "128px",
-      "--cell-h": compact ? "28px" : "36px",
-      "--hdr-h": compact ? "84px" : "116px",
-      "--row-w": compact ? "144px" : "176px",
-      position: "relative",
+  return {
+    // Tamanhos em px inteiros: os espaçadores da virtualização precisam compensar exatamente
+    // as linhas/colunas fora da janela, senão a área de rolagem muda a cada troca de janela.
+    "--col-w": compact ? "92px" : "128px",
+    "--cell-h": compact ? "28px" : "36px",
+    "--hdr-h": compact ? "84px" : "116px",
+    "--row-w": compact ? "144px" : "176px",
+    position: "relative",
+    flex: 1,
+    minHeight: 0,
+    width: "100%",
+    overflow: "auto",
+    outline: "none",
+    borderTop: lockMode
+      ? `3px solid ${tk.lockModeAccent}`
+      : `1px solid ${tk.border}`,
+    color: theme.palette.text.primary,
+
+    "& table": {
+      borderCollapse: "separate",
+      borderSpacing: 0,
+      ...theme.typography.body2,
+      fontSize: compact ? "0.8125rem" : "0.875rem",
+    },
+    "& th, & td": {
+      borderRight: `1px solid ${tk.border}`,
+      borderBottom: `1px solid ${tk.border}`,
+      backgroundColor: tk.paper,
+      padding: 0,
+    },
+    // Espaçadores da virtualização (Fase 6): ocupam a área das linhas/colunas fora da janela
+    "& th.sp, & td.sp": {
+      padding: 0,
+      border: "none",
+      background: "transparent",
+      position: "static",
+    },
+    "& tr.sp-row td": { padding: 0, border: "none" },
+    "& th:focus-visible, & td:focus-visible": {
+      outline: tk.focusRing,
+      outlineOffset: -3,
+      zIndex: 4,
+    },
+    "& thead th": {
+      position: "sticky",
+      top: 0,
+      zIndex: 2,
+      verticalAlign: "top",
+      textAlign: "left",
+    },
+    "& thead th.corner": {
+      left: 0,
+      zIndex: 3,
+      width: "var(--row-w)",
+      minWidth: "var(--row-w)",
+      maxWidth: "var(--row-w)",
+      textAlign: "center",
+      verticalAlign: "middle",
+      fontWeight: "bold",
+    },
+
+    // Cabeçalho de turma (compacto, sem expansão sobreposta: U4)
+    "& th.col": { cursor: pointer },
+    "& th.col[data-locked]": { backgroundImage: tk.lockedPattern },
+    "& th.col .hdr": {
+      display: "flex",
+      flexDirection: "column",
+      gap: 2,
+      width: "var(--col-w)",
+      height: "var(--hdr-h)",
+      padding: compact ? "4px 4px" : "6px 6px",
+      overflow: "hidden",
+    },
+    "& .hdr-top": { display: "flex", alignItems: "center", gap: 2 },
+    "& .hdr-code": {
+      fontWeight: 700,
+      fontSize: compact ? "0.75rem" : "0.8125rem",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    },
+    "& .hdr-badge": {
+      marginLeft: "auto",
+      minWidth: 18,
+      height: 18,
+      padding: "0 4px",
+      borderRadius: 9,
+      fontSize: "0.6875rem",
+      fontWeight: 700,
+      lineHeight: "18px",
+      textAlign: "center",
+      backgroundColor: hc ? "#FFFF00" : theme.palette.primary.main,
+      color: hc ? "#000000" : theme.palette.primary.contrastText,
+    },
+    "& .hdr-badge.empty": {
+      backgroundColor: hc ? "#FFFFFF" : theme.palette.warning.light,
+      color: hc ? "#000000" : theme.palette.warning.contrastText,
+    },
+    "& .hdr-name": {
+      fontSize: compact ? "0.6875rem" : "0.75rem",
+      lineHeight: 1.25,
+      display: "-webkit-box",
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: "vertical",
+      overflow: "hidden",
+    },
+    "& .hdr-cursos": {
+      fontSize: "0.6875rem",
+      color: theme.palette.text.secondary,
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    },
+    "& .hdr-days": {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 2,
+      overflow: "hidden",
+    },
+    "& .day": {
+      fontSize: "0.625rem",
+      lineHeight: "14px",
+      padding: "0 4px",
+      borderRadius: 7,
+      whiteSpace: "nowrap",
+      border: `1px solid ${tk.border}`,
+      color: theme.palette.text.secondary,
+      fontVariantNumeric: "tabular-nums",
+    },
+    "& .day.tbd": { fontStyle: "italic" },
+    "& .ico": { fontSize: "0.875rem", flexShrink: 0 },
+    "& .ico.warn": { color: tk.conflict.color },
+
+    // Coluna fixa de docentes
+    "& th.row": {
+      position: "sticky",
+      left: 0,
+      zIndex: 1,
+      width: "var(--row-w)",
+      minWidth: "var(--row-w)",
+      maxWidth: "var(--row-w)",
+      textAlign: "left",
+      cursor: pointer,
+    },
+    "& th.row[data-locked]": { backgroundImage: tk.lockedPattern },
+    "& th.row[data-conflict]": {
+      backgroundColor: tk.conflict.background,
+      color: tk.conflict.color,
+    },
+    "& th.row .nm": {
+      display: "flex",
+      alignItems: "center",
+      gap: 4,
+      height: "var(--cell-h)",
+      padding: "0 8px",
+      fontWeight: 600,
+    },
+    "& .nm-txt": {
       flex: 1,
-      minHeight: 0,
-      width: "100%",
-      overflow: "auto",
-      outline: "none",
-      borderTop: lockMode
-        ? `3px solid ${tk.lockModeAccent}`
-        : `1px solid ${tk.border}`,
-      color: theme.palette.text.primary,
+      minWidth: 0,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
+    "& .nm-carga": {
+      fontSize: "0.75rem",
+      fontWeight: 400,
+      color: theme.palette.text.secondary,
+      fontVariantNumeric: "tabular-nums",
+    },
 
-      "& table": {
-        borderCollapse: "separate",
-        borderSpacing: 0,
-        ...theme.typography.body2,
-        fontSize: compact ? "0.8125rem" : "0.875rem",
-      },
-      "& th, & td": {
-        borderRight: `1px solid ${tk.border}`,
-        borderBottom: `1px solid ${tk.border}`,
-        backgroundColor: tk.paper,
-        padding: 0,
-      },
-      // Espaçadores da virtualização (Fase 6): ocupam a área das linhas/colunas fora da janela
-      "& th.sp, & td.sp": {
-        padding: 0,
-        border: "none",
-        background: "transparent",
-        position: "static",
-      },
-      "& tr.sp-row td": { padding: 0, border: "none" },
-      "& th:focus-visible, & td:focus-visible": {
-        outline: tk.focusRing,
-        outlineOffset: -3,
-        zIndex: 4,
-      },
-      "& thead th": {
-        position: "sticky",
-        top: 0,
-        zIndex: 2,
-        verticalAlign: "top",
-        textAlign: "left",
-      },
-      "& thead th.corner": {
-        left: 0,
-        zIndex: 3,
-        width: "var(--row-w)",
-        minWidth: "var(--row-w)",
-        maxWidth: "var(--row-w)",
-        textAlign: "center",
-        verticalAlign: "middle",
-        fontWeight: "bold",
-      },
-
-      // Cabeçalho de turma (compacto, sem expansão sobreposta: U4)
-      "& th.col": { cursor: pointer },
-      "& th.col[data-locked]": { backgroundImage: tk.lockedPattern },
-      "& th.col .hdr": {
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        width: "var(--col-w)",
-        height: "var(--hdr-h)",
-        padding: compact ? "4px 4px" : "6px 6px",
-        overflow: "hidden",
-      },
-      "& .hdr-top": { display: "flex", alignItems: "center", gap: 2 },
-      "& .hdr-code": {
-        fontWeight: 700,
-        fontSize: compact ? "0.75rem" : "0.8125rem",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-      "& .hdr-badge": {
-        marginLeft: "auto",
-        minWidth: 18,
-        height: 18,
-        padding: "0 4px",
-        borderRadius: 9,
-        fontSize: "0.6875rem",
-        fontWeight: 700,
-        lineHeight: "18px",
-        textAlign: "center",
-        backgroundColor: hc ? "#FFFF00" : theme.palette.primary.main,
-        color: hc ? "#000000" : theme.palette.primary.contrastText,
-      },
-      "& .hdr-badge.empty": {
-        backgroundColor: hc ? "#FFFFFF" : theme.palette.warning.light,
-        color: hc ? "#000000" : theme.palette.warning.contrastText,
-      },
-      "& .hdr-name": {
-        fontSize: compact ? "0.6875rem" : "0.75rem",
-        lineHeight: 1.25,
-        display: "-webkit-box",
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: "vertical",
-        overflow: "hidden",
-      },
-      "& .hdr-cursos": {
-        fontSize: "0.6875rem",
-        color: theme.palette.text.secondary,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-      "& .hdr-days": {
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 2,
-        overflow: "hidden",
-      },
-      "& .day": {
-        fontSize: "0.625rem",
-        lineHeight: "14px",
-        padding: "0 4px",
-        borderRadius: 7,
-        whiteSpace: "nowrap",
-        border: `1px solid ${tk.border}`,
-        color: theme.palette.text.secondary,
-        fontVariantNumeric: "tabular-nums",
-      },
-      "& .day.tbd": { fontStyle: "italic" },
-      "& .ico": { fontSize: "0.875rem", flexShrink: 0 },
-      "& .ico.warn": { color: tk.conflict.color },
-
-      // Coluna fixa de docentes (B4)
-      "& th.row": {
-        position: "sticky",
-        left: 0,
-        zIndex: 1,
-        width: "var(--row-w)",
-        minWidth: "var(--row-w)",
-        maxWidth: "var(--row-w)",
-        textAlign: "left",
-        cursor: pointer,
-      },
-      "& th.row[data-locked]": { backgroundImage: tk.lockedPattern },
-      "& th.row[data-conflict]": {
-        backgroundColor: tk.conflict.background,
-        color: tk.conflict.color,
-      },
-      "& th.row .nm": {
-        display: "flex",
-        alignItems: "center",
-        gap: 4,
-        height: "var(--cell-h)",
-        padding: "0 8px",
-        fontWeight: 600,
-      },
-      "& .nm-txt": {
-        flex: 1,
-        minWidth: 0,
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-      },
-      "& .nm-carga": {
-        fontSize: "0.75rem",
-        fontWeight: 400,
-        color: theme.palette.text.secondary,
-        fontVariantNumeric: "tabular-nums",
-      },
-
-      // Células
-      "& td.c": {
-        position: "relative",
-        width: "var(--col-w)",
-        minWidth: "var(--col-w)",
-        maxWidth: "var(--col-w)",
-        height: "var(--cell-h)",
-        textAlign: "center",
-        verticalAlign: "middle",
-        fontVariantNumeric: "tabular-nums",
-        fontWeight: 600,
-        cursor: pointer,
-        transition: "background-color 120ms ease, box-shadow 120ms ease",
-      },
-      ...cellStates,
-      "& td.c[data-locked]": {
-        backgroundImage: tk.lockedPattern,
-        ...(tk.lockedBorder && { border: tk.lockedBorder }),
-      },
-      "& td.c[data-r]:hover": { boxShadow: tk.hoverCell },
-      "& td.c .ck": {
-        position: "absolute",
-        top: 1,
-        right: 1,
-        fontSize: "0.75rem",
-      },
-      "& td.c .lk": {
-        position: "absolute",
-        bottom: 1,
-        right: 1,
-        fontSize: "0.7rem",
-        opacity: 0.85,
-      },
-      "@keyframes ag-shake": {
-        "0%, 100%": { transform: "translateX(0)" },
-        "25%": { transform: "translateX(-3px)" },
-        "75%": { transform: "translateX(3px)" },
-      },
-      "& .shake": { animation: "ag-shake 240ms ease" },
-      "@media (prefers-reduced-motion: reduce)": {
-        "& td.c": { transition: "none" },
-        "& .shake": { animation: "none" },
-      },
-    };
-  },
-);
+    // Células
+    "& td.c": {
+      position: "relative",
+      width: "var(--col-w)",
+      minWidth: "var(--col-w)",
+      maxWidth: "var(--col-w)",
+      height: "var(--cell-h)",
+      textAlign: "center",
+      verticalAlign: "middle",
+      fontVariantNumeric: "tabular-nums",
+      fontWeight: 600,
+      cursor: pointer,
+      transition: "background-color 120ms ease, box-shadow 120ms ease",
+    },
+    ...cellStates,
+    "& td.c[data-locked]": {
+      backgroundImage: tk.lockedPattern,
+      ...(tk.lockedBorder && { border: tk.lockedBorder }),
+    },
+    "& td.c[data-r]:hover": { boxShadow: tk.hoverCell },
+    "& td.c .ck": {
+      position: "absolute",
+      top: 1,
+      right: 1,
+      fontSize: "0.75rem",
+    },
+    "& td.c .lk": {
+      position: "absolute",
+      bottom: 1,
+      right: 1,
+      fontSize: "0.7rem",
+      opacity: 0.85,
+    },
+    "@keyframes ag-shake": {
+      "0%, 100%": { transform: "translateX(0)" },
+      "25%": { transform: "translateX(-3px)" },
+      "75%": { transform: "translateX(3px)" },
+    },
+    "& .shake": { animation: "ag-shake 240ms ease" },
+    "@media (prefers-reduced-motion: reduce)": {
+      "& td.c": { transition: "none" },
+      "& .shake": { animation: "none" },
+    },
+  };
+});
 
 const Tip = styled("div")(({ theme }) => ({
   position: "fixed",
@@ -315,7 +328,7 @@ const VisuallyHidden = styled("div")({
 });
 
 /**
- * Realce de linha/coluna (B13) via CSS gerado a partir do store: nenhuma célula re-renderiza no hover.
+ * Realce de linha/coluna via CSS gerado a partir do store: nenhuma célula re-renderiza no hover.
  */
 function HoverHighlight({
   store,
@@ -399,7 +412,12 @@ export default function AssignmentGrid({
   const countsRef = useRef({ rows: rows.length, cols: cols.length });
   countsRef.current = { rows: rows.length, cols: cols.length };
   const [win, setWin] = useState<GridWindow>(() =>
-    computeWindow(rows.length, cols.length, { scrollTop: 0, scrollLeft: 0, width: 0, height: 0 }, metrics),
+    computeWindow(
+      rows.length,
+      cols.length,
+      { scrollTop: 0, scrollLeft: 0, width: 0, height: 0 },
+      metrics,
+    ),
   );
 
   const readViewport = () => {
@@ -435,8 +453,10 @@ export default function AssignmentGrid({
     const cell = root.querySelector<HTMLElement>("td.c");
     const bodyRow = cell?.parentElement;
     const next: GridMetrics = {
-      rowHeaderWidth: corner?.offsetWidth || DEFAULT_METRICS[density].rowHeaderWidth,
-      headerHeight: headerRow?.offsetHeight || DEFAULT_METRICS[density].headerHeight,
+      rowHeaderWidth:
+        corner?.offsetWidth || DEFAULT_METRICS[density].rowHeaderWidth,
+      headerHeight:
+        headerRow?.offsetHeight || DEFAULT_METRICS[density].headerHeight,
       colWidth: cell?.offsetWidth || DEFAULT_METRICS[density].colWidth,
       rowHeight: bodyRow?.offsetHeight || DEFAULT_METRICS[density].rowHeight,
     };
@@ -562,7 +582,12 @@ export default function AssignmentGrid({
   };
 
   /** Aplica a ação de uma célula (clique, Espaço/Enter, L) com anúncio e feedback. */
-  const actOnCell = (r: number, c: number, lock: boolean, el?: HTMLElement | null) => {
+  const actOnCell = (
+    r: number,
+    c: number,
+    lock: boolean,
+    el?: HTMLElement | null,
+  ) => {
     const docente = rows[r];
     const disciplina = cols[c];
     if (!docente || !disciplina) return;
@@ -580,7 +605,9 @@ export default function AssignmentGrid({
     }
     commands.cellClick(docente.nome, disciplina.id, lock);
     if (lock) {
-      announce(t("announceCellLock", { docente: docente.nome, turma: turmaLabel }));
+      announce(
+        t("announceCellLock", { docente: docente.nome, turma: turmaLabel }),
+      );
     } else {
       announce(
         t(model.assigned.has(key) ? "announceRemoved" : "announceAssigned", {
@@ -625,7 +652,7 @@ export default function AssignmentGrid({
     c: el.dataset.c !== undefined ? Number(el.dataset.c) : -1,
   });
 
-  /** Troca de zona (célula, cabeçalho, nome) para a pré-visualização do painel (B14). */
+  /** Troca de zona (célula, cabeçalho, nome) para a pré-visualização do painel. */
   const enterZone = (key: string, enter?: () => void) => {
     if (zoneRef.current === key) return;
     zoneRef.current = key;
@@ -709,7 +736,12 @@ export default function AssignmentGrid({
     else if ((key === " " || key === "Enter") && !ctrl) {
       if (isCell) actOnCell(pos.r, pos.c, isLockMode, el);
       else actOnHeader(pos, isLockMode);
-    } else if ((key === "l" || key === "L") && plain && !event.shiftKey && isCell)
+    } else if (
+      (key === "l" || key === "L") &&
+      plain &&
+      !event.shiftKey &&
+      isCell
+    )
       actOnCell(pos.r, pos.c, true, el);
     else if ((key === "l" || key === "L") && plain && event.shiftKey && !isCell)
       actOnHeader(pos, true);
@@ -717,7 +749,8 @@ export default function AssignmentGrid({
       setIsLockMode(!isLockMode);
       announce(t("announceLockMode", { state: isLockMode ? "off" : "on" }));
     } else if ((key === "i" || key === "I") && plain) {
-      if (pos.c >= 0 && cols[pos.c]) onPin({ kind: "turma", id: cols[pos.c].id });
+      if (pos.c >= 0 && cols[pos.c])
+        onPin({ kind: "turma", id: cols[pos.c].id });
       else if (pos.r >= 0 && rows[pos.r])
         onPin({ kind: "docente", nome: rows[pos.r].nome });
     } else if (key === "Escape") {
@@ -792,7 +825,9 @@ export default function AssignmentGrid({
                   disciplina={disciplina}
                   c={c}
                   locked={model.colLocked.has(disciplina.id)}
-                  assignedCount={model.assignedByTurma.get(disciplina.id)?.length ?? 0}
+                  assignedCount={
+                    model.assignedByTurma.get(disciplina.id)?.length ?? 0
+                  }
                   density={density}
                   active={active.r === -1 && active.c === c}
                 />
@@ -803,58 +838,67 @@ export default function AssignmentGrid({
         </thead>
         <tbody>
           {r0 > 0 && (
-            <tr className="sp-row" aria-hidden="true" style={{ height: r0 * metrics.rowHeight }}>
+            <tr
+              className="sp-row"
+              aria-hidden="true"
+              style={{ height: r0 * metrics.rowHeight }}
+            >
               <td className="sp" colSpan={renderedColSpan} />
             </tr>
           )}
           {visibleRows.map((docente, i) => {
             const r = r0 + i;
             return (
-            <tr key={docente.nome} role="row" aria-rowindex={r + 2}>
-              <DocenteRowHeader
-                nome={docente.nome}
-                r={r}
-                locked={model.rowLocked.has(docente.nome)}
-                conflict={model.conflictDocentes.has(docente.nome)}
-                carga={model.cargaByDocente.get(docente.nome) ?? 0}
-                saldo={docente.saldo}
-                active={active.r === r && active.c === -1}
-              />
-              {leftSpacer("td")}
-              {visibleCols.map((disciplina, j) => {
-                const c = c0 + j;
-                const key = cellKey(docente.nome, disciplina.id);
-                const priority = model.priority.get(key);
-                const assigned = model.assigned.has(key);
-                const locked = model.cellLocked.has(key);
-                const base = assigned ? "assigned" : priority ? "pref" : "empty";
-                const color = base === "pref" ? priorityColor(priority) : undefined;
-                const label = [
-                  docente.nome,
-                  `${disciplina.codigo} ${disciplina.nome}`,
-                  priority ? labels.priority(priority) : labels.noForm,
-                  assigned ? labels.assigned : labels.notAssigned,
-                  locked ? labels.locked : "",
-                ]
-                  .filter(Boolean)
-                  .join(", ");
-                return (
-                  <GridCell
-                    key={disciplina.id}
-                    r={r}
-                    c={c}
-                    base={base}
-                    locked={locked}
-                    priority={priority}
-                    bg={color?.bg}
-                    fg={color?.fg}
-                    active={active.r === r && active.c === c}
-                    label={label}
-                  />
-                );
-              })}
-              {rightSpacer("td")}
-            </tr>
+              <tr key={docente.nome} role="row" aria-rowindex={r + 2}>
+                <DocenteRowHeader
+                  nome={docente.nome}
+                  r={r}
+                  locked={model.rowLocked.has(docente.nome)}
+                  conflict={model.conflictDocentes.has(docente.nome)}
+                  carga={model.cargaByDocente.get(docente.nome) ?? 0}
+                  saldo={docente.saldo}
+                  active={active.r === r && active.c === -1}
+                />
+                {leftSpacer("td")}
+                {visibleCols.map((disciplina, j) => {
+                  const c = c0 + j;
+                  const key = cellKey(docente.nome, disciplina.id);
+                  const priority = model.priority.get(key);
+                  const assigned = model.assigned.has(key);
+                  const locked = model.cellLocked.has(key);
+                  const base = assigned
+                    ? "assigned"
+                    : priority
+                      ? "pref"
+                      : "empty";
+                  const color =
+                    base === "pref" ? priorityColor(priority) : undefined;
+                  const label = [
+                    docente.nome,
+                    `${disciplina.codigo} ${disciplina.nome}`,
+                    priority ? labels.priority(priority) : labels.noForm,
+                    assigned ? labels.assigned : labels.notAssigned,
+                    locked ? labels.locked : "",
+                  ]
+                    .filter(Boolean)
+                    .join(", ");
+                  return (
+                    <GridCell
+                      key={disciplina.id}
+                      r={r}
+                      c={c}
+                      base={base}
+                      locked={locked}
+                      priority={priority}
+                      bg={color?.bg}
+                      fg={color?.fg}
+                      active={active.r === r && active.c === c}
+                      label={label}
+                    />
+                  );
+                })}
+                {rightSpacer("td")}
+              </tr>
             );
           })}
           {r1 < rows.length && (

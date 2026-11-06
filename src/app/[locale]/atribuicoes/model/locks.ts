@@ -18,7 +18,7 @@ export function hasLock(travas: Celula[], trava: Celula): boolean {
 }
 
 /**
- * Qualquer trava (Cell, RowCell ou ColumnCell) na célula impede atribuir/remover (B7).
+ * Qualquer trava (Cell, RowCell ou ColumnCell) na célula impede atribuir/remover.
  */
 export function isCellLocked(
   travas: Celula[],
@@ -33,7 +33,7 @@ export function isCellLocked(
 }
 
 /**
- * Adiciona ou remove uma trava `Cell` (B9). Outras travas na mesma célula continuam.
+ * Adiciona ou remove uma trava `Cell`. Outras travas na mesma célula continuam.
  */
 export function setCellLock(
   travas: Celula[],
@@ -81,7 +81,7 @@ export function isRowLocked(travas: Celula[], nome_docente: string) {
 
 /**
  * Trava `Column` + `ColumnCell` para TODOS os docentes (inclusive inativos), ou
- * remove apenas as travas Column/ColumnCell daquela turma (B9, B10).
+ * remove apenas as travas Column/ColumnCell daquela turma.
  */
 export function setColumnLock(
   travas: Celula[],
@@ -124,7 +124,7 @@ export function toggleColumnLock(
 
 /**
  * Trava `Row` + `RowCell` para TODAS as turmas (inclusive inativas), ou remove
- * apenas as travas Row/RowCell daquele docente (B9, B10).
+ * apenas as travas Row/RowCell daquele docente.
  */
 export function setRowLock(
   travas: Celula[],

@@ -29,9 +29,9 @@ export function decodeEntities(text: string): string {
 }
 
 /**
- * Texto dos cursos para o cabeçalho da turma (B3): remove o prefixo até o primeiro `;`,
+ * Texto dos cursos para o cabeçalho da turma: remove o prefixo até o primeiro `;`,
  * os `<br>` e os `&emsp;`. Qualquer outra marcação é descartada e o resultado é texto puro,
- * nunca HTML (D2: o dado pode vir de outro participante da sala).
+ * nunca HTML (o dado pode vir de outro participante da sala).
  */
 export function formatCursos(cursos: string | undefined | null): string {
   if (!cursos) return "";

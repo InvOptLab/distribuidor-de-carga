@@ -117,7 +117,7 @@ export default function TimetableView() {
     setOpenCleanDialog(false);
   };
 
-  // Convidado sem permissão não executa nem limpa (D5)
+  // Convidado sem permissão não executa nem limpa
   const handleExecute = () => {
     if (!commands.ensureCanEdit()) return;
     executeProcess();
@@ -260,7 +260,7 @@ export default function TimetableView() {
         stage={executionStage}
         progress={{
           current: disciplinasAlocadas,
-          // O algoritmo roda sobre todas as turmas ativas, não só as filtradas (D8)
+          // O algoritmo roda sobre todas as turmas ativas, não só as filtradas
           total: disciplinas.filter((disciplina) => disciplina.ativo).length,
         }}
         estatisticasMonitoradas={estatisticasMonitoradas}

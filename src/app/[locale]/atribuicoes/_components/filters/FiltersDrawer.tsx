@@ -30,7 +30,7 @@ interface FiltersDrawerProps {
 }
 
 /**
- * Visão completa dos filtros (B19), no drawer lateral. A barra de filtros cobre o uso rápido.
+ * Visão completa dos filtros, no drawer lateral. A barra de filtros cobre o uso rápido.
  */
 export default function FiltersDrawer({
   docenteFilters,
@@ -58,7 +58,10 @@ export default function FiltersDrawer({
   const addDisciplinaRule = (rule: FilterRule) => {
     onDisciplinaFiltersChange({
       ...disciplinaFilters,
-      rules: [...disciplinaFilters.rules, { ...rule, id: Date.now().toString() }],
+      rules: [
+        ...disciplinaFilters.rules,
+        { ...rule, id: Date.now().toString() },
+      ],
     });
     setOpenDisciplinaDialog(false);
   };
@@ -75,9 +78,15 @@ export default function FiltersDrawer({
       rules: disciplinaFilters.rules.filter((rule) => rule.id !== ruleId),
     });
 
-  const hasActiveFilters = computeHasActiveFilters(docenteFilters, disciplinaFilters);
+  const hasActiveFilters = computeHasActiveFilters(
+    docenteFilters,
+    disciplinaFilters,
+  );
 
-  const renderFilterRule = (rule: FilterRule, onRemove: (id: string) => void) => (
+  const renderFilterRule = (
+    rule: FilterRule,
+    onRemove: (id: string) => void,
+  ) => (
     <Chip
       key={rule.id}
       label={describeRule(rule)}
@@ -110,7 +119,12 @@ export default function FiltersDrawer({
         onChange={(e) => onSearch(e.target.value)}
         sx={{ mb: 2 }}
       />
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={1}
+      >
         <Typography variant="body2">{t("advancedFiltersLabel")}</Typography>
         <Button
           size="small"
@@ -130,7 +144,12 @@ export default function FiltersDrawer({
 
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
         <Typography variant="h6">{t("gridFilters")}</Typography>
         <IconButton onClick={onClose} aria-label={t("cancel")}>
           <Close />
@@ -185,7 +204,9 @@ export default function FiltersDrawer({
                 variant="outlined"
               />
             )}
-            {docenteFilters.rules.map((rule) => renderFilterRule(rule, removeDocenteRule))}
+            {docenteFilters.rules.map((rule) =>
+              renderFilterRule(rule, removeDocenteRule),
+            )}
             {disciplinaFilters.rules.map((rule) =>
               renderFilterRule(rule, removeDisciplinaRule),
             )}
@@ -213,7 +234,8 @@ export default function FiltersDrawer({
             t("classFiltersColumns"),
             t("searchClassByNameCodeId"),
             disciplinaFilters.search,
-            (search) => onDisciplinaFiltersChange({ ...disciplinaFilters, search }),
+            (search) =>
+              onDisciplinaFiltersChange({ ...disciplinaFilters, search }),
             () => setOpenDisciplinaDialog(true),
             disciplinaFilters.rules,
             removeDisciplinaRule,
