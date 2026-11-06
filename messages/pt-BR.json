@@ -1490,6 +1490,279 @@
         "aspirationCriteria": "Critérios de Aspiração"
       }
     },
+    "Compare": {
+      "title": "Comparar soluções",
+      "swap": "Trocar A e B (X)",
+      "noForm": "Sem formulário",
+      "priorityAria": "Prioridade {value}",
+      "missing": "Solução não encontrada no histórico: {ids}. Escolha outra no seletor.",
+      "ignored": "{count, plural, one {# solução selecionada a mais foi ignorada} other {# soluções selecionadas a mais foram ignoradas}}: a comparação usa só as duas primeiras.",
+      "side": {
+        "a": "Solução A",
+        "b": "Solução B"
+      },
+      "delta": {
+        "same": "igual",
+        "better": "melhor",
+        "worse": "pior",
+        "changed": "mudou"
+      },
+      "status": {
+        "added": "Adicionadas",
+        "removed": "Removidas",
+        "modified": "Modificadas",
+        "unchanged": "Inalteradas"
+      },
+      "empty": {
+        "needTwo": "É preciso pelo menos duas soluções para comparar",
+        "needTwoBody": "Execute um algoritmo, salve alterações manuais ou importe outra solução.",
+        "selectTwo": "Selecione duas soluções",
+        "selectTwoBody": "Escolha a solução B no seletor ou use uma das sugestões acima."
+      },
+      "picker": {
+        "label": "Solução {side}",
+        "placeholder": "Buscar por data, origem ou algoritmo",
+        "noOptions": "Nenhuma solução encontrada",
+        "evaluation": "Aval. {value}",
+        "coverage": "{done}/{total} turmas",
+        "assignments": "{count, plural, one {# atribuição} other {# atribuições}}"
+      },
+      "menu": {
+        "more": "Ações da solução {side}",
+        "restore": "Restaurar esta solução",
+        "alreadyCurrent": "Já é a solução atual",
+        "openInHistory": "Abrir no histórico",
+        "statistics": "Ver estatísticas",
+        "download": "Baixar JSON"
+      },
+      "suggestions": {
+        "label": "Sugestões para B:",
+        "previous": "Anterior a A",
+        "best": "Melhor avaliação",
+        "current": "Atual"
+      },
+      "tabs": {
+        "aria": "Seções da comparação",
+        "overview": "Visão geral",
+        "changes": "Mudanças",
+        "docentes": "Docentes",
+        "dist": "Distribuições",
+        "config": "Configuração"
+      },
+      "scorecard": {
+        "title": "Placar",
+        "metric": "Métrica",
+        "openRow": "Ver detalhes de {metric}",
+        "metrics": {
+          "avaliacao": "Avaliação",
+          "cobertura": "Cobertura (turmas atribuídas)",
+          "pares": "Total de atribuições",
+          "docentesUnicos": "Docentes com atribuição",
+          "semAtribuicao": "Docentes sem atribuição",
+          "conflitos": "Docentes com conflito",
+          "semFormulario": "Atribuições sem formulário",
+          "prioMedia": "Prioridade média atribuída",
+          "cargaDesvio": "Desvio-padrão da carga",
+          "travas": "Travas",
+          "iteracoes": "Iterações",
+          "tempo": "Tempo de execução",
+          "status": "Execução"
+        },
+        "status": {
+          "none": "— (sem estatísticas)",
+          "complete": "Completa",
+          "interrupted": "Interrompida"
+        }
+      },
+      "compat": {
+        "body": "As soluções usam dados diferentes: {parts}. Cada métrica usa os dados da própria solução.",
+        "details": "Ver diferenças",
+        "turmasSoA": "{count, plural, one {# turma só em A} other {# turmas só em A}}",
+        "turmasSoB": "{count, plural, one {# turma só em B} other {# turmas só em B}}",
+        "docentesSoA": "{count, plural, one {# docente só em A} other {# docentes só em A}}",
+        "docentesSoB": "{count, plural, one {# docente só em B} other {# docentes só em B}}",
+        "forms": "{count, plural, one {# formulário com prioridade diferente} other {# formulários com prioridade diferente}}",
+        "maxPriority": "prioridade máxima {a} × {b}",
+        "more": "e mais {count}…",
+        "lists": {
+          "turmasSoA": "Turmas só em A",
+          "turmasSoB": "Turmas só em B",
+          "docentesSoA": "Docentes só em A",
+          "docentesSoB": "Docentes só em B",
+          "forms": "Formulários com prioridade diferente (A → B)"
+        }
+      },
+      "overview": {
+        "changesTitle": "Mudanças por turma",
+        "compositionAria": "Composição das mudanças",
+        "pairs": "{kept} pares mantidos · {swapped} trocados",
+        "seeChanges": "Ver mudanças"
+      },
+      "changes": {
+        "statusFilter": "Filtrar por situação",
+        "trendFilter": "Filtrar por prioridade média",
+        "trend": {
+          "all": "Todas",
+          "improved": "Melhorou",
+          "worsened": "Piorou",
+          "same": "Igual"
+        },
+        "search": "Buscar turma ou docente",
+        "exportCsv": "Exportar CSV",
+        "empty": "Nenhuma turma corresponde aos filtros.",
+        "tableAria": "Mudanças por turma",
+        "addedMark": "Entrou",
+        "removedMark": "Saiu",
+        "columns": {
+          "turma": "Turma",
+          "status": "Situação",
+          "a": "Docentes em A",
+          "b": "Docentes em B",
+          "deltaPrio": "Δ prio. média",
+          "deltaCarga": "Δ carga envolvida",
+          "deltaCargaHint": "Carga total (B) dos docentes de B menos a carga total (A) dos docentes de A",
+          "deltaSaldo": "Δ saldo",
+          "deltaSaldoHint": "Soma dos saldos dos docentes de B menos a dos docentes de A",
+          "obs": "Obs."
+        },
+        "obs": {
+          "onlyA": "turma só em A",
+          "onlyB": "turma só em B",
+          "noFormA": "{count} sem formulário em A",
+          "noFormB": "{count} sem formulário em B",
+          "conflictB": "conflito em B",
+          "conflictResolved": "conflito resolvido"
+        },
+        "csv": {
+          "entered": "Entraram",
+          "left": "Saíram"
+        }
+      },
+      "docentes": {
+        "filterAria": "Filtrar docentes",
+        "search": "Buscar docente",
+        "empty": "Nenhum docente corresponde aos filtros.",
+        "tableAria": "Docentes",
+        "saldoDiffers": "Saldo diferente entre os contextos de A e B",
+        "bothConflict": "Conflito em A e em B",
+        "workloadFilter": "Carga: {label}",
+        "filters": {
+          "affected": "Afetados",
+          "all": "Todos",
+          "lostAll": "Ficaram sem atribuição",
+          "unassigned": "Sem atribuição (A ou B)",
+          "conflict": "Com conflito",
+          "gainedConflict": "Ganharam conflito",
+          "resolvedConflict": "Resolveram conflito"
+        },
+        "columns": {
+          "docente": "Docente",
+          "saldo": "Saldo",
+          "cargaA": "Carga A",
+          "cargaB": "Carga B",
+          "deltaHint": "Carga B − carga A (ordena por |Δ|)",
+          "ganhou": "Ganhou",
+          "perdeu": "Perdeu",
+          "prio": "Prio. média A → B",
+          "conflictHint": "Conflito de horário"
+        }
+      },
+      "charts": {
+        "seriesA": "Solução A",
+        "seriesB": "Solução B",
+        "noForm": "Sem form.",
+        "priorityTitle": "Prioridades das atribuições",
+        "priorityAxis": "Prioridade (1 = mais preferida)",
+        "assignmentsAxis": "Atribuições",
+        "priorityHint": "Atribuições sem formulário aparecem na última barra e não entram na média.",
+        "prioritySummaryItem": "prioridade {p}: A {a}, B {b}",
+        "noPriority": "Nenhuma atribuição para mostrar",
+        "weightedMean": "Média ponderada",
+        "totals": "Totais",
+        "violationsTitle": "Violações por restrição",
+        "constraintsAxis": "Restrições",
+        "violationsAxis": "Violações",
+        "noViolations": "Nenhuma violação registrada",
+        "compositionTitle": "Composição das violações (100%)",
+        "compositionAxis": "Solução",
+        "workloadTitle": "Carga didática por docente",
+        "workloadAxis": "Carga didática",
+        "docentesAxis": "Docentes",
+        "workloadHint": "Clique numa barra ou numa faixa para ver os docentes na aba Docentes.",
+        "workloadSummaryItem": "carga {carga}: A {a}, B {b}",
+        "noWorkload": "Nenhum docente ativo",
+        "band0": "Carga 0",
+        "bandRange": "Carga até {to} (> {from})",
+        "bandAbove": "Carga > {from}",
+        "cargaEquals": "carga = {carga}",
+        "bandFilter": "faixa {band}"
+      },
+      "inspector": {
+        "aria": "Detalhes A × B",
+        "close": "Fechar (Esc)",
+        "turma": "Turma",
+        "docente": "Docente",
+        "carga": "Carga {value}",
+        "conflict": "Conflito de horário",
+        "notInSide": "Não existe nesta solução",
+        "noDocentes": "Sem docentes",
+        "noTurmas": "Sem turmas",
+        "interested": "Interessados (formulários)",
+        "preferences": "Turmas com formulário",
+        "noForms": "Nenhum formulário",
+        "priorityDiffers": "Prioridade diferente entre A e B (dados incompatíveis)",
+        "assigned": "Atribuído",
+        "saldo": "Saldo",
+        "cargaLabel": "Carga",
+        "conflicts": "{count, plural, one {# turma em conflito} other {# turmas em conflito}}",
+        "summary": "Ganhou {gained} e perdeu {lost} turma(s)"
+      },
+      "config": {
+        "onlyDiffs": "Mostrar só diferenças",
+        "general": "Geral",
+        "parameter": "Parâmetro",
+        "manual": "Sem algoritmo (inserção manual)",
+        "complete": "Completa",
+        "interrupted": "Interrompida",
+        "rows": {
+          "algorithm": "Algoritmo",
+          "origin": "Origem",
+          "date": "Data",
+          "id": "ID",
+          "evaluation": "Avaliação",
+          "iterations": "Iterações",
+          "time": "Tempo de execução",
+          "status": "Execução",
+          "dataPoints": "Pontos de dados",
+          "docentes": "Docentes ativos / total",
+          "turmas": "Turmas ativas / total",
+          "travas": "Travas",
+          "maxPriority": "Prioridade máxima"
+        },
+        "noAlgorithmBoth": "Sem configuração de algoritmo (inserção manual) nas duas soluções.",
+        "noAlgorithmSide": "A solução {side} não tem configuração de algoritmo (inserção manual).",
+        "constraints": "Restrições",
+        "constraint": "Restrição",
+        "type": "Tipo",
+        "activeHeader": "Ativa",
+        "penalty": "Penalidade",
+        "hard": "Hard",
+        "soft": "Soft",
+        "active": "Ativa",
+        "inactive": "Inativa",
+        "none": "Nenhum",
+        "lists": {
+          "neighborhood": "Vizinhança",
+          "stop": "Critérios de parada",
+          "aspiration": "Critérios de aspiração",
+          "tabu": "Lista tabu"
+        },
+        "tabu": {
+          "solution": "Solução · tamanho {size}",
+          "moviment": "Movimento · add {add}, drop {drop}"
+        }
+      }
+    },
     "History": {
       "title": "Histórico de soluções ({count})",
       "columns": {
