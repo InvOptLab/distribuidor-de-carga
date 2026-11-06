@@ -1,10 +1,18 @@
+import type React from "react";
 import { Solucao } from "@/algoritmo/communs/interfaces/interfaces";
-import { getFormattedDate } from "@/app/[locale]/atribuicoes";
+import { getFormattedDate } from "@/app/[locale]/atribuicoes/io/exportJson";
+import { nextFreeHistoryId } from "@/app/[locale]/history/model/sort";
 import {
   ContextoExecucao,
   HistoricoSolucao,
   TipoInsercao,
 } from "../Global/utils";
+
+/**
+ * Ids já emitidos nesta sessão. Cobre inserções no mesmo tick, antes de o Map do estado
+ * refletir a anterior.
+ */
+const issuedIds = new Set<string>();
 
 /**
  * Função que adiciona uma nova solução ao histórico
@@ -15,30 +23,36 @@ import {
  */
 export function addNewSolutionToHistory(
   novaSolucao: Solucao,
-  setHistoricoSolucoes: (
-    historicoSolucoes: Map<string, HistoricoSolucao>,
-  ) => void,
+  setHistoricoSolucoes: React.Dispatch<
+    React.SetStateAction<Map<string, HistoricoSolucao>>
+  >,
   historicoSolucoes: Map<string, HistoricoSolucao>,
   tipoInsercao: TipoInsercao,
   contextoExecucao: ContextoExecucao,
 ): string {
-  // Por conta do React, a inserção de um novo item em um Map deve ser feita da maneira a seguir.
-  const newHistoricoSolucoesMap: Map<string, HistoricoSolucao> = new Map<
-    string,
-    HistoricoSolucao
-  >(historicoSolucoes);
   const date = new Date();
-  const id = getFormattedDate(date);
-  newHistoricoSolucoesMap.set(id, {
+  // Mesmo formato legível de antes; `_2`, `_3`… só quando o segundo já foi usado
+  const id = nextFreeHistoryId(
+    getFormattedDate(date),
+    (candidate) => historicoSolucoes.has(candidate) || issuedIds.has(candidate),
+  );
+  issuedIds.add(id);
+
+  const entrada: HistoricoSolucao = {
     id: id,
     solucao: novaSolucao,
     datetime: date.toLocaleString(),
     tipoInsercao: tipoInsercao,
     contexto: contextoExecucao,
     algorithm: novaSolucao.algorithm,
-  });
+  };
 
-  setHistoricoSolucoes(newHistoricoSolucoesMap);
+  // Updater funcional: inserções concorrentes não se sobrescrevem
+  setHistoricoSolucoes((prev) => {
+    const next = new Map(prev);
+    next.set(id, entrada);
+    return next;
+  });
   return id;
 }
 
@@ -55,4 +69,35 @@ export function updateSolutionId(
     ...solucaoAtual, // Copia as propriedades existentes de Solucao
     idHistorico: id, // Atualiza apenas o idHistorico
   }));
+}
+
+/** Remove entradas do Map (puro). */
+export function withoutEntries(
+  map: Map<string, HistoricoSolucao>,
+  ids: Iterable<string>,
+): Map<string, HistoricoSolucao> {
+  const next = new Map(map);
+  for (const id of ids) next.delete(id);
+  return next;
+}
+
+/**
+ * Reinsere entradas na posição original (puro). `positions` é o índice que cada id tinha no Map
+ * antes da remoção; ids que já existem são ignorados.
+ */
+export function withEntriesAt(
+  map: Map<string, HistoricoSolucao>,
+  entries: { id: string; entry: HistoricoSolucao; position: number }[],
+): Map<string, HistoricoSolucao> {
+  const pending = entries
+    .filter((e) => !map.has(e.id))
+    .sort((a, b) => a.position - b.position);
+  if (pending.length === 0) return map;
+
+  const result: [string, HistoricoSolucao][] = Array.from(map.entries());
+  for (const item of pending) {
+    const index = Math.min(Math.max(0, item.position), result.length);
+    result.splice(index, 0, [item.id, item.entry]);
+  }
+  return new Map(result);
 }
