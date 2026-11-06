@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Container,
   Typography,
@@ -27,12 +28,19 @@ import { HistoricoSolucao } from "@/context/Global/utils";
 import { useGlobalContext } from "@/context/Global";
 import NoDataFound from "@/components/NoDataFound";
 
-export default function CompararSolucoes() {
+function CompararSolucoesView() {
   const { historicoSolucoes } = useSolutionHistory();
   // const { docentes, disciplinas } = useGlobalContext();
 
-  const [solutionA, setSolutionA] = useState<HistoricoSolucao | null>(null);
-  const [solutionB, setSolutionB] = useState<HistoricoSolucao | null>(null);
+  // Deep link do histórico: /comparar?ids=a,b (sem o parâmetro, nada muda)
+  const searchParams = useSearchParams();
+  const linkedIds = (searchParams.get("ids") ?? "").split(",").filter(Boolean);
+  const [solutionA, setSolutionA] = useState<HistoricoSolucao | null>(
+    () => historicoSolucoes.get(linkedIds[0]) ?? null,
+  );
+  const [solutionB, setSolutionB] = useState<HistoricoSolucao | null>(
+    () => (linkedIds[1] !== linkedIds[0] && historicoSolucoes.get(linkedIds[1])) || null,
+  );
 
   const { docentes, disciplinas } = useGlobalContext();
   const hasData = docentes.length && disciplinas.length;
@@ -295,5 +303,14 @@ export default function CompararSolucoes() {
         </Alert>
       )}
     </Container>
+  );
+}
+
+// useSearchParams exige um limite de Suspense
+export default function CompararSolucoes() {
+  return (
+    <Suspense fallback={null}>
+      <CompararSolucoesView />
+    </Suspense>
   );
 }

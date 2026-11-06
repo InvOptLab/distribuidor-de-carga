@@ -15,7 +15,8 @@ import {
   Paper,
   Container,
 } from "@mui/material";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import OverviewTab from "./_components/OverviewTab";
 import ConstraintsTab from "./_components/ConstraintsTab";
 import ConfigurationsTab from "./_components/ConfigurationsTab";
@@ -52,10 +53,15 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-export default function Statistics() {
+function StatisticsView() {
   const t = useTranslations("Pages.Statistics");
   const { historicoSolucoes } = useGlobalContext();
-  const [solutionId, setSolutionId] = useState("");
+  // Deep link do histórico: /statistics?id=<id> (sem o parâmetro, nada muda)
+  const searchParams = useSearchParams();
+  const [solutionId, setSolutionId] = useState(() => {
+    const id = searchParams.get("id");
+    return id && historicoSolucoes.has(id) ? id : "";
+  });
   const [currentTab, setCurrentTab] = useState(0);
 
   const { docentes, disciplinas } = useGlobalContext();
@@ -223,5 +229,14 @@ export default function Statistics() {
         )}
       </Box>
     </Container>
+  );
+}
+
+// useSearchParams exige um limite de Suspense
+export default function Statistics() {
+  return (
+    <Suspense fallback={null}>
+      <StatisticsView />
+    </Suspense>
   );
 }

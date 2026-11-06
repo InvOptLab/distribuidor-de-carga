@@ -17,8 +17,8 @@ const formatNumber = (value: number) =>
   Number.isInteger(value) ? String(value) : value.toFixed(1);
 
 /**
- * Nome do docente (coluna fixa, B4): ellipsis + tooltip, carga atribuída, ⚠ em conflito
- * (B12, não só cor) e 🔒 com a linha travada (B11).
+ * Nome do docente (coluna fixa): ellipsis + tooltip, carga atribuída, ⚠ em conflito
+ * (não só cor) e 🔒 com a linha travada.
  */
 function DocenteRowHeader({
   nome,
@@ -53,7 +53,9 @@ function DocenteRowHeader({
       aria-label={[nome, ...details].join(", ")}
     >
       <div className="nm">
-        {conflict && <WarningAmberIcon className="ico warn" aria-hidden="true" />}
+        {conflict && (
+          <WarningAmberIcon className="ico warn" aria-hidden="true" />
+        )}
         {locked && <LockIcon className="ico" aria-hidden="true" />}
         <span className="nm-txt">{nome}</span>
         <span className="nm-carga" aria-hidden="true">

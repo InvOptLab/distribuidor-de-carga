@@ -25,7 +25,7 @@ interface FilterSyncParams {
 }
 
 /**
- * Sincronização dos filtros com a sala colaborativa (B22). Protocolo inalterado: FULL_DATA.
+ * Sincronização dos filtros com a sala colaborativa. Protocolo inalterado: FULL_DATA.
  */
 export function useFilterSync({
   docenteFilters,

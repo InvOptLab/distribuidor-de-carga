@@ -41,15 +41,19 @@ interface GridCommandsParams {
 export interface GridCommands {
   /** Pode alterar a grade? Fora de sala, sempre. */
   canEdit: boolean;
-  /** Avisa e devolve `false` se o usuário não pode alterar (D5). */
+  /** Avisa e devolve `false` se o usuário não pode alterar. */
   ensureCanEdit: () => boolean;
-  /** Clique em célula: alterna trava (`lock`) ou atribuição (B6, B7, B9). */
-  cellClick: (nome_docente: string, id_disciplina: string, lock: boolean) => void;
-  /** Clique no cabeçalho da turma: só trava/destrava quando `lock` (B9, B10). */
+  /** Clique em célula: alterna trava (`lock`) ou atribuição. */
+  cellClick: (
+    nome_docente: string,
+    id_disciplina: string,
+    lock: boolean,
+  ) => void;
+  /** Clique no cabeçalho da turma: só trava/destrava quando `lock`. */
   columnClick: (id_disciplina: string, lock: boolean) => void;
-  /** Clique no nome do docente: só trava/destrava quando `lock` (B9, B10). */
+  /** Clique no nome do docente: só trava/destrava quando `lock. */
   rowClick: (nome_docente: string, lock: boolean) => void;
-  /** Limpa as atribuições mantendo travadas e inativas (B16). */
+  /** Limpa as atribuições mantendo travadas e inativas. */
   clear: () => void;
 }
 
@@ -78,8 +82,14 @@ export function useGridCommands({
   const t = useTranslations("Pages.Assignment.Alerts");
 
   // Estado mais recente, para decidir a operação e montar o broadcast
-  // mesmo com cliques rápidos antes do próximo render (D11).
-  const latest = useRef({ atribuicoes, travas, docentes, disciplinas, formularios });
+  // mesmo com cliques rápidos antes do próximo render.
+  const latest = useRef({
+    atribuicoes,
+    travas,
+    docentes,
+    disciplinas,
+    formularios,
+  });
   latest.current = { atribuicoes, travas, docentes, disciplinas, formularios };
 
   const canEdit = !isInRoom || isOwner || !!config?.guestsCanEdit;
@@ -98,7 +108,8 @@ export function useGridCommands({
       setTravas(update);
 
       if (isInRoom) {
-        const { docentes, disciplinas, formularios, atribuicoes } = latest.current;
+        const { docentes, disciplinas, formularios, atribuicoes } =
+          latest.current;
         broadcastDataUpdate(
           { docentes, disciplinas, formularios, atribuicoes, travas: next },
           "FULL_DATA",
@@ -144,7 +155,8 @@ export function useGridCommands({
       latest.current.atribuicoes = next;
       setAtribuicoes(
         (prev) =>
-          setAssignment(prev, nome_docente, id_disciplina, assigned).atribuicoes,
+          setAssignment(prev, nome_docente, id_disciplina, assigned)
+            .atribuicoes,
       );
 
       if (isInRoom) broadcastAssignmentChange(changed, "update");
@@ -211,7 +223,14 @@ export function useGridCommands({
         "FULL_DATA",
       );
     }
-  }, [ensureCanEdit, setAtribuicoes, addAlerta, t, isInRoom, broadcastDataUpdate]);
+  }, [
+    ensureCanEdit,
+    setAtribuicoes,
+    addAlerta,
+    t,
+    isInRoom,
+    broadcastDataUpdate,
+  ]);
 
   return useMemo(
     () => ({ canEdit, ensureCanEdit, cellClick, columnClick, rowClick, clear }),

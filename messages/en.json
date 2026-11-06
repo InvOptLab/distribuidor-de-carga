@@ -1487,21 +1487,172 @@
       }
     },
     "History": {
+      "title": "Solution history ({count})",
       "columns": {
-        "identifier": "Identifier",
+        "date": "Date",
+        "origin": "Origin",
         "evaluation": "Evaluation",
-        "insertion": "Insertion",
+        "coverage": "Coverage",
+        "conflicts": "Conflicts",
+        "time": "Time",
         "actions": "Actions"
       },
-      "SolutionHistoryRow": {
-        "details": "Details",
-        "restore": "Restore this solution",
-        "delete": "Delete this solution"
+      "origin": {
+        "Algoritmo": "Algorithm",
+        "Manual": "Manual",
+        "Importação": "Import"
+      },
+      "algorithms": {
+        "tabu-search": "Tabu Search",
+        "simulated-annealing": "Simulated Annealing",
+        "integer-solver": "Exact solver (MILP)",
+        "manual-insert": "Manual insertion"
+      },
+      "current": "Current",
+      "best": "Best evaluation",
+      "deltaFromBest": "{delta} from the best",
+      "coverageTooltip": "{done} of {total} classes with a professor",
+      "conflictsTooltip": "{count, plural, one {# professor} other {# professors}} with schedule conflicts",
+      "noConflicts": "No schedule conflicts",
+      "timeTooltip": "Run time: {time} · {iterations} iterations",
+      "noDataBanner": "No data loaded. Restoring a solution also restores professors, classes and forms.",
+      "noResults": "No solution matches the filters.",
+      "clearFilters": "Clear filters",
+      "toolbar": {
+        "search": "Search by date, origin or algorithm",
+        "origin": "Origin",
+        "allOrigins": "All",
+        "sort": "Sort",
+        "sortCustom": "Custom",
+        "sortOptions": {
+          "recent": "Newest first",
+          "oldest": "Oldest first",
+          "best": "Best evaluation",
+          "worst": "Worst evaluation",
+          "coverage": "Highest coverage",
+          "conflicts": "Fewest conflicts"
+        },
+        "selected": "{count} selected",
+        "compare": "Compare",
+        "delete": "Delete",
+        "clearSelection": "Clear selection"
+      },
+      "actions": {
+        "restore": "Restore",
+        "restoreAria": "Restore solution {label}",
+        "alreadyCurrent": "This is already the current solution",
+        "more": "More actions",
+        "moreAria": "More actions for solution {label}",
+        "statistics": "View statistics",
+        "compareWithCurrent": "Compare with current",
+        "download": "Download JSON",
+        "delete": "Delete",
+        "currentCannotDelete": "The current solution cannot be deleted"
+      },
+      "dialogs": {
+        "restore": {
+          "title": "Restore with unsaved changes?",
+          "body": "The grid has assignments that are not in the history. Restoring {label} replaces professors, classes, forms, locks and assignments.",
+          "save": "Save current and restore",
+          "discard": "Discard and restore",
+          "cancel": "Cancel"
+        },
+        "delete": {
+          "title": "Delete {count, plural, one {# solution} other {# solutions}}?",
+          "body": "The solutions will be removed from the history. You can undo right after.",
+          "skippedCurrent": "The current solution is in the selection and will be kept.",
+          "confirm": "Delete {count}",
+          "cancel": "Cancel"
+        }
+      },
+      "undo": {
+        "removed": "{count, plural, one {Solution removed} other {# solutions removed}}",
+        "undo": "Undo",
+        "restored": "Removal undone"
+      },
+      "empty": {
+        "title": "No saved solutions yet",
+        "body": "Solutions show up here when you run an algorithm, save manual changes or import a file with a solution.",
+        "goToGrid": "Go to the assignment grid"
+      },
+      "detail": {
+        "close": "Close",
+        "entityKind": "Show professors or classes",
+        "tabs": {
+          "docentes": "Professors ({count})",
+          "turmas": "Classes ({count})"
+        },
+        "filter": "Filter…",
+        "onlyConflicts": "Conflicts only",
+        "onlyUnassigned": "Unassigned",
+        "emptyList": "Nothing found.",
+        "selectEntity": "Select a professor or a class on the left.",
+        "notFound": "Item not found in this solution.",
+        "conflict": "Schedule conflict",
+        "saldo": "balance {saldo}",
+        "carga": "load {carga}",
+        "assignmentsCount": "{count, plural, one {# assignment} other {# assignments}}",
+        "docentesCount": "{count, plural, =0 {no professors} one {# professor} other {# professors}}",
+        "relationFilter": "Filter relations",
+        "relationsTable": "Forms and assignments",
+        "relations": {
+          "all": "All",
+          "filled": "Forms only",
+          "assigned": "Assigned only"
+        },
+        "columns": {
+          "turma": "Class",
+          "docente": "Professor",
+          "saldo": "Balance",
+          "priority": "Priority",
+          "assigned": "Assigned",
+          "notes": "Notes"
+        },
+        "notAssigned": "Not assigned",
+        "noRelations": "No forms or assignments.",
+        "notes": {
+          "noForm": "no form",
+          "clashWith": "clashes with {turmas}"
+        },
+        "kpi": {
+          "evaluation": "Evaluation",
+          "best": "Best evaluation",
+          "coverage": "Coverage",
+          "unassigned": "Unassigned",
+          "conflicts": "Conflicts",
+          "noForm": "No form",
+          "locks": "Locks",
+          "time": "Time"
+        },
+        "prevSolution": "Previous solution",
+        "nextSolution": "Next solution",
+        "position": "{index} of {total}",
+        "inspector": {
+          "title": "Inspector",
+          "label": "Inspector: {name}",
+          "live": "Inspector: {name}",
+          "back": "Back to {name}",
+          "focus": "Focus",
+          "collapse": "Collapse inspector",
+          "expand": "Expand inspector",
+          "open": "View details",
+          "relation": "Relation",
+          "assigned": "assigned",
+          "empty": "Select a professor or a class to see its details."
+        },
+        "breadcrumb": {
+          "label": "Detail navigation",
+          "back": "Go up one level",
+          "docentes": "Professors",
+          "turmas": "Classes"
+        }
       },
       "Alerts": {
         "removed": "The solution was removed from history!",
         "applied": "Solution {datetime} has been applied!",
-        "downloaded": "Solution {datetime} has been downloaded!"
+        "downloaded": "Solution {datetime} has been downloaded!",
+        "notAllowed": "Only the room leader (or guests with edit permission) can restore solutions.",
+        "saveFailed": "Could not save the current solution. Nothing was restored."
       }
     }
   },
@@ -1729,20 +1880,6 @@
     "close": "Close"
   },
   "Components": {
-    "TreeView": {
-      "professorsCount": "Professors ({count})",
-      "classesCount": "Classes ({count})",
-      "professors": "Professors",
-      "classes": "Classes",
-      "balance": "Balance: ",
-      "noInfoSelected": "No information selected!",
-      "chosenByProfessor": "Chosen by the professor",
-      "chosenByProfessors": "Chosen by the professors",
-      "forms": "Forms",
-      "assignedToProfessor": "Assigned to the professor",
-      "assignedToProfessors": "Assigned to the professors",
-      "assignments": "Assignments"
-    },
     "PlanilhaTable": {
       "filter": "Filter"
     },

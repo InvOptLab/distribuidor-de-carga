@@ -12,10 +12,13 @@ import { docente } from "./fixtures";
 const lum = (rgb: string) =>
   relativeLuminance(rgb.match(/\d+/g)!.map(Number) as [number, number, number]);
 
-describe("rampa de prioridade (D10, 10.1)", () => {
+describe("rampa de prioridade", () => {
   it("1 = mais preferida = mais escura no tema claro, e é monotônica", () => {
-    const values = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((p) => lum(priorityRampColor(p, 9).bg));
-    for (let i = 1; i < values.length; i++) expect(values[i]).toBeGreaterThan(values[i - 1]);
+    const values = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((p) =>
+      lum(priorityRampColor(p, 9).bg),
+    );
+    for (let i = 1; i < values.length; i++)
+      expect(values[i]).toBeGreaterThan(values[i - 1]);
   });
 
   it("no tema escuro a escala é invertida", () => {
@@ -48,14 +51,29 @@ describe("rampa de prioridade (D10, 10.1)", () => {
 
 describe("filtros rápidos e conflito", () => {
   it("toggleQuickRule liga e desliga", () => {
-    const on = toggleQuickRule({ search: "", rules: [] }, "semDocente", "Sem docente");
+    const on = toggleQuickRule(
+      { search: "", rules: [] },
+      "semDocente",
+      "Sem docente",
+    );
     expect(hasQuickRule(on, "semDocente")).toBe(true);
-    expect(hasQuickRule(toggleQuickRule(on, "semDocente", "x"), "semDocente")).toBe(false);
+    expect(
+      hasQuickRule(toggleQuickRule(on, "semDocente", "x"), "semDocente"),
+    ).toBe(false);
   });
 
   it("comConflito usa o conjunto de conflitos", () => {
-    const filters = toggleQuickRule({ search: "", rules: [] }, "comConflito", "c");
-    const out = applyDocenteFilters([docente("Ana"), docente("Bruno")], filters, [], new Set(["Bruno"]));
+    const filters = toggleQuickRule(
+      { search: "", rules: [] },
+      "comConflito",
+      "c",
+    );
+    const out = applyDocenteFilters(
+      [docente("Ana"), docente("Bruno")],
+      filters,
+      [],
+      new Set(["Bruno"]),
+    );
     expect(out.map((d) => d.nome)).toEqual(["Bruno"]);
   });
 });

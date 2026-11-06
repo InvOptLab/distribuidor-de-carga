@@ -42,7 +42,10 @@ function readPrefs(): { width: number; collapsed: boolean } {
     if (raw) {
       const parsed = JSON.parse(raw);
       return {
-        width: Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, Number(parsed.width) || DEFAULT_WIDTH)),
+        width: Math.min(
+          MAX_WIDTH,
+          Math.max(MIN_WIDTH, Number(parsed.width) || DEFAULT_WIDTH),
+        ),
         collapsed: !!parsed.collapsed,
       };
     }
@@ -53,7 +56,7 @@ function readPrefs(): { width: number; collapsed: boolean } {
 }
 
 /**
- * Conteúdo de `HoveredCourse` / `HoveredDocente` (nada removido), sem a rolagem forçada (D7).
+ * Conteúdo de `HoveredCourse` / `HoveredDocente` (nada removido), sem a rolagem forçada.
  */
 function DetailsContent({ target }: { target: DetailsTarget }) {
   const { docentes, disciplinas, formularios, atribuicoes } = useTimetable();
@@ -127,7 +130,8 @@ export default function DetailsPanel({
   };
   const onResizeMove = (event: React.PointerEvent) => {
     if (!drag.current) return;
-    const next = drag.current.startWidth + (drag.current.startX - event.clientX);
+    const next =
+      drag.current.startWidth + (drag.current.startX - event.clientX);
     setWidth(Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, next)));
   };
   const onResizeEnd = () => {
@@ -178,7 +182,11 @@ export default function DetailsPanel({
             aria-label={pinned ? t("unpin") : t("pin")}
             onClick={() => (pinned ? onUnpin() : onPin(target))}
           >
-            {pinned ? <PushPinIcon fontSize="small" /> : <PushPinOutlinedIcon fontSize="small" />}
+            {pinned ? (
+              <PushPinIcon fontSize="small" />
+            ) : (
+              <PushPinOutlinedIcon fontSize="small" />
+            )}
           </IconButton>
         </Tooltip>
       )}
@@ -190,7 +198,11 @@ export default function DetailsPanel({
         </Tooltip>
       ) : (
         <Tooltip title={t("collapse")}>
-          <IconButton size="small" aria-label={t("collapse")} onClick={toggleCollapsed}>
+          <IconButton
+            size="small"
+            aria-label={t("collapse")}
+            onClick={toggleCollapsed}
+          >
             <ChevronRightIcon fontSize="small" />
           </IconButton>
         </Tooltip>
@@ -241,11 +253,17 @@ export default function DetailsPanel({
         }}
       >
         <Tooltip title={t("expand")} placement="left">
-          <IconButton size="small" aria-label={t("expand")} onClick={toggleCollapsed}>
+          <IconButton
+            size="small"
+            aria-label={t("expand")}
+            onClick={toggleCollapsed}
+          >
             <ChevronLeftIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        {pinned && <PushPinIcon fontSize="small" color="action" sx={{ mt: 1 }} />}
+        {pinned && (
+          <PushPinIcon fontSize="small" color="action" sx={{ mt: 1 }} />
+        )}
       </Paper>
     );
   }

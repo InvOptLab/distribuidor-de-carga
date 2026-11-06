@@ -15,8 +15,8 @@ interface TurmaHeaderProps {
 }
 
 /**
- * Cabeçalho compacto da turma (5.4): código, nome em 2 linhas, dias como mini-chips e
- * contagem de docentes atribuídos. Cursos como texto, sem innerHTML (D2). O detalhe completo
+ * Cabeçalho compacto da turma: código, nome em 2 linhas, dias como mini-chips e
+ * contagem de docentes atribuídos. Cursos como texto, sem innerHTML. O detalhe completo
  * vai para o painel lateral.
  */
 function TurmaHeader({
@@ -29,7 +29,8 @@ function TurmaHeader({
 }: TurmaHeaderProps) {
   const t = useTranslations("Pages.Assignment.Grid");
   const horarios = (disciplina.horarios ?? []).filter(Boolean);
-  const cursos = density === "comfortable" ? formatCursos(disciplina.cursos) : "";
+  const cursos =
+    density === "comfortable" ? formatCursos(disciplina.cursos) : "";
   const countLabel = t("assignedCount", { count: assignedCount });
   const fullName = `${disciplina.codigo} ${disciplina.nome}`;
 

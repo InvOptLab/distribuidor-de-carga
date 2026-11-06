@@ -11,28 +11,18 @@ import {
 } from "react";
 import { useGlobalContext } from "@/context/Global";
 import { useAlertsContext } from "@/context/Alerts";
-import { useAlgorithmContext } from "@/context/Algorithm";
 import { DisciplinaFilters, DocenteFilters } from "../types/types";
-import {
-  exportJson,
-  getFormattedDate,
-  removeInativos,
-  saveAtribuicoesInHistoryState,
-} from "..";
+import { exportJson, getFormattedDate } from "..";
 import {
   Atribuicao,
   Celula,
   Disciplina,
   Docente,
-  Solucao,
 } from "@/algoritmo/communs/interfaces/interfaces";
-import { ContextoExecucao } from "@/context/Global/utils";
-import ObjectiveComponent from "@/algoritmo/abstractions/ObjectiveComponent";
-import { calculateManualSolution } from "@/algoritmo/communs/calculateManualSolution";
 import { useTranslations } from "next-intl";
 import { applyDocenteFilters, applyTurmaFilters } from "../model/filters";
 import { buildGridModel, type GridModel } from "../model/gridModel";
-import { InsercaoManual } from "../state/InsercaoManual";
+import { useSaveManualSolution } from "../state/useSaveManualSolution";
 import { useFilterSync } from "../state/useFilterSync";
 import { type GridCommands, useGridCommands } from "../state/useGridCommands";
 
@@ -76,13 +66,8 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
     travas,
     setTravas,
     solucaoAtual,
-    setSolucaoAtual,
     historicoSolucoes,
-    setHistoricoSolucoes,
   } = useGlobalContext();
-
-  const { hardConstraints, softConstraints, objectiveComponents } =
-    useAlgorithmContext();
   const { addAlerta } = useAlertsContext();
 
   const t = useTranslations("Pages.Assignment.Alerts");
@@ -154,93 +139,23 @@ export function TimetableProvider({ children }: { children: ReactNode }) {
   /**
    * Salva as alterações atuais no histórico (manual)
    */
+  const saveManualSolution = useSaveManualSolution();
   const saveAlterations = useCallback(async () => {
     try {
-      const objectives: ObjectiveComponent<any>[] = Array.from(
-        objectiveComponents.values(),
-      ).filter((entry) => entry.isActive);
-
-      const ativos = removeInativos(docentes, disciplinas, atribuicoes);
-
-      const solucaoManual: Solucao = await calculateManualSolution(
-        ativos.atribuicoes,
-        ativos.docentes,
-        ativos.turmas,
-        travas,
-        formularios,
-        softConstraints, // Map de restrições soft
-        hardConstraints, // Map de restrições hard
-        objectives,
-        maxPriority,
-      );
-
-      const contextoExecucao: ContextoExecucao = {
-        disciplinas: [...disciplinas],
-        docentes: [...docentes],
-        travas: [...travas],
-        maxPriority: maxPriority,
-        formularios: formularios,
-      };
-
-      /**
-       * Precisa ser revisto, talvez uma opção seja criar um método "manual" para facilitar a inserção.
-       */
-      const algorithm = new InsercaoManual(
-        "manual-insert",
-        {
-          atribuicoes: ativos.atribuicoes,
-          docentes: ativos.docentes,
-          turmas: ativos.turmas,
-          prioridades: formularios,
-          travas: travas,
-          maiorPrioridade: maxPriority,
-        },
-        [...hardConstraints.values(), ...softConstraints.values()],
-        solucaoManual,
-        "max",
-        [...objectiveComponents.values()],
-        maxPriority,
-      );
-
-      saveAtribuicoesInHistoryState(
-        solucaoManual.atribuicoes,
-        solucaoManual.avaliacao,
-        historicoSolucoes,
-        setHistoricoSolucoes,
-        setSolucaoAtual,
-        contextoExecucao,
-        algorithm,
-        solucaoManual.estatisticas,
-      );
-
+      await saveManualSolution(maxPriority);
       addAlerta(t("assignmentsAddedToHistory"), "success");
     } catch (error) {
       console.error(t("errorSavingChanges"), error);
       addAlerta(t("errorSavingChanges"), "error");
     }
-  }, [
-    objectiveComponents,
-    docentes,
-    disciplinas,
-    atribuicoes,
-    travas,
-    formularios,
-    softConstraints,
-    hardConstraints,
-    maxPriority,
-    historicoSolucoes,
-    setHistoricoSolucoes,
-    setSolucaoAtual,
-    addAlerta,
-    t,
-  ]);
+  }, [saveManualSolution, maxPriority, addAlerta, t]);
 
   /**
    * Exporta as atribuições para um arquivo JSON
    */
   const downalodJson = useCallback(() => {
     if (!atribuicoes.some((atribuicao) => atribuicao.docentes.length > 0)) {
-      // Avisa, mas exporta mesmo assim (B17)
+      // Avisa, mas exporta mesmo assim
       addAlerta(t("noAssignmentMade"), "warning");
     }
 
