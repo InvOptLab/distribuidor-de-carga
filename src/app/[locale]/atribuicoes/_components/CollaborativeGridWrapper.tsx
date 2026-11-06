@@ -17,6 +17,8 @@ import {
   Divider,
   Badge,
   alpha,
+  useTheme,
+  type Theme,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -102,7 +104,14 @@ interface Props {
   children: React.ReactNode;
 }
 
+function roleColors(theme: Theme) {
+  return { owner: theme.palette.primary.main, guest: theme.palette.warning.main };
+}
+
 export const CollaborativeGridWrapper = ({ children }: Props) => {
+  // Cores da barra derivadas do tema (claro/escuro/alto contraste), sem gradientes fixos
+  const theme = useTheme();
+  const roleColor = roleColors(theme);
   const {
     isInRoom,
     isOwner,
@@ -269,9 +278,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
           overflow: "hidden",
           border: "1px solid",
           borderColor: isOwner ? "primary.main" : "warning.main",
-          background: isOwner
-            ? "linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)"
-            : "linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)",
+          bgcolor: alpha(isOwner ? roleColor.owner : roleColor.guest, 0.08),
         }}
       >
         {/* Header principal */}
@@ -352,13 +359,13 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                 sx={{
                   fontWeight: "bold",
                   bgcolor: isOwner
-                    ? alpha("#1976d2", 0.15)
-                    : alpha("#ed6c02", 0.15),
+                    ? alpha(roleColor.owner, 0.15)
+                    : alpha(roleColor.guest, 0.15),
                   color: isOwner ? "primary.dark" : "warning.dark",
                   border: "1px solid",
                   borderColor: isOwner
-                    ? alpha("#1976d2", 0.3)
-                    : alpha("#ed6c02", 0.3),
+                    ? alpha(roleColor.owner, 0.3)
+                    : alpha(roleColor.guest, 0.3),
                 }}
               />
             </Tooltip>
@@ -470,7 +477,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              bgcolor: "rgba(255,255,255,0.5)",
+              bgcolor: alpha(theme.palette.background.paper, 0.5),
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -626,7 +633,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             {/* Switch de Edição */}
             <Paper
               variant="outlined"
-              sx={{ p: 2, borderRadius: 2, bgcolor: alpha("#1976d2", 0.03) }}
+              sx={{ p: 2, borderRadius: 2, bgcolor: alpha(roleColor.owner, 0.03) }}
             >
               <FormControlLabel
                 control={
@@ -658,7 +665,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             {/* NOVO: Switch de Filtro */}
             <Paper
               variant="outlined"
-              sx={{ p: 2, borderRadius: 2, bgcolor: alpha("#1976d2", 0.03) }}
+              sx={{ p: 2, borderRadius: 2, bgcolor: alpha(roleColor.owner, 0.03) }}
             >
               <FormControlLabel
                 control={
@@ -687,7 +694,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
               />
             </Paper>
 
-            <Box sx={{ p: 2, bgcolor: alpha("#ff9800", 0.1), borderRadius: 2 }}>
+            <Box sx={{ p: 2, bgcolor: alpha(roleColor.guest, 0.1), borderRadius: 2 }}>
               <Typography variant="body2" color="warning.dark">
                 <strong>{t("noteLabel")}</strong>{" "}
                 {t("changesAppliedImmediately")}
