@@ -45,14 +45,20 @@ export function algorithmNameOf(entry: HistoricoSolucao): string | undefined {
 }
 
 export function normalizeOrigin(value: unknown): TipoInsercao {
-  if (value === TipoInsercao.Algoritmo || value === TipoInsercao.Manual || value === TipoInsercao.Importação) {
+  if (
+    value === TipoInsercao.Algoritmo ||
+    value === TipoInsercao.Manual ||
+    value === TipoInsercao.Importação
+  ) {
     return value;
   }
   return TipoInsercao.Manual;
 }
 
 function finite(value: unknown): number | undefined {
-  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+  return typeof value === "number" && Number.isFinite(value)
+    ? value
+    : undefined;
 }
 
 /** Métricas da linha da lista, derivadas do detalhe (mesmos números nos dois lugares). */
@@ -62,7 +68,9 @@ export function buildSolutionSummary(
   key?: string,
 ): SolutionSummary {
   const name = algorithmNameOf(entry);
-  const algorithmKey = (KNOWN_ALGORITHMS as readonly string[]).includes(name ?? "")
+  const algorithmKey = (KNOWN_ALGORITHMS as readonly string[]).includes(
+    name ?? "",
+  )
     ? (name as KnownAlgorithm)
     : undefined;
 
@@ -100,15 +108,41 @@ export function buildSolutionSummary(
   };
 }
 
+/** Direção de "melhor" de uma métrica: define a cor e o ícone do Δ. */
+export type MetricDirection = "higher" | "lower" | "neutral";
+
 /**
- * Melhor avaliação da lista. Decisão 10.1: a avaliação é de maximização (o código passa "max"
- * para todos os métodos), então maior é melhor.
+ * Fonte única de direção, compartilhada por histórico, comparação e grade.
+ * - Avaliação: maximização (o código passa "max" para todos os métodos).
+ * - Prioridade: 1 = mais preferida (rampa da grade e `PrioridadesDefault`), então menor é melhor.
  */
-export function bestEvaluation(summaries: Iterable<SolutionSummary>): number | undefined {
+export const EVALUATION_DIRECTION: MetricDirection = "higher";
+export const PRIORITY_DIRECTION: MetricDirection = "lower";
+
+/** `b` é melhor (1), pior (-1) ou igual/indiferente (0) a `a`, segundo a direção. */
+export function compareByDirection(
+  a: number,
+  b: number,
+  direction: MetricDirection,
+  epsilon = 1e-9,
+): -1 | 0 | 1 {
+  if (direction === "neutral" || Math.abs(b - a) <= epsilon) return 0;
+  const higher = b > a;
+  return (direction === "higher") === higher ? 1 : -1;
+}
+
+/** Melhor avaliação da lista, segundo `EVALUATION_DIRECTION`. */
+export function bestEvaluation(
+  summaries: Iterable<SolutionSummary>,
+): number | undefined {
   let best: number | undefined;
   for (const s of summaries) {
     if (s.avaliacao === undefined) continue;
-    if (best === undefined || s.avaliacao > best) best = s.avaliacao;
+    if (
+      best === undefined ||
+      compareByDirection(best, s.avaliacao, EVALUATION_DIRECTION) > 0
+    )
+      best = s.avaliacao;
   }
   return best;
 }
