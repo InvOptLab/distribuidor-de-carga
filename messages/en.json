@@ -1486,6 +1486,279 @@
         "aspirationCriteria": "Aspiration Criteria"
       }
     },
+    "Compare": {
+      "title": "Compare solutions",
+      "swap": "Swap A and B (X)",
+      "noForm": "No form",
+      "priorityAria": "Priority {value}",
+      "missing": "Solution not found in history: {ids}. Pick another one in the selector.",
+      "ignored": "{count, plural, one {# extra selected solution was ignored} other {# extra selected solutions were ignored}}: only the first two are compared.",
+      "side": {
+        "a": "Solution A",
+        "b": "Solution B"
+      },
+      "delta": {
+        "same": "same",
+        "better": "better",
+        "worse": "worse",
+        "changed": "changed"
+      },
+      "status": {
+        "added": "Added",
+        "removed": "Removed",
+        "modified": "Modified",
+        "unchanged": "Unchanged"
+      },
+      "empty": {
+        "needTwo": "At least two solutions are needed to compare",
+        "needTwoBody": "Run an algorithm, save manual changes or import another solution.",
+        "selectTwo": "Select two solutions",
+        "selectTwoBody": "Pick solution B in the selector or use one of the suggestions above."
+      },
+      "picker": {
+        "label": "Solution {side}",
+        "placeholder": "Search by date, origin or algorithm",
+        "noOptions": "No solution found",
+        "evaluation": "Eval. {value}",
+        "coverage": "{done}/{total} classes",
+        "assignments": "{count, plural, one {# assignment} other {# assignments}}"
+      },
+      "menu": {
+        "more": "Actions for solution {side}",
+        "restore": "Restore this solution",
+        "alreadyCurrent": "Already the current solution",
+        "openInHistory": "Open in history",
+        "statistics": "View statistics",
+        "download": "Download JSON"
+      },
+      "suggestions": {
+        "label": "Suggestions for B:",
+        "previous": "Before A",
+        "best": "Best evaluation",
+        "current": "Current"
+      },
+      "tabs": {
+        "aria": "Comparison sections",
+        "overview": "Overview",
+        "changes": "Changes",
+        "docentes": "Teachers",
+        "dist": "Distributions",
+        "config": "Configuration"
+      },
+      "scorecard": {
+        "title": "Scorecard",
+        "metric": "Metric",
+        "openRow": "See details for {metric}",
+        "metrics": {
+          "avaliacao": "Evaluation",
+          "cobertura": "Coverage (assigned classes)",
+          "pares": "Total assignments",
+          "docentesUnicos": "Teachers with assignments",
+          "semAtribuicao": "Teachers without assignments",
+          "conflitos": "Teachers with conflicts",
+          "semFormulario": "Assignments without form",
+          "prioMedia": "Mean assigned priority",
+          "cargaDesvio": "Workload standard deviation",
+          "travas": "Locks",
+          "iteracoes": "Iterations",
+          "tempo": "Execution time",
+          "status": "Run"
+        },
+        "status": {
+          "none": "— (no statistics)",
+          "complete": "Complete",
+          "interrupted": "Interrupted"
+        }
+      },
+      "compat": {
+        "body": "The solutions use different data: {parts}. Each metric uses its own solution's data.",
+        "details": "See differences",
+        "turmasSoA": "{count, plural, one {# class only in A} other {# classes only in A}}",
+        "turmasSoB": "{count, plural, one {# class only in B} other {# classes only in B}}",
+        "docentesSoA": "{count, plural, one {# teacher only in A} other {# teachers only in A}}",
+        "docentesSoB": "{count, plural, one {# teacher only in B} other {# teachers only in B}}",
+        "forms": "{count, plural, one {# form with a different priority} other {# forms with different priorities}}",
+        "maxPriority": "maximum priority {a} × {b}",
+        "more": "and {count} more…",
+        "lists": {
+          "turmasSoA": "Classes only in A",
+          "turmasSoB": "Classes only in B",
+          "docentesSoA": "Teachers only in A",
+          "docentesSoB": "Teachers only in B",
+          "forms": "Forms with different priority (A → B)"
+        }
+      },
+      "overview": {
+        "changesTitle": "Changes by class",
+        "compositionAria": "Composition of changes",
+        "pairs": "{kept} pairs kept · {swapped} swapped",
+        "seeChanges": "See changes"
+      },
+      "changes": {
+        "statusFilter": "Filter by status",
+        "trendFilter": "Filter by mean priority",
+        "trend": {
+          "all": "All",
+          "improved": "Improved",
+          "worsened": "Worsened",
+          "same": "Same"
+        },
+        "search": "Search class or teacher",
+        "exportCsv": "Export CSV",
+        "empty": "No class matches the filters.",
+        "tableAria": "Changes by class",
+        "addedMark": "Entered",
+        "removedMark": "Left",
+        "columns": {
+          "turma": "Class",
+          "status": "Status",
+          "a": "Teachers in A",
+          "b": "Teachers in B",
+          "deltaPrio": "Δ mean prio.",
+          "deltaCarga": "Δ involved load",
+          "deltaCargaHint": "Total load (B) of B's teachers minus total load (A) of A's teachers",
+          "deltaSaldo": "Δ balance",
+          "deltaSaldoHint": "Sum of B's teachers' balances minus A's",
+          "obs": "Notes"
+        },
+        "obs": {
+          "onlyA": "class only in A",
+          "onlyB": "class only in B",
+          "noFormA": "{count} without form in A",
+          "noFormB": "{count} without form in B",
+          "conflictB": "conflict in B",
+          "conflictResolved": "conflict resolved"
+        },
+        "csv": {
+          "entered": "Entered",
+          "left": "Left"
+        }
+      },
+      "docentes": {
+        "filterAria": "Filter teachers",
+        "search": "Search teacher",
+        "empty": "No teacher matches the filters.",
+        "tableAria": "Teachers",
+        "saldoDiffers": "Balance differs between A's and B's data",
+        "bothConflict": "Conflict in A and in B",
+        "workloadFilter": "Load: {label}",
+        "filters": {
+          "affected": "Affected",
+          "all": "All",
+          "lostAll": "Left without assignments",
+          "unassigned": "Without assignments (A or B)",
+          "conflict": "With conflict",
+          "gainedConflict": "Gained a conflict",
+          "resolvedConflict": "Resolved a conflict"
+        },
+        "columns": {
+          "docente": "Teacher",
+          "saldo": "Balance",
+          "cargaA": "Load A",
+          "cargaB": "Load B",
+          "deltaHint": "Load B − load A (sorted by |Δ|)",
+          "ganhou": "Gained",
+          "perdeu": "Lost",
+          "prio": "Mean prio. A → B",
+          "conflictHint": "Schedule conflict"
+        }
+      },
+      "charts": {
+        "seriesA": "Solution A",
+        "seriesB": "Solution B",
+        "noForm": "No form",
+        "priorityTitle": "Assignment priorities",
+        "priorityAxis": "Priority (1 = most preferred)",
+        "assignmentsAxis": "Assignments",
+        "priorityHint": "Assignments without a form appear in the last bar and are not part of the mean.",
+        "prioritySummaryItem": "priority {p}: A {a}, B {b}",
+        "noPriority": "No assignments to show",
+        "weightedMean": "Weighted mean",
+        "totals": "Totals",
+        "violationsTitle": "Violations by constraint",
+        "constraintsAxis": "Constraints",
+        "violationsAxis": "Violations",
+        "noViolations": "No violations recorded",
+        "compositionTitle": "Violation composition (100%)",
+        "compositionAxis": "Solution",
+        "workloadTitle": "Teaching load by teacher",
+        "workloadAxis": "Teaching load",
+        "docentesAxis": "Teachers",
+        "workloadHint": "Click a bar or a band to see the teachers in the Teachers tab.",
+        "workloadSummaryItem": "load {carga}: A {a}, B {b}",
+        "noWorkload": "No active teachers",
+        "band0": "Load 0",
+        "bandRange": "Load up to {to} (> {from})",
+        "bandAbove": "Load > {from}",
+        "cargaEquals": "load = {carga}",
+        "bandFilter": "band {band}"
+      },
+      "inspector": {
+        "aria": "A × B details",
+        "close": "Close (Esc)",
+        "turma": "Class",
+        "docente": "Teacher",
+        "carga": "Load {value}",
+        "conflict": "Schedule conflict",
+        "notInSide": "Not present in this solution",
+        "noDocentes": "No teachers",
+        "noTurmas": "No classes",
+        "interested": "Interested (forms)",
+        "preferences": "Classes with a form",
+        "noForms": "No forms",
+        "priorityDiffers": "Priority differs between A and B (incompatible data)",
+        "assigned": "Assigned",
+        "saldo": "Balance",
+        "cargaLabel": "Load",
+        "conflicts": "{count, plural, one {# class in conflict} other {# classes in conflict}}",
+        "summary": "Gained {gained} and lost {lost} class(es)"
+      },
+      "config": {
+        "onlyDiffs": "Show only differences",
+        "general": "General",
+        "parameter": "Parameter",
+        "manual": "No algorithm (manual insert)",
+        "complete": "Complete",
+        "interrupted": "Interrupted",
+        "rows": {
+          "algorithm": "Algorithm",
+          "origin": "Origin",
+          "date": "Date",
+          "id": "ID",
+          "evaluation": "Evaluation",
+          "iterations": "Iterations",
+          "time": "Execution time",
+          "status": "Run",
+          "dataPoints": "Data points",
+          "docentes": "Active / total teachers",
+          "turmas": "Active / total classes",
+          "travas": "Locks",
+          "maxPriority": "Maximum priority"
+        },
+        "noAlgorithmBoth": "No algorithm configuration (manual insert) in either solution.",
+        "noAlgorithmSide": "Solution {side} has no algorithm configuration (manual insert).",
+        "constraints": "Constraints",
+        "constraint": "Constraint",
+        "type": "Type",
+        "activeHeader": "Active",
+        "penalty": "Penalty",
+        "hard": "Hard",
+        "soft": "Soft",
+        "active": "Active",
+        "inactive": "Inactive",
+        "none": "None",
+        "lists": {
+          "neighborhood": "Neighborhood",
+          "stop": "Stopping criteria",
+          "aspiration": "Aspiration criteria",
+          "tabu": "Tabu list"
+        },
+        "tabu": {
+          "solution": "Solution · size {size}",
+          "moviment": "Move · add {add}, drop {drop}"
+        }
+      }
+    },
     "History": {
       "title": "Solution history ({count})",
       "columns": {
