@@ -17,7 +17,9 @@ import {
   School as SchoolIcon,
   AccessTime as AccessTimeIcon,
   CheckCircle as CheckCircleIcon,
+  Link as LinkIcon,
 } from "@mui/icons-material";
+import { formatEspelho } from "@/context/Global/utils";
 import {
   Atribuicao,
   Disciplina,
@@ -163,6 +165,40 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
           >
             {disciplina.nome}
           </Typography>
+          {disciplina.espelho && (
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              sx={{
+                mt: 1.25,
+                pt: 1.25,
+                borderTop: "1px solid",
+                borderColor: "rgba(255,255,255,0.3)",
+              }}
+            >
+              <LinkIcon fontSize="small" sx={{ opacity: 0.9 }} />
+              <Box sx={{ minWidth: 0 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: "block",
+                    opacity: 0.9,
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
+                  }}
+                >
+                  {t("mirror")}
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {formatEspelho(disciplina.espelho)}
+                </Typography>
+                <Typography variant="body2" sx={{ opacity: 0.95 }}>
+                  {disciplina.espelho.nome}
+                </Typography>
+              </Box>
+            </Stack>
+          )}
         </Box>
 
         {/* Conteúdo principal */}
