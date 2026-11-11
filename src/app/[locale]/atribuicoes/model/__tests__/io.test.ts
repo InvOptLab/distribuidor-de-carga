@@ -4,7 +4,7 @@ import { buildExportPayload, getFormattedDate } from "../../io/exportJson";
 import { formatCursos } from "../text";
 import { docente, turma } from "./fixtures";
 
-describe("export JSON v3", () => {
+describe("export JSON v4", () => {
   it("mantém o formato", () => {
     const docentes = [
       docente("Ana", {
@@ -49,12 +49,35 @@ describe("export JSON v3", () => {
       [],
     );
     expect(payload).toEqual({
-      versao: "3.0",
+      versao: "4.0",
       formularios: {},
       disciplinas: {},
       docentes: [],
       saldos: {},
     });
+  });
+
+  it("exporta espelho e uuid apenas quando existem", () => {
+    const espelho = {
+      codigo: "SME5784",
+      id: "SME5784,1",
+      nome: "Métodos Numéricos para Equações Diferenciais",
+      ementa: "https://exemplo/SME5784",
+      uuid: "7ae9c2fd",
+    };
+    const payload = buildExportPayload(
+      [],
+      [
+        turma("SME0202,1", { espelho, uuid: "e225dc67" }),
+        turma("SME0300,1"),
+      ] as any,
+      [],
+      [],
+    ) as any;
+    expect(payload.disciplinas["SME0202,1"].espelho).toEqual(espelho);
+    expect(payload.disciplinas["SME0202,1"].uuid).toBe("e225dc67");
+    expect("espelho" in payload.disciplinas["SME0300,1"]).toBe(false);
+    expect("uuid" in payload.disciplinas["SME0300,1"]).toBe(false);
   });
 
   it("nome do arquivo YYYYMMDD_hh_mm_ss", () => {
