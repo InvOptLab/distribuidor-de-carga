@@ -20,6 +20,8 @@ import {
 } from "@mui/icons-material";
 import { Disciplina } from "@/algoritmo/communs/interfaces/interfaces";
 import { useTranslations } from "next-intl";
+import EspelhoChip from "@/components/Turma/EspelhoChip";
+import { useNivelLabel } from "@/components/Turma/NivelChip";
 
 interface TurmaCardProps {
   turma: Disciplina;
@@ -29,6 +31,7 @@ interface TurmaCardProps {
 
 export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
   const t = useTranslations("Pages.Cadastro.Components.TurmaCard");
+  const nivelLabel = useNivelLabel();
   return (
     <Card
       sx={{
@@ -73,9 +76,12 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
             >
               {turma.nome}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {turma.codigo} - {t("class", { number: turma.turma })}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, flexWrap: "wrap" }}>
+              <Typography variant="caption" color="text.secondary">
+                {turma.codigo} - {t("class", { number: turma.turma })}
+              </Typography>
+              <EspelhoChip espelho={turma.espelho} size="tiny" />
+            </Box>
           </Box>
         </Box>
 
@@ -108,7 +114,7 @@ export default function TurmaCard({ turma, onEdit, onDelete }: TurmaCardProps) {
                 {t("level")}
               </Typography>
               <Typography variant="body2" fontWeight={500}>
-                {turma.nivel}
+                {nivelLabel(turma).longo}
               </Typography>
             </Box>
           )}

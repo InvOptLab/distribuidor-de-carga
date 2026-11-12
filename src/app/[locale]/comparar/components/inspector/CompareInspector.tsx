@@ -18,6 +18,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { useTranslations } from "next-intl";
 import { formatCursos } from "@/app/[locale]/atribuicoes/model/text";
+import NivelChip from "@/components/Turma/NivelChip";
+import EspelhoChip from "@/components/Turma/EspelhoChip";
 import { formatSaldo } from "@/app/[locale]/history/model/format";
 import {
   pairKey,
@@ -248,6 +250,12 @@ function TurmaInspector({ id }: { id: string }) {
         <Typography variant="h6" component="h2" sx={{ lineHeight: 1.25 }}>
           {turmaLabel(turma)}
         </Typography>
+        {turma.espelho && (
+          <Box sx={{ mt: 0.5, display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+            <NivelChip nivel={turma.nivel} espelho={turma.espelho} />
+            <EspelhoChip espelho={turma.espelho} />
+          </Box>
+        )}
         {(cursos || hor) && (
           <Typography variant="body2" color="text.secondary">
             {[cursos, hor].filter(Boolean).join(" · ")}

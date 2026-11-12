@@ -913,6 +913,7 @@
           "courses": "Courses",
           "level": "Level",
           "workload": "Workload",
+          "mirror": "Mirror (graduate)",
           "hoursPerWeek": "{hours}h/week",
           "schedules": "Schedules",
           "active": "Active",

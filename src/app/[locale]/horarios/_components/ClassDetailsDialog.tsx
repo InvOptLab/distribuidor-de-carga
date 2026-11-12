@@ -30,6 +30,7 @@ import {
 } from "@mui/icons-material";
 import type { TimetableEntry } from "../page";
 import { Docente, formatEspelho } from "@/context/Global/utils";
+import { useNivelLabel } from "@/components/Turma/NivelChip";
 
 interface ClassDetailsDialogProps {
   entry: TimetableEntry | null;
@@ -44,6 +45,7 @@ export default function ClassDetailsDialog({
   onClose,
   docentes,
 }: ClassDetailsDialogProps) {
+  const nivelLabel = useNivelLabel();
   if (!entry) return null;
 
   const {
@@ -166,7 +168,7 @@ export default function ClassDetailsDialog({
                         Nível
                       </Typography>
                       <Typography variant="body1">
-                        {disciplina.nivel}
+                        {nivelLabel(disciplina).longo}
                       </Typography>
                     </Box>
                   )}

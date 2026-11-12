@@ -16,6 +16,7 @@ import {
   Warning as WarningIcon,
 } from "@mui/icons-material";
 import type { TimetableEntry } from "../page";
+import EspelhoChip from "@/components/Turma/EspelhoChip";
 
 interface TimeSlotProps {
   entry: TimetableEntry;
@@ -134,9 +135,12 @@ export default function TimeSlot({ entry, viewMode, onClick }: TimeSlotProps) {
           }}
         >
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="subtitle2" fontWeight="bold" noWrap>
-              {disciplina.codigo}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 0 }}>
+              <Typography variant="subtitle2" fontWeight="bold" noWrap>
+                {disciplina.codigo}
+              </Typography>
+              <EspelhoChip espelho={disciplina.espelho} size="tiny" />
+            </Box>
             <Typography variant="caption" color="text.secondary" noWrap>
               {disciplina.nome}
             </Typography>

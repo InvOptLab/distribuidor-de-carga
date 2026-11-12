@@ -46,8 +46,10 @@ import {
   type CampoBuscaEspelho,
   campoEspelho,
   textoBuscaEspelho,
+  formatEspelho,
 } from "@/context/Global/utils";
 import { useTranslations } from "next-intl";
+import { useNivelLabel } from "@/components/Turma/NivelChip";
 import { useGlobalContext } from "@/context/Global";
 
 // Mapa para relacionar a chave neutra com o dado em pt-br que vem do arquivo
@@ -90,6 +92,8 @@ export default function CustomSelector({
   const [filtersExpanded, setFiltersExpanded] = useState(false);
 
   const t = useTranslations("Pages.Select.CustomSelector");
+  const tTurma = useTranslations("Components.Turma");
+  const nivelLabelMain = useNivelLabel();
   const { atribuicoes, formularios } = useGlobalContext();
 
   // Determinar se estamos lidando com docentes ou disciplinas
@@ -326,6 +330,10 @@ export default function CustomSelector({
         displayValue = filter.value
           .map((key: string) => t(`WeekDays.${key}`)) // Busca "Seg.", "Mon.", etc, conforme o idioma
           .join(", ");
+      } else if (filter.fieldKey === "nivel") {
+        displayValue = filter.value
+          .map((nivel: string) => nivelLabelMain({ nivel }).longo)
+          .join(", ");
       } else {
         displayValue = filter.value.join(", ");
       }
@@ -543,7 +551,11 @@ export default function CustomSelector({
                 }
                 secondary={
                   isDisciplina(value) && (value as Disciplina).codigo
-                    ? `${t("codeLabel")} ${(value as Disciplina).codigo}`
+                    ? `${t("codeLabel")} ${(value as Disciplina).codigo}${
+                        (value as Disciplina).espelho
+                          ? ` · ${tTurma("mirror")}: ${formatEspelho((value as Disciplina).espelho!)}`
+                          : ""
+                      }`
                     : undefined
                 }
               />
@@ -585,6 +597,7 @@ function AdvancedFilterForm({
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const t = useTranslations("Pages.Select.CustomSelector.AdvancedFilterForm");
+  const nivelLabel = useNivelLabel();
 
   const selectedFieldConfig = fields.find((f) => f.key === selectedField);
 
@@ -720,7 +733,9 @@ function AdvancedFilterForm({
                         const displayLabel =
                           selectedFieldConfig.key === "horarios_dias"
                             ? t(`WeekDays.${option}`)
-                            : option;
+                            : selectedFieldConfig.key === "nivel"
+                              ? nivelLabel({ nivel: option }).longo
+                              : option;
 
                         return (
                           <Chip

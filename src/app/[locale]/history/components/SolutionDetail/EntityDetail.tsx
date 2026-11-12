@@ -20,6 +20,8 @@ import { useTranslations } from "next-intl";
 import { useAccessibility } from "@/context/Accessibility";
 import { gridTokens } from "@/app/[locale]/atribuicoes/theme/gridTokens";
 import { formatCursos } from "@/app/[locale]/atribuicoes/model/text";
+import NivelChip from "@/components/Turma/NivelChip";
+import EspelhoChip from "@/components/Turma/EspelhoChip";
 import {
   relationsOf,
   type RelationRow,
@@ -278,6 +280,10 @@ function EntityDetail({
           <Typography variant="subtitle1" fontWeight={600} component="h3">
             {turmaLabelOf(detail, tt.turma.id)}
           </Typography>
+          <EspelhoChip espelho={tt.turma.espelho} />
+          {tt.turma.espelho && (
+            <NivelChip nivel={tt.turma.nivel} espelho={tt.turma.espelho} />
+          )}
           <Typography variant="body2" color="text.secondary">
             {t("docentesCount", { count: tt.docentes.length })}
           </Typography>
