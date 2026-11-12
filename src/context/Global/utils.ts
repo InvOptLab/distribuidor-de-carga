@@ -131,6 +131,36 @@ export function formatEspelho(espelho: Espelho): string {
   return turma ? `${espelho.codigo} - T${turma}` : espelho.codigo;
 }
 
+/**
+ * Nível de uma turma, a partir do campo `nivel` dos arquivos:
+ * "g" = graduação; "p" ou "pg" = pós-graduação; "g+p" = turma da graduação
+ * com espelho na pós (v4.0). Uma turma com `espelho` também é "ambos", mesmo
+ * que o nível venha só como "g".
+ */
+export type TipoNivel = "graduacao" | "pos" | "ambos" | "outro";
+
+export function tipoNivel(turma: {
+  nivel?: string;
+  espelho?: Espelho;
+}): TipoNivel {
+  const nivel = (turma.nivel ?? "").trim().toLowerCase().replace(/\s/g, "");
+  if (turma.espelho || nivel === "g+p" || nivel === "p+g") return "ambos";
+  if (nivel === "g" || nivel.startsWith("grad")) return "graduacao";
+  if (nivel === "p" || nivel === "pg" || nivel.startsWith("pós") || nivel.startsWith("pos")) {
+    return "pos";
+  }
+  return "outro";
+}
+
+/**
+ * Carga didática para exibição, com no máximo 2 casas decimais
+ * (os arquivos trazem valores como 1.099609375).
+ */
+export function formatCarga(carga?: number): string {
+  if (carga === undefined || carga === null || Number.isNaN(carga)) return "";
+  return String(Math.round(carga * 100) / 100);
+}
+
 /** Campos da turma espelho que também identificam a turma principal nas buscas. */
 export const CAMPOS_BUSCA_ESPELHO = ["id", "codigo", "nome"] as const;
 export type CampoBuscaEspelho = (typeof CAMPOS_BUSCA_ESPELHO)[number];

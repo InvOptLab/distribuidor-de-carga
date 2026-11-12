@@ -2161,6 +2161,16 @@
     "close": "Fechar"
   },
   "Components": {
+    "Turma": {
+      "undergraduate": "Graduação",
+      "graduate": "Pós-graduação",
+      "both": "Graduação + Pós (turma espelho)",
+      "shortUndergraduate": "Grad",
+      "shortGraduate": "Pós",
+      "shortBoth": "Grad + Pós",
+      "mirror": "Espelho",
+      "mirrorTooltip": "Turma espelho na pós: {label} — {nome}"
+    },
     "PlanilhaTable": {
       "filter": "Filtro"
     },

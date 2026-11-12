@@ -2157,6 +2157,16 @@
     "close": "Close"
   },
   "Components": {
+    "Turma": {
+      "undergraduate": "Undergraduate",
+      "graduate": "Graduate",
+      "both": "Undergraduate + Graduate (mirror class)",
+      "shortUndergraduate": "Undergrad",
+      "shortGraduate": "Grad",
+      "shortBoth": "Undergrad + Grad",
+      "mirror": "Mirror",
+      "mirrorTooltip": "Mirror class in graduate program: {label} — {nome}"
+    },
     "PlanilhaTable": {
       "filter": "Filter"
     },
