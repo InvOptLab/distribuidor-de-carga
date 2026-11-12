@@ -122,17 +122,6 @@ export default function DocenteForm({
       return;
     }
 
-    const prioridadeExiste = formulariosTemp.some(
-      (f) => f.prioridade === prioridade,
-    );
-    if (prioridadeExiste) {
-      addAlerta(
-        t("alerts.uniquePriority", { priority: prioridade }),
-        "error",
-      );
-      return;
-    }
-
     const disciplinaExiste = formulariosTemp.some(
       (f) => f.id_disciplina === selectedDisciplina,
     );
@@ -272,7 +261,9 @@ export default function DocenteForm({
     onSave?.();
   };
 
-  const prioridadesUsadas = formulariosTemp.map((f) => f.prioridade);
+  const prioridadesUsadas = [
+    ...new Set(formulariosTemp.map((f) => f.prioridade)),
+  ].sort((a, b) => a - b);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -529,16 +520,6 @@ export default function DocenteForm({
               size="small"
               inputProps={{ min: 1, step: 1 }}
               placeholder={t("classAllocation.priorityPlaceholder")}
-              error={
-                prioridade !== "" &&
-                prioridadesUsadas.includes(prioridade as number)
-              }
-              helperText={
-                prioridade !== "" &&
-                prioridadesUsadas.includes(prioridade as number)
-                  ? t("classAllocation.priorityUsed")
-                  : ""
-              }
             />
           </Tooltip>
 
