@@ -52,7 +52,7 @@
       "authors": {
         "title": "Autores",
         "roles": {
-          "masterStudent": "Aluno de Mestrado",
+          "doctoralStudent": "Aluno de Doutorado",
           "advisor": "Orientador",
           "coadvisor": "Coorientador"
         },

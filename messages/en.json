@@ -52,7 +52,7 @@
       "authors": {
         "title": "Authors",
         "roles": {
-          "masterStudent": "Master's Student",
+          "doctoralStudent": "Doctoral Student",
           "advisor": "Advisor",
           "coadvisor": "Co-advisor"
         },

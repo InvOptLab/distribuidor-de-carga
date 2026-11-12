@@ -73,7 +73,7 @@ export default function AuthProfile({
   ): "primary" | "secondary" | "success" | "info" => {
     if (role === t("authors.roles.advisor")) return "primary";
     if (role === t("authors.roles.coadvisor")) return "secondary";
-    if (role === t("authors.roles.masterStudent")) return "success";
+    if (role === t("authors.roles.doctoralStudent")) return "success";
     return "success";
   };
 
