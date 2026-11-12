@@ -54,12 +54,17 @@ const KNOWN_CODES: RoomErrorCode[] = [
   "NOT_OWNER",
 ];
 
-/** Função RPC ausente (script de segurança ainda não aplicado). */
-function isMissingFunction(error: { code?: string; message?: string } | null) {
+/**
+ * Função RPC ausente (script de segurança ainda não aplicado).
+ * Só o PGRST202 do PostgREST indica isso. O código 42883 do Postgres NÃO serve:
+ * ele também aparece quando algo DENTRO da função falha (ex.: gen_random_bytes
+ * fora do search_path), e cair no acesso direto escondia o erro real atrás de
+ * "permission denied for table rooms".
+ */
+export function isMissingFunction(error: { code?: string; message?: string } | null) {
   if (!error) return false;
   return (
     error.code === "PGRST202" ||
-    error.code === "42883" ||
     /could not find the function/i.test(error.message ?? "")
   );
 }

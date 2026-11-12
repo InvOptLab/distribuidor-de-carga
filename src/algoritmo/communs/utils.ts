@@ -239,9 +239,12 @@ export function calcularCargaDidatica(
   let cargaDocente = 0;
 
   for (const atribuicao of atribuicoesDocente) {
-    cargaDocente += turmas.find(
+    // A atribuição pode apontar para uma turma fora da lista (ex.: turma
+    // desativada na tela de seleção): ela não conta na carga.
+    const turma = turmas.find(
       (turma) => turma.id === atribuicao.id_disciplina
-    ).carga;
+    );
+    cargaDocente += turma?.carga ?? 0;
   }
   return cargaDocente;
 }

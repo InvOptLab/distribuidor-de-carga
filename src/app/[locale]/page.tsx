@@ -66,7 +66,7 @@ export default function Home() {
       lattes: "http://lattes.cnpq.br/1790961525430099",
       institution: "USP",
       institute: "ICMC",
-      role: t("authors.roles.masterStudent"),
+      role: t("authors.roles.doctoralStudent"),
       researchArea: t("authors.researchAreas.combinatorialOptimization"),
       linkedin: "https://www.linkedin.com/in/josebieco",
       orcid: "0009-0009-3773-9005",
@@ -300,29 +300,75 @@ export default function Home() {
 
           {/* Nova Seção: Como Funciona */}
           <Box className={`${styles.scrollAnim} ${styles.reveal}`}>
-            <Typography variant="h4" fontWeight="800" align="center" gutterBottom color="primary.dark" sx={{ mb: 4 }}>
+            <Typography
+              variant="h4"
+              fontWeight="800"
+              align="center"
+              gutterBottom
+              color="primary.dark"
+              sx={{ mb: 4 }}
+            >
               {t("howItWorks.title")}
             </Typography>
             <Grid container spacing={4}>
               <Grid size={{ xs: 12, md: 4 }}>
-                <Box className={styles.glassCard} sx={{ p: 4, textAlign: "center" }}>
-                  <Typography variant="h1" color="primary.light" sx={{ opacity: 0.3, fontWeight: 900, mb: 1 }}>1</Typography>
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>{t("howItWorks.step1Title")}</Typography>
-                  <Typography variant="body2" color="text.secondary">{t("howItWorks.step1Desc")}</Typography>
+                <Box
+                  className={styles.glassCard}
+                  sx={{ p: 4, textAlign: "center" }}
+                >
+                  <Typography
+                    variant="h1"
+                    color="primary.light"
+                    sx={{ opacity: 0.3, fontWeight: 900, mb: 1 }}
+                  >
+                    1
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    {t("howItWorks.step1Title")}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {t("howItWorks.step1Desc")}
+                  </Typography>
                 </Box>
               </Grid>
               <Grid size={{ xs: 12, md: 4 }}>
-                <Box className={styles.glassCard} sx={{ p: 4, textAlign: "center" }}>
-                  <Typography variant="h1" color="primary.light" sx={{ opacity: 0.3, fontWeight: 900, mb: 1 }}>2</Typography>
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>{t("howItWorks.step2Title")}</Typography>
-                  <Typography variant="body2" color="text.secondary">{t("howItWorks.step2Desc")}</Typography>
+                <Box
+                  className={styles.glassCard}
+                  sx={{ p: 4, textAlign: "center" }}
+                >
+                  <Typography
+                    variant="h1"
+                    color="primary.light"
+                    sx={{ opacity: 0.3, fontWeight: 900, mb: 1 }}
+                  >
+                    2
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    {t("howItWorks.step2Title")}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {t("howItWorks.step2Desc")}
+                  </Typography>
                 </Box>
               </Grid>
               <Grid size={{ xs: 12, md: 4 }}>
-                <Box className={styles.glassCard} sx={{ p: 4, textAlign: "center" }}>
-                  <Typography variant="h1" color="primary.light" sx={{ opacity: 0.3, fontWeight: 900, mb: 1 }}>3</Typography>
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>{t("howItWorks.step3Title")}</Typography>
-                  <Typography variant="body2" color="text.secondary">{t("howItWorks.step3Desc")}</Typography>
+                <Box
+                  className={styles.glassCard}
+                  sx={{ p: 4, textAlign: "center" }}
+                >
+                  <Typography
+                    variant="h1"
+                    color="primary.light"
+                    sx={{ opacity: 0.3, fontWeight: 900, mb: 1 }}
+                  >
+                    3
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    {t("howItWorks.step3Title")}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {t("howItWorks.step3Desc")}
+                  </Typography>
                 </Box>
               </Grid>
             </Grid>

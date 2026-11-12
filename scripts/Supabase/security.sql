@@ -1,9 +1,14 @@
 -- =====================================================================
 -- Segurança das salas colaborativas
 --
--- Aplicar UMA vez no SQL Editor do Supabase, depois de realtime.sql.
+-- Aplicar no SQL Editor do Supabase, depois de realtime.sql. Pode ser rodado
+-- de novo sem problema (tudo é "if not exists" / "create or replace").
 -- O app funciona antes e depois deste script (antes, cai no acesso direto
 -- às tabelas; depois, passa a usar só as funções abaixo).
+--
+-- No Supabase o pgcrypto fica no schema "extensions": por isso as funções
+-- usam search_path = public, extensions (sem isso, gen_random_bytes/digest
+-- não são encontradas).
 --
 -- O que muda:
 --  * As tabelas deixam de ser lidas/escritas diretamente com a chave pública
@@ -78,7 +83,7 @@ returns json language sql stable as $$
 $$;
 
 create or replace function _check_owner(p_room_id uuid, p_owner_token text)
-returns void language plpgsql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public, extensions as $$
 begin
   if not exists (
     select 1 from room_secrets
@@ -94,7 +99,7 @@ create or replace function create_room(
   p_name text, p_owner_id text, p_owner_name text,
   p_config jsonb, p_password_hash text default null
 ) returns json
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 declare
   r rooms;
   v_token text := encode(gen_random_bytes(24), 'hex');
@@ -125,7 +130,7 @@ create or replace function join_room(
   p_room_name text, p_user_id text, p_name text,
   p_password_hash text default null
 ) returns json
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 declare
   r rooms;
   s room_secrets;
@@ -173,7 +178,7 @@ $$;
 
 create or replace function rejoin_owner(p_room_id uuid, p_owner_token text)
 returns json
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 declare r rooms;
 begin
   perform _check_owner(p_room_id, p_owner_token);
@@ -187,20 +192,20 @@ $$;
 
 create or replace function touch_participant(p_room_id uuid, p_user_id text)
 returns void
-language sql security definer set search_path = public as $$
+language sql security definer set search_path = public, extensions as $$
   update participants set last_seen = now()
   where room_id = p_room_id and user_id = p_user_id;
 $$;
 
 create or replace function leave_room(p_room_id uuid, p_user_id text)
 returns void
-language sql security definer set search_path = public as $$
+language sql security definer set search_path = public, extensions as $$
   delete from participants where room_id = p_room_id and user_id = p_user_id;
 $$;
 
 create or replace function end_room(p_room_id uuid, p_owner_token text)
 returns void
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 begin
   perform _check_owner(p_room_id, p_owner_token);
   delete from rooms where id = p_room_id;
@@ -210,7 +215,7 @@ $$;
 create or replace function update_room_config(
   p_room_id uuid, p_owner_token text, p_config jsonb
 ) returns jsonb
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 declare v_config jsonb;
 begin
   perform _check_owner(p_room_id, p_owner_token);
