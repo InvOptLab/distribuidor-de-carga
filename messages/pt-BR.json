@@ -440,6 +440,7 @@
         "active": "Ativo",
         "group": "Grupo",
         "workload": "Carga",
+        "mirror": "Espelho (pós)",
         "schedule": "Horário {value}"
       }
     },
@@ -1390,6 +1391,7 @@
         "active": "Ativa",
         "group": "Grupo",
         "workload": "Carga",
+        "mirror": "Espelho (pós)",
         "schedule": "Horário {value}"
       }
     },

@@ -440,6 +440,7 @@
         "active": "Active",
         "group": "Group",
         "workload": "Workload",
+        "mirror": "Mirror (graduate)",
         "schedule": "Schedule {value}"
       }
     },
@@ -1386,6 +1387,7 @@
         "active": "Active",
         "group": "Group",
         "workload": "Workload",
+        "mirror": "Mirror (graduate)",
         "schedule": "Schedule {value}"
       }
     },

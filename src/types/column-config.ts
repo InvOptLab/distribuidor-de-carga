@@ -1,4 +1,15 @@
 import { Disciplina } from "@/algoritmo/communs/interfaces/interfaces";
+import { formatCarga, formatEspelho, tipoNivel } from "@/context/Global/utils";
+
+/**
+ * Nível por extenso na planilha (mesmo padrão de "Sim"/"Não" das colunas
+ * booleanas). "outro" fica de fora para manter o valor original do arquivo.
+ */
+const NIVEL_LABEL: Partial<Record<ReturnType<typeof tipoNivel>, string>> = {
+  graduacao: "Graduação",
+  pos: "Pós-graduação",
+  ambos: "Graduação + Pós",
+};
 
 /**
  * Tipo de coluna na planilha
@@ -19,7 +30,8 @@ export type ColumnType =
   | "docentes"
   | "ativo"
   | "grupo"
-  | "carga";
+  | "carga"
+  | "espelho";
 
 /**
  * Configuração de uma coluna da planilha
@@ -67,6 +79,15 @@ export function getCellValue(
   if (column.type === "horarios" && column.horarioIndex !== undefined) {
     return disciplina.horarios[column.horarioIndex] || null;
   }
+  // Valores já legíveis: servem para exibir, filtrar, ordenar e exportar
+  if (column.type === "espelho") {
+    return disciplina.espelho
+      ? `${formatEspelho(disciplina.espelho)} (${disciplina.espelho.nome})`
+      : "";
+  }
+  if (column.type === "nivel") {
+    return NIVEL_LABEL[tipoNivel(disciplina)] ?? disciplina.nivel;
+  }
   return disciplina[column.type as keyof Disciplina];
 }
 
@@ -88,6 +109,8 @@ export function formatCellValue(value: any, column: ColumnConfig): string {
     case "ingles":
     case "ativo":
       return value ? "Sim" : "Não";
+    case "carga":
+      return typeof value === "number" ? formatCarga(value) : String(value);
     case "docentes":
       if (Array.isArray(value)) {
         return value.join(", ");

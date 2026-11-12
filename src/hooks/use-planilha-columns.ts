@@ -141,6 +141,17 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
         filterable: true,
       },
       {
+        // Turma espelho (pós). Visível por padrão só se o arquivo tiver espelhos.
+        id: "espelho",
+        label: t("mirror"),
+        type: "espelho",
+        visible: disciplinas.some((d) => d.espelho),
+        order: 6.5,
+        width: 140,
+        sortable: true,
+        filterable: true,
+      },
+      {
         id: "grupo",
         label: t("group"),
         type: "grupo",
