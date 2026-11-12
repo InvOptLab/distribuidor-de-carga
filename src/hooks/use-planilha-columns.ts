@@ -2,6 +2,11 @@
 
 import { Disciplina } from "@/algoritmo/communs/interfaces/interfaces";
 import {
+  CAMPOS_BUSCA_ESPELHO,
+  type CampoBuscaEspelho,
+  campoEspelho,
+} from "@/context/Global/utils";
+import {
   ColumnConfig,
   FilterState,
   getCellValue,
@@ -268,10 +273,22 @@ export function usePlanilhaColumns(disciplinas: Disciplina[]) {
       const column = columns.find((c) => c.id === columnId);
       if (!column || !filterValue) return;
 
+      const needle = filterValue.toLowerCase();
+      // Colunas id/código/nome também casam com a turma espelho (pós)
+      const campoEsp = CAMPOS_BUSCA_ESPELHO.includes(
+        column.id as CampoBuscaEspelho,
+      )
+        ? (column.id as CampoBuscaEspelho)
+        : null;
+
       result = result.filter((disciplina) => {
         const cellValue = getCellValue(disciplina, column);
         const stringValue = String(cellValue).toLowerCase();
-        return stringValue.includes(filterValue.toLowerCase());
+        if (stringValue.includes(needle)) return true;
+        return (
+          campoEsp !== null &&
+          campoEspelho(disciplina, campoEsp).toLowerCase().includes(needle)
+        );
       });
     });
 

@@ -129,6 +129,44 @@ describe("applyDocenteFilters", () => {
   });
 });
 
+describe("applyTurmaFilters com turma espelho", () => {
+  const turmas = [
+    turma("SME0202,1", {
+      codigo: "SME0202",
+      nome: "Métodos Numéricos em Equações Diferenciais",
+      espelho: {
+        codigo: "SME5784",
+        id: "SME5784,1",
+        nome: "Métodos Numéricos para Equações Diferenciais",
+      },
+    }),
+    turma("SME0300,2", { codigo: "SME0300", nome: "Cálculo Numérico" }),
+  ];
+
+  it("busca pelo código, id ou nome da pós encontra a graduação", () => {
+    const f = (search: string) =>
+      applyTurmaFilters(turmas, { search, rules: [] }, []).map((d) => d.id);
+    expect(f("sme5784")).toEqual(["SME0202,1"]);
+    expect(f("SME5784,1")).toEqual(["SME0202,1"]);
+    expect(f("para equações")).toEqual(["SME0202,1"]);
+    expect(f("numérico")).toEqual(["SME0202,1", "SME0300,2"]);
+  });
+
+  it("regra de texto em código/nome também casa com o espelho", () => {
+    const f = (fieldKey: string, value: string) =>
+      applyTurmaFilters(
+        turmas,
+        { search: "", rules: [rule({ fieldKey, type: "contains", value })] },
+        [],
+      ).map((d) => d.id);
+    expect(f("codigo", "SME5784")).toEqual(["SME0202,1"]);
+    expect(f("nome", "para Equações")).toEqual(["SME0202,1"]);
+    expect(f("codigo", "SME0300")).toEqual(["SME0300,2"]);
+    // Outros campos não olham o espelho
+    expect(f("cursos", "SME5784")).toEqual([]);
+  });
+});
+
 describe("applyTurmaFilters", () => {
   const turmas = [
     turma("MAT101-1", { nome: "Cálculo I", noturna: true }),
