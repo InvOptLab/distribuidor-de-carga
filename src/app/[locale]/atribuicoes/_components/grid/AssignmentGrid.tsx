@@ -168,6 +168,12 @@ const GridRoot = styled("div", {
       overflow: "hidden",
       textOverflow: "ellipsis",
     },
+    // Indicador de turma espelho (pós) ao lado do código
+    "& .hdr-mirror": {
+      display: "inline-flex",
+      color: hc ? "inherit" : theme.palette.info.main,
+      flexShrink: 0,
+    },
     "& .hdr-badge": {
       marginLeft: "auto",
       minWidth: 18,

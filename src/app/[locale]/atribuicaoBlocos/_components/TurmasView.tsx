@@ -8,7 +8,7 @@ import {
   KeyboardArrowDown,
   ArrowBack,
 } from "@mui/icons-material";
-import { Celula } from "@/algoritmo/communs/interfaces/interfaces";
+import { Celula, Espelho } from "@/algoritmo/communs/interfaces/interfaces";
 import { useTranslations } from "next-intl";
 
 export interface TurmaData {
@@ -24,6 +24,7 @@ export interface TurmaData {
   carga: number;
   docentesAtribuidos: DocenteInfo[];
   docentesComPrioridade: DocenteInfo[];
+  espelho?: Espelho;
 }
 
 interface Props {

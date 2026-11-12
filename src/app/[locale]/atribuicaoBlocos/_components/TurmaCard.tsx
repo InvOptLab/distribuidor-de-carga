@@ -1,5 +1,8 @@
 "use client";
-import { Horario } from "@/algoritmo/communs/interfaces/interfaces";
+import { Espelho, Horario } from "@/algoritmo/communs/interfaces/interfaces";
+import NivelChip from "@/components/Turma/NivelChip";
+import EspelhoChip from "@/components/Turma/EspelhoChip";
+import { formatCarga } from "@/context/Global/utils";
 import {
   Box,
   Typography,
@@ -50,6 +53,7 @@ type Props = {
   onTravar?: () => void;
   onClick?: () => void;
   canNavigate?: boolean;
+  espelho?: Espelho;
 };
 
 export default function TurmaCard({
@@ -71,6 +75,7 @@ export default function TurmaCard({
   onTravar,
   onClick,
   canNavigate = true,
+  espelho,
 }: Props) {
   const t = useTranslations("Pages.AllocationBlocks.TurmaCard");
 
@@ -183,19 +188,8 @@ export default function TurmaCard({
                 />
               </Tooltip>
             )}
-            {nivel && (
-              <Tooltip
-                title={nivel === "g" ? t("undergraduate") : t("graduate")}
-              >
-                <Chip
-                  label={nivel.substring(0, 4)}
-                  size="small"
-                  variant="filled"
-                  sx={{ height: 16, fontSize: "0.6rem", px: 0 }}
-                  color={nivel === "g" ? "primary" : "secondary"}
-                />
-              </Tooltip>
-            )}
+            <NivelChip nivel={nivel} espelho={espelho} size="tiny" />
+            <EspelhoChip espelho={espelho} size="tiny" />
           </Stack>
         </Stack>
 
@@ -217,7 +211,7 @@ export default function TurmaCard({
               icon={
                 <FitnessCenterIcon sx={{ fontSize: "0.8rem !important" }} />
               }
-              label={`${carga}`}
+              label={formatCarga(carga)}
               size="small"
               sx={{
                 height: 20,

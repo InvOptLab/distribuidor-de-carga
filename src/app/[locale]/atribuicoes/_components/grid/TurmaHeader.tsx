@@ -1,5 +1,7 @@
 import { memo } from "react";
 import LockIcon from "@mui/icons-material/Lock";
+import LinkIcon from "@mui/icons-material/Link";
+import { formatEspelho } from "@/context/Global/utils";
 import { useTranslations } from "next-intl";
 import type { Disciplina } from "@/algoritmo/communs/interfaces/interfaces";
 import { formatCursos } from "../../model/text";
@@ -28,11 +30,19 @@ function TurmaHeader({
   active,
 }: TurmaHeaderProps) {
   const t = useTranslations("Pages.Assignment.Grid");
+  const tTurma = useTranslations("Components.Turma");
   const horarios = (disciplina.horarios ?? []).filter(Boolean);
   const cursos =
     density === "comfortable" ? formatCursos(disciplina.cursos) : "";
   const countLabel = t("assignedCount", { count: assignedCount });
   const fullName = `${disciplina.codigo} ${disciplina.nome}`;
+  // Turma espelho (pós): mesma turma com outro código
+  const mirrorLabel = disciplina.espelho
+    ? tTurma("mirrorTooltip", {
+        label: formatEspelho(disciplina.espelho),
+        nome: disciplina.espelho.nome,
+      })
+    : "";
 
   return (
     <th
@@ -43,13 +53,23 @@ function TurmaHeader({
       data-c={c}
       data-locked={locked || undefined}
       tabIndex={active ? 0 : -1}
-      aria-label={[fullName, countLabel, locked ? t("columnLocked") : ""]
+      aria-label={[
+        fullName,
+        mirrorLabel,
+        countLabel,
+        locked ? t("columnLocked") : "",
+      ]
         .filter(Boolean)
         .join(", ")}
     >
       <div className="hdr">
         <div className="hdr-top">
           <span className="hdr-code">{disciplina.codigo}</span>
+          {mirrorLabel && (
+            <span className="hdr-mirror" title={mirrorLabel} aria-hidden="true">
+              <LinkIcon className="ico" />
+            </span>
+          )}
           {locked && <LockIcon className="ico" aria-hidden="true" />}
           <span
             className={`hdr-badge${assignedCount === 0 ? " empty" : ""}`}

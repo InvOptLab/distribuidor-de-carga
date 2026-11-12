@@ -18,7 +18,14 @@ import {
   NightsStay as NightIcon,
   Language as LangIcon,
 } from "@mui/icons-material";
-import { Celula, TipoTrava } from "@/algoritmo/communs/interfaces/interfaces";
+import {
+  Celula,
+  Espelho,
+  TipoTrava,
+} from "@/algoritmo/communs/interfaces/interfaces";
+import NivelChip from "@/components/Turma/NivelChip";
+import EspelhoChip from "@/components/Turma/EspelhoChip";
+import { formatCarga } from "@/context/Global/utils";
 import { useTranslations } from "next-intl";
 
 export interface DocenteInfo {
@@ -51,6 +58,7 @@ type Props = {
   onTravar?: (nome_docente: string, id_disciplina: string) => void;
   travas?: Celula[];
   canNavigate?: boolean;
+  espelho?: Espelho;
 };
 
 export default function TurmaRow({
@@ -75,6 +83,7 @@ export default function TurmaRow({
   onTravar,
   travas = [],
   canNavigate = true,
+  espelho,
 }: Props) {
   // Função para verificar se um docente está travado nesta turma
   const isDocenteTravado = (nomeDocente: string): boolean => {
@@ -162,20 +171,11 @@ export default function TurmaRow({
                     />
                   </Tooltip>
                 )}
-                <Tooltip
-                  title={nivel === "g" ? t("graduate") : t("undergraduate")}
-                >
-                  <Chip
-                    // TODO: ver como ficará a tradução
-                    label={nivel === "g" ? "Grad" : "Pós"}
-                    size="small"
-                    variant="filled"
-                    sx={{ height: 20, fontSize: "0.7rem" }}
-                    color={nivel === "g" ? "primary" : "secondary"}
-                  />
-                </Tooltip>
+                {/* Nível (antes a dica estava trocada e "g+p" virava "Pós") */}
+                <NivelChip nivel={nivel} espelho={espelho} />
+                <EspelhoChip espelho={espelho} />
                 <Chip
-                  label={t("workload", { carga })}
+                  label={t("workload", { carga: formatCarga(carga) })}
                   size="small"
                   variant="outlined"
                   sx={{ height: 20, fontSize: "0.7rem" }}

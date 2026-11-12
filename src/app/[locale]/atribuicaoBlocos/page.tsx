@@ -9,6 +9,7 @@ import {
   Disciplina,
   Docente,
   Formulario,
+  formatEspelho,
 } from "@/context/Global/utils";
 import { CargaDeTrabalhoMaximaDocente } from "@/algoritmo/communs/Constraints/CargaDeTrabalhoMaximaDocente";
 import { calcularCargaDidatica } from "@/algoritmo/communs/utils";
@@ -256,6 +257,7 @@ export default function AtribuicaoEmBlocosPage() {
         carga: turma.carga || 0,
         docentesAtribuidos,
         docentesComPrioridade,
+        espelho: turma.espelho,
       };
     });
   }, [turmasAtivas, atribuicoes, formularios, docentes, cargaDidaticaMap]);
@@ -557,7 +559,9 @@ export default function AtribuicaoEmBlocosPage() {
       } else {
         const turma = turmasData.find((t) => t.id === item.id);
         return {
-          label: turma ? `${turma.codigo}-T${turma.turma}` : "Turma",
+          label: turma
+            ? `${turma.codigo}-T${turma.turma}${turma.espelho ? ` / ${formatEspelho(turma.espelho)}` : ""}`
+            : "Turma",
           type: "turma" as const,
         };
       }

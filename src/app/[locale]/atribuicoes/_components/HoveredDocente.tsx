@@ -28,6 +28,7 @@ import type {
 import { forwardRef } from "react";
 import { useTranslations } from "next-intl";
 import { priorityRampColor } from "../theme/priorityRamp";
+import { formatEspelho } from "@/context/Global/utils";
 
 interface HoveredDocenteProps {
   docente: Docente;
@@ -318,7 +319,11 @@ const HoveredDocente = forwardRef<HTMLDivElement, HoveredDocenteProps>(
                                 sx={{ fontWeight: 500, lineHeight: 1.3 }}
                               >
                                 {disciplina
-                                  ? `${disciplina.codigo} - T${disciplina.turma}`
+                                  ? `${disciplina.codigo} - T${disciplina.turma}${
+                                      disciplina.espelho
+                                        ? ` / ${formatEspelho(disciplina.espelho)}`
+                                        : ""
+                                    }`
                                   : formulario.id_disciplina}
                               </Typography>
                               <Typography

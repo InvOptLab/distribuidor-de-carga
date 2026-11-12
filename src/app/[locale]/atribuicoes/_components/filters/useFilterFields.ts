@@ -6,6 +6,7 @@ import { useCollaboration } from "@/context/Collaboration";
 import type { FilterRule } from "../../types/types";
 import { useTimetable } from "../../context/TimetableContext";
 import type { FilterField } from "./FilterRuleForm";
+import { useNivelLabel } from "@/components/Turma/NivelChip";
 
 /**
  * Campos de filtro de docente e de turma e o texto de cada regra ativa (chip).
@@ -14,6 +15,7 @@ import type { FilterField } from "./FilterRuleForm";
 export function useFilterFields() {
   const { disciplinas } = useTimetable();
   const t = useTranslations("Pages.Assignment.Filters");
+  const nivelLabel = useNivelLabel();
 
   const diasSemana = useMemo(
     () => [
@@ -60,9 +62,12 @@ export function useFilterFields() {
         disciplinas.filter((d) => d.ativo && d.grupo).map((d) => d.grupo),
       ),
     ).filter(Boolean);
+    // Valor original do arquivo ("g", "p", "g+p"...), rótulo por extenso
     const uniqueLevels = Array.from(
       new Set(disciplinas.filter((d) => d.ativo).map((d) => d.nivel)),
-    ).filter(Boolean);
+    )
+      .filter(Boolean)
+      .map((nivel) => ({ value: nivel, label: nivelLabel({ nivel }).longo }));
     return [
       { key: "nome", label: t("name"), type: "text" },
       { key: "codigo", label: t("code"), type: "text" },
@@ -79,7 +84,7 @@ export function useFilterFields() {
       },
       { key: "horarios_tempo", label: t("scheduleRange"), type: "timeRange" },
     ];
-  }, [disciplinas, t, diasSemana]);
+  }, [disciplinas, t, diasSemana, nivelLabel]);
 
   const describeRule = useCallback(
     (rule: FilterRule): string => {
@@ -90,7 +95,9 @@ export function useFilterFields() {
             ? rule.value
                 .map((v) => diasSemana.find((d) => d.value === v)?.label || v)
                 .join(", ")
-            : rule.value.join(", ");
+            : rule.fieldKey === "nivel"
+              ? rule.value.map((v) => nivelLabel({ nivel: v }).longo).join(", ")
+              : rule.value.join(", ");
       } else if (rule.type === "timeRange") {
         const start = rule.value.start || "00:00";
         const end = rule.value.end || "23:59";
@@ -114,7 +121,7 @@ export function useFilterFields() {
         )?.label ?? rule.field;
       return `${field}: ${displayValue}`;
     },
-    [diasSemana, agruparOptions, docenteFields, disciplinaFields, t],
+    [diasSemana, agruparOptions, docenteFields, disciplinaFields, t, nivelLabel],
   );
 
   return { docenteFields, disciplinaFields, describeRule };
