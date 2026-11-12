@@ -42,6 +42,9 @@ import LockIcon from "@mui/icons-material/Lock";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { supabase } from "@/lib/supabaseClient";
+import { listRooms } from "@/context/Collaboration/roomsApi";
+
+const LOBBY_REFRESH_MS = 10_000;
 import {
   useCollaboration,
   hashPassword,
@@ -112,27 +115,28 @@ export default function LobbyPage() {
     if (isInRoom) router.push("/atribuicoes");
   }, [isInRoom, router]);
 
-  const fetchRooms = async () => {
-    setIsLoading(true);
-    const { data } = await supabase
-      .from("rooms")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (data) setRooms(data);
-    setIsLoading(false);
+  const fetchRooms = async (silent = false) => {
+    if (!silent) setIsLoading(true);
+    // Lista sem segredos (e sem o id de salas privadas)
+    setRooms(await listRooms());
+    if (!silent) setIsLoading(false);
   };
 
   useEffect(() => {
     fetchRooms();
+    // Eventos da tabela (só chegam sem o script de segurança aplicado)
     const channel = supabase
       .channel("lobby")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "rooms" },
-        fetchRooms,
+        () => fetchRooms(true),
       )
       .subscribe();
+    // Com RLS ligado a tabela não emite eventos para a chave pública: atualiza periodicamente
+    const poll = setInterval(() => fetchRooms(true), LOBBY_REFRESH_MS);
     return () => {
+      clearInterval(poll);
       supabase.removeChannel(channel);
     };
   }, []);
@@ -251,7 +255,7 @@ export default function LobbyPage() {
             <Box sx={{ display: "flex", gap: 1 }}>
               <Tooltip title={t("header.refreshTooltip")}>
                 <IconButton
-                  onClick={fetchRooms}
+                  onClick={() => fetchRooms()}
                   sx={{
                     color: "white",
                     bgcolor: "rgba(255,255,255,0.1)",
@@ -369,7 +373,7 @@ export default function LobbyPage() {
         ) : (
           <Grid container spacing={3}>
             {filteredRooms.map((room, index) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={room.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={room.name}>
                 <Fade in timeout={300 + index * 100}>
                   <Card
                     elevation={0}
