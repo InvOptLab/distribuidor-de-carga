@@ -10,8 +10,8 @@ import { Box, CssBaseline } from "@mui/material";
 
 import "katex/dist/katex.min.css";
 import { CollaborationProvider } from "@/context/Collaboration";
+import CollaborationSync from "@/context/Collaboration/CollaborationSync";
 import { NextIntlClientProvider, useMessages } from "next-intl";
-import { HistorySolutionProvider } from "./history/context/history.context";
 import { getMessages } from "next-intl/server";
 import { AccessibilityProvider } from "@/context/Accessibility";
 import AccessibilityBar from "@/components/AccessibilityBar";
@@ -69,29 +69,29 @@ export default async function RootLayout({
                 </Box>
 
                 <GlobalWrapper>
+                  {/* Sincroniza os dados com a sala colaborativa em todas as páginas */}
+                  <CollaborationSync />
                   <AlgorithmWrapper>
                     <AlertsWrapper>
-                      <HistorySolutionProvider>
-                        {/* Substituímos a <div> nativa pelo Box do MUI para controlar o scroll */}
-                        <Box
-                          component="main"
-                          id="main-content"
-                          sx={{
-                            flexGrow: 1, // Faz este bloco crescer para preencher a tela restante
-                            overflowY: "auto", // O scroll VAI ACONTECER AQUI!
-                            overflowX: "hidden",
-                            display: "flex",
-                            flexDirection: "column",
-                            position: "relative", // Evita bugs com modais/tooltips internas
-                          }}
-                        >
-                          <OnboardingDialog />
-                          <ClearStorageModal />
-                          {children}
-                        </Box>
+                      {/* Substituímos a <div> nativa pelo Box do MUI para controlar o scroll */}
+                      <Box
+                        component="main"
+                        id="main-content"
+                        sx={{
+                          flexGrow: 1, // Faz este bloco crescer para preencher a tela restante
+                          overflowY: "auto", // O scroll VAI ACONTECER AQUI!
+                          overflowX: "hidden",
+                          display: "flex",
+                          flexDirection: "column",
+                          position: "relative", // Evita bugs com modais/tooltips internas
+                        }}
+                      >
+                        <OnboardingDialog />
+                        <ClearStorageModal />
+                        {children}
+                      </Box>
 
-                        <AvatarChatWidget />
-                      </HistorySolutionProvider>
+                      <AvatarChatWidget />
                     </AlertsWrapper>
                   </AlgorithmWrapper>
                 </GlobalWrapper>

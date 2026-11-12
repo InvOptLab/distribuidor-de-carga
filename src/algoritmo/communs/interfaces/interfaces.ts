@@ -64,12 +64,26 @@ export interface Docente {
   agrupar?: string; //"Indiferente" | "Agrupar" | "Espalhar" | "";
 }
 
+/**
+ * Turma espelho (v4.0): a mesma turma oferecida com outro código, sempre a
+ * turma da pós inserida na turma da graduação. Na prática é uma única turma.
+ */
+export interface Espelho {
+  codigo: string;
+  id: string;
+  nome: string;
+  ementa?: string;
+  uuid?: string;
+}
+
 export interface DisciplinaETL {
   codigo: string;
   turma: number;
   nome: string;
   horario: string;
   cursos: string;
+  /** Nome do campo `cursos` no formato v4.0. */
+  curso?: string;
   ementa: string;
   id: string;
   nivel: string;
@@ -81,6 +95,8 @@ export interface DisciplinaETL {
   horarios?: Horario[];
   grupo?: string;
   carga?: number;
+  espelho?: Espelho;
+  uuid?: string;
 }
 
 export interface Disciplina {
@@ -103,6 +119,8 @@ export interface Disciplina {
   // Pensar se faz sentido colocar um Set com os Docentes alocados para a Disciplina
   grupo: string; // Caso não tenha deve ser ums string vazia
   carga?: number;
+  espelho?: Espelho; // Turma da pós equivalente (turmas espelho, v4.0)
+  uuid?: string;
 }
 
 export interface Atribuicao {

@@ -1,0 +1,65 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`export JSON v4 > mantém o formato 1`] = `
+{
+  "atribuicao": {
+    "T1": [
+      "Ana",
+    ],
+  },
+  "disciplinas": {
+    "T1": {
+      "ativo": true,
+      "carga": 1,
+      "codigo": "T1",
+      "conflitos": [
+        "T2",
+      ],
+      "cursos": "",
+      "docentes": undefined,
+      "ementa": "",
+      "grupo": "",
+      "horario": "",
+      "horarios": [
+        {
+          "dia": "Seg.",
+          "fim": "10:00",
+          "inicio": "08:00",
+        },
+      ],
+      "id": "T1",
+      "ingles": false,
+      "nivel": "Graduação",
+      "nome": "Turma T1",
+      "noturna": false,
+      "prioridade": 0,
+      "trava": false,
+      "turma": 1,
+    },
+  },
+  "docentes": [
+    {
+      "agrupar": "Agrupar",
+      "ativo": true,
+      "comentario": "c",
+      "nome": "Ana",
+    },
+  ],
+  "formularios": {
+    "Ana": {
+      "T1": 3,
+    },
+  },
+  "saldos": {
+    "Ana": 1.5,
+  },
+  "travas": [
+    {
+      "id_disciplina": "T1",
+      "nome_docente": "Ana",
+      "tipo_trava": 3,
+    },
+  ],
+  "versao": "4.0",
+}
+`;

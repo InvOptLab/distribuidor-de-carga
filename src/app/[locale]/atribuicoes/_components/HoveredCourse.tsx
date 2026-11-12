@@ -4,6 +4,7 @@ import type React from "react";
 import { forwardRef } from "react";
 import {
   Paper,
+  useTheme,
   Stack,
   Typography,
   Divider,
@@ -16,8 +17,11 @@ import {
   School as SchoolIcon,
   AccessTime as AccessTimeIcon,
   CheckCircle as CheckCircleIcon,
+  Link as LinkIcon,
 } from "@mui/icons-material";
+import { formatEspelho } from "@/context/Global/utils";
 import {
+  Atribuicao,
   Disciplina,
   Docente,
   Formulario,
@@ -26,14 +30,19 @@ import { useGlobalContext } from "@/context/Global";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import { useTranslations } from "next-intl";
+import { priorityRampColor } from "../theme/priorityRamp";
 
 interface HoveredCourseProps {
   disciplina: Disciplina;
   formularios?: Formulario[];
   docentes?: Docente[];
+  /** Atribuições a exibir. Padrão: as do estado global (grade). O histórico passa as da entrada. */
+  atribuicoes?: Atribuicao[];
   children?: React.ReactNode;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  /** "panel": sem sombra/limite de altura, para o painel lateral de detalhes. */
+  variant?: "card" | "panel";
 }
 
 /**
@@ -46,14 +55,17 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
       disciplina,
       formularios = [],
       docentes = [],
+      atribuicoes: atribuicoesProp,
       children,
+      variant = "card",
       onMouseEnter,
       onMouseLeave,
     },
     ref,
   ) => {
     // Acessa o contexto global para buscar as atribuições atualizadas
-    const { atribuicoes } = useGlobalContext();
+    const { atribuicoes: atribuicoesGlobais } = useGlobalContext();
+    const atribuicoes = atribuicoesProp ?? atribuicoesGlobais;
 
     const t = useTranslations("Pages.Assignment.Hover.Course");
 
@@ -75,10 +87,26 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
       return "inherit"; // Preto (cor padrão)
     };
 
-    const getPrioridadeColor = (prioridade: number): string => {
-      if (prioridade >= 4) return "#4caf50"; // Verde para alta prioridade
-      if (prioridade === 3) return "#ff9800"; // Laranja para média prioridade
-      return "#f44336"; // Vermelho para baixa
+    // Mesma rampa da grade (1 = mais preferida), sobre a maior prioridade dos formulários
+    const theme = useTheme();
+    const maxPrioridade = formularios.reduce(
+      (max, f) => Math.max(max, f.prioridade),
+      1,
+    );
+    const rampMode = theme.palette.mode === "dark" ? "dark" : "light";
+    const getPrioridadeColor = (prioridade: number): string =>
+      priorityRampColor(prioridade, maxPrioridade, rampMode).bg;
+    const priorityPill = (prioridade: number) => {
+      const { bg, fg } = priorityRampColor(prioridade, maxPrioridade, rampMode);
+      return {
+        backgroundColor: bg,
+        color: fg,
+        px: 0.75,
+        borderRadius: 1,
+        alignSelf: "flex-start",
+        display: "inline-block",
+        fontWeight: 600,
+      };
     };
 
     const getDocenteByName = (nome: string): Docente | undefined => {
@@ -87,22 +115,22 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
 
     return (
       <Paper
-        elevation={12}
+        elevation={variant === "panel" ? 0 : 12}
         sx={{
-          maxWidth: 700,
-          borderRadius: 3,
-          border: "1px solid",
+          maxWidth: variant === "panel" ? "none" : 700,
+          borderRadius: variant === "panel" ? 0 : 3,
+          border: variant === "panel" ? 0 : "1px solid",
           borderColor: "divider",
         }}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        {/* Cabeçalho com gradiente */}
+        {/* Cabeçalho na cor primária do tema (vale para alto contraste) */}
         <Box
           sx={{
-            background: "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
+            bgcolor: "primary.main",
             p: 2.5,
-            color: "white",
+            color: "primary.contrastText",
           }}
         >
           <Stack direction="row" spacing={1} alignItems="center" mb={1}>
@@ -137,6 +165,40 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
           >
             {disciplina.nome}
           </Typography>
+          {disciplina.espelho && (
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              sx={{
+                mt: 1.25,
+                pt: 1.25,
+                borderTop: "1px solid",
+                borderColor: "rgba(255,255,255,0.3)",
+              }}
+            >
+              <LinkIcon fontSize="small" sx={{ opacity: 0.9 }} />
+              <Box sx={{ minWidth: 0 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: "block",
+                    opacity: 0.9,
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
+                  }}
+                >
+                  {t("mirror")}
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {formatEspelho(disciplina.espelho)}
+                </Typography>
+                <Typography variant="body2" sx={{ opacity: 0.95 }}>
+                  {disciplina.espelho.nome}
+                </Typography>
+              </Box>
+            </Stack>
+          )}
         </Box>
 
         {/* Conteúdo principal */}
@@ -145,7 +207,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
           spacing={2}
           sx={{
             p: 2.5,
-            maxHeight: "55vh",
+            maxHeight: variant === "panel" ? "none" : "55vh",
             overflowY: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",
@@ -227,10 +289,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                               <Typography
                                 variant="caption"
                                 sx={{
-                                  color: getPrioridadeColor(
-                                    formulario.prioridade,
-                                  ),
-                                  fontWeight: 600,
+                                  ...priorityPill(formulario.prioridade),
                                 }}
                               >
                                 {t("priorityLevel", {
@@ -450,10 +509,7 @@ const HoveredCourse = forwardRef<HTMLDivElement, HoveredCourseProps>(
                               <Typography
                                 variant="caption"
                                 sx={{
-                                  color: getPrioridadeColor(
-                                    formulario.prioridade,
-                                  ),
-                                  fontWeight: 600,
+                                  ...priorityPill(formulario.prioridade),
                                 }}
                               >
                                 {t("priorityLevel", {

@@ -14,6 +14,7 @@ import { ColumnManager } from "@/components/Planilha/ColumnManager";
 import { exportToExcel } from "./excel-export";
 import { CollaborativeGridWrapper } from "@/app/[locale]/atribuicoes/_components/CollaborativeGridWrapper";
 import { useCollaboration } from "@/context/Collaboration";
+import { useAlertsContext } from "@/context/Alerts";
 import { useTranslations } from "next-intl";
 import NoDataFound from "@/components/NoDataFound";
 
@@ -40,7 +41,9 @@ export default function PlanilhaPage() {
   const t = useTranslations("Pages.Spreadsheet");
 
   // Hook de colaboração para transmitir mudanças
-  const { broadcastAssignmentChange, isInRoom } = useCollaboration();
+  const { broadcastAssignmentChange, isInRoom, canEdit } = useCollaboration();
+  const { addAlerta } = useAlertsContext();
+  const tAssign = useTranslations("Pages.Assignment.Alerts");
 
   // Hook para gerenciar colunas, filtros e ordenação
   const {
@@ -64,6 +67,15 @@ export default function PlanilhaPage() {
     disciplinaId: string,
     newDocentes: string[],
   ) => {
+    // Em sala, só o líder ou convidados com permissão de edição alteram
+    if (!canEdit) {
+      addAlerta(tAssign("onlyRoomLeaderCanMakeChanges"), "warning");
+      return;
+    }
+
+    const prevDocentes =
+      atribuicoes.find((a) => a.id_disciplina === disciplinaId)?.docentes ?? [];
+
     // Verifica se já existe atribuição para determinar se é 'update' ou 'add'
     const hasAtribuicao = atribuicoes.some(
       (a) => a.id_disciplina === disciplinaId,
@@ -84,17 +96,9 @@ export default function PlanilhaPage() {
 
     updateAtribuicoes(updatedAtribuicoes);
 
-    // Colaboração: Transmite a alteração para a sala via WebSocket
+    // Colaboração: transmite só o delta (quem entrou/saiu) para a sala
     if (isInRoom) {
-      const assignmentPayload = {
-        id_disciplina: disciplinaId,
-        docentes: newDocentes,
-      };
-
-      broadcastAssignmentChange(
-        assignmentPayload,
-        hasAtribuicao ? "update" : "add",
-      );
+      broadcastAssignmentChange(disciplinaId, prevDocentes, newDocentes);
     }
   };
 
@@ -192,6 +196,7 @@ export default function PlanilhaPage() {
               onSort={handleSort}
               onFilter={handleFilter}
               onUpdateDocentes={handleUpdateDocentes}
+              readOnly={!canEdit}
               formularios={formularios}
               atribuicoes={atribuicoes}
             />

@@ -645,6 +645,7 @@
         "active": "Ativo",
         "comment": "Comentário",
         "withoutAssignment": "Sem atribuição",
+        "withConflict": "Com conflito",
         "withoutTeacher": "Sem docente",
         "groupPreference": "Agrupar",
         "indifferent": "Indiferente",
@@ -712,6 +713,7 @@
           "noForm": "Sem formulário",
           "course": "Curso",
           "teachingWorkload": "Carga Didática",
+          "mirror": "Turma espelho (pós)",
           "schedules": "Horários",
           "toBeDefined": "A definir",
           "interestedProfessors": "Docentes Interessados ({count})"
@@ -739,6 +741,8 @@
         "filterSync": "Filtro Sync",
         "usersOnline": "Usuários online nesta sala",
         "requestSync": "Solicitar sincronização de dados do líder",
+        "pushSync": "Reenviar seu estado atual para todos na sala",
+        "ownerOffline": "O líder está desconectado. Suas alterações chegam aos outros convidados, mas o líder só as verá ao voltar e sincronizar.",
         "roomSettingsTooltip": "Configurações da sala",
         "collapseDetails": "Recolher detalhes",
         "expandDetails": "Expandir detalhes",
@@ -767,6 +771,77 @@
         "warningMessage": "Você está prestes a limpar todas as atribuições realizadas. Esta ação é irreversível e não poderá ser desfeita. Tem certeza de que deseja continuar?",
         "cancel": "Cancelar",
         "apply": "Aplicar"
+      },
+      "Grid": {
+        "gridLabel": "Grade de atribuições: docentes nas linhas, turmas nas colunas",
+        "priority": "prioridade {priority}",
+        "noForm": "sem formulário",
+        "assigned": "atribuída",
+        "notAssigned": "não atribuída",
+        "locked": "travada",
+        "lockedCell": "Célula travada",
+        "announceAssigned": "{docente} atribuído(a) a {turma}",
+        "announceRemoved": "{docente} removido(a) de {turma}",
+        "announceCellLock": "Trava alternada: {docente}, {turma}",
+        "announceColumnLock": "Trava alternada na coluna {turma}",
+        "announceRowLock": "Trava alternada na linha {docente}",
+        "announceLockMode": "Modo trava {state, select, on {ligado} other {desligado}}",
+        "workload": "Carga atribuída: {carga}",
+        "balance": "Saldo: {saldo}",
+        "conflict": "Conflito de horário",
+        "rowLocked": "Linha travada",
+        "columnLocked": "Coluna travada",
+        "assignedCount": "{count, plural, =0 {Nenhum docente atribuído} one {# docente atribuído} other {# docentes atribuídos}}",
+        "toBeDefined": "a definir",
+        "legend": "Legenda",
+        "legendEmpty": "sem formulário",
+        "legendPriority": "prioridade",
+        "legendPriorityHint": "1 = mais preferida",
+        "legendAssigned": "atribuído",
+        "legendLocked": "travado",
+        "legendConflict": "conflito de horário"
+      },
+      "Toolbar": {
+        "more": "Mais ações",
+        "summaryTurmas": "{count} turmas",
+        "summarySemDocente": "{count} sem docente",
+        "summaryConflitos": "{count, plural, one {# conflito} other {# conflitos}}",
+        "summaryTravas": "{count, plural, one {# trava} other {# travas}}",
+        "filterBySemDocente": "Mostrar só turmas sem docente",
+        "filterByConflitos": "Mostrar só docentes com conflito",
+        "lockModeBanner": "Modo trava: cliques travam/destravam. Esc para sair.",
+        "density": "Densidade",
+        "compact": "Compacta",
+        "comfortable": "Confortável",
+        "shortcuts": "Atalhos de teclado",
+        "shortcutsList": "Setas: mover · Home/End: início/fim da linha · Ctrl+Home/End: primeira/última célula · Espaço/Enter: atribuir · L ou Ctrl+Espaço: travar célula · Shift+L: travar linha/coluna · T: modo trava · I: fixar detalhes · Esc: sair do modo trava/desafixar · /: buscar",
+        "onlyLeaderCanEdit": "Apenas o líder da sala pode realizar alterações."
+      },
+      "FilterBar": {
+        "searchProfessor": "Buscar docente…",
+        "searchClass": "Buscar turma…",
+        "quickWithoutTeacher": "Sem docente",
+        "quickWithoutAssignment": "Sem atribuição",
+        "quickEvening": "Noturna",
+        "quickEnglish": "Inglês",
+        "quickConflicts": "Conflitos",
+        "addFilter": "Filtro",
+        "professor": "Docente",
+        "class": "Turma",
+        "clearAll": "Limpar tudo",
+        "allFilters": "Todos os filtros",
+        "guestsCannotFilter": "O líder da sala bloqueou os filtros para convidados."
+      },
+      "Details": {
+        "title": "Detalhes",
+        "pin": "Fixar",
+        "unpin": "Desafixar",
+        "pinned": "Fixado",
+        "collapse": "Recolher painel",
+        "expand": "Expandir painel",
+        "close": "Fechar",
+        "empty": "Passe o mouse ou clique em uma turma ou docente para ver os detalhes.",
+        "resize": "Redimensionar painel"
       },
       "TimetableGrid": {
         "professors": "Docentes"
@@ -1418,22 +1493,446 @@
         "aspirationCriteria": "Critérios de Aspiração"
       }
     },
+    "Compare": {
+      "title": "Comparar soluções",
+      "swap": "Trocar A e B (X)",
+      "noForm": "Sem formulário",
+      "priorityAria": "Prioridade {value}",
+      "missing": "Solução não encontrada no histórico: {ids}. Escolha outra no seletor.",
+      "ignored": "{count, plural, one {# solução selecionada a mais foi ignorada} other {# soluções selecionadas a mais foram ignoradas}}: a comparação usa só as duas primeiras.",
+      "side": {
+        "a": "Solução A",
+        "b": "Solução B"
+      },
+      "delta": {
+        "same": "igual",
+        "better": "melhor",
+        "worse": "pior",
+        "changed": "mudou"
+      },
+      "status": {
+        "added": "Adicionadas",
+        "removed": "Removidas",
+        "modified": "Modificadas",
+        "unchanged": "Inalteradas"
+      },
+      "empty": {
+        "needTwo": "É preciso pelo menos duas soluções para comparar",
+        "needTwoBody": "Execute um algoritmo, salve alterações manuais ou importe outra solução.",
+        "selectTwo": "Selecione duas soluções",
+        "selectTwoBody": "Escolha a solução B no seletor ou use uma das sugestões acima."
+      },
+      "picker": {
+        "label": "Solução {side}",
+        "placeholder": "Buscar por data, origem ou algoritmo",
+        "noOptions": "Nenhuma solução encontrada",
+        "evaluation": "Aval. {value}",
+        "coverage": "{done}/{total} turmas",
+        "assignments": "{count, plural, one {# atribuição} other {# atribuições}}"
+      },
+      "menu": {
+        "more": "Ações da solução {side}",
+        "restore": "Restaurar esta solução",
+        "alreadyCurrent": "Já é a solução atual",
+        "openInHistory": "Abrir no histórico",
+        "statistics": "Ver estatísticas",
+        "download": "Baixar JSON"
+      },
+      "suggestions": {
+        "label": "Sugestões para B:",
+        "previous": "Anterior a A",
+        "best": "Melhor avaliação",
+        "current": "Atual"
+      },
+      "tabs": {
+        "aria": "Seções da comparação",
+        "overview": "Visão geral",
+        "changes": "Mudanças",
+        "docentes": "Docentes",
+        "dist": "Distribuições",
+        "config": "Configuração"
+      },
+      "scorecard": {
+        "title": "Placar",
+        "metric": "Métrica",
+        "openRow": "Ver detalhes de {metric}",
+        "metrics": {
+          "avaliacao": "Avaliação",
+          "cobertura": "Cobertura (turmas atribuídas)",
+          "pares": "Total de atribuições",
+          "docentesUnicos": "Docentes com atribuição",
+          "semAtribuicao": "Docentes sem atribuição",
+          "conflitos": "Docentes com conflito",
+          "semFormulario": "Atribuições sem formulário",
+          "prioMedia": "Prioridade média atribuída",
+          "cargaDesvio": "Desvio-padrão da carga",
+          "travas": "Travas",
+          "iteracoes": "Iterações",
+          "tempo": "Tempo de execução",
+          "status": "Execução"
+        },
+        "status": {
+          "none": "— (sem estatísticas)",
+          "complete": "Completa",
+          "interrupted": "Interrompida"
+        }
+      },
+      "compat": {
+        "body": "As soluções usam dados diferentes: {parts}. Cada métrica usa os dados da própria solução.",
+        "details": "Ver diferenças",
+        "turmasSoA": "{count, plural, one {# turma só em A} other {# turmas só em A}}",
+        "turmasSoB": "{count, plural, one {# turma só em B} other {# turmas só em B}}",
+        "docentesSoA": "{count, plural, one {# docente só em A} other {# docentes só em A}}",
+        "docentesSoB": "{count, plural, one {# docente só em B} other {# docentes só em B}}",
+        "forms": "{count, plural, one {# formulário com prioridade diferente} other {# formulários com prioridade diferente}}",
+        "maxPriority": "prioridade máxima {a} × {b}",
+        "more": "e mais {count}…",
+        "lists": {
+          "turmasSoA": "Turmas só em A",
+          "turmasSoB": "Turmas só em B",
+          "docentesSoA": "Docentes só em A",
+          "docentesSoB": "Docentes só em B",
+          "forms": "Formulários com prioridade diferente (A → B)"
+        }
+      },
+      "overview": {
+        "changesTitle": "Mudanças por turma",
+        "compositionAria": "Composição das mudanças",
+        "pairs": "{kept} pares mantidos · {swapped} trocados",
+        "seeChanges": "Ver mudanças"
+      },
+      "changes": {
+        "statusFilter": "Filtrar por situação",
+        "trendFilter": "Filtrar por prioridade média",
+        "trend": {
+          "all": "Todas",
+          "improved": "Melhorou",
+          "worsened": "Piorou",
+          "same": "Igual"
+        },
+        "search": "Buscar turma ou docente",
+        "exportCsv": "Exportar CSV",
+        "empty": "Nenhuma turma corresponde aos filtros.",
+        "tableAria": "Mudanças por turma",
+        "addedMark": "Entrou",
+        "removedMark": "Saiu",
+        "columns": {
+          "turma": "Turma",
+          "status": "Situação",
+          "a": "Docentes em A",
+          "b": "Docentes em B",
+          "deltaPrio": "Δ prio. média",
+          "deltaCarga": "Δ carga envolvida",
+          "deltaCargaHint": "Carga total (B) dos docentes de B menos a carga total (A) dos docentes de A",
+          "deltaSaldo": "Δ saldo",
+          "deltaSaldoHint": "Soma dos saldos dos docentes de B menos a dos docentes de A",
+          "obs": "Obs."
+        },
+        "obs": {
+          "onlyA": "turma só em A",
+          "onlyB": "turma só em B",
+          "noFormA": "{count} sem formulário em A",
+          "noFormB": "{count} sem formulário em B",
+          "conflictB": "conflito em B",
+          "conflictResolved": "conflito resolvido"
+        },
+        "csv": {
+          "entered": "Entraram",
+          "left": "Saíram"
+        }
+      },
+      "docentes": {
+        "filterAria": "Filtrar docentes",
+        "search": "Buscar docente",
+        "empty": "Nenhum docente corresponde aos filtros.",
+        "tableAria": "Docentes",
+        "saldoDiffers": "Saldo diferente entre os contextos de A e B",
+        "bothConflict": "Conflito em A e em B",
+        "workloadFilter": "Carga: {label}",
+        "filters": {
+          "affected": "Afetados",
+          "all": "Todos",
+          "lostAll": "Ficaram sem atribuição",
+          "unassigned": "Sem atribuição (A ou B)",
+          "conflict": "Com conflito",
+          "gainedConflict": "Ganharam conflito",
+          "resolvedConflict": "Resolveram conflito"
+        },
+        "columns": {
+          "docente": "Docente",
+          "saldo": "Saldo",
+          "cargaA": "Carga A",
+          "cargaB": "Carga B",
+          "deltaHint": "Carga B − carga A (ordena por |Δ|)",
+          "ganhou": "Ganhou",
+          "perdeu": "Perdeu",
+          "prio": "Prio. média A → B",
+          "conflictHint": "Conflito de horário"
+        }
+      },
+      "charts": {
+        "seriesA": "Solução A",
+        "seriesB": "Solução B",
+        "noForm": "Sem form.",
+        "priorityTitle": "Prioridades das atribuições",
+        "priorityAxis": "Prioridade (1 = mais preferida)",
+        "assignmentsAxis": "Atribuições",
+        "priorityHint": "Atribuições sem formulário aparecem na última barra e não entram na média.",
+        "prioritySummaryItem": "prioridade {p}: A {a}, B {b}",
+        "noPriority": "Nenhuma atribuição para mostrar",
+        "weightedMean": "Média ponderada",
+        "totals": "Totais",
+        "violationsTitle": "Violações por restrição",
+        "constraintsAxis": "Restrições",
+        "violationsAxis": "Violações",
+        "noViolations": "Nenhuma violação registrada",
+        "compositionTitle": "Composição das violações (100%)",
+        "compositionAxis": "Solução",
+        "workloadTitle": "Carga didática por docente",
+        "workloadAxis": "Carga didática",
+        "docentesAxis": "Docentes",
+        "workloadHint": "Clique numa barra ou numa faixa para ver os docentes na aba Docentes.",
+        "workloadSummaryItem": "carga {carga}: A {a}, B {b}",
+        "noWorkload": "Nenhum docente ativo",
+        "band0": "Carga 0",
+        "bandRange": "Carga até {to} (> {from})",
+        "bandAbove": "Carga > {from}",
+        "cargaEquals": "carga = {carga}",
+        "bandFilter": "faixa {band}"
+      },
+      "inspector": {
+        "aria": "Detalhes A × B",
+        "close": "Fechar (Esc)",
+        "turma": "Turma",
+        "docente": "Docente",
+        "carga": "Carga {value}",
+        "conflict": "Conflito de horário",
+        "notInSide": "Não existe nesta solução",
+        "noDocentes": "Sem docentes",
+        "noTurmas": "Sem turmas",
+        "interested": "Interessados (formulários)",
+        "preferences": "Turmas com formulário",
+        "noForms": "Nenhum formulário",
+        "priorityDiffers": "Prioridade diferente entre A e B (dados incompatíveis)",
+        "assigned": "Atribuído",
+        "saldo": "Saldo",
+        "cargaLabel": "Carga",
+        "conflicts": "{count, plural, one {# turma em conflito} other {# turmas em conflito}}",
+        "summary": "Ganhou {gained} e perdeu {lost} turma(s)"
+      },
+      "config": {
+        "onlyDiffs": "Mostrar só diferenças",
+        "general": "Geral",
+        "parameter": "Parâmetro",
+        "manual": "Sem algoritmo (inserção manual)",
+        "complete": "Completa",
+        "interrupted": "Interrompida",
+        "rows": {
+          "algorithm": "Algoritmo",
+          "origin": "Origem",
+          "date": "Data",
+          "id": "ID",
+          "evaluation": "Avaliação",
+          "iterations": "Iterações",
+          "time": "Tempo de execução",
+          "status": "Execução",
+          "dataPoints": "Pontos de dados",
+          "docentes": "Docentes ativos / total",
+          "turmas": "Turmas ativas / total",
+          "travas": "Travas",
+          "maxPriority": "Prioridade máxima"
+        },
+        "noAlgorithmBoth": "Sem configuração de algoritmo (inserção manual) nas duas soluções.",
+        "noAlgorithmSide": "A solução {side} não tem configuração de algoritmo (inserção manual).",
+        "constraints": "Restrições",
+        "constraint": "Restrição",
+        "type": "Tipo",
+        "activeHeader": "Ativa",
+        "penalty": "Penalidade",
+        "hard": "Hard",
+        "soft": "Soft",
+        "active": "Ativa",
+        "inactive": "Inativa",
+        "none": "Nenhum",
+        "lists": {
+          "neighborhood": "Vizinhança",
+          "stop": "Critérios de parada",
+          "aspiration": "Critérios de aspiração",
+          "tabu": "Lista tabu"
+        },
+        "tabu": {
+          "solution": "Solução · tamanho {size}",
+          "moviment": "Movimento · add {add}, drop {drop}"
+        }
+      }
+    },
     "History": {
+      "title": "Histórico de soluções ({count})",
       "columns": {
-        "identifier": "Identificador",
+        "date": "Data",
+        "origin": "Origem",
         "evaluation": "Avaliação",
-        "insertion": "Inserção",
+        "coverage": "Cobertura",
+        "conflicts": "Conflitos",
+        "time": "Tempo",
         "actions": "Ações"
       },
-      "SolutionHistoryRow": {
-        "details": "Detalhes",
-        "restore": "Restaurar essa solução",
-        "delete": "Excluir essa solução"
+      "origin": {
+        "Algoritmo": "Algoritmo",
+        "Manual": "Manual",
+        "Importação": "Importação"
+      },
+      "algorithms": {
+        "tabu-search": "Busca Tabu",
+        "simulated-annealing": "Simulated Annealing",
+        "integer-solver": "Solver exato (MILP)",
+        "manual-insert": "Inserção manual"
+      },
+      "current": "Atual",
+      "best": "Melhor avaliação",
+      "deltaFromBest": "{delta} em relação à melhor",
+      "coverageTooltip": "{done} de {total} turmas com docente",
+      "conflictsTooltip": "{count, plural, one {# docente} other {# docentes}} com conflito de horário",
+      "noConflicts": "Sem conflitos de horário",
+      "timeTooltip": "Tempo de execução: {time} · {iterations} iterações",
+      "noDataBanner": "Nenhum dado carregado. Restaurar uma solução também restaura docentes, turmas e formulários.",
+      "noResults": "Nenhuma solução corresponde aos filtros.",
+      "clearFilters": "Limpar filtros",
+      "toolbar": {
+        "search": "Buscar por data, origem ou algoritmo",
+        "origin": "Origem",
+        "allOrigins": "Todas",
+        "sort": "Ordenar",
+        "sortCustom": "Personalizado",
+        "sortOptions": {
+          "recent": "Mais recentes",
+          "oldest": "Mais antigas",
+          "best": "Melhor avaliação",
+          "worst": "Pior avaliação",
+          "coverage": "Maior cobertura",
+          "conflicts": "Menos conflitos"
+        },
+        "selected": "{count, plural, one {# selecionada} other {# selecionadas}}",
+        "compare": "Comparar",
+        "delete": "Excluir",
+        "clearSelection": "Limpar seleção"
+      },
+      "actions": {
+        "restore": "Restaurar",
+        "restoreAria": "Restaurar a solução {label}",
+        "alreadyCurrent": "Esta já é a solução atual",
+        "more": "Mais ações",
+        "moreAria": "Mais ações para a solução {label}",
+        "statistics": "Ver estatísticas",
+        "compareWithCurrent": "Comparar com a atual",
+        "download": "Baixar JSON",
+        "delete": "Excluir",
+        "currentCannotDelete": "A solução atual não pode ser excluída"
+      },
+      "dialogs": {
+        "restore": {
+          "title": "Restaurar com alterações não salvas?",
+          "body": "A grade tem atribuições que não estão no histórico. Restaurar {label} substitui docentes, turmas, formulários, travas e atribuições.",
+          "save": "Salvar atual e restaurar",
+          "discard": "Descartar e restaurar",
+          "cancel": "Cancelar"
+        },
+        "delete": {
+          "title": "Excluir {count, plural, one {# solução} other {# soluções}}?",
+          "body": "As soluções saem do histórico. Você poderá desfazer logo em seguida.",
+          "skippedCurrent": "A solução atual está na seleção e será mantida.",
+          "confirm": "Excluir {count}",
+          "cancel": "Cancelar"
+        }
+      },
+      "undo": {
+        "removed": "{count, plural, one {Solução removida} other {# soluções removidas}}",
+        "undo": "Desfazer",
+        "restored": "Remoção desfeita"
+      },
+      "empty": {
+        "title": "Nenhuma solução salva ainda",
+        "body": "As soluções aparecem aqui quando você executa um algoritmo, salva alterações manuais ou importa um arquivo com solução.",
+        "goToGrid": "Ir para a grade de atribuições"
+      },
+      "detail": {
+        "close": "Fechar",
+        "entityKind": "Mostrar docentes ou turmas",
+        "tabs": {
+          "docentes": "Docentes ({count})",
+          "turmas": "Turmas ({count})"
+        },
+        "filter": "Filtrar…",
+        "onlyConflicts": "Só conflitos",
+        "onlyUnassigned": "Sem atribuição",
+        "emptyList": "Nada encontrado.",
+        "selectEntity": "Selecione um docente ou uma turma à esquerda.",
+        "notFound": "Item não encontrado nesta solução.",
+        "conflict": "Conflito de horário",
+        "saldo": "saldo {saldo}",
+        "carga": "carga {carga}",
+        "assignmentsCount": "{count, plural, one {# atribuição} other {# atribuições}}",
+        "docentesCount": "{count, plural, =0 {nenhum docente} one {# docente} other {# docentes}}",
+        "relationFilter": "Filtrar relações",
+        "relationsTable": "Formulários e atribuições",
+        "relations": {
+          "all": "Todos",
+          "filled": "Só preenchidos",
+          "assigned": "Só atribuídos"
+        },
+        "columns": {
+          "turma": "Turma",
+          "docente": "Docente",
+          "saldo": "Saldo",
+          "priority": "Prioridade",
+          "assigned": "Atribuída",
+          "notes": "Observações"
+        },
+        "notAssigned": "Não atribuída",
+        "noRelations": "Nenhum formulário ou atribuição.",
+        "notes": {
+          "noForm": "sem formulário",
+          "clashWith": "choca com {turmas}"
+        },
+        "kpi": {
+          "evaluation": "Avaliação",
+          "best": "Melhor avaliação",
+          "coverage": "Cobertura",
+          "unassigned": "Sem atribuição",
+          "conflicts": "Conflitos",
+          "noForm": "Sem formulário",
+          "locks": "Travas",
+          "time": "Tempo"
+        },
+        "prevSolution": "Solução anterior",
+        "nextSolution": "Próxima solução",
+        "position": "{index} de {total}",
+        "inspector": {
+          "title": "Inspetor",
+          "label": "Inspetor: {name}",
+          "live": "Inspetor: {name}",
+          "back": "Voltar para {name}",
+          "focus": "Focar",
+          "collapse": "Recolher inspetor",
+          "expand": "Expandir inspetor",
+          "open": "Ver detalhe",
+          "relation": "Relação",
+          "assigned": "atribuída",
+          "empty": "Selecione um docente ou uma turma para ver o detalhe."
+        },
+        "breadcrumb": {
+          "label": "Navegação do detalhe",
+          "back": "Voltar um nível",
+          "docentes": "Docentes",
+          "turmas": "Turmas"
+        }
       },
       "Alerts": {
         "removed": "A solução foi removida do histórico!",
         "applied": "A solução {datetime} foi aplicada!",
-        "downloaded": "A solução {datetime} foi baixada!"
+        "downloaded": "A solução {datetime} foi baixada!",
+        "notAllowed": "Só o líder da sala (ou convidados com permissão de edição) pode restaurar soluções.",
+        "saveFailed": "Não foi possível salvar a solução atual. Nada foi restaurado."
       }
     }
   },
@@ -1470,6 +1969,7 @@
   "Collaboration": {
     "roomNotFound": "Sala não encontrada ou indisponível.",
     "nameAlreadyExistis": "Este nome já está em uso na sala.",
+    "roomNameTaken": "Já existe uma sala com esse nome.",
     "passwordRequired": "É necessário informar a senha para entrar.",
     "incorrectPassword": "Senha incorreta.",
     "ownerEndedRoom": "O criador da sala encerrou a sessão. Você foi desconectado."
@@ -1661,20 +2161,6 @@
     "close": "Fechar"
   },
   "Components": {
-    "TreeView": {
-      "professorsCount": "Docentes ({count})",
-      "classesCount": "Disciplinas ({count})",
-      "professors": "Docentes",
-      "classes": "Disciplinas",
-      "balance": "Saldo: ",
-      "noInfoSelected": "Nenhuma informação selecionada!",
-      "chosenByProfessor": "Escolhidas pelo docente",
-      "chosenByProfessors": "Escolhida pelos docentes",
-      "forms": "Formulários",
-      "assignedToProfessor": "Atribuídas ao docente",
-      "assignedToProfessors": "Atribuída aos docentes",
-      "assignments": "Atribuições"
-    },
     "PlanilhaTable": {
       "filter": "Filtro"
     },

@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useCollaboration, type RoomConfig } from "@/context/Collaboration";
 import {
   Paper,
@@ -17,6 +17,8 @@ import {
   Divider,
   Badge,
   alpha,
+  useTheme,
+  type Theme,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -35,8 +37,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SyncIcon from "@mui/icons-material/Sync";
-import { useGlobalContext } from "@/context/Global";
-import { jsonReviver } from "@/context/Global/utils";
+import { Alert } from "@mui/material";
 import { useTranslations } from "next-intl";
 
 // Função para gerar cor consistente baseada no nome
@@ -102,7 +103,14 @@ interface Props {
   children: React.ReactNode;
 }
 
+function roleColors(theme: Theme) {
+  return { owner: theme.palette.primary.main, guest: theme.palette.warning.main };
+}
+
 export const CollaborativeGridWrapper = ({ children }: Props) => {
+  // Cores da barra derivadas do tema (claro/escuro/alto contraste), sem gradientes fixos
+  const theme = useTheme();
+  const roleColor = roleColors(theme);
   const {
     isInRoom,
     isOwner,
@@ -115,26 +123,9 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
     config,
     updateConfig,
     requestDataFromOwner,
-    onDataRequest,
-    broadcastDataUpdate,
-    onDataUpdate,
-    onAssignmentChange,
-    broadcastAssignmentChange,
+    ownerOnline,
+    presenceReady,
   } = useCollaboration();
-
-  // Consumir o estado global para sincronização
-  const {
-    docentes,
-    disciplinas,
-    atribuicoes,
-    formularios,
-    travas,
-    setDocentes,
-    setDisciplinas,
-    setAtribuicoes,
-    setFormularios,
-    setTravas,
-  } = useGlobalContext();
 
   const t = useTranslations("Pages.Assignment.CollaborativeGridWrapper");
 
@@ -145,77 +136,8 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
 
   const lastMouseUpdate = useRef(0);
 
-  // =========================================================
-  // LÓGICA DE SINCRONIZAÇÃO
-  // =========================================================
-
-  // LÍDER: Serializa e Envia Dados Completos (incluindo filtros se estiverem no context)
-  // Nota: Filtros estão no TimetableContext, aqui pegamos do GlobalContext.
-  // A sincronização inicial de filtros é tratada no listener de REQUEST_DATA no TimetableContext
-  // ou precisamos injetar os filtros aqui?
-  // O TimetableContext trata de dados específicos de grade/filtros.
-  // O CollaborativeGridWrapper trata de dados Globais.
-  // Idealmente, a sincronização de filtros ocorre no TimetableContext.
-
-  // No entanto, para consistência, o GlobalContext contém os DADOS.
-  // Os filtros estão apenas no TimetableContext.
-  // Vamos manter a sincronização de filtros no TimetableContext.
-
-  // TODOS (Líder e Convidados): Recebem atualizações
-  // IMPORTANTE: Removido '|| isOwner' para que o líder também receba edits dos convidados.
-  useEffect(() => {
-    if (!isInRoom) return;
-
-    // Escuta pacotes de dados (FULL_DATA ou parciais)
-    // Ex: Alguém rodou o algoritmo ou limpou a grade -> envia FULL_DATA
-    const unsubscribeData = onDataUpdate((payload) => {
-      if (payload.type === "FULL_DATA" && payload.data) {
-        console.log("📥", t("receivingSyncedData"), payload.data);
-        // Transforma de volta nos Maps e Sets corretos da aplicação
-        const hydratedData = JSON.parse(payload.data, jsonReviver);
-
-        if (hydratedData.docentes) setDocentes(hydratedData.docentes);
-        if (hydratedData.disciplinas) setDisciplinas(hydratedData.disciplinas);
-        if (hydratedData.atribuicoes) setAtribuicoes(hydratedData.atribuicoes);
-        if (hydratedData.formularios) setFormularios(hydratedData.formularios);
-        if (hydratedData.travas) setTravas(hydratedData.travas);
-      }
-    });
-
-    // Escuta mudanças pontuais na grade (Click/Add/Remove)
-    const unsubscribeAssignment = onAssignmentChange((payload) => {
-      if (payload.assignment) {
-        // Revive a atribuição individual
-        const parsedAssignment = JSON.parse(payload.assignment, jsonReviver);
-
-        setAtribuicoes((prev) => {
-          const index = prev.findIndex(
-            (a) => a.id_disciplina === parsedAssignment.id_disciplina,
-          );
-          if (index !== -1) {
-            const newArr = [...prev];
-            newArr[index] = parsedAssignment;
-            return newArr;
-          }
-          return [...prev, parsedAssignment];
-        });
-      }
-    });
-
-    return () => {
-      unsubscribeData();
-      unsubscribeAssignment();
-    };
-  }, [
-    isInRoom,
-    onDataUpdate,
-    onAssignmentChange,
-    setDocentes,
-    setDisciplinas,
-    setAtribuicoes,
-    setFormularios,
-    setTravas,
-  ]);
+  // A sincronização dos dados (receber, responder a quem entra) fica no
+  // CollaborationSync, montado no layout, para funcionar em qualquer página.
 
   // Se não estiver em sala, apenas renderiza a grade normal sem wrapper
   if (!isInRoom) return <>{children}</>;
@@ -269,9 +191,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
           overflow: "hidden",
           border: "1px solid",
           borderColor: isOwner ? "primary.main" : "warning.main",
-          background: isOwner
-            ? "linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)"
-            : "linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)",
+          bgcolor: alpha(isOwner ? roleColor.owner : roleColor.guest, 0.08),
         }}
       >
         {/* Header principal */}
@@ -352,13 +272,13 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
                 sx={{
                   fontWeight: "bold",
                   bgcolor: isOwner
-                    ? alpha("#1976d2", 0.15)
-                    : alpha("#ed6c02", 0.15),
+                    ? alpha(roleColor.owner, 0.15)
+                    : alpha(roleColor.guest, 0.15),
                   color: isOwner ? "primary.dark" : "warning.dark",
                   border: "1px solid",
                   borderColor: isOwner
-                    ? alpha("#1976d2", 0.3)
-                    : alpha("#ed6c02", 0.3),
+                    ? alpha(roleColor.owner, 0.3)
+                    : alpha(roleColor.guest, 0.3),
                 }}
               />
             </Tooltip>
@@ -400,17 +320,17 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
               />
             </Tooltip>
 
-            {!isOwner && (
-              <Tooltip title={t("requestSync")}>
-                <IconButton
-                  size="small"
-                  onClick={handleRequestSync}
-                  color="primary"
-                >
-                  <SyncIcon />
-                </IconButton>
-              </Tooltip>
-            )}
+            {/* Convidado: pede o estado ao líder. Líder: reenvia o seu a todos. */}
+            <Tooltip title={isOwner ? t("pushSync") : t("requestSync")}>
+              <IconButton
+                size="small"
+                onClick={handleRequestSync}
+                color="primary"
+                aria-label={isOwner ? t("pushSync") : t("requestSync")}
+              >
+                <SyncIcon />
+              </IconButton>
+            </Tooltip>
 
             {isOwner && (
               <Tooltip title={t("roomSettingsTooltip")}>
@@ -470,7 +390,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              bgcolor: "rgba(255,255,255,0.5)",
+              bgcolor: alpha(theme.palette.background.paper, 0.5),
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -578,6 +498,13 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
         </Collapse>
       </Paper>
 
+      {/* Líder fechou a aba ou perdeu a conexão: avisa os convidados */}
+      {!isOwner && presenceReady && !ownerOnline && (
+        <Alert severity="warning" variant="outlined" role="status">
+          {t("ownerOffline")}
+        </Alert>
+      )}
+
       {/* ÁREA DA GRADE */}
       <div
         ref={containerRef}
@@ -626,7 +553,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             {/* Switch de Edição */}
             <Paper
               variant="outlined"
-              sx={{ p: 2, borderRadius: 2, bgcolor: alpha("#1976d2", 0.03) }}
+              sx={{ p: 2, borderRadius: 2, bgcolor: alpha(roleColor.owner, 0.03) }}
             >
               <FormControlLabel
                 control={
@@ -658,7 +585,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
             {/* NOVO: Switch de Filtro */}
             <Paper
               variant="outlined"
-              sx={{ p: 2, borderRadius: 2, bgcolor: alpha("#1976d2", 0.03) }}
+              sx={{ p: 2, borderRadius: 2, bgcolor: alpha(roleColor.owner, 0.03) }}
             >
               <FormControlLabel
                 control={
@@ -687,7 +614,7 @@ export const CollaborativeGridWrapper = ({ children }: Props) => {
               />
             </Paper>
 
-            <Box sx={{ p: 2, bgcolor: alpha("#ff9800", 0.1), borderRadius: 2 }}>
+            <Box sx={{ p: 2, bgcolor: alpha(roleColor.guest, 0.1), borderRadius: 2 }}>
               <Typography variant="body2" color="warning.dark">
                 <strong>{t("noteLabel")}</strong>{" "}
                 {t("changesAppliedImmediately")}

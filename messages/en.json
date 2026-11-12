@@ -649,6 +649,7 @@
         "active": "Active",
         "comment": "Comment",
         "withoutAssignment": "Without assignment",
+        "withConflict": "With conflict",
         "withoutTeacher": "Without teacher",
         "groupPreference": "Group",
         "indifferent": "Indifferent",
@@ -708,6 +709,7 @@
           "noForm": "No form",
           "course": "Course",
           "teachingWorkload": "Teaching Workload",
+          "mirror": "Mirror class (graduate)",
           "schedules": "Schedules",
           "toBeDefined": "To be defined",
           "interestedProfessors": "Interested Professors ({count})"
@@ -735,6 +737,8 @@
         "filterSync": "Filter Sync",
         "usersOnline": "Users online in this room",
         "requestSync": "Request data synchronization from the leader",
+        "pushSync": "Resend your current state to everyone in the room",
+        "ownerOffline": "The leader is disconnected. Your changes reach other guests, but the leader will only see them after reconnecting and syncing.",
         "roomSettingsTooltip": "Room settings",
         "collapseDetails": "Collapse details",
         "expandDetails": "Expand details",
@@ -763,6 +767,77 @@
         "warningMessage": "You are about to clear all made allocations. This action is irreversible and cannot be undone. Are you sure you want to continue?",
         "cancel": "Cancel",
         "apply": "Apply"
+      },
+      "Grid": {
+        "gridLabel": "Assignment grid: professors in rows, classes in columns",
+        "priority": "priority {priority}",
+        "noForm": "no form",
+        "assigned": "assigned",
+        "notAssigned": "not assigned",
+        "locked": "locked",
+        "lockedCell": "Locked cell",
+        "announceAssigned": "{docente} assigned to {turma}",
+        "announceRemoved": "{docente} removed from {turma}",
+        "announceCellLock": "Lock toggled: {docente}, {turma}",
+        "announceColumnLock": "Lock toggled on column {turma}",
+        "announceRowLock": "Lock toggled on row {docente}",
+        "announceLockMode": "Lock mode {state, select, on {on} other {off}}",
+        "workload": "Assigned workload: {carga}",
+        "balance": "Balance: {saldo}",
+        "conflict": "Schedule conflict",
+        "rowLocked": "Row locked",
+        "columnLocked": "Column locked",
+        "assignedCount": "{count, plural, =0 {No professor assigned} one {# professor assigned} other {# professors assigned}}",
+        "toBeDefined": "to be defined",
+        "legend": "Legend",
+        "legendEmpty": "no form",
+        "legendPriority": "priority",
+        "legendPriorityHint": "1 = most preferred",
+        "legendAssigned": "assigned",
+        "legendLocked": "locked",
+        "legendConflict": "schedule conflict"
+      },
+      "Toolbar": {
+        "more": "More actions",
+        "summaryTurmas": "{count} classes",
+        "summarySemDocente": "{count} without professor",
+        "summaryConflitos": "{count, plural, one {# conflict} other {# conflicts}}",
+        "summaryTravas": "{count, plural, one {# lock} other {# locks}}",
+        "filterBySemDocente": "Show only classes without a professor",
+        "filterByConflitos": "Show only professors with conflicts",
+        "lockModeBanner": "Lock mode: clicks lock/unlock. Press Esc to exit.",
+        "density": "Density",
+        "compact": "Compact",
+        "comfortable": "Comfortable",
+        "shortcuts": "Keyboard shortcuts",
+        "shortcutsList": "Arrows: move · Home/End: row start/end · Ctrl+Home/End: first/last cell · Space/Enter: assign · L or Ctrl+Space: lock cell · Shift+L: lock row/column · T: lock mode · I: pin details · Esc: exit lock mode/unpin · /: search",
+        "onlyLeaderCanEdit": "Only the room leader can make changes."
+      },
+      "FilterBar": {
+        "searchProfessor": "Search professor…",
+        "searchClass": "Search class…",
+        "quickWithoutTeacher": "No professor",
+        "quickWithoutAssignment": "No assignment",
+        "quickEvening": "Evening",
+        "quickEnglish": "English",
+        "quickConflicts": "Conflicts",
+        "addFilter": "Filter",
+        "professor": "Professor",
+        "class": "Class",
+        "clearAll": "Clear all",
+        "allFilters": "All filters",
+        "guestsCannotFilter": "The room leader has locked filters for guests."
+      },
+      "Details": {
+        "title": "Details",
+        "pin": "Pin",
+        "unpin": "Unpin",
+        "pinned": "Pinned",
+        "collapse": "Collapse panel",
+        "expand": "Expand panel",
+        "close": "Close",
+        "empty": "Hover or click a class or professor to see its details.",
+        "resize": "Resize panel"
       },
       "TimetableGrid": {
         "professors": "Professors"
@@ -1414,22 +1489,446 @@
         "aspirationCriteria": "Aspiration Criteria"
       }
     },
+    "Compare": {
+      "title": "Compare solutions",
+      "swap": "Swap A and B (X)",
+      "noForm": "No form",
+      "priorityAria": "Priority {value}",
+      "missing": "Solution not found in history: {ids}. Pick another one in the selector.",
+      "ignored": "{count, plural, one {# extra selected solution was ignored} other {# extra selected solutions were ignored}}: only the first two are compared.",
+      "side": {
+        "a": "Solution A",
+        "b": "Solution B"
+      },
+      "delta": {
+        "same": "same",
+        "better": "better",
+        "worse": "worse",
+        "changed": "changed"
+      },
+      "status": {
+        "added": "Added",
+        "removed": "Removed",
+        "modified": "Modified",
+        "unchanged": "Unchanged"
+      },
+      "empty": {
+        "needTwo": "At least two solutions are needed to compare",
+        "needTwoBody": "Run an algorithm, save manual changes or import another solution.",
+        "selectTwo": "Select two solutions",
+        "selectTwoBody": "Pick solution B in the selector or use one of the suggestions above."
+      },
+      "picker": {
+        "label": "Solution {side}",
+        "placeholder": "Search by date, origin or algorithm",
+        "noOptions": "No solution found",
+        "evaluation": "Eval. {value}",
+        "coverage": "{done}/{total} classes",
+        "assignments": "{count, plural, one {# assignment} other {# assignments}}"
+      },
+      "menu": {
+        "more": "Actions for solution {side}",
+        "restore": "Restore this solution",
+        "alreadyCurrent": "Already the current solution",
+        "openInHistory": "Open in history",
+        "statistics": "View statistics",
+        "download": "Download JSON"
+      },
+      "suggestions": {
+        "label": "Suggestions for B:",
+        "previous": "Before A",
+        "best": "Best evaluation",
+        "current": "Current"
+      },
+      "tabs": {
+        "aria": "Comparison sections",
+        "overview": "Overview",
+        "changes": "Changes",
+        "docentes": "Teachers",
+        "dist": "Distributions",
+        "config": "Configuration"
+      },
+      "scorecard": {
+        "title": "Scorecard",
+        "metric": "Metric",
+        "openRow": "See details for {metric}",
+        "metrics": {
+          "avaliacao": "Evaluation",
+          "cobertura": "Coverage (assigned classes)",
+          "pares": "Total assignments",
+          "docentesUnicos": "Teachers with assignments",
+          "semAtribuicao": "Teachers without assignments",
+          "conflitos": "Teachers with conflicts",
+          "semFormulario": "Assignments without form",
+          "prioMedia": "Mean assigned priority",
+          "cargaDesvio": "Workload standard deviation",
+          "travas": "Locks",
+          "iteracoes": "Iterations",
+          "tempo": "Execution time",
+          "status": "Run"
+        },
+        "status": {
+          "none": "— (no statistics)",
+          "complete": "Complete",
+          "interrupted": "Interrupted"
+        }
+      },
+      "compat": {
+        "body": "The solutions use different data: {parts}. Each metric uses its own solution's data.",
+        "details": "See differences",
+        "turmasSoA": "{count, plural, one {# class only in A} other {# classes only in A}}",
+        "turmasSoB": "{count, plural, one {# class only in B} other {# classes only in B}}",
+        "docentesSoA": "{count, plural, one {# teacher only in A} other {# teachers only in A}}",
+        "docentesSoB": "{count, plural, one {# teacher only in B} other {# teachers only in B}}",
+        "forms": "{count, plural, one {# form with a different priority} other {# forms with different priorities}}",
+        "maxPriority": "maximum priority {a} × {b}",
+        "more": "and {count} more…",
+        "lists": {
+          "turmasSoA": "Classes only in A",
+          "turmasSoB": "Classes only in B",
+          "docentesSoA": "Teachers only in A",
+          "docentesSoB": "Teachers only in B",
+          "forms": "Forms with different priority (A → B)"
+        }
+      },
+      "overview": {
+        "changesTitle": "Changes by class",
+        "compositionAria": "Composition of changes",
+        "pairs": "{kept} pairs kept · {swapped} swapped",
+        "seeChanges": "See changes"
+      },
+      "changes": {
+        "statusFilter": "Filter by status",
+        "trendFilter": "Filter by mean priority",
+        "trend": {
+          "all": "All",
+          "improved": "Improved",
+          "worsened": "Worsened",
+          "same": "Same"
+        },
+        "search": "Search class or teacher",
+        "exportCsv": "Export CSV",
+        "empty": "No class matches the filters.",
+        "tableAria": "Changes by class",
+        "addedMark": "Entered",
+        "removedMark": "Left",
+        "columns": {
+          "turma": "Class",
+          "status": "Status",
+          "a": "Teachers in A",
+          "b": "Teachers in B",
+          "deltaPrio": "Δ mean prio.",
+          "deltaCarga": "Δ involved load",
+          "deltaCargaHint": "Total load (B) of B's teachers minus total load (A) of A's teachers",
+          "deltaSaldo": "Δ balance",
+          "deltaSaldoHint": "Sum of B's teachers' balances minus A's",
+          "obs": "Notes"
+        },
+        "obs": {
+          "onlyA": "class only in A",
+          "onlyB": "class only in B",
+          "noFormA": "{count} without form in A",
+          "noFormB": "{count} without form in B",
+          "conflictB": "conflict in B",
+          "conflictResolved": "conflict resolved"
+        },
+        "csv": {
+          "entered": "Entered",
+          "left": "Left"
+        }
+      },
+      "docentes": {
+        "filterAria": "Filter teachers",
+        "search": "Search teacher",
+        "empty": "No teacher matches the filters.",
+        "tableAria": "Teachers",
+        "saldoDiffers": "Balance differs between A's and B's data",
+        "bothConflict": "Conflict in A and in B",
+        "workloadFilter": "Load: {label}",
+        "filters": {
+          "affected": "Affected",
+          "all": "All",
+          "lostAll": "Left without assignments",
+          "unassigned": "Without assignments (A or B)",
+          "conflict": "With conflict",
+          "gainedConflict": "Gained a conflict",
+          "resolvedConflict": "Resolved a conflict"
+        },
+        "columns": {
+          "docente": "Teacher",
+          "saldo": "Balance",
+          "cargaA": "Load A",
+          "cargaB": "Load B",
+          "deltaHint": "Load B − load A (sorted by |Δ|)",
+          "ganhou": "Gained",
+          "perdeu": "Lost",
+          "prio": "Mean prio. A → B",
+          "conflictHint": "Schedule conflict"
+        }
+      },
+      "charts": {
+        "seriesA": "Solution A",
+        "seriesB": "Solution B",
+        "noForm": "No form",
+        "priorityTitle": "Assignment priorities",
+        "priorityAxis": "Priority (1 = most preferred)",
+        "assignmentsAxis": "Assignments",
+        "priorityHint": "Assignments without a form appear in the last bar and are not part of the mean.",
+        "prioritySummaryItem": "priority {p}: A {a}, B {b}",
+        "noPriority": "No assignments to show",
+        "weightedMean": "Weighted mean",
+        "totals": "Totals",
+        "violationsTitle": "Violations by constraint",
+        "constraintsAxis": "Constraints",
+        "violationsAxis": "Violations",
+        "noViolations": "No violations recorded",
+        "compositionTitle": "Violation composition (100%)",
+        "compositionAxis": "Solution",
+        "workloadTitle": "Teaching load by teacher",
+        "workloadAxis": "Teaching load",
+        "docentesAxis": "Teachers",
+        "workloadHint": "Click a bar or a band to see the teachers in the Teachers tab.",
+        "workloadSummaryItem": "load {carga}: A {a}, B {b}",
+        "noWorkload": "No active teachers",
+        "band0": "Load 0",
+        "bandRange": "Load up to {to} (> {from})",
+        "bandAbove": "Load > {from}",
+        "cargaEquals": "load = {carga}",
+        "bandFilter": "band {band}"
+      },
+      "inspector": {
+        "aria": "A × B details",
+        "close": "Close (Esc)",
+        "turma": "Class",
+        "docente": "Teacher",
+        "carga": "Load {value}",
+        "conflict": "Schedule conflict",
+        "notInSide": "Not present in this solution",
+        "noDocentes": "No teachers",
+        "noTurmas": "No classes",
+        "interested": "Interested (forms)",
+        "preferences": "Classes with a form",
+        "noForms": "No forms",
+        "priorityDiffers": "Priority differs between A and B (incompatible data)",
+        "assigned": "Assigned",
+        "saldo": "Balance",
+        "cargaLabel": "Load",
+        "conflicts": "{count, plural, one {# class in conflict} other {# classes in conflict}}",
+        "summary": "Gained {gained} and lost {lost} class(es)"
+      },
+      "config": {
+        "onlyDiffs": "Show only differences",
+        "general": "General",
+        "parameter": "Parameter",
+        "manual": "No algorithm (manual insert)",
+        "complete": "Complete",
+        "interrupted": "Interrupted",
+        "rows": {
+          "algorithm": "Algorithm",
+          "origin": "Origin",
+          "date": "Date",
+          "id": "ID",
+          "evaluation": "Evaluation",
+          "iterations": "Iterations",
+          "time": "Execution time",
+          "status": "Run",
+          "dataPoints": "Data points",
+          "docentes": "Active / total teachers",
+          "turmas": "Active / total classes",
+          "travas": "Locks",
+          "maxPriority": "Maximum priority"
+        },
+        "noAlgorithmBoth": "No algorithm configuration (manual insert) in either solution.",
+        "noAlgorithmSide": "Solution {side} has no algorithm configuration (manual insert).",
+        "constraints": "Constraints",
+        "constraint": "Constraint",
+        "type": "Type",
+        "activeHeader": "Active",
+        "penalty": "Penalty",
+        "hard": "Hard",
+        "soft": "Soft",
+        "active": "Active",
+        "inactive": "Inactive",
+        "none": "None",
+        "lists": {
+          "neighborhood": "Neighborhood",
+          "stop": "Stopping criteria",
+          "aspiration": "Aspiration criteria",
+          "tabu": "Tabu list"
+        },
+        "tabu": {
+          "solution": "Solution · size {size}",
+          "moviment": "Move · add {add}, drop {drop}"
+        }
+      }
+    },
     "History": {
+      "title": "Solution history ({count})",
       "columns": {
-        "identifier": "Identifier",
+        "date": "Date",
+        "origin": "Origin",
         "evaluation": "Evaluation",
-        "insertion": "Insertion",
+        "coverage": "Coverage",
+        "conflicts": "Conflicts",
+        "time": "Time",
         "actions": "Actions"
       },
-      "SolutionHistoryRow": {
-        "details": "Details",
-        "restore": "Restore this solution",
-        "delete": "Delete this solution"
+      "origin": {
+        "Algoritmo": "Algorithm",
+        "Manual": "Manual",
+        "Importação": "Import"
+      },
+      "algorithms": {
+        "tabu-search": "Tabu Search",
+        "simulated-annealing": "Simulated Annealing",
+        "integer-solver": "Exact solver (MILP)",
+        "manual-insert": "Manual insertion"
+      },
+      "current": "Current",
+      "best": "Best evaluation",
+      "deltaFromBest": "{delta} from the best",
+      "coverageTooltip": "{done} of {total} classes with a professor",
+      "conflictsTooltip": "{count, plural, one {# professor} other {# professors}} with schedule conflicts",
+      "noConflicts": "No schedule conflicts",
+      "timeTooltip": "Run time: {time} · {iterations} iterations",
+      "noDataBanner": "No data loaded. Restoring a solution also restores professors, classes and forms.",
+      "noResults": "No solution matches the filters.",
+      "clearFilters": "Clear filters",
+      "toolbar": {
+        "search": "Search by date, origin or algorithm",
+        "origin": "Origin",
+        "allOrigins": "All",
+        "sort": "Sort",
+        "sortCustom": "Custom",
+        "sortOptions": {
+          "recent": "Newest first",
+          "oldest": "Oldest first",
+          "best": "Best evaluation",
+          "worst": "Worst evaluation",
+          "coverage": "Highest coverage",
+          "conflicts": "Fewest conflicts"
+        },
+        "selected": "{count} selected",
+        "compare": "Compare",
+        "delete": "Delete",
+        "clearSelection": "Clear selection"
+      },
+      "actions": {
+        "restore": "Restore",
+        "restoreAria": "Restore solution {label}",
+        "alreadyCurrent": "This is already the current solution",
+        "more": "More actions",
+        "moreAria": "More actions for solution {label}",
+        "statistics": "View statistics",
+        "compareWithCurrent": "Compare with current",
+        "download": "Download JSON",
+        "delete": "Delete",
+        "currentCannotDelete": "The current solution cannot be deleted"
+      },
+      "dialogs": {
+        "restore": {
+          "title": "Restore with unsaved changes?",
+          "body": "The grid has assignments that are not in the history. Restoring {label} replaces professors, classes, forms, locks and assignments.",
+          "save": "Save current and restore",
+          "discard": "Discard and restore",
+          "cancel": "Cancel"
+        },
+        "delete": {
+          "title": "Delete {count, plural, one {# solution} other {# solutions}}?",
+          "body": "The solutions will be removed from the history. You can undo right after.",
+          "skippedCurrent": "The current solution is in the selection and will be kept.",
+          "confirm": "Delete {count}",
+          "cancel": "Cancel"
+        }
+      },
+      "undo": {
+        "removed": "{count, plural, one {Solution removed} other {# solutions removed}}",
+        "undo": "Undo",
+        "restored": "Removal undone"
+      },
+      "empty": {
+        "title": "No saved solutions yet",
+        "body": "Solutions show up here when you run an algorithm, save manual changes or import a file with a solution.",
+        "goToGrid": "Go to the assignment grid"
+      },
+      "detail": {
+        "close": "Close",
+        "entityKind": "Show professors or classes",
+        "tabs": {
+          "docentes": "Professors ({count})",
+          "turmas": "Classes ({count})"
+        },
+        "filter": "Filter…",
+        "onlyConflicts": "Conflicts only",
+        "onlyUnassigned": "Unassigned",
+        "emptyList": "Nothing found.",
+        "selectEntity": "Select a professor or a class on the left.",
+        "notFound": "Item not found in this solution.",
+        "conflict": "Schedule conflict",
+        "saldo": "balance {saldo}",
+        "carga": "load {carga}",
+        "assignmentsCount": "{count, plural, one {# assignment} other {# assignments}}",
+        "docentesCount": "{count, plural, =0 {no professors} one {# professor} other {# professors}}",
+        "relationFilter": "Filter relations",
+        "relationsTable": "Forms and assignments",
+        "relations": {
+          "all": "All",
+          "filled": "Forms only",
+          "assigned": "Assigned only"
+        },
+        "columns": {
+          "turma": "Class",
+          "docente": "Professor",
+          "saldo": "Balance",
+          "priority": "Priority",
+          "assigned": "Assigned",
+          "notes": "Notes"
+        },
+        "notAssigned": "Not assigned",
+        "noRelations": "No forms or assignments.",
+        "notes": {
+          "noForm": "no form",
+          "clashWith": "clashes with {turmas}"
+        },
+        "kpi": {
+          "evaluation": "Evaluation",
+          "best": "Best evaluation",
+          "coverage": "Coverage",
+          "unassigned": "Unassigned",
+          "conflicts": "Conflicts",
+          "noForm": "No form",
+          "locks": "Locks",
+          "time": "Time"
+        },
+        "prevSolution": "Previous solution",
+        "nextSolution": "Next solution",
+        "position": "{index} of {total}",
+        "inspector": {
+          "title": "Inspector",
+          "label": "Inspector: {name}",
+          "live": "Inspector: {name}",
+          "back": "Back to {name}",
+          "focus": "Focus",
+          "collapse": "Collapse inspector",
+          "expand": "Expand inspector",
+          "open": "View details",
+          "relation": "Relation",
+          "assigned": "assigned",
+          "empty": "Select a professor or a class to see its details."
+        },
+        "breadcrumb": {
+          "label": "Detail navigation",
+          "back": "Go up one level",
+          "docentes": "Professors",
+          "turmas": "Classes"
+        }
       },
       "Alerts": {
         "removed": "The solution was removed from history!",
         "applied": "Solution {datetime} has been applied!",
-        "downloaded": "Solution {datetime} has been downloaded!"
+        "downloaded": "Solution {datetime} has been downloaded!",
+        "notAllowed": "Only the room leader (or guests with edit permission) can restore solutions.",
+        "saveFailed": "Could not save the current solution. Nothing was restored."
       }
     }
   },
@@ -1466,6 +1965,7 @@
   "Collaboration": {
     "roomNotFound": "Room not found or no longer available.",
     "nameAlreadyExistis": "This name is already in use in the room.",
+    "roomNameTaken": "A room with this name already exists.",
     "passwordRequired": "Password is required to enter this room.",
     "incorrectPassword": "Incorrect password.",
     "ownerEndedRoom": "The room creator has ended the session. You have been disconnected."
@@ -1657,20 +2157,6 @@
     "close": "Close"
   },
   "Components": {
-    "TreeView": {
-      "professorsCount": "Professors ({count})",
-      "classesCount": "Classes ({count})",
-      "professors": "Professors",
-      "classes": "Classes",
-      "balance": "Balance: ",
-      "noInfoSelected": "No information selected!",
-      "chosenByProfessor": "Chosen by the professor",
-      "chosenByProfessors": "Chosen by the professors",
-      "forms": "Forms",
-      "assignedToProfessor": "Assigned to the professor",
-      "assignedToProfessors": "Assigned to the professors",
-      "assignments": "Assignments"
-    },
     "PlanilhaTable": {
       "filter": "Filter"
     },

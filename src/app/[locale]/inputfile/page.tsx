@@ -36,6 +36,7 @@ import {
   processFormularios,
   processSolucao,
   processTravas,
+  resolveEspelhos,
 } from "./UpdateState";
 import { useGlobalContext } from "@/context/Global";
 import { useAlertsContext } from "@/context/Alerts";
@@ -53,6 +54,7 @@ import {
 } from "@/context/Global/utils";
 import { exportJson } from "../atribuicoes";
 import { useAlgorithmContext } from "@/context/Algorithm";
+import { useCollaboration } from "@/context/Collaboration";
 import { useTranslations } from "next-intl";
 
 interface FileAnalysis {
@@ -106,6 +108,8 @@ export default function InputFileUpload() {
   const { cleanSolucaoAtual } = useSolutionHistory();
   const { setMaiorPrioridade } = useAlgorithmContext();
   const t = useTranslations("Pages.InputFile");
+  const tAssign = useTranslations("Pages.Assignment.Alerts");
+  const { isInRoom, canEdit, broadcastDataUpdate } = useCollaboration();
 
   // Função para processar e analisar o arquivo usando suas funções existentes
   const processAndAnalyzeFile = useCallback(
@@ -123,24 +127,27 @@ export default function InputFileUpload() {
         processDisciplinas,
         () => null,
       );
-      const atribuicoes: Atribuicao[] = processAndUpdateState(
-        jsonData,
-        "atribuicao",
-        processAtribuicoes,
-        () => null,
-      );
-      const formularios: Formulario[] = processAndUpdateState(
-        jsonData,
-        "formularios",
-        processFormularios,
-        () => null,
-      );
-
-      const travas: Celula[] = processAndUpdateState(
-        jsonData,
-        "travas",
-        processTravas,
-        () => null,
+      // Turmas espelho (v4.0): ids da turma da pós apontam para a turma principal
+      const { atribuicoes, formularios, travas } = resolveEspelhos(
+        disciplinas,
+        processAndUpdateState<Formulario>(
+          jsonData,
+          "formularios",
+          processFormularios,
+          () => null,
+        ),
+        processAndUpdateState<Atribuicao>(
+          jsonData,
+          "atribuicao",
+          processAtribuicoes,
+          () => null,
+        ),
+        processAndUpdateState<Celula>(
+          jsonData,
+          "travas",
+          processTravas,
+          () => null,
+        ),
       );
 
       // Criar todas as disciplinas no state de atribuições
@@ -429,8 +436,24 @@ export default function InputFileUpload() {
       );
     }
 
+    // Em sala colaborativa, os novos dados vão para todos
+    if (isInRoom) {
+      broadcastDataUpdate(
+        {
+          docentes: tempData.docentes,
+          disciplinas: tempData.disciplinas,
+          atribuicoes: tempData.atribuicoes,
+          formularios: tempData.formularios,
+          travas: tempData.travas,
+        },
+        "FULL_DATA",
+      );
+    }
+
     updateProgress(steps[6]);
   }, [
+    isInRoom,
+    broadcastDataUpdate,
     tempData,
     setDocentes,
     setDisciplinas,
@@ -483,6 +506,13 @@ export default function InputFileUpload() {
       return;
     }
 
+    // Em sala, só quem pode editar troca os dados de todos
+    if (!canEdit) {
+      addAlerta(tAssign("onlyRoomLeaderCanMakeChanges"), "warning");
+      setShowBackupDialog(false);
+      return;
+    }
+
     setUploading(true);
     setUploadProgress([]);
 
@@ -504,7 +534,15 @@ export default function InputFileUpload() {
     setUploadProgress([]);
     cleanSolucaoAtual();
     setShowBackupDialog(false);
-  }, [selectedFile, tempData, applyTempData, addAlerta, cleanSolucaoAtual]);
+  }, [
+    selectedFile,
+    tempData,
+    applyTempData,
+    addAlerta,
+    cleanSolucaoAtual,
+    canEdit,
+    tAssign,
+  ]);
 
   // Função para drag and drop
   const handleDragOver = useCallback((e: React.DragEvent) => {

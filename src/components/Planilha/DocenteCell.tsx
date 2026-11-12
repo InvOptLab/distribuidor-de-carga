@@ -36,6 +36,11 @@ interface DocenteCellProps {
    * Callback quando os docentes são alterados
    */
   onChange: (docentes: string[]) => void;
+
+  /**
+   * Somente leitura (ex.: convidado sem permissão de edição na sala)
+   */
+  readOnly?: boolean;
 }
 
 /**
@@ -48,6 +53,7 @@ export function DocenteCell({
   docentesDisponiveis,
   formularios,
   onChange,
+  readOnly = false,
 }: DocenteCellProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -135,22 +141,24 @@ export function DocenteCell({
         </Box>
 
         {/* Botão para adicionar docentes */}
-        <Tooltip title={t("addTeacher")} arrow>
-          <IconButton
-            onClick={handleOpenDialog}
-            size="small"
-            color="primary"
-            sx={{
-              border: "1px dashed",
-              borderColor: "primary.main",
-              "&:hover": {
-                backgroundColor: "primary.light",
-              },
-            }}
-          >
-            <AddIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+        {!readOnly && (
+          <Tooltip title={t("addTeacher")} arrow>
+            <IconButton
+              onClick={handleOpenDialog}
+              size="small"
+              color="primary"
+              sx={{
+                border: "1px dashed",
+                borderColor: "primary.main",
+                "&:hover": {
+                  backgroundColor: "primary.light",
+                },
+              }}
+            >
+              <AddIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
       </Box>
 
       {/* Dialog de seleção de docentes */}

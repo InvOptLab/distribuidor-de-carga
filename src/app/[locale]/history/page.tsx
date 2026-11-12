@@ -1,199 +1,305 @@
 "use client";
 
-import { useGlobalContext } from "@/context/Global";
 import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useRouter } from "next/navigation";
+import {
+  Alert,
+  Box,
+  Button,
   Container,
+  Snackbar,
   Typography,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Fade,
 } from "@mui/material";
-import SolutionHistoryRow from "./_components/SolutionHistoryRow";
-import HoveredCourse from "../atribuicoes/_components/HoveredCourse";
-import { useEffect, useRef, useState } from "react";
-import { TreeDisciplina } from "./_components/SolutionHistoryStatistics";
-import { Formulario } from "@/algoritmo/communs/interfaces/interfaces";
-import NoDataFound from "@/components/NoDataFound";
 import { useTranslations } from "next-intl";
+import { useGlobalContext } from "@/context/Global";
+import HistoryTable from "./components/HistoryTable";
+import HistoryToolbar from "./components/HistoryToolbar";
+import EmptyHistory from "./components/EmptyHistory";
+import SolutionDetailDialog from "./components/SolutionDetail/SolutionDetailDialog";
+import RestoreDialog from "./components/dialogs/RestoreDialog";
+import DeleteDialog from "./components/dialogs/DeleteDialog";
+import { useHistoryLabels } from "./components/useHistoryLabels";
+import { useHistoryList, type HistoryRow } from "./state/useHistoryList";
+import { useHistoryCommands } from "./state/useHistoryCommands";
+import { getSolutionSummary } from "./state/summaryCache";
+import {
+  detailPosition,
+  successorAfterRemoval,
+} from "./state/detailNavigation";
 
-
-export default function History() {
+function HistoryView() {
   const t = useTranslations("Pages.History");
-  const { historicoSolucoes, docentes, disciplinas } = useGlobalContext();
+  const router = useRouter();
+  const { historicoSolucoes, docentes, disciplinas, solucaoAtual } =
+    useGlobalContext();
+  const labels = useHistoryLabels();
+  const { locale } = labels;
 
-  const hasData = docentes.length > 0 && disciplinas.length > 0;
-
-  const tableColumns = [
-    t("columns.identifier"),
-    t("columns.evaluation"),
-    t("columns.insertion"),
-    t("columns.actions"),
-  ];
-
-  /**
-   * State para controlar o hover nos filhos do table header a fim de exibir o componenete HoveredCourese
-   */
-  const [hoveredCourse, setHoveredCourse] = useState<TreeDisciplina | null>(
-    null,
+  const searchTextOf = useCallback(
+    (row: HistoryRow) =>
+      [
+        row.id,
+        labels.dateLabel(row),
+        labels.fullDateLabel(row),
+        labels.originLabel(row.origin),
+        labels.algorithmLabel(row) ?? "",
+      ].join(" "),
+    [labels],
   );
 
-  // Refs dos timers
-  const enterTimer = useRef<NodeJS.Timeout | null>(null);
-  const leaveTimer = useRef<NodeJS.Timeout | null>(null);
+  const list = useHistoryList(
+    historicoSolucoes,
+    solucaoAtual.idHistorico,
+    searchTextOf,
+  );
 
-  const LEAVE_DELAY_MS = 200; // Atraso para sair (dá tempo de mover o mouse para o card)
+  const labelOf = useCallback(
+    (id: string) => {
+      const entry = historicoSolucoes.get(id);
+      return entry ? labels.dateLabel(getSolutionSummary(entry, id)) : id;
+    },
+    [historicoSolucoes, labels],
+  );
+  const commands = useHistoryCommands(labelOf);
+  const { restore, remove, download } = commands;
 
-  // Limpa qualquer timer pendente
-  const clearTimers = () => {
-    if (enterTimer.current) {
-      clearTimeout(enterTimer.current);
-      enterTimer.current = null;
-    }
-    if (leaveTimer.current) {
-      clearTimeout(leaveTimer.current);
-      leaveTimer.current = null;
-    }
-  };
-
-  // Handler para SAIR (seja do trigger ou do próprio card)
-  const handleMouseLeave = () => {
-    clearTimers();
-    leaveTimer.current = setTimeout(() => {
-      setHoveredCourse(null);
-    }, LEAVE_DELAY_MS);
-  };
-
-  const createHistoryColumns = () => {
-    const historyColumns = [];
-
-    for (const column of tableColumns) {
-      historyColumns.push(
-        <TableCell align="center" key={`cell_row_${column}`}>
-          <Typography
-            key={`typigraphy_${column}`}
-            variant="h6"
-            color="textPrimary"
-            align="center"
-          >
-            {column}
-          </Typography>
-        </TableCell>,
-      );
-    }
-
-    return historyColumns;
-  };
-
-  const createHistoryComponents = () => {
-    const historyComponents = [];
-
-    historicoSolucoes.forEach((value, key) => {
-      historyComponents.push(
-        <SolutionHistoryRow
-          key={`component_${key}`}
-          id={key}
-          solucao={value}
-          setHoveredCourese={setHoveredCourse}
-        />,
-      );
-    });
-
-    return historyComponents;
-  };
-
-  // Refs para os *elementos de conteúdo rolável* dentro dos cards
-  const courseCardContentRef = useRef<HTMLDivElement>(null);
-
-  // useEffect para encaminhamento de Scroll
-  useEffect(() => {
-    // Esta função será chamada CADA vez que o usuário usar o scroll
-    const handleWheel = (event: WheelEvent) => {
-      // Verifica se o card de Docente está ativo e se sua ref existe
-      if (hoveredCourse && courseCardContentRef.current) {
-        event.preventDefault(); // Impede a página de rolar
-        // Aplica o scroll manualmente ao conteúdo do card
-        courseCardContentRef.current.scrollTop += event.deltaY;
+  // Excluir a solução aberta: o diálogo vai para a próxima (ou fecha) e desfazer a reabre (4.5)
+  const listRef = useRef(list);
+  listRef.current = list;
+  const reopenOnUndo = useRef<string | null>(null);
+  const onDelete = useCallback(
+    (id: string) => {
+      const { detailId, rows, showDetail } = listRef.current;
+      if (id === detailId && id !== commands.currentId) {
+        reopenOnUndo.current = id;
+        showDetail(successorAfterRemoval(rows, id));
+      } else {
+        reopenOnUndo.current = null;
       }
-      // Se nenhum card estiver ativo, esta função não fará nada
-      // (e o listener idealmente já terá sido removido)
-    };
-
-    // Adiciona o listener SÓ SE um dos cards estiver ativo
-    if (hoveredCourse) {
-      // Adicionamos { passive: false } para permitir o uso de event.preventDefault()
-      window.addEventListener("wheel", handleWheel, { passive: false });
+      remove([id]);
+    },
+    [remove, commands.currentId],
+  );
+  const undoRemove = useCallback(() => {
+    const id = reopenOnUndo.current;
+    const reopen =
+      !!id && !!commands.undo.state?.entries.some((e) => e.id === id);
+    commands.undo.undo();
+    reopenOnUndo.current = null;
+    if (reopen && id) {
+      const { detailId, showDetail, openDetail } = listRef.current;
+      if (detailId) showDetail(id);
+      else openDetail(id);
     }
+  }, [commands.undo]);
+  const onStatistics = useCallback(
+    (id: string) =>
+      router.push(`/${locale}/statistics?id=${encodeURIComponent(id)}`),
+    [router, locale],
+  );
+  const onCompare = useCallback(
+    (ids: string[]) =>
+      router.push(
+        `/${locale}/comparar?ids=${ids.slice(0, 2).map(encodeURIComponent).join(",")}`,
+      ),
+    [router, locale],
+  );
+  const handlers = useMemo(
+    () => ({
+      onRestore: restore,
+      onDelete,
+      onDownload: download,
+      onStatistics,
+      onCompare,
+    }),
+    [restore, onDelete, download, onStatistics, onCompare],
+  );
 
-    // Função de limpeza do useEffect:
-    // Isso é chamado quando o componente é desmontado
-    // ou ANTES de o efeito rodar novamente (quando as dependências mudam)
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-    };
-  }, [hoveredCourse]); // Dependências: re-executa se o card ativo mudar
+  const openRow = useMemo(
+    () =>
+      list.detailId
+        ? list.allRows.find((r) => r.id === list.detailId)
+        : undefined,
+    [list.detailId, list.allRows],
+  );
+  const openEntry = list.detailId
+    ? historicoSolucoes.get(list.detailId)
+    : undefined;
+  const position = useMemo(
+    () => detailPosition(list.rows, list.detailId),
+    [list.rows, list.detailId],
+  );
+
+  // A linha continua marcada depois de fechar, e o foco volta para ela
+  const [lastOpenId, setLastOpenId] = useState<string | null>(null);
+  const previousDetail = useRef<string | null>(null);
+  useEffect(() => {
+    const prev = previousDetail.current;
+    previousDetail.current = list.detailId;
+    if (list.detailId) {
+      setLastOpenId(list.detailId);
+      return;
+    }
+    if (!prev) return;
+    const timer = setTimeout(() => {
+      const cell = document.querySelector<HTMLElement>(
+        `.MuiDataGrid-row[data-id="${CSS.escape(prev)}"] .MuiDataGrid-cell[data-field="chrono"]`,
+      );
+      cell?.focus();
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [list.detailId]);
+
+  // Selecionar só o que não é a solução atual para o lote
+  const { selection, setSelection } = list;
+  const deleteSelected = useCallback(
+    () => remove(selection),
+    [remove, selection],
+  );
+  const compareSelected = useCallback(
+    () => onCompare(selection),
+    [onCompare, selection],
+  );
+  const clearSelection = useCallback(() => setSelection([]), [setSelection]);
+
+  const goToGrid = useCallback(
+    () => router.push(`/${locale}/atribuicoes`),
+    [router, locale],
+  );
+
+  const hasLoadedData = docentes.length > 0 && disciplinas.length > 0;
+  const restoreTarget = commands.restoreDialog.target;
 
   return (
-    <Container maxWidth="lg" key="container">
-      {!hasData ? (
-        <NoDataFound />
+    <Container maxWidth={false} sx={{ py: 2, maxWidth: 1800 }}>
+      {historicoSolucoes.size === 0 ? (
+        <EmptyHistory onGoToGrid={goToGrid} />
       ) : (
-        <TableContainer key="tabbleContainer" onMouseLeave={handleMouseLeave}>
-          <Table key="table">
-            <TableHead key="tableHead">
-              <TableRow key="tableHeadRow">
-                <TableCell key="emptyCellRow" />
-                {createHistoryColumns()}
-              </TableRow>
-            </TableHead>
-            <TableBody key="tableBody">{createHistoryComponents()}</TableBody>
-          </Table>
-        </TableContainer>
-      )}
-      {/* Envolve os cards em <Fade> para fluidez */}
-      {/* O `in` agora é um booleano */}
-      <Fade in={!!hoveredCourse} timeout={150}>
-        {/* Wrapper <div style={{...}}> é necessário para o Fade 
-                  posicionar corretamente um item 'fixed' */}
-        <div
-          style={{ position: "fixed", zIndex: 99, bottom: "6vh", right: "2vw" }}
-        >
-          {/* Só renderiza o conteúdo se o objeto existir (evita erro no Fade out) */}
-          {hoveredCourse && (
-            <HoveredCourse
-              ref={courseCardContentRef}
-              disciplina={hoveredCourse}
-              onMouseEnter={clearTimers} // Se entrar no card, cancela o "fechar"
-              onMouseLeave={handleMouseLeave} // Se sair do card, agenda o "fechar"
-              docentes={Array.from(new Set(hoveredCourse.formularios.values()))}
-              formularios={Array.from(
-                hoveredCourse.formularios.values().map((item) => {
-                  const formulario: Formulario = {
-                    id_disciplina: hoveredCourse.id,
-                    nome_docente: item.nome,
-                    prioridade: item.prioridade,
-                  };
-                  return formulario;
-                }),
-              )}
-            >
-              {/* <Grid
-                container
-                size={{ xs: 12 }}
-                spacing={1}
-                //sx={{ maxHeight: "10em", overflowY: "auto" }}
-                maxWidth="40em"
-                key="grid_history_main"
-              >
-                {renderHoverCourseChildren(hoveredCourse)}
-              </Grid> */}
-            </HoveredCourse>
+        <>
+          {!hasLoadedData && (
+            // H1: o histórico é autocontido; sem dados carregados a lista continua acessível
+            <Alert severity="info" sx={{ mb: 2 }}>
+              {t("noDataBanner")}
+            </Alert>
           )}
-        </div>
-      </Fade>
+          <Box>
+            <Box sx={{ minWidth: 0 }}>
+              <HistoryToolbar
+                total={historicoSolucoes.size}
+                labels={labels}
+                query={list.query}
+                onQueryChange={list.setQuery}
+                origins={list.origins}
+                onOriginsChange={list.setOrigins}
+                sortModel={list.sortModel}
+                onSortModelChange={list.setSortModel}
+                selection={selection}
+                onClearSelection={clearSelection}
+                onCompare={compareSelected}
+                onDeleteSelected={deleteSelected}
+              />
+              {list.rows.length === 0 ? (
+                <Box sx={{ py: 6, textAlign: "center" }}>
+                  <Typography color="text.secondary" gutterBottom>
+                    {t("noResults")}
+                  </Typography>
+                  <Button
+                    onClick={() => {
+                      list.setQuery("");
+                      list.setOrigins([]);
+                    }}
+                  >
+                    {t("clearFilters")}
+                  </Button>
+                </Box>
+              ) : (
+                <HistoryTable
+                  rows={list.rows}
+                  labels={labels}
+                  currentId={commands.currentId}
+                  openId={list.detailId ?? lastOpenId}
+                  selection={selection}
+                  onSelectionChange={setSelection}
+                  sortModel={list.sortModel}
+                  onSortModelChange={list.setSortModel}
+                  onOpen={list.openDetail}
+                  {...handlers}
+                />
+              )}
+            </Box>
+          </Box>
+        </>
+      )}
+
+      {openEntry && openRow && (
+        <SolutionDetailDialog
+          entry={openEntry}
+          row={openRow}
+          labels={labels}
+          currentId={commands.currentId}
+          entity={list.entity}
+          inspect={list.inspect}
+          onEntityChange={list.setEntity}
+          onInspectChange={list.setInspect}
+          onNavigate={list.navigateDetail}
+          position={position}
+          onClose={list.closeDetail}
+          {...handlers}
+        />
+      )}
+      <RestoreDialog
+        open={!!restoreTarget}
+        label={restoreTarget ? labelOf(restoreTarget) : ""}
+        saving={commands.restoreDialog.saving}
+        onSave={() => commands.restoreDialog.confirm("save")}
+        onDiscard={() => commands.restoreDialog.confirm("discard")}
+        onCancel={commands.restoreDialog.cancel}
+      />
+      <DeleteDialog
+        open={!!commands.deleteDialog.targets}
+        count={commands.deleteDialog.count}
+        skippedCurrent={commands.deleteDialog.skippedCurrent}
+        onConfirm={commands.deleteDialog.confirm}
+        onCancel={commands.deleteDialog.cancel}
+      />
+      <Snackbar
+        key={commands.undo.state?.key}
+        open={!!commands.undo.state}
+        autoHideDuration={6000}
+        onClose={(_, reason) => {
+          if (reason !== "clickaway") commands.undo.dismiss();
+        }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        message={t("undo.removed", {
+          count: commands.undo.state?.entries.length ?? 0,
+        })}
+        action={
+          <Button
+            color="inherit"
+            size="small"
+            sx={{ fontWeight: 700 }}
+            onClick={undoRemove}
+          >
+            {t("undo.undo")}
+          </Button>
+        }
+      />
     </Container>
+  );
+}
+
+export default function History() {
+  // useSearchParams exige um limite de Suspense
+  return (
+    <Suspense fallback={null}>
+      <HistoryView />
+    </Suspense>
   );
 }

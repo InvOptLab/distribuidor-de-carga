@@ -7,7 +7,9 @@
     "build": "next build --webpack",
     "start": "npx serve@latest out",
     "lint": "next lint",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -47,6 +49,8 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.9.5",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -54,7 +58,9 @@
     "baseline-browser-mapping": "^2.10.10",
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.6",
+    "jsdom": "^26.1.0",
     "postcss": "^8.5.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }

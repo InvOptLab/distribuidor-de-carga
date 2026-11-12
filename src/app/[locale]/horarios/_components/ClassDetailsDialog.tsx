@@ -29,7 +29,7 @@ import {
   Assignment as AssignmentIcon,
 } from "@mui/icons-material";
 import type { TimetableEntry } from "../page";
-import { Docente } from "@/context/Global/utils";
+import { Docente, formatEspelho } from "@/context/Global/utils";
 
 interface ClassDetailsDialogProps {
   entry: TimetableEntry | null;
@@ -124,6 +124,30 @@ export default function ClassDetailsDialog({
                     </Typography>
                     <Typography variant="body1">{disciplina.turma}</Typography>
                   </Box>
+
+                  {disciplina.espelho && (
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Turma Espelho (Pós)
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {formatEspelho(disciplina.espelho)}
+                      </Typography>
+                      <Typography variant="body2">
+                        {disciplina.espelho.nome}
+                      </Typography>
+                      {disciplina.espelho.ementa && (
+                        <Link
+                          variant="body2"
+                          href={disciplina.espelho.ementa}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Ementa
+                        </Link>
+                      )}
+                    </Box>
+                  )}
 
                   {disciplina.cursos && (
                     <Box>

@@ -1,5 +1,9 @@
 import Algorithm from "@/algoritmo/abstractions/Algorithm";
-import { Horario, Solucao } from "@/algoritmo/communs/interfaces/interfaces";
+import {
+  Espelho,
+  Horario,
+  Solucao,
+} from "@/algoritmo/communs/interfaces/interfaces";
 export interface Docente {
   nome: string;
   saldo?: number;
@@ -17,6 +21,8 @@ export interface DisciplinaETL {
   nome: string;
   horario: string;
   cursos: string;
+  /** Nome do campo `cursos` no formato v4.0. */
+  curso?: string;
   ementa: string;
   id: string;
   nivel: string;
@@ -28,6 +34,8 @@ export interface DisciplinaETL {
   horarios?: Horario[];
   grupo?: string;
   carga?: number;
+  espelho?: Espelho;
+  uuid?: string;
 }
 
 export interface Disciplina {
@@ -50,6 +58,8 @@ export interface Disciplina {
   // Pensar se faz sentido colocar um Set com os Docentes alocados para a Disciplina
   grupo: string; // Caso não tenha deve ser ums string vazia
   carga?: number;
+  espelho?: Espelho; // Turma da pós equivalente (turmas espelho, v4.0)
+  uuid?: string;
 }
 
 export interface Atribuicao {
@@ -110,6 +120,39 @@ export interface HistoricoSolucao {
   tipoInsercao: TipoInsercao;
   contexto: ContextoExecucao;
   algorithm?: Algorithm<any>;
+}
+
+/**
+ * Rótulo curto da turma espelho, no mesmo formato da turma principal
+ * ("SME5784 - T1"). O número da turma vem do id ("SME5784,1").
+ */
+export function formatEspelho(espelho: Espelho): string {
+  const turma = espelho.id?.split(",")[1]?.trim();
+  return turma ? `${espelho.codigo} - T${turma}` : espelho.codigo;
+}
+
+/** Campos da turma espelho que também identificam a turma principal nas buscas. */
+export const CAMPOS_BUSCA_ESPELHO = ["id", "codigo", "nome"] as const;
+export type CampoBuscaEspelho = (typeof CAMPOS_BUSCA_ESPELHO)[number];
+
+/**
+ * Valor de um campo da turma espelho, para que buscar pelo código/nome da
+ * turma da pós encontre a turma da graduação. Vazio quando não há espelho.
+ */
+export function campoEspelho(
+  turma: { espelho?: Espelho },
+  campo: CampoBuscaEspelho,
+): string {
+  return turma.espelho?.[campo] ?? "";
+}
+
+/**
+ * Texto de busca da turma espelho (id, código e nome), para concatenar ao
+ * texto de busca da turma principal. Vazio quando não há espelho.
+ */
+export function textoBuscaEspelho(turma: { espelho?: Espelho }): string {
+  if (!turma.espelho) return "";
+  return CAMPOS_BUSCA_ESPELHO.map((c) => campoEspelho(turma, c)).join(" ");
 }
 
 /**
@@ -178,7 +221,7 @@ export function ajustaDisciplinas(
   for (const disciplina of disciplinas) {
     if (
       typeof disciplina.horario === "string" &&
-      !version.includes("2") /*!= "2.0"*/
+      !String(version ?? "").startsWith("2") /*!= "2.0"*/
     ) {
       // Converte a string de horários para o objeto esperado
       const horarios = parseHorario(disciplina.horario);
@@ -194,6 +237,7 @@ export function ajustaDisciplinas(
       // Desestrutura o objeto e substitui o campo 'horarios'
       newDisciplina = {
         ...disciplina,
+        horarios: disciplina.horarios ?? [],
         conflitos: new Set(),
         trava: false,
       };
