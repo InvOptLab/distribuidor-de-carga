@@ -36,6 +36,7 @@ import {
   processFormularios,
   processSolucao,
   processTravas,
+  resolveEspelhos,
 } from "./UpdateState";
 import { useGlobalContext } from "@/context/Global";
 import { useAlertsContext } from "@/context/Alerts";
@@ -123,24 +124,27 @@ export default function InputFileUpload() {
         processDisciplinas,
         () => null,
       );
-      const atribuicoes: Atribuicao[] = processAndUpdateState(
-        jsonData,
-        "atribuicao",
-        processAtribuicoes,
-        () => null,
-      );
-      const formularios: Formulario[] = processAndUpdateState(
-        jsonData,
-        "formularios",
-        processFormularios,
-        () => null,
-      );
-
-      const travas: Celula[] = processAndUpdateState(
-        jsonData,
-        "travas",
-        processTravas,
-        () => null,
+      // Turmas espelho (v4.0): ids da turma da pós apontam para a turma principal
+      const { atribuicoes, formularios, travas } = resolveEspelhos(
+        disciplinas,
+        processAndUpdateState<Formulario>(
+          jsonData,
+          "formularios",
+          processFormularios,
+          () => null,
+        ),
+        processAndUpdateState<Atribuicao>(
+          jsonData,
+          "atribuicao",
+          processAtribuicoes,
+          () => null,
+        ),
+        processAndUpdateState<Celula>(
+          jsonData,
+          "travas",
+          processTravas,
+          () => null,
+        ),
       );
 
       // Criar todas as disciplinas no state de atribuições

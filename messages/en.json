@@ -709,6 +709,7 @@
           "noForm": "No form",
           "course": "Course",
           "teachingWorkload": "Teaching Workload",
+          "mirror": "Mirror class (graduate)",
           "schedules": "Schedules",
           "toBeDefined": "To be defined",
           "interestedProfessors": "Interested Professors ({count})"

@@ -120,7 +120,8 @@ export const processDisciplinas = (
       nome: disciplina.nome,
       horario: disciplina.horario,
       horarios: disciplina?.horarios,
-      cursos: disciplina.cursos,
+      // v4.0 renomeou `cursos` para `curso`
+      cursos: disciplina.cursos ?? disciplina.curso ?? "",
       ementa: disciplina.ementa,
       id: disciplina.id,
       nivel: disciplina.nivel,
@@ -131,10 +132,91 @@ export const processDisciplinas = (
       ativo: disciplina.ativo !== undefined ? disciplina.ativo : true,
       grupo: disciplina.grupo ? disciplina.grupo : "",
       carga: disciplina.carga ? disciplina.carga : 1,
+      // Só inclui as chaves quando presentes (turmas sem espelho não têm o atributo)
+      ...(disciplina.espelho ? { espelho: { ...disciplina.espelho } } : {}),
+      ...(disciplina.uuid ? { uuid: disciplina.uuid } : {}),
     });
   }
 
   return ajustaDisciplinas(version, newDisciplinas);
+};
+
+/**
+ * Versão principal do arquivo ("3.0" -> 3, "4.0" -> 4). Arquivos sem versão
+ * são tratados como o formato mais antigo (1).
+ */
+export const versaoPrincipal = (version?: string): number => {
+  const major = parseInt(String(version ?? "").split(".")[0], 10);
+  return Number.isNaN(major) ? 1 : major;
+};
+
+/**
+ * Turmas espelho (v4.0): a turma da pós vem aninhada na turma da graduação
+ * (`disciplina.espelho`). Formulários, atribuições e travas que referenciem o
+ * id da turma espelho são redirecionados para a turma principal, mesclando
+ * duplicatas (formulário: menor prioridade; atribuição: união dos docentes).
+ */
+export const resolveEspelhos = (
+  disciplinas: Disciplina[],
+  formularios: Formulario[],
+  atribuicoes: Atribuicao[],
+  travas: Celula[],
+): {
+  formularios: Formulario[];
+  atribuicoes: Atribuicao[];
+  travas: Celula[];
+} => {
+  const principal = new Map<string, string>();
+  const idsPrincipais = new Set(disciplinas.map((d) => d.id));
+  for (const d of disciplinas) {
+    // Se a turma espelho também existir como turma própria, não redireciona
+    if (d.espelho?.id && !idsPrincipais.has(d.espelho.id)) {
+      principal.set(d.espelho.id, d.id);
+    }
+  }
+
+  if (principal.size === 0) return { formularios, atribuicoes, travas };
+
+  const resolve = (id?: string) => (id && principal.get(id)) || id;
+
+  const formMap = new Map<string, Formulario>();
+  for (const f of formularios) {
+    const id_disciplina = resolve(f.id_disciplina)!;
+    const key = `${f.nome_docente}\u0000${id_disciplina}`;
+    const atual = formMap.get(key);
+    if (!atual || f.prioridade < atual.prioridade) {
+      formMap.set(key, { ...f, id_disciplina });
+    }
+  }
+
+  const atribMap = new Map<string, Atribuicao>();
+  for (const a of atribuicoes) {
+    const id_disciplina = resolve(a.id_disciplina)!;
+    const atual = atribMap.get(id_disciplina);
+    if (!atual) {
+      atribMap.set(id_disciplina, { id_disciplina, docentes: [...a.docentes] });
+    } else {
+      for (const doc of a.docentes) {
+        if (!atual.docentes.includes(doc)) atual.docentes.push(doc);
+      }
+    }
+  }
+
+  const travaKeys = new Set<string>();
+  const novasTravas: Celula[] = [];
+  for (const t of travas) {
+    const id_disciplina = resolve(t.id_disciplina);
+    const key = `${t.nome_docente}\u0000${id_disciplina}\u0000${t.tipo_trava}`;
+    if (travaKeys.has(key)) continue;
+    travaKeys.add(key);
+    novasTravas.push({ ...t, id_disciplina });
+  }
+
+  return {
+    formularios: Array.from(formMap.values()),
+    atribuicoes: Array.from(atribMap.values()),
+    travas: novasTravas,
+  };
 };
 
 export const processAtribuicoes = (
@@ -160,7 +242,8 @@ export const processFormularios = (
   const formulariosJson: Record<string, Disciplina[] | number> = data;
   const newFormularios: Formulario[] = [];
 
-  if (version.includes("3")) {
+  // A partir da v3 os formulários são { docente: { id_turma: prioridade } }
+  if (versaoPrincipal(version) >= 3) {
     for (const [nome_docente, formularios] of Object.entries(formulariosJson)) {
       for (const id_turma of Object.keys(formularios)) {
         newFormularios.push({

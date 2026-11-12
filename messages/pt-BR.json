@@ -713,6 +713,7 @@
           "noForm": "Sem formulário",
           "course": "Curso",
           "teachingWorkload": "Carga Didática",
+          "mirror": "Turma espelho (pós)",
           "schedules": "Horários",
           "toBeDefined": "A definir",
           "interestedProfessors": "Docentes Interessados ({count})"

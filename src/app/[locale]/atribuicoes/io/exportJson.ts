@@ -42,7 +42,7 @@ function exportarJsonBrowser(objeto: any, nomeArquivo: string) {
 }
 
 /**
- * Monta o objeto do JSON de saída (formato v3). Separado do download para ser testável.
+ * Monta o objeto do JSON de saída (formato v4: v3 + turmas espelho). Separado do download para ser testável.
  */
 export function buildExportPayload(
   docentes: Docente[],
@@ -75,6 +75,9 @@ export function buildExportPayload(
       grupo: disciplina.grupo ? disciplina.grupo : "",
       carga: disciplina.carga ? disciplina.carga : 1,
       trava: disciplina.trava,
+      // Turma espelho (v4.0): atributo omitido quando não existe
+      ...(disciplina.espelho ? { espelho: disciplina.espelho } : {}),
+      ...(disciplina.uuid ? { uuid: disciplina.uuid } : {}),
     };
     disciplinasDTO[disciplina.id] = {
       ...disc,
@@ -126,7 +129,7 @@ export function buildExportPayload(
   }
 
   const dados = {
-    versao: "3.0",
+    versao: "4.0",
     formularios: formulariosDTO,
     disciplinas: disciplinasDTO,
     docentes: docentesDTO,
