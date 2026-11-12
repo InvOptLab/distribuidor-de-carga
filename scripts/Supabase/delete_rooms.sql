@@ -1,3 +1,8 @@
+-- ATENÇÃO: security.sql redefine delete_orphaned_rooms() usando a presença
+-- (participants.last_seen) e contando o líder como participante. Esta versão
+-- original apagava salas em que só o líder estava (ele não era participante).
+-- O agendamento abaixo continua valendo para a nova função.
+
 -- Habilita a extensão do pg_cron no Supabase (se ainda não estiver ativa)
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 
