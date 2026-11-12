@@ -220,6 +220,10 @@ export default function TurmaForm({
       trava: turmaParaEditar?.trava || false,
       grupo: grupo.trim(),
       carga,
+      // O formulário não edita estes campos: preserva-os ao editar
+      // (antes, salvar uma turma apagava a turma espelho e o uuid)
+      ...(turmaParaEditar?.espelho ? { espelho: turmaParaEditar.espelho } : {}),
+      ...(turmaParaEditar?.uuid ? { uuid: turmaParaEditar.uuid } : {}),
     };
 
     let disciplinasAtualizadas: Disciplina[];
