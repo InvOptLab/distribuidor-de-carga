@@ -107,14 +107,8 @@ export function useGridCommands({
       latest.current.travas = next;
       setTravas(update);
 
-      if (isInRoom) {
-        const { docentes, disciplinas, formularios, atribuicoes } =
-          latest.current;
-        broadcastDataUpdate(
-          { docentes, disciplinas, formularios, atribuicoes, travas: next },
-          "FULL_DATA",
-        );
-      }
+      // Só as travas: reenviar as atribuições aqui apagaria edições simultâneas
+      if (isInRoom) broadcastDataUpdate({ travas: next }, "FULL_DATA");
       cleanSolucaoAtual();
     },
     [setTravas, isInRoom, broadcastDataUpdate, cleanSolucaoAtual],
@@ -145,6 +139,9 @@ export function useGridCommands({
         nome_docente,
         id_disciplina,
       );
+      const prevDocentes =
+        latest.current.atribuicoes.find((a) => a.id_disciplina === id_disciplina)
+          ?.docentes ?? [];
       const { atribuicoes: next, changed } = setAssignment(
         latest.current.atribuicoes,
         nome_docente,
@@ -159,7 +156,10 @@ export function useGridCommands({
             .atribuicoes,
       );
 
-      if (isInRoom) broadcastAssignmentChange(changed, "update");
+      // Envia só o delta (quem entrou/saiu), para não apagar edições simultâneas
+      if (isInRoom) {
+        broadcastAssignmentChange(id_disciplina, prevDocentes, changed.docentes);
+      }
       cleanSolucaoAtual();
     },
     [

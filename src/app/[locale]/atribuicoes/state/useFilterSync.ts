@@ -73,21 +73,11 @@ export function useFilterSync({
       }
     });
 
-    // O CollaborativeGridWrapper manda os dados globais, mas os filtros estão aqui.
+    // Os dados globais são enviados pelo CollaborationSync (em qualquer página);
+    // aqui só os filtros, que existem apenas na grade.
     const unsubscribeReq = onDataRequest(() => {
       if (isOwner) {
-        broadcastDataUpdate(
-          {
-            docentes,
-            disciplinas,
-            atribuicoes,
-            formularios,
-            travas,
-            docenteFilters,
-            disciplinaFilters,
-          },
-          "FULL_DATA",
-        );
+        broadcastDataUpdate({ docenteFilters, disciplinaFilters }, "FULL_DATA");
       }
     });
 
@@ -105,11 +95,6 @@ export function useFilterSync({
     disciplinaFilters,
     setDocenteFilters,
     setDisciplinaFilters,
-    docentes,
-    disciplinas,
-    atribuicoes,
-    formularios,
-    travas,
   ]);
 
   // Broadcast dos filtros quando mudam localmente (dono, ou convidados com guestsCanFilter)

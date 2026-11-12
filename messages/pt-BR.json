@@ -741,6 +741,8 @@
         "filterSync": "Filtro Sync",
         "usersOnline": "Usuários online nesta sala",
         "requestSync": "Solicitar sincronização de dados do líder",
+        "pushSync": "Reenviar seu estado atual para todos na sala",
+        "ownerOffline": "O líder está desconectado. Suas alterações chegam aos outros convidados, mas o líder só as verá ao voltar e sincronizar.",
         "roomSettingsTooltip": "Configurações da sala",
         "collapseDetails": "Recolher detalhes",
         "expandDetails": "Expandir detalhes",
@@ -1967,6 +1969,7 @@
   "Collaboration": {
     "roomNotFound": "Sala não encontrada ou indisponível.",
     "nameAlreadyExistis": "Este nome já está em uso na sala.",
+    "roomNameTaken": "Já existe uma sala com esse nome.",
     "passwordRequired": "É necessário informar a senha para entrar.",
     "incorrectPassword": "Senha incorreta.",
     "ownerEndedRoom": "O criador da sala encerrou a sessão. Você foi desconectado."
