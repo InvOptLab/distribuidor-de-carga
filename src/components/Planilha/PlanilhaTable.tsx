@@ -80,6 +80,11 @@ interface PlanilhaTableProps {
    * Callback para atualizar docentes de uma disciplina
    */
   onUpdateDocentes: (disciplinaId: string, docentes: string[]) => void;
+
+  /**
+   * Somente leitura (ex.: convidado sem permissão de edição na sala)
+   */
+  readOnly?: boolean;
 }
 
 /**
@@ -96,6 +101,7 @@ export function PlanilhaTable({
   onSort,
   onFilter,
   onUpdateDocentes,
+  readOnly = false,
 }: PlanilhaTableProps) {
   // const [editingCell, setEditingCell] = useState<{
   //   disciplinaId: string;
@@ -123,7 +129,7 @@ export function PlanilhaTable({
     if (column.type === "docentes") {
       const docentesAtribuidos = atribuicoes.find(
         (atribuicao) => atribuicao.id_disciplina === disciplina.id
-      ).docentes;
+      )?.docentes;
       return (
         <DocenteCell
           disciplina={disciplina}
@@ -133,6 +139,7 @@ export function PlanilhaTable({
           onChange={(newDocentes) =>
             onUpdateDocentes(disciplina.id, newDocentes)
           }
+          readOnly={readOnly}
         />
       );
     }
