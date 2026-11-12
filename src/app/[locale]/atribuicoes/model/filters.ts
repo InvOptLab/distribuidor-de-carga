@@ -3,6 +3,12 @@ import type {
   Disciplina,
   Docente,
 } from "@/algoritmo/communs/interfaces/interfaces";
+import {
+  CAMPOS_BUSCA_ESPELHO,
+  type CampoBuscaEspelho,
+  campoEspelho,
+  textoBuscaEspelho,
+} from "@/context/Global/utils";
 import type {
   DisciplinaFilters,
   DocenteFilters,
@@ -132,11 +138,12 @@ export function applyTurmaFilters(
   return disciplinas.filter((disciplina) => {
     if (!disciplina.ativo) return false;
 
+    // Inclui id/código/nome da turma espelho (pós): achar a pós acha a graduação
     if (
       search &&
-      !disciplina.nome.toLowerCase().includes(search) &&
-      !disciplina.codigo.toLowerCase().includes(search) &&
-      !disciplina.id.toLowerCase().includes(search)
+      !`${disciplina.nome} ${disciplina.codigo} ${disciplina.id} ${textoBuscaEspelho(disciplina)}`
+        .toLowerCase()
+        .includes(search)
     ) {
       return false;
     }
@@ -153,7 +160,18 @@ export function applyTurmaFilters(
           ? "horarios"
           : rule.fieldKey;
       const value = (disciplina as any)[fieldKey];
-      if (!matchesRule(value, rule)) return false;
+      if (!matchesRule(value, rule)) {
+        // Regra de texto em id/código/nome também casa com a turma espelho
+        const campo = fieldKey as CampoBuscaEspelho;
+        if (
+          rule.type === "contains" &&
+          CAMPOS_BUSCA_ESPELHO.includes(campo) &&
+          matchesRule(campoEspelho(disciplina, campo), rule)
+        ) {
+          continue;
+        }
+        return false;
+      }
     }
 
     return true;

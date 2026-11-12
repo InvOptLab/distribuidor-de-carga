@@ -131,6 +131,30 @@ export function formatEspelho(espelho: Espelho): string {
   return turma ? `${espelho.codigo} - T${turma}` : espelho.codigo;
 }
 
+/** Campos da turma espelho que também identificam a turma principal nas buscas. */
+export const CAMPOS_BUSCA_ESPELHO = ["id", "codigo", "nome"] as const;
+export type CampoBuscaEspelho = (typeof CAMPOS_BUSCA_ESPELHO)[number];
+
+/**
+ * Valor de um campo da turma espelho, para que buscar pelo código/nome da
+ * turma da pós encontre a turma da graduação. Vazio quando não há espelho.
+ */
+export function campoEspelho(
+  turma: { espelho?: Espelho },
+  campo: CampoBuscaEspelho,
+): string {
+  return turma.espelho?.[campo] ?? "";
+}
+
+/**
+ * Texto de busca da turma espelho (id, código e nome), para concatenar ao
+ * texto de busca da turma principal. Vazio quando não há espelho.
+ */
+export function textoBuscaEspelho(turma: { espelho?: Espelho }): string {
+  if (!turma.espelho) return "";
+  return CAMPOS_BUSCA_ESPELHO.map((c) => campoEspelho(turma, c)).join(" ");
+}
+
 /**
  * Verifica se um objeto é do tipo Disciplina
  * @param obj Objeto a ser verificado

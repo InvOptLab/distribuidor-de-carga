@@ -54,6 +54,7 @@ import {
 } from "@/context/Global/utils";
 import { exportJson } from "../atribuicoes";
 import { useAlgorithmContext } from "@/context/Algorithm";
+import { useCollaboration } from "@/context/Collaboration";
 import { useTranslations } from "next-intl";
 
 interface FileAnalysis {
@@ -107,6 +108,8 @@ export default function InputFileUpload() {
   const { cleanSolucaoAtual } = useSolutionHistory();
   const { setMaiorPrioridade } = useAlgorithmContext();
   const t = useTranslations("Pages.InputFile");
+  const tAssign = useTranslations("Pages.Assignment.Alerts");
+  const { isInRoom, canEdit, broadcastDataUpdate } = useCollaboration();
 
   // Função para processar e analisar o arquivo usando suas funções existentes
   const processAndAnalyzeFile = useCallback(
@@ -433,8 +436,24 @@ export default function InputFileUpload() {
       );
     }
 
+    // Em sala colaborativa, os novos dados vão para todos
+    if (isInRoom) {
+      broadcastDataUpdate(
+        {
+          docentes: tempData.docentes,
+          disciplinas: tempData.disciplinas,
+          atribuicoes: tempData.atribuicoes,
+          formularios: tempData.formularios,
+          travas: tempData.travas,
+        },
+        "FULL_DATA",
+      );
+    }
+
     updateProgress(steps[6]);
   }, [
+    isInRoom,
+    broadcastDataUpdate,
     tempData,
     setDocentes,
     setDisciplinas,
@@ -487,6 +506,13 @@ export default function InputFileUpload() {
       return;
     }
 
+    // Em sala, só quem pode editar troca os dados de todos
+    if (!canEdit) {
+      addAlerta(tAssign("onlyRoomLeaderCanMakeChanges"), "warning");
+      setShowBackupDialog(false);
+      return;
+    }
+
     setUploading(true);
     setUploadProgress([]);
 
@@ -508,7 +534,15 @@ export default function InputFileUpload() {
     setUploadProgress([]);
     cleanSolucaoAtual();
     setShowBackupDialog(false);
-  }, [selectedFile, tempData, applyTempData, addAlerta, cleanSolucaoAtual]);
+  }, [
+    selectedFile,
+    tempData,
+    applyTempData,
+    addAlerta,
+    cleanSolucaoAtual,
+    canEdit,
+    tAssign,
+  ]);
 
   // Função para drag and drop
   const handleDragOver = useCallback((e: React.DragEvent) => {

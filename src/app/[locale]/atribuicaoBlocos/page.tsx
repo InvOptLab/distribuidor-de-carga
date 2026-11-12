@@ -358,11 +358,11 @@ export default function AtribuicaoEmBlocosPage() {
           const novosDocentes = atribuicaoAtual.docentes.filter(
             (d) => d !== nome_docente,
           );
-          const atribuicaoAtualizada = {
-            ...atribuicaoAtual,
-            docentes: novosDocentes,
-          };
-          broadcastAssignmentChange(atribuicaoAtualizada, "update");
+          broadcastAssignmentChange(
+            id_disciplina,
+            atribuicaoAtual.docentes,
+            novosDocentes,
+          );
         }
       }
     },
@@ -428,7 +428,11 @@ export default function AtribuicaoEmBlocosPage() {
           updateAtribuicoes(newAtribuicoes);
         }
         if (isInRoom) {
-          broadcastAssignmentChange(atribuicaoAtualizada, "update");
+          broadcastAssignmentChange(
+            id_disciplina,
+            atribuicaoAtual.docentes,
+            novosDocentes,
+          );
         }
       }
     },
@@ -477,17 +481,9 @@ export default function AtribuicaoEmBlocosPage() {
       setTravas(novasTravas);
 
       // Transmite para a Sala Colaborativa
+      // Só as travas: reenviar as atribuições apagaria edições simultâneas
       if (isInRoom && broadcastDataUpdate) {
-        broadcastDataUpdate(
-          {
-            docentes,
-            disciplinas,
-            formularios,
-            atribuicoes, // Enviamos o estado atual de atribuições INTACTO
-            travas: novasTravas, // Enviamos as novas travas
-          },
-          "FULL_DATA",
-        );
+        broadcastDataUpdate({ travas: novasTravas }, "FULL_DATA");
       }
 
       // Limpa a solução visual e os cálculos passados do algoritmo

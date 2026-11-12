@@ -737,6 +737,8 @@
         "filterSync": "Filter Sync",
         "usersOnline": "Users online in this room",
         "requestSync": "Request data synchronization from the leader",
+        "pushSync": "Resend your current state to everyone in the room",
+        "ownerOffline": "The leader is disconnected. Your changes reach other guests, but the leader will only see them after reconnecting and syncing.",
         "roomSettingsTooltip": "Room settings",
         "collapseDetails": "Collapse details",
         "expandDetails": "Expand details",
@@ -1963,6 +1965,7 @@
   "Collaboration": {
     "roomNotFound": "Room not found or no longer available.",
     "nameAlreadyExistis": "This name is already in use in the room.",
+    "roomNameTaken": "A room with this name already exists.",
     "passwordRequired": "Password is required to enter this room.",
     "incorrectPassword": "Incorrect password.",
     "ownerEndedRoom": "The room creator has ended the session. You have been disconnected."

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { formatEspelho } from "@/context/Global/utils";
+import {
+  campoEspelho,
+  formatEspelho,
+  textoBuscaEspelho,
+} from "@/context/Global/utils";
 import {
   processDisciplinas,
   processFormularios,
@@ -51,6 +55,20 @@ describe("formatEspelho", () => {
   it("monta o rótulo a partir do id", () => {
     expect(formatEspelho(turmaV4.espelho)).toBe("SME5784 - T1");
     expect(formatEspelho({ codigo: "X", id: "X", nome: "" })).toBe("X");
+  });
+});
+
+describe("busca pela turma espelho", () => {
+  it("expõe id, código e nome do espelho", () => {
+    expect(textoBuscaEspelho(turmaV4)).toBe(
+      "SME5784,1 SME5784 Métodos Numéricos para Equações Diferenciais",
+    );
+    expect(campoEspelho(turmaV4, "codigo")).toBe("SME5784");
+  });
+
+  it("é vazio quando não há espelho", () => {
+    expect(textoBuscaEspelho({})).toBe("");
+    expect(campoEspelho({}, "nome")).toBe("");
   });
 });
 

@@ -18,6 +18,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { useTranslations } from "next-intl";
 import { formatCursos } from "@/app/[locale]/atribuicoes/model/text";
+import { textoBuscaEspelho } from "@/context/Global/utils";
 import type { SolutionDetail } from "../../model/solutionDetail";
 import { formatSaldo } from "../../model/format";
 import type { EntityRef } from "../../state/useHistoryList";
@@ -99,7 +100,10 @@ export default function EntityList({
         count: tt.docentes.length,
         conflito: tt.conflito,
         semAtribuicao: tt.docentes.length === 0,
-        search: normalize(`${tt.turma.id} ${tt.turma.codigo} ${tt.turma.nome} ${cursos}`),
+        // Inclui a turma espelho (pós): buscar por ela encontra a graduação
+        search: normalize(
+          `${tt.turma.id} ${tt.turma.codigo} ${tt.turma.nome} ${cursos} ${textoBuscaEspelho(tt.turma)}`,
+        ),
       };
     });
   }, [detail, kind]);

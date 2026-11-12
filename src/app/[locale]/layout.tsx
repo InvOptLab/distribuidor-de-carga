@@ -10,6 +10,7 @@ import { Box, CssBaseline } from "@mui/material";
 
 import "katex/dist/katex.min.css";
 import { CollaborationProvider } from "@/context/Collaboration";
+import CollaborationSync from "@/context/Collaboration/CollaborationSync";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { AccessibilityProvider } from "@/context/Accessibility";
@@ -68,6 +69,8 @@ export default async function RootLayout({
                 </Box>
 
                 <GlobalWrapper>
+                  {/* Sincroniza os dados com a sala colaborativa em todas as páginas */}
+                  <CollaborationSync />
                   <AlgorithmWrapper>
                     <AlertsWrapper>
                       {/* Substituímos a <div> nativa pelo Box do MUI para controlar o scroll */}

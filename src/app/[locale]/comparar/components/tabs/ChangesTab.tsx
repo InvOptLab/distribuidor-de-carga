@@ -22,6 +22,7 @@ import {
   type GridColumnVisibilityModel,
 } from "@mui/x-data-grid";
 import { useTranslations } from "next-intl";
+import { textoBuscaEspelho } from "@/context/Global/utils";
 import { PRIORITY_DIRECTION } from "@/app/[locale]/history/model/solutionSummary";
 import {
   priorityTrend,
@@ -107,7 +108,13 @@ export default function ChangesTab({
       if (trend !== "all" && r.trend !== trend) return false;
       if (needle) {
         const hay = normalize(
-          [r.id, r.label, ...r.docentesA, ...r.docentesB].join(" "),
+          [
+            r.id,
+            r.label,
+            textoBuscaEspelho(r.turma), // turma espelho (pós) acha a graduação
+            ...r.docentesA,
+            ...r.docentesB,
+          ].join(" "),
         );
         if (!hay.includes(needle)) return false;
       }

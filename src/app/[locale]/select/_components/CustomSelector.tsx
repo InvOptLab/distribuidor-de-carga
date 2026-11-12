@@ -42,6 +42,10 @@ import {
   type Disciplina,
   type Docente,
   isDisciplina,
+  CAMPOS_BUSCA_ESPELHO,
+  type CampoBuscaEspelho,
+  campoEspelho,
+  textoBuscaEspelho,
 } from "@/context/Global/utils";
 import { useTranslations } from "next-intl";
 import { useGlobalContext } from "@/context/Global";
@@ -185,12 +189,18 @@ export default function CustomSelector({
     }
 
     switch (rule.type) {
-      case "text":
+      case "text": {
+        const needle = rule.value.toLowerCase();
+        // Em turmas, id/código/nome também casam com a turma espelho (pós)
+        const espelho =
+          !isDocenteList &&
+          CAMPOS_BUSCA_ESPELHO.includes(rule.fieldKey as CampoBuscaEspelho)
+            ? campoEspelho(item, rule.fieldKey as CampoBuscaEspelho)
+            : "";
+        if (espelho && espelho.toLowerCase().includes(needle)) return true;
         if (!value) return false;
-        return value
-          .toString()
-          .toLowerCase()
-          .includes(rule.value.toLowerCase());
+        return value.toString().toLowerCase().includes(needle);
+      }
 
       case "boolean":
         return value === rule.value;
@@ -260,7 +270,7 @@ export default function CustomSelector({
       ? (item as Docente).nome
       : `${(item as Disciplina).id} - ${(item as Disciplina).nome} - ${
           (item as Disciplina).codigo
-        }`;
+        } - ${textoBuscaEspelho(item as Disciplina)}`;
 
     const matchesSearch = searchText
       .toLowerCase()
